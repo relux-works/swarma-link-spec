@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 — 2026-11-09
+
+Adds LIP-0003 (Draft): detached grants under an agent identity — the agent's name
+holds only its keys; each grant is a certificate signed by the grant key with its
+own seal and validity window; no per-grant transaction; closure on seal spend or
+grant-key rotation. RELEASE.md renders LICENSE-MIT too. No normative change.
+
 ## 0.1.1 — 2026-11-09
 
 Improvement proposals are now Link Improvement Proposals (LIPs): `cips/` is

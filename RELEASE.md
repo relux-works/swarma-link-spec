@@ -9,7 +9,7 @@ specification as one PDF and its SHA-256.
 3. Render the PDF from the tagged sources only (`git archive v<version>`), in this
    order: `README.md`, `protocol/names.md`, `protocol/issuance.md`,
    `protocol/observation.md`, `protocol/revocation.md`, `decisions/*`, `lips/*`,
-   `conformance/README.md`, `LICENSE.md`; Markdown → HTML with pandoc, HTML → PDF
+   `conformance/README.md`, `LICENSE.md`, `LICENSE-MIT`; Markdown → HTML with pandoc, HTML → PDF
    with WeasyPrint, a serif print theme.
 4. Check the PDF: page count, every section title present in `pdftotext` output.
 5. Publish: `gh release create v<version> --verify-tag` with
