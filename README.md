@@ -6,7 +6,7 @@
 
 **Status:** Draft
 
-**Authors:** Alexey Grigoryev, Ivan Oparin
+**Authors:** Alexey Grigorev, Ivan Oparin
 
 **License:** text under CC BY 4.0; code under MIT. See [LICENSE.md](LICENSE.md).
 

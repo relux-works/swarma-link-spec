@@ -9,4 +9,4 @@ This repository uses two licences.
 - **Code** (any source code, scripts and conformance tooling): the MIT
   licence, in [LICENSE-MIT](LICENSE-MIT).
 
-Copyright © 2026 Alexey Grigoryev, Ivan Oparin.
+Copyright © 2026 Alexey Grigorev, Ivan Oparin.
