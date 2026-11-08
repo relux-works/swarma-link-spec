@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.0
+**Version:** 0.1.1
 
-**Date:** 2026-11-08
+**Date:** 2026-11-09
 
 **Status:** Draft
 
@@ -34,7 +34,8 @@ Out of scope here, specified elsewhere and referenced by name:
 | [Observation](protocol/observation.md) | Normative: how a verifier reads the chain and decides |
 | [Revocation](protocol/revocation.md) | Normative: seal spend closes the grant; watcher states pending and final |
 | [Conformance](conformance/README.md) | Normative classes and the v0.1 evidence vectors |
-| [`cips/`](cips/) | Improvement proposals (not normative until adopted) |
+| [`lips/`](lips/) | Link Improvement Proposals (LIPs; not normative until adopted) |
+| [`RELEASE.md`](RELEASE.md) | How each revision is released with its PDF |
 | [`decisions/`](decisions/) | Adopted design decisions with context and consequences |
 
 The normative keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL

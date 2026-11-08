@@ -1,4 +1,4 @@
-# CIP-0002: Single-use grants
+# LIP-0002: Single-use grants
 
 - **Status:** Draft
 - **Created:** 2026-11-08

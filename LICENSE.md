@@ -2,7 +2,7 @@
 
 This repository uses two licences.
 
-- **Text** (specification, CIPs, decisions, conformance descriptions and
+- **Text** (specification, LIPs, decisions, conformance descriptions and
   vectors, and every other file that is not code): Creative Commons
   Attribution 4.0 International (CC BY 4.0),
   <https://creativecommons.org/licenses/by/4.0/legalcode>.

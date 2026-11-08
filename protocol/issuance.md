@@ -46,7 +46,7 @@ of the transaction that creates it.
 ## Limitations
 
 - Only P2PKH seal and name outputs are specified. Segwit, multisig and the
-  two-party seals of single-use grants are future work (CIP-0002).
+  two-party seals of single-use grants are future work (LIP-0002).
 - One grant per owner name at a time: a new anchor replaces the owner value,
   so every grant anchored to the previous generation is closed by the new
   one ([observation](observation.md) §4).
