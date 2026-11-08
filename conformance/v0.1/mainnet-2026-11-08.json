@@ -1,0 +1,154 @@
+{
+  "vector_set": "swarma-link/v0.1/mainnet-2026-11-08",
+  "network": "namecoin-main",
+  "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+  "names": {
+    "owner": "id/swarma-poc-alexis",
+    "requester": "id/swarma-poc-ivan-agent",
+    "requester_generation": {
+      "txid": "6e913b784a59faa7e734645226364c6c4c690560e0af976bff77e21d5f8bada3",
+      "height": 850641,
+      "block": "84f1d95034c17fd59d7d19ac9a1d4af9b41515617e12c98dd50ff6d4ab79b103"
+    }
+  },
+  "cycles": [
+    {
+      "id": "cycle-1",
+      "certificate_sha256": "a12e96229b3d6d9bd69b9ca5c37effc28d87c543d2a9d7f8836b2c0764ae12ac",
+      "seal": {
+        "txid": "5e826d1ec2fddf46c0e269590eb4bc6e6518a4bd58b1f34556633ca6cb80c068",
+        "vout": 0,
+        "height": 850659,
+        "block": "d9a4434515b1ad65499034ae169cf5971c0d003da961c434f338fdbfe9a078ce"
+      },
+      "anchor": {
+        "txid": "1289910906421eab137d7e988c2fd41aa07bb56c650c2ac8fee097dbf1996e99",
+        "height": 850661,
+        "block": "eb14b5cab473d0e14a5d32d38c59cb299d2ceb94ddbd57466139de946b3f35b0"
+      },
+      "revocation": {
+        "txid": "389e8d300779ed3ca9238fe52fe56a2c9b9504b9efeee75b323ae269cba14209",
+        "height": 850663,
+        "block": "c644d614fc1f9988846013b58b20bb71449b196c881b842fd37d758340b1ca6e"
+      },
+      "observations": [
+        {
+          "at": "2026-11-08T05:09:09Z",
+          "tip": 850661,
+          "tip_block": "eb14b5cab473d0e14a5d32d38c59cb299d2ceb94ddbd57466139de946b3f35b0",
+          "tip_source": "receipt",
+          "expect": {
+            "verified": true,
+            "closure": null,
+            "watch": "UNSPENT"
+          }
+        },
+        {
+          "at": "2026-11-08T05:12:24Z",
+          "tip": 850663,
+          "tip_block": "c644d614fc1f9988846013b58b20bb71449b196c881b842fd37d758340b1ca6e",
+          "tip_source": "receipt",
+          "expect": {
+            "verified": false,
+            "closure": "seal-spent-or-unknown",
+            "watch": "FINALREVOKED",
+            "watch_reason": "FIRST_ACTIVE_BLOCK_SPEND"
+          }
+        },
+        {
+          "at": "2026-11-08T05:14:55Z",
+          "tip": null,
+          "tip_block": null,
+          "tip_source": "not_recorded",
+          "note": "fresh process, same state",
+          "expect": {
+            "verified": false,
+            "closure": "seal-spent-or-unknown",
+            "closure_unchanged": true,
+            "watch": null
+          }
+        }
+      ],
+      "note": "Mempool stage not observed: the revocation was mined about 20 s after broadcast. The admit tip 850661 and the revocation block 850663 are two blocks apart; the watcher reports FINALREVOKED for a spend in any of the first six successors of its start tip."
+    },
+    {
+      "id": "cycle-2",
+      "certificate_sha256": "59824771ef2bc317798a708b7287854d8234499fba9b4023aa769361fc057b69",
+      "seal": {
+        "txid": "10c6e840edee875f7767662f2cefeba22c85f7ddd0f49db0d56a1f4cd2d31cfa",
+        "vout": 0,
+        "height": 850666,
+        "block": "f845df877e442e44c1844d0df46aeaa55876f04d8415b6cf5a80a1ff005b19ed"
+      },
+      "anchor": {
+        "txid": "05fc58ef81834765c148178cb9a9062381b78d19a56b8b5713695e3cda20e786",
+        "height": 850669,
+        "block": "39d51ab9c65dbeccd6d417714385337e0d07c04852b42c8c327b6d40bdbf21db"
+      },
+      "revocation": {
+        "txid": "7aa82a7731eb1fd430c577facddc0274d553211fe0a33e2815176f9e104e80d8",
+        "height": 850672,
+        "block": "2c941b6a62181e606c1db38d70d5afc5a658a8224425d886255d8f95ee792c17"
+      },
+      "observations": [
+        {
+          "at": "2026-11-08T06:18:54Z",
+          "tip": 850669,
+          "tip_block": "39d51ab9c65dbeccd6d417714385337e0d07c04852b42c8c327b6d40bdbf21db",
+          "tip_source": "receipt",
+          "expect": {
+            "verified": true,
+            "closure": null,
+            "watch": "UNSPENT"
+          }
+        },
+        {
+          "at": "2026-11-08T06:26:43Z",
+          "tip": 850670,
+          "tip_block": "354f409c872c4cfe745af492bc6d881b69faaee9a2110473498956e660799314",
+          "tip_source": "receipt",
+          "revocation_in_mempool": true,
+          "expect": {
+            "verified": false,
+            "closure": "seal-spent-or-unknown",
+            "watch": "SUSPEND",
+            "watch_reason": "MEMPOOL_SEAL_INPUT"
+          }
+        },
+        {
+          "at": "2026-11-08T06:26:57Z",
+          "tip": 850671,
+          "tip_block": "ed0d8d5fe50a40dfc5d4a17de1a9d96c23be4f4cb0c534fd1af37a5dd13e4994",
+          "tip_source": "receipt",
+          "revocation_in_mempool": true,
+          "note": "block without the spend; closure from 06:26:43Z unchanged",
+          "expect": {
+            "verified": false,
+            "closure": "seal-spent-or-unknown",
+            "closure_unchanged": true,
+            "watch": "SUSPEND",
+            "watch_reason": "MEMPOOL_SEAL_INPUT"
+          }
+        },
+        {
+          "at": "2026-11-08T06:38:43Z",
+          "tip": 850672,
+          "tip_block": "2c941b6a62181e606c1db38d70d5afc5a658a8224425d886255d8f95ee792c17",
+          "tip_source": "receipt",
+          "expect": {
+            "verified": false,
+            "closure": "seal-spent-or-unknown",
+            "closure_unchanged": true,
+            "watch": "FINALREVOKED",
+            "watch_reason": "FIRST_ACTIVE_BLOCK_SPEND"
+          }
+        }
+      ]
+    }
+  ],
+  "field_sources": {
+    "receipt": "observation verdicts, closures, watch states and reasons, and tips marked tip_source=receipt come from the reference run's verifier and watcher receipts",
+    "chain": "txids, heights and block hashes of names, seals, anchors and revocations are public chain data; anyone can re-read them from a Namecoin full node",
+    "not_recorded": "a field set to null was not recorded by the run"
+  }
+}

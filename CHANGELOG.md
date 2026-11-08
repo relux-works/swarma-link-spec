@@ -1,0 +1,8 @@
+# Changelog
+
+## 0.1.0 — 2026-11-08
+
+First public draft. Names, issuance, observation and revocation as proved by
+the first Namecoin mainnet experiment; conformance cases and mainnet vectors;
+decisions 0001-0002; CIP-0001 (process) and CIP-0002 (single-use grants,
+Draft, with regtest and mainnet evidence).
