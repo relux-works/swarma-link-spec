@@ -39,7 +39,8 @@ This document is normative.
 | `keyvault_seal` | object | The seal outpoint: `{"txid": <64 lowercase hex>, "vout": <integer ≥ 0>}` |
 
 3. Issuers MUST NOT write members other than those defined here. A verifier
-   ignores members it does not define, unless they are aliases (§3.1).
+   ignores members it does not define, unless they are aliases or fold
+   conflicts (§3.1).
 4. An owner name carries `keyvault_owner_spki`. After an issuance it also
    carries `keyvault_certificate_sha256` and `keyvault_seal`
    ([issuance](issuance.md)). A requester name carries
@@ -68,8 +69,9 @@ This document is normative.
   does not meet §3.1 and §3.2: its seal check (`gettxout`, review finding F1),
   its seal watcher (F2), its displaced-header path (F3) and its name value
   reader select the exact member and do not refuse aliases or fold conflicts.
-  The fix (keyvault `0c8352ff`, chain-lab `e6c6c579`) passed independent
-  review on 2026-11-08 and is not yet landed. Until a conforming build is
+  The fix passed independent review on 2026-11-08 and landed in rebased
+  form (keyvault main `6775a18f`, chain-lab `e6c6c579`); a conforming build
+  is not yet deployed. Until one is
   deployed, only a verifier that reads genuine Namecoin Core output directly,
   with nothing in between, is in scope; Core emits official spellings only.
 - Name expiry (36000 blocks without an update) is enforced as a refusal

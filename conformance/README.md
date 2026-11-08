@@ -51,7 +51,7 @@ certificate and issuance, not the closed one.
 | 10 | a later name update replaces the anchored generation | refuse | `confirmed-issuance-replacement` |
 | 11 | chain tip changes during the observation | refuse | `observed-tip-change` |
 | 12 | requester name changes generation during the observation | refuse | `confirmed-requester-generation-change` |
-| 13 | fold alias, fold conflict or duplicate member in a name value, or in a chain, block, header or transaction reply | refuse | none |
+| 13 | fold alias, fold conflict or duplicate member in a name value, or in a chain, block, header, transaction, name or mempool reply | refuse | none |
 | 14 | the same in the seal output (`gettxout`) reply | refuse | `seal-spent-or-unknown` (the seal read fails) |
 | 15 | the pinned anchor block is proved displaced from the active chain | refuse | `canonical-block-displacement` |
 | 16 | expired owner or requester name | refuse | none |

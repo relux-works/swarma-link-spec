@@ -99,6 +99,10 @@ new certificate and a new issuance.
   fresh grant.
 - Sequential reads are not atomic; an away-and-back change between reads is
   not excluded.
+- A closure whose write failed is held only in the running verifier (§4).
+  If the verifier then crashes, nothing in v0.1 tells the restarted process
+  that the certificate is barred; it re-derives the verdict from the chain.
+  The reference verifier has the same gap (review finding F6).
 - Admission safety rests on the trusted node being current. v0.1 checks only
   that the node is not in initial block download; it has no rule for a stale
   but synced-looking node. Operators of the reference run cross-checked tips

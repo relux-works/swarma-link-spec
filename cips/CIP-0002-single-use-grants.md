@@ -49,9 +49,10 @@ mainnet run under the same custody and exact-hex review rules as v0.1.
 
 ## Evidence so far (2026-11-08)
 
-- Regtest: a 47-case genuine Namecoin Core 28.0 matrix (37 refusals, 3 pending,
-  9 replays without a second effect, each next to a valid neighbour) plus five
-  traffic-noise scenarios; independent review accepted.
+- Regtest: a matrix of 47 controls on genuine Namecoin Core 28.0, each next
+  to a valid neighbour (receipt outcomes across the matrix: 37 refusals,
+  3 pending, 9 replays without a second effect, plus the executions of the
+  neighbours), and five traffic-noise scenarios; independent review accepted.
 - Mainnet, one complete run: seal (P2SH 1-of-2) at height 850684, anchor at
   850686, grantee use with the request hash at 850690. The executor reported
   pending while the use was in the mempool, executed once after one
@@ -62,9 +63,12 @@ mainnet run under the same custody and exact-hex review rules as v0.1.
 
 The first mainnet confirmed-use observation refused falsely. While searching
 for spends of the seal, the executor strictly decoded every unrelated block
-and mempool transaction with a legacy-only decoder. A third-party segwit
-transaction, a transaction with many inputs, or a large mempool made it
-refuse. That is a refusal any third party can trigger. Rule for this
+and mempool transaction with a legacy-only decoder, so unrelated traffic
+could make it refuse. The exact transaction that triggered the mainnet
+refusal was not identified; each mechanism (a third-party segwit
+transaction, a transaction with many inputs, a large mempool) was
+reproduced separately on regtest. That is a refusal any third party can
+trigger. Rule for this
 proposal: discovery reads only the exact projected inputs of each
 transaction; only candidates that spend the seal are strictly validated; a
 candidate that fails strict validation aborts the observation as a refusal,
