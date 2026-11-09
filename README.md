@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.3
+**Version:** 0.1.4
 
-**Date:** 2026-11-09
+**Date:** 2026-11-10
 
 **Status:** Draft
 
@@ -52,3 +52,37 @@ normative oracle.
 v0.1 describes the shape that ran on Namecoin mainnet on 2026-11-08 (two full
 cycles, see [conformance](conformance/README.md)). Known gaps are listed in each
 part under "Limitations" and are not hidden by the normative text.
+
+## Draft implementation profiles in v0.1.4
+
+This revision reconciles informative draft descriptions with the public
+implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
+grants, optional social name metadata and separate discovery;
+[LIP-0005](lips/LIP-0005-op-return-locator.md) records the landed framed writer
+and exact bare compatibility; [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
+introduces grant-gated actions and the concrete wallet service v1 profile.
+
+These drafts do not replace the normative v0.1 profile, adopt new conformance
+requirements or rewrite historical evidence. LIP-0002's signed-envelope
+commitment remains distinct from the wallet service's unsigned-request
+commitment. Adoption needs a decision plus protocol and profile-specific
+conformance changes under LIP-0001; that is outside this patch revision.
+Open decisions are indexed in [UNRESOLVED_QUESTIONS.md](UNRESOLVED_QUESTIONS.md)
+and remain detailed in the individual proposals.
+
+## Tools and release artifacts
+
+Release steps and the complete input order are in [RELEASE.md](RELEASE.md).
+Placeholders below refer to that version, ordered tagged inputs and selected
+serif print theme; HTML is an intermediate artifact in the release workspace.
+
+| Tool | Purpose and entry point | Output |
+| --- | --- | --- |
+| Git | `git archive v<version>` | Tagged source archive on stdout. |
+| Pandoc | `pandoc --from=markdown --to=html5 --standalone <ordered-inputs> -o <html>` | Intermediate HTML. |
+| WeasyPrint | `weasyprint --stylesheet <serif-print-theme.css> <html> swarma-link-spec-v<version>.pdf` | Whole-specification PDF. |
+| Poppler | `pdftotext swarma-link-spec-v<version>.pdf -` | Extracted text on stdout for section coverage checks. |
+| GitHub CLI | `gh release create v<version> --verify-tag swarma-link-spec-v<version>.pdf swarma-link-spec-v<version>.pdf.sha256` | Release with PDF and SHA-256 assets. |
+
+Source review precedes tagging and rendering. This repository has no general
+executable conformance runner.

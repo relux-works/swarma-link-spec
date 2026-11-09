@@ -7,6 +7,11 @@
   BitTorrent, another network — with the hash as the pointer in that place; the pointer may be the grant's own hash or
   an info-hash; inspired by the Memo protocol that the Swarma Forum takes as is.
 
+This is a draft micro-protocol, not a replacement for normative v0.1 anchors.
+The implementation notes below refer to
+[`swarma-chain-lab` at `ca074ca645bc69d7bba41e7889504612eaa7f7d4`](https://github.com/relux-works/swarma-chain-lab/tree/ca074ca645bc69d7bba41e7889504612eaa7f7d4/experiments/rental).
+They reconcile the landed parser/writer without adopting a new conformance profile.
+
 ## 1. Constraints
 
 - **Size.** Namecoin Core 28 relay policy (not consensus) accepts one `OP_RETURN` output whose script is at most 83
@@ -57,8 +62,15 @@ locator = location_type(1) || pointer
 | `0x05`-`0x7f` | reserved for further networks | defined by a later LIP | — |
 | `0x80`-`0xff` | experimental / private use | — | — |
 
-Where to fetch is the *location*; which server or tracker is not on chain (it comes from the agent's or landlord's
-Namecoin name value, e.g. a `blob` or `tracker` field, so it can change without touching history).
+The location type describes the retrieval mechanism, not a server or tracker.
+Endpoint discovery is separate configuration or future profile work. Current
+landlord/agent name values have closed schemas: they do not accept `blob` or
+`tracker` fields. Their optional Nostr relay hints do not supply a blob/torrent
+endpoint or trigger a fetch. No new name field is implied by this format.
+
+Reserved and experimental ranges are allocations for future profiles, not
+currently accepted values. The reference parser accepts only the two defined
+actions and the five defined location types, with their exact pointer lengths.
 
 ### Sizes
 
@@ -75,15 +87,51 @@ The payload is always a single direct push of at most 75 bytes; every defined co
 1. Exactly one `OP_RETURN` output per issuance transaction (as today).
 2. `6a 03 534c <action> <n> <payload>`: parse strictly — exactly these two direct pushes, known action, known
    version, known location type, exact pointer length, n = payload length; anything else is refused, never guessed.
-3. Bare `6a20<32>`: legacy v0.1 anchor; the 32 bytes are the hash, location unspecified.
-4. A Memo output (prefix byte `0x6d`) is not a Swarma Link output and is ignored by Link readers.
+3. Exact bare `6a20<32>`: explicit legacy syntax with location unspecified, not
+   a fallback for malformed framing. The normative v0.1 profile interprets the
+   bytes as its envelope hash; the landlord profile can interpret them as its
+   issuance commitment. The caller pins the profile and expected hash.
+4. A Memo output (prefix byte `0x6d` in its direct push) is classified as non-Link
+   by the generic parser. It does not satisfy an issuance transaction's required
+   commitment, and an extra Memo `OP_RETURN` still violates rule 1.
 5. The pointer is verified after fetching: the fetched bytes must hash to the pointer (type `0x01`) or match the
    torrent's info dictionary (types `0x02`-`0x04`), and the object must hash to the value the commitment binds.
 
 ## 4. Effect on the reference implementation
 
-The landlord-grant issuer (LIP-0004) writes action `0x01` with locator type `0x01` (pointer = grant id), replacing the bare
-commitment push; the kernel parses per §3. The reference implementation still writes the bare form; moving it to this framing is a small follow-up.
+The landlord-grant issuer now writes action `0x01` with location `0x01`
+(pointer = grant id). The script is exactly 72 bytes:
+
+```text
+6a 03 53 4c 01 42 01 <commitment:32> 01 <grant_id:32>
+
+offset    contents
+0         OP_RETURN (6a)
+1         direct push of 3 bytes (03)
+2-3       protocol SL (53 4c)
+4         issuance action (01)
+5         direct push of 66 bytes (42)
+6         payload version (01)
+7-38      issuance commitment (32 bytes)
+39        blob location (01)
+40-71     grant_id (32 bytes)
+```
+
+The fresh writer and its fee projection use this frame. The landlord matcher
+also accepts an exact bare commitment matching LIP-0004 section 4. The completed
+plan comparator retains byte/fee/change/size equality for old regtest plans and
+framed plans; it does not rewrite a completed record. Legacy projection is
+regtest-only. A frame with old fees or a bare script with new fees refuses.
+
+Generic parsing can return either defined action with any defined location.
+Landlord issuance accepts only action `0x01`, blob location `0x01` and pointer
+equal to the presented `grant_id`, with exactly one zero-value `OP_RETURN` and
+no seal input. This acceptance rule is narrower than parser success.
+
+The parser neither fetches the object nor verifies its availability or authority.
+Rule 5 describes the check a location-specific retriever needs; it does not
+claim the current parser implements such a retriever. The reference delivery
+profile takes a complete grant presentation, independently of this locator.
 
 ## 5. Open
 

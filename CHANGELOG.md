@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.4 — 2026-11-10
+
+Reconciles Draft LIP-0004/0005 with the landed 72-byte issuance writer, exact
+bare-commitment compatibility and completed-plan replay boundaries. Describes
+optional typed social metadata in authority names and the separate discovery
+mirror without granting it authority; removes unsupported blob/tracker name
+field suggestions. Adds LIP-0006 (Draft), recording the wallet service v1 request,
+unsigned single-use commitment, signed/pinned reads, reserved receive allocation,
+receipts and recovery semantics. Historical LIP-0002 and v0.1 conformance evidence
+are unchanged. No normative change or proposal adoption.
+
 ## 0.1.3 — 2026-11-09
 
 Adds LIP-0004 (Draft): landlord grants — the agent name holds only its messaging key and a

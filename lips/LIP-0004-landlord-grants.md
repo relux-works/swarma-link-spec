@@ -8,7 +8,17 @@
 - **Terms:** *grant* (the signed document), *contract* (the terms both sides sign), *seal* (the output whose spend ends
   the grant early). The word "certificate" is not used.
 
+## Current state and profile boundary
+
+This draft describes the landlord implementation profile in
+[`swarma-chain-lab` at `ca074ca645bc69d7bba41e7889504612eaa7f7d4`](https://github.com/relux-works/swarma-chain-lab/tree/ca074ca645bc69d7bba41e7889504612eaa7f7d4/experiments/rental),
+including its strict name parser and framed issuance writer. It does not replace
+the normative v0.1 name/envelope/anchor profile or adopt these draft requirements.
+Implementation statements below are informative; adoption follows LIP-0001.
+
 ## 1. Names
+
+Historical authority values remain accepted with identical builder bytes:
 
 ```json
 {"swarma":{"landlord":{"grant":"<x-only grant key>"}}}
@@ -17,7 +27,63 @@
 
 - The landlord name holds the **grant key**; it is owned by a cold key. The agent name holds only its messaging key
   and a pointer to its landlord name. A landlord may be the operator who owns the agent or a company.
-- Exact shapes: missing, aliased, extra, duplicate, reordered or malformed fields refuse.
+- Authority comes from the pinned `id/` names, their bindings and the grant checks below.
+
+### Optional social descriptor
+
+The upgraded parser also accepts a typed root `nostr` member, before `swarma`:
+
+```json
+{"nostr":{"names":{"_":"<social key>"}},"swarma":{"landlord":{"grant":"<grant key>"}}}
+{"nostr":{"names":{"_":"<agent key>"}},"swarma":{"agent":{"nostr":"<agent key>","landlord":"id/alice"}}}
+```
+
+These examples show field order with placeholders, not valid signable values.
+Keys are lowercase 64-hex valid secp256k1 x-only public keys. The descriptor has
+`names`, then optional `relays`. Here `names` has exactly one member, `_`.
+When present, `relays` has exactly that social key as its map key and a nonempty
+array of distinct absolute `ws` or `wss` URLs with hostnames. Userinfo and nonempty
+fragments refuse; spelling is preserved and duplicates use exact string equality.
+No relay is inferred, fetched or contacted by parsing this value.
+
+For an agent, `nostr.names._` equals `swarma.agent.nostr`. A landlord's social key
+is independent of its grant key: equality is permitted, never required or inferred.
+An absent descriptor supplies no social identity. The social key and relay hints
+do not issue grants, add scope or replace the authority binding. A valid social-only
+update does not close a grant; observed authority changes still follow section 5.
+
+Both historical and combined values require exact compact UTF-8 JSON bytes, with
+the implementation's field/map order and escaping, no newline, and at most 520
+bytes for the complete value. Missing required, aliased, extra, duplicate, null,
+reordered or malformed fields refuse, including case-folded or escaped duplicate
+names. Empty descriptors, scalar shorthand, delegated/imported maps and arbitrary
+local-parts inside this `id/` descriptor are not accepted.
+
+Upgrade all consumers before publishing combined values: older binaries reject
+the new root member. This is a parser compatibility requirement, not evidence that
+installed consumers were upgraded.
+
+### Separate discovery record
+
+The optional `d/` mirror is a separate local discovery profile, for example:
+
+```json
+{"nostr":{"names":{"_":"<landlord social key>","sonya":"<agent social key>"}}}
+```
+
+It contains exactly `nostr.names`, with sorted map keys; no `swarma`, relays,
+wildcards, imports or delegation. `_` is the landlord root. Other labels use
+1–63 lowercase ASCII letters/digits/hyphens, with no leading, trailing or repeated
+hyphen. The landlord `id/<label>` determines `d/<label>`; agent `id/` names are
+explicit inventory entries, not derived from their social labels. Agent labels
+and names are unique, and their landlord pointers agree with that inventory.
+
+The reference tool admits at most 32 agent entries before the final 520-byte
+mirror limit and reports sorted missing, extra and mismatched labels. It neither
+publishes names nor proves the inventory complete or fresh. A stale inventory
+can produce a misleading match. A discovery record cannot replace an `id/`
+authority value, and a combined authority value is not a discovery mirror.
+Missing or stale discovery never grants, revokes, widens or gates authority.
 
 ## 2. Grant v3
 
@@ -25,8 +91,11 @@ Canonical compact JSON in this field order: `version` (3), `network`, `genesis`,
 `issuer_key`, `grantee_key`, optional `grantee_name`, `contract_sha256`, `scope`, `not_before`, `not_after`,
 `seal {txid, vout}`, optional `budget`, `consent`.
 
-- Signature: BIP-340 by the landlord's grant key over `SHA-256("swarma-grant-v3" || canonical grant bytes)`; no
-  untagged form is accepted.
+- Signature: BIP-340 by the landlord's grant key over
+  `SHA-256("swarma-grant-v3" || canonical grant bytes)`. The 15-byte ASCII prefix
+  has no terminator, length or separator; this is a fixed protocol prefix,
+  not the BIP-340 tagged-hash construction. A signature over the unprefixed
+  grant hash is rejected.
 - `grant_id` = SHA-256 of the canonical signed grant `{"grant":…,"signature":…}`.
 - Presentation: `{"signed_grant": …, "issuance": {"txid": …}}`. The issuance locator is unsigned and outside the id.
 - Scope: a sorted set from `deliver`, `names.register`, `pay`, `publish`, `repository.push`, `secret.release`; no
@@ -50,11 +119,30 @@ commitment = SHA-256( "swarma-issue-v1" || contract_sha256 || consent_event.id |
                       || landlord_sig || grant_id )
 ```
 
-Raw bytes, no lengths or separators. The issuance transaction has exactly one zero-value `OP_RETURN` output carrying
-the commitment (encoding per LIP-0005; the first implementation uses the bare `6a20<commitment>` form). The seal is not
-an input of that transaction. The verifier fetches the transaction named by the locator on its own node and requires
-it to be confirmed in the active chain. Before the renter signs, they know the formula and their own inputs; the final
-commitment depends on the landlord's countersignature and the grant id and is checkable after issuance.
+Raw bytes, no lengths or separators: the 15-byte ASCII prefix is followed by
+decoded fields of 32, 32, 64, 64 and 32 bytes respectively. ASCII hex spelling
+does not replace the decoded bytes. The issuance transaction has exactly one
+zero-value `OP_RETURN` output carrying the commitment. Fresh plans use the
+72-byte LIP-0005 frame, action `0x01`, location `0x01`, pointer equal to `grant_id`:
+
+```text
+6a 03 53 4c 01 42 01 <commitment:32> 01 <grant_id:32>
+```
+
+The verifier also accepts the exact historical 34-byte
+`6a20<commitment:32>` landlord form. Those 32 bytes are this section's issuance
+commitment, which already binds `grant_id`; they are not silently reinterpreted
+as the normative v0.1 envelope hash. Bare syntax alone does not identify a profile.
+Malformed framing never falls back to the bare path. For framed landlord issuance,
+generic parsing is insufficient: the action, blob location and exact grant ID
+must match. A batch, torrent, no-locator or Memo output cannot substitute for it.
+The verifier counts all `OP_RETURN` outputs; an additional one also refuses.
+
+The seal is not an input of the issuance transaction. The verifier fetches the
+transaction named by the unsigned issuance locator on its own node and requires
+it to be confirmed in the active chain. Before the renter signs, they know the
+formula and their own inputs; the final commitment depends on the landlord's
+countersignature and the grant id and is checkable after issuance.
 
 ## 5. Checking
 
@@ -74,6 +162,14 @@ cannot prove a change-and-return history it never saw.
   never a re-signed grant; one pool seal per grant, ever.
 - **Funding never uses the seal script.** All funding inputs and change use a separate pinned funding script; any
   input at the seal script is refused, known or not. Pool refills and revocations return change to the funding script.
+- Fresh funding projections include the 72-byte script before any reservation
+  or signature; funds sufficient only for the old 34-byte output do not qualify.
+- Completed-record replay preserves the whole stored plan, including fee,
+  change and signed-size bound. The reference comparator accepts exact old
+  regtest plans and exact framed plans, not mixed shapes or a migration to a new
+  transaction. Its legacy projection is regtest-only; the fresh writer always
+  uses framing. The offline planner also supports explicit mainnet pins; that
+  alone does not establish end-to-end mainnet issuance.
 
 ## 7. Relation to LIP-0003
 
@@ -82,5 +178,10 @@ the mandatory per-grant commitment. LIP-0003's batch anchor stays optional and n
 
 ## 8. Evidence
 
-A regtest implementation with genuine Namecoin Core 28 suites (lifecycle, landlord rotation, issuer crash boundaries,
-funding separation, legacy replay) and independent review exists in the reference laboratory.
+The pinned reference laboratory publishes genuine Namecoin Core 28 regtest
+suites for lifecycle, landlord rotation, issuer crash boundaries, funding
+separation and legacy replay, plus pure locator/name fixtures. See
+`LIP-0004-PROFILE.md`, `N1-VALUES.md`, `grant_locator_test.go`,
+`grant_locator_core_test.go`, `nostr_value_test.go` and `nostr_value_core_test.go`
+there. Implementation support for explicit mainnet pins does not itself qualify
+a deployment or extend the historical v0.1 mainnet conformance record.
