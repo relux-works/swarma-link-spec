@@ -83,7 +83,7 @@ The payload is always a single direct push of at most 75 bytes; every defined co
 ## 4. Effect on the reference implementation
 
 The landlord-grant issuer (LIP-0004) writes action `0x01` with locator type `0x01` (pointer = grant id), replacing the bare
-commitment push; the kernel parses per §3. One small delta after K1 lands.
+commitment push; the kernel parses per §3. The reference implementation still writes the bare form; moving it to this framing is a small follow-up.
 
 ## 5. Open
 
