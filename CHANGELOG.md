@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3 — 2026-11-09
+
+Adds LIP-0004 (Draft): landlord grants — the agent name holds only its messaging key and a
+pointer to its landlord; the landlord's grant key signs grants v3 that carry the renter's signed
+consent event and the landlord's countersignature; one mandatory on-chain commitment per grant;
+funding never from the seal script. Adds LIP-0005 (Draft): an OP_RETURN locator micro-protocol
+(own protocol id, action, location type and pointer), with the bare v0.1 anchor kept as legacy.
+No normative change.
+
 ## 0.1.2 — 2026-11-09
 
 Adds LIP-0003 (Draft): detached grants under an agent identity — the agent's name
