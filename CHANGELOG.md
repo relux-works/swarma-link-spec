@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.5 — 2026-11-10
+
+Clarifies LIP-0004 section 6 after the main issuance funding fix: the V2 route
+prepares framed main issuance plans with explicit pins and fees; the v1 payment
+route remains regtest-only. Describes offline regression coverage and its
+regtest observation projections without claiming mainnet qualification or
+extending historical conformance evidence. No normative change or proposal
+adoption.
+
 ## 0.1.4 — 2026-11-10
 
 Reconciles Draft LIP-0004/0005 with the landed 72-byte issuance writer, exact

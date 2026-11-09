@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.4
+**Version:** 0.1.5
 
 **Date:** 2026-11-10
 
@@ -53,14 +53,17 @@ v0.1 describes the shape that ran on Namecoin mainnet on 2026-11-08 (two full
 cycles, see [conformance](conformance/README.md)). Known gaps are listed in each
 part under "Limitations" and are not hidden by the normative text.
 
-## Draft implementation profiles in v0.1.4
+## Draft implementation profiles in v0.1.5
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
 grants, optional social name metadata and separate discovery;
 [LIP-0005](lips/LIP-0005-op-return-locator.md) records the landed framed writer
 and exact bare compatibility; [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
-introduces grant-gated actions and the concrete wallet service v1 profile.
+describes grant-gated actions and the concrete wallet service v1 profile.
+
+LIP-0004 also distinguishes the implemented V2 main issuance route and its
+offline test coverage from the regtest-only v1 route and mainnet qualification.
 
 These drafts do not replace the normative v0.1 profile, adopt new conformance
 requirements or rewrite historical evidence. LIP-0002's signed-envelope

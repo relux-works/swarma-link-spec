@@ -11,7 +11,7 @@
 ## Current state and profile boundary
 
 This draft describes the landlord implementation profile in
-[`swarma-chain-lab` at `ca074ca645bc69d7bba41e7889504612eaa7f7d4`](https://github.com/relux-works/swarma-chain-lab/tree/ca074ca645bc69d7bba41e7889504612eaa7f7d4/experiments/rental),
+[`swarma-chain-lab` at `11084e3a31175907e77644a7596e7802283e7c1e`](https://github.com/relux-works/swarma-chain-lab/tree/11084e3a31175907e77644a7596e7802283e7c1e/experiments/rental),
 including its strict name parser and framed issuance writer. It does not replace
 the normative v0.1 name/envelope/anchor profile or adopt these draft requirements.
 Implementation statements below are informative; adoption follows LIP-0001.
@@ -167,9 +167,18 @@ cannot prove a change-and-return history it never saw.
 - Completed-record replay preserves the whole stored plan, including fee,
   change and signed-size bound. The reference comparator accepts exact old
   regtest plans and exact framed plans, not mixed shapes or a migration to a new
-  transaction. Its legacy projection is regtest-only; the fresh writer always
-  uses framing. The offline planner also supports explicit mainnet pins; that
-  alone does not establish end-to-end mainnet issuance.
+  transaction. Its legacy projection is regtest-only; completed main records
+  accept only exact framed plans. The fresh writer always uses framing.
+- The V2 payment route, `IssueGrantWithNodes`, supports fresh main issuance
+  preparation with explicitly pinned identity/payment network and genesis and
+  a positive explicit fee rate. Shared funding-input checks precede replay
+  lookup; fresh issuance then checks the framed fee projection before any
+  reservation or signature. The result is a signed grant and an unsigned
+  issuance plan, not a broadcast or a live grant. Separate transaction signing,
+  broadcast and confirmed observation are still required.
+- The v1 payment route, `IssueGrant`, remains regtest-only: main payment-package
+  admission refuses with `ISSUER_POLICY`. Its shared funding preflight reaching
+  an observation does not establish successful v1 main issuance.
 
 ## 7. Relation to LIP-0003
 
@@ -185,3 +194,16 @@ separation and legacy replay, plus pure locator/name fixtures. See
 `grant_locator_core_test.go`, `nostr_value_test.go` and `nostr_value_core_test.go`
 there. Implementation support for explicit mainnet pins does not itself qualify
 a deployment or extend the historical v0.1 mainnet conformance record.
+
+Main-route regression coverage is defined in
+[`main_issuance_test.go`](https://github.com/relux-works/swarma-chain-lab/blob/11084e3a31175907e77644a7596e7802283e7c1e/experiments/rental/main_issuance_test.go)
+and
+[`main_issuance_core_test.go`](https://github.com/relux-works/swarma-chain-lab/blob/11084e3a31175907e77644a7596e7802283e7c1e/experiments/rental/main_issuance_core_test.go).
+The pure public-entry test checks funding refusals without burns beside a
+funded control that reaches an offline observation boundary. The Core V2
+witness uses isolated regtest identity and payment nodes, changes only their
+chain/genesis replies, and re-signs the V2 terms for main. It checks a signed
+framed grant, explicit fees, payment evidence and exact offline replay, with
+wrong-chain refusals that leave no burns. A separate witness pairs v1 main
+refusal with valid regtest preparation. These tests neither contact mainnet nor
+broadcast the main-labelled plan, prove mainnet consensus or qualify a deployment.
