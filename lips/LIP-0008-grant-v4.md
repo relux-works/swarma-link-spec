@@ -182,7 +182,7 @@ group has read-only access (file mode `0640`, directory mode `0750`). Before
 startup, the launching side checks the configuration hash against the sealed
 manifest and refuses to start on a mismatch. The service cannot rewrite the
 configuration at runtime. Changing operator ceilings requires a new reviewed
-package; a request or writable override cannot relax them. This is the lead's accepted
+package; a request or writable override cannot relax them. This is the accepted
 deployment decision of 2026-11-10, not evidence of implementation or completed
 host qualification.
 
@@ -369,7 +369,7 @@ was:
 | 90 min | 0.001% | 0.01 min/day |
 
 These are reported chain-gap measurements, not service availability or future
-bounds. The lead's proposed defaults for review stop money/irreversible
+bounds. Proposed defaults for review stop money/irreversible
 actions at 60 minutes and other privileged actions at 90 minutes, alongside the
 node-health checks. A service determines operation risk from its action profile;
 a caller cannot downgrade it. Exact age measure, clocks, independent-node

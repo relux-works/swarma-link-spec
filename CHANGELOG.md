@@ -30,7 +30,7 @@ Swift verification. Static signing audit found both issuer paths recompute authe
 hashes, with no demonstrated oracle. Matched role/version migration and
 wire/profile decisions remain open; historical v0.1 is frozen, including its documented false closures.
 
-The lead's immutable-config decision assigns configuration to the administrator, with
+The immutable-config decision assigns configuration to the administrator, with
 service-group read-only access (file `0640`, directory `0750`), a pre-start
 manifest hash check and new reviewed packages for ceiling changes. This is
 accepted design without an implementation or host-qualification claim.
