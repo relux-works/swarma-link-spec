@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6 — 2026-11-10
+
+Adds an informative key map for the rental path and wallet service: separate
+custodians, signing roles, rotation dependencies and compromise limits, with
+a schematic authority diagram. Model caps are identified as signed contract
+terms, without claiming the proposed integration is landed. No normative
+change or proposal adoption. Historical profiles and evidence remain unchanged.
+
 ## 0.1.5 — 2026-11-10
 
 Clarifies LIP-0004 section 6 after the main issuance funding fix: the V2 route

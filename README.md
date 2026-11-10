@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.5
+**Version:** 0.1.6
 
 **Date:** 2026-11-10
 
@@ -34,6 +34,7 @@ Out of scope here, specified elsewhere and referenced by name:
 | [Observation](protocol/observation.md) | Normative: how a verifier reads the chain and decides |
 | [Revocation](protocol/revocation.md) | Normative: seal spend closes the grant; watcher states pending and final |
 | [Conformance](conformance/README.md) | Normative classes and the v0.1 evidence vectors |
+| [Key map](KEY-MAP.md) | Informative: custody, rotation and compromise boundaries for rental and wallet keys |
 | [`lips/`](lips/) | Link Improvement Proposals (LIPs; not normative until adopted) |
 | [`RELEASE.md`](RELEASE.md) | How each revision is released with its PDF |
 | [`decisions/`](decisions/) | Adopted design decisions with context and consequences |
@@ -53,7 +54,7 @@ v0.1 describes the shape that ran on Namecoin mainnet on 2026-11-08 (two full
 cycles, see [conformance](conformance/README.md)). Known gaps are listed in each
 part under "Limitations" and are not hidden by the normative text.
 
-## Draft implementation profiles in v0.1.5
+## Draft implementation profiles in v0.1.6
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
