@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7 — 2026-11-10
+
+Defines the common grant-gated service term and examples in LIP-0006. Records
+delegated grant issuance as a capability requiring a separate authority and
+delegation profile, outside wallet v1 and the current rental rehearsal. No new
+wire action, normative adoption or conformance change.
+
 ## 0.1.6 — 2026-11-10
 
 Adds an informative key map for the rental path and wallet service: separate

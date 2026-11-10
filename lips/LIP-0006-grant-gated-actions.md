@@ -16,6 +16,24 @@ This proposal separates a common service pattern from the concrete experimental
 parameters, budget units and effect schemas. This draft does not adopt a new
 normative Swarma Link profile or alter the historical v0.1 conformance set.
 
+### Common term and examples
+
+A **grant-gated service** (Russian book term: *сервис по доверенности*) checks
+current grant authority before an effect and keeps its execution credentials
+and journal outside the client. Examples include wallet payments, model
+inference, rental slots/stations, mail sending, file/blob storage, name
+registration/updates, repository access, booking and Matrix room administration.
+Each needs a service-specific action and parameter contract; this list grants
+no action and adds none to the implemented wallet v1 closed set.
+
+Delegated issuance is a capability of the same pattern: a signing service can
+be entrusted by a grant to issue bounded child grants. This requires explicit
+issuance authority and a separate profile for child scope, recipient, lifetime,
+budgets, parent closure and delegation-chain verification. Neither `deliver`
+nor `pay` implies delegation. An agent's v3 messaging key gains no grant-issuing
+role. This capability is outside the current rental rehearsal and the wallet
+v1 actions; it has no adopted wire format or implementation claim here.
+
 ## Motivation
 
 A same-user command-line checker cannot keep wallet credentials from an agent
