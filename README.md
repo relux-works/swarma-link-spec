@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.11
+**Version:** 0.1.12
 
 **Date:** 2026-11-10
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.11
+## Draft profiles and design decisions in v0.1.12
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -108,6 +108,15 @@ reconciliation by default; small capped prepaid contracts;
 native Blossom BUD-07 where offered plus a separately versioned grant-aware
 NMC/BTC/LTC option. Exact profiles and independent conformance remain open.
 This is spec/book work, not an M5 or first-demo implementation gate.
+
+[LIP-0010](lips/LIP-0010-name-value.md) proposes the name value of the landlord
+profile: `swarma` is the only member Link defines, the reader ignores the
+owner's other members and stays strict inside `swarma`; the agent key is
+written once, in `nostr` in the NIP-05 shape, and both published forms of
+`nostr` yield the same key. `d/` stays discovery only, with a deployment rule
+to register `d/<label>` together with `id/<label>`. It records Ivan Oparin's
+four decisions of 2026-11-10 and awaits the co-author's agreement. No reader
+implements these rules yet; LIP-0004 values keep their own rules.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

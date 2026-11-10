@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.12 — 2026-11-10
+
+Adds Draft LIP-0010, Name value. `swarma` is the only member of a name value
+that Link defines: a reader ignores the owner's other top-level members and
+refuses only a duplicate or a fold alias of `swarma` or `nostr`; parsing inside
+`swarma` stays strict. The agent key is written once, in `nostr` in the NIP-05
+shape, and `swarma.agent` keeps only the landlord pointer. A reader accepts the
+key string and the NIP-05 object and derives the same key for `_`; a `nostr`
+member it does not understand removes the key and never the authority. `d/`
+stays discovery only; the deployment rule registers `d/<label>` with
+`id/<label>` because the two names are unrelated on chain. Recomputes every
+example against the 520-byte limit. Records Ivan Oparin's four decisions of
+2026-11-10; the co-author's agreement is pending. No implementation, normative
+adoption or change to LIP-0004 bytes or historical v0.1 evidence.
+
 ## 0.1.11 — 2026-11-10
 
 Adds Draft LIP-0009, Replaceable services: compatible type interfaces, portable
