@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.9 — 2026-11-10
+
+Records owner acceptance on 2026-11-10 of the proposed Grant v4 change: replace
+the 30-minute
+stop with risk cutoffs of 60 minutes for money or irreversible actions and
+90 minutes for other privileged actions, plus a node-health check requiring
+at least two independent nodes to agree on the tip. This is decided design;
+implementation follows in GV4. The reported basis remains 70.7 min/day beyond
+the 30-minute cutoff over 137.2 days on one node, not service availability or
+a future bound. Historical normative v0.1 and its 30-minute STOP stay unchanged.
+
 ## 0.1.8 — 2026-11-10
 
 Adds Draft LIP-0007 for service types/actions and typed name self-declaration,

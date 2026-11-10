@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.8
+**Version:** 0.1.9
 
 **Date:** 2026-11-10
 
@@ -59,7 +59,7 @@ read-failure and tip-change closures remain recorded, not recommended for a new
 working profile. Successor proposals distinguish transient refusal from proved
 closure and require their own adoption and conformance evidence.
 
-## Draft profiles and design proposals in v0.1.8
+## Draft profiles and design decisions in v0.1.9
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -76,8 +76,9 @@ issuer-output closure, owner-pinned recipients and concrete executor budgets.
 It also records issuer-instance renewal pins, typed self-computed signing
 digests, durable validated issuer-branch mempool closure, value-dependent
 confirmation minima, per-seal keys, a topology/threat model and a dependent
-issuance evaluation. Risk-tier freshness and the signing-time-bound correction
-remain proposals. Canonical/signature/error/state vectors, a public runner and
+issuance evaluation. Risk-tier freshness is decided design as of 2026-11-10;
+implementation follows in GV4. The signing-time-bound correction remains a
+proposal. Canonical/signature/error/state vectors, a public runner and
 an independent Swift implementation are planned. These two proposals
 specify design semantics with unresolved wire/proof details; they do not
 reconcile a v4 implementation or assert interoperability.

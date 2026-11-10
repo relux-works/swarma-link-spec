@@ -350,7 +350,7 @@ anti-rollback profile. Exact proof/journal encoding and cross-replica propagatio
 remain open. Transient RPC failures, tip movement and inconsistent reads
 retry or refuse without creating this permanent closure.
 
-### 6. Freshness and operation risk (proposal under review)
+### 6. Freshness and operation risk (decided design)
 
 Node health, history freshness and operation risk are separate signals. A healthy
 node may wait a long time for the next proof-of-work block. Check peer headers
@@ -369,12 +369,15 @@ was:
 | 90 min | 0.001% | 0.01 min/day |
 
 These are reported chain-gap measurements, not service availability or future
-bounds. Proposed defaults for review stop money/irreversible
-actions at 60 minutes and other privileged actions at 90 minutes, alongside the
-node-health checks. A service determines operation risk from its action profile;
-a caller cannot downgrade it. Exact age measure, clocks, independent-node
-criteria and risk classification need adoption and qualification. This proposal
-does not change normative v0.1's existing 30-minute `STOP` rule.
+bounds. The owner decision of 2026-11-10 replaces the 30-minute stop in the
+Grant v4 design: stop money or irreversible actions at 60 minutes and other
+privileged actions at 90 minutes. Admission also requires a node-health check
+with at least two independent nodes agreeing on the tip. This is decided design;
+implementation follows in GV4. A service determines operation risk from its
+action profile; a caller cannot downgrade it. Exact age measure, clocks,
+independent-node criteria and risk classification still need profile definition
+and qualification. This decision does not rewrite historical normative v0.1's
+existing 30-minute `STOP` rule.
 
 ### 7. Acceptance interval versus signing-time bound
 
@@ -544,7 +547,7 @@ post-refusal state. The semantic outline pairs these controls:
 | Same-owner grantee renewal and a newly listed supported channel key under the same grant | Refusing solely because the grantee output changed is wrong; accepting a removed key or mismatched owner is wrong. Current-owner equality alone proves no permanent transfer-and-return history. |
 | Exact executor name/key and its allocated budget | Wrong executor of the same type, reused full budget at a second executor, partition overspend or single-use executor substitution: no effect. |
 | Replicas sharing one authoritative journal; recovery with chain evidence | Independent journals, lost journal authority, concurrent duplicate or uncertain retry: no second reservation/effect. |
-| Healthy independent node observations and action-specific age policy | Lagging/conflicting nodes or exceeded risk cutoff refuse; a healthy gap under the proposed cutoff alone is not node failure. |
+| Healthy independent node observations and action-specific age policy | Lagging/conflicting nodes or exceeded risk cutoff refuse; a healthy gap under the decided cutoff alone is not node failure. |
 | Recent block committed in signed grant and verified on the selected chain | Seal confirmation alone proves no signing-time lower bound; unknown, stale or wrong-branch block reference refuses under the selected profile. |
 | W with native P2WPKH/SIGHASH_ALL inputs, confirmed ordinary funding and validated linkage/payment dependencies | One legacy or wrapped input, another sighash mode, witness marker alone, unproved parent or arbitrary unconfirmed funding refuses; no effect before required confirmations. |
 | L with confirmed referenced outpoints and an anchor built after seal confirmation | An unconfirmed reference, dependent chain or same-block seal/anchor construction refuses. A changed parent requires reissuance; no silent txid substitution or unsafe admission. |
@@ -575,8 +578,9 @@ This is a conformance plan, not a published runner or interoperability result.
   vectors; reissuance after issuer channel updates and renewal.
 - Owner-key encoding and supported scripts; proof of current unspent name
   outputs, reorg policy, channel descriptors and Matrix key support.
-- Adoption of the proposed 60/90-minute risk cutoffs, explicit freshness/clock
-  measure, independent-node health criteria and block-recency policy.
+- Implementation and qualification of the decided 60/90-minute risk cutoffs;
+  explicit freshness/clock measure, independent-node health criteria and
+  block-recency policy.
 - Executor identity/key profile, partition validation and shared-journal
   consistency, recovery and anti-rollback requirements.
 - Limit-kind wire registry, asset/model identities, numeric bounds, cost units,
