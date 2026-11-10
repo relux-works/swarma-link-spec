@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.10
+**Version:** 0.1.11
 
 **Date:** 2026-11-10
 
@@ -59,7 +59,7 @@ read-failure and tip-change closures remain recorded, not recommended for a new
 working profile. Successor proposals distinguish transient refusal from proved
 closure and require their own adoption and conformance evidence.
 
-## Draft profiles and design decisions in v0.1.10
+## Draft profiles and design decisions in v0.1.11
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -93,6 +93,16 @@ General agent sub-delegation still needs its separate both-owner decision.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.
+
+[LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
+compatible type profiles, portable state, fenced cut-over with replacement
+executor-bound grants, Namecoin discovery and separate authorization,
+accounting and settlement. It records Ivan Oparin's five accepted RS1 design
+choices: start with `store.blob`; replacement grants before rebind; operator
+reconciliation with retained uncertainty; small capped prepaid contracts;
+native Blossom BUD-07 where offered plus a separately versioned grant-aware
+NMC/BTC/LTC option. Exact profiles and independent conformance remain open.
+This is spec/book work, not an M5 or first-demo implementation gate.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

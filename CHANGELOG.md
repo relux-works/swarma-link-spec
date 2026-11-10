@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.11 — 2026-11-10
+
+Adds Draft LIP-0009, Replaceable services: compatible type interfaces, portable
+data and accounting evidence, exclusive cut-over with replacement executor-bound
+grants, Namecoin discovery, bounded prepaid liability and a Blossom-backed
+`store.blob` first profile. Records Ivan Oparin's acceptance of the five RS1
+design choices on 2026-11-10. Rebind, exact wire/export/accounting/payment
+profiles and qualification remain separate; no existing native NMC/BTC/LTC BUD
+or automatic budget/credit migration is claimed. This is specification/book
+work, not an M5 or first-demo implementation requirement. No historical v0.1,
+wallet-v1/v3 or existing v4 draft bytes change; no implementation is added.
+
 ## 0.1.10 — 2026-11-10
 
 Adds pre-freeze Swarma requirements to Draft LIP-0008: separate signed
