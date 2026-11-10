@@ -1,8 +1,8 @@
 # Key map
 
 Informative custody map for the rental and wallet profiles, not normative adoption.
-The landlord grant key stays separate from the owner's personal Nostr key.
-Public keys and pins reach verifiers; hot service keys stay outside the agent's OS user.
+Deployment policy keeps the landlord grant key separate from the owner's personal Nostr key.
+By design, public keys and pins reach verifiers; hot service keys stay outside the agent's OS user.
 Rotation below names required operator work, not an automatic migration protocol.
 
 | Key / custodian | Signs or authorizes | Rotation / breakage | Theft and containment |
