@@ -104,7 +104,7 @@ compatible type profiles, portable state, fenced cut-over with replacement
 executor-bound grants, Namecoin discovery and separate authorization,
 accounting and settlement. It records Ivan Oparin's five accepted RS1 design
 choices: start with `store.blob`; replacement grants before rebind; operator
-reconciliation with retained uncertainty; small capped prepaid contracts;
+reconciliation by default; small capped prepaid contracts;
 native Blossom BUD-07 where offered plus a separately versioned grant-aware
 NMC/BTC/LTC option. Exact profiles and independent conformance remain open.
 This is spec/book work, not an M5 or first-demo implementation gate.

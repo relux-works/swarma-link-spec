@@ -15,17 +15,21 @@ interpretive erratum, recorded in v0.1.11; it adds no successor-profile rule.
 
 The no-closure sentence in §1.4 applies only to route readiness. It does not
 exempt a seal-state read from §4. For a presented certificate's independently
-pinned seal (§2), any seal-state read is an authority observation for the
-seal check, even when performed inside a health check or before other
-observation steps.
+pinned seal (§2), a spent, unknown or failed seal-state read is an authority
+observation for the closure rule, even when performed inside a health check
+or before other observation steps. The rule is asymmetric: an unspent
+precheck read is route readiness only, not a seal verdict for the observation.
+It does not satisfy Observation §3 item 4; the observation performs its own
+seal check.
 
 If that seal read finds spent (mempool or block), unknown, or fails, the verifier
 MUST refuse and record `seal-spent-or-unknown` under §4. It MUST write the
 closure durably before reporting refusal. A route-health failure, early return,
 or label such as "precheck" MUST NOT discard that result or bypass closure.
 The rule applies when a route-only failure and a seal-state result occur in
-the same batch. A successful unspent seal read alone never authorizes admission;
-all applicable observation conditions still have to hold.
+the same batch. A successful unspent seal read inside the observation alone
+never authorizes admission; all applicable observation conditions still have
+to hold.
 
 Once written, that closure never reopens after mempool eviction, a later
 unspent response or restart. Recovery needs a fresh certificate and issuance.
@@ -50,6 +54,7 @@ valid neighbour uses a fresh certificate and issuance, as the existing
 | Valid control | Required refusal or invariant |
 | --- | --- |
 | Healthy route, live independently pinned seal and all other conditions satisfied can admit | A precheck finding that seal spent in mempool/block refuses and durably closes before reporting. |
+| Seal read inside the observation and all other admit conditions satisfied | Admission resting only on an earlier unspent precheck result refuses; the observation cannot skip its own seal check. |
 | Route-only failure before any seal read may skip starting the observation without a new closure | Unknown seal or failed seal-state read in a precheck refuses and closes; calling it route failure cannot suppress §4. |
 | A route failure with no seal result creates no seal closure by itself | A mixed batch containing both route failure and a spent/unknown/failed seal read still refuses and closes. |
 | A fresh unclosed certificate/issuance with all conditions satisfied can admit | After a recorded precheck closure, mempool eviction, later unspent state and restart cannot reopen the old certificate. |

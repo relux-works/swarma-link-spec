@@ -27,9 +27,9 @@ exact profiles and qualification below remain Draft.
 | --- | --- |
 | D1 — First portable service | Start with `store.blob`: immutable content hashes make data continuity inspectable; wallets and live compute have harder recovery boundaries. |
 | D2 — Provider-change authority | Use replacement grants first. Defer rebinding an existing grant until its authority and fencing model receives a separate review. |
-| D3 — Unavailable old provider | Operator reconciliation is the default. A separately authorized emergency budget may fund only nonconflicting work; old liability and uncertain exposure remain. |
-| D4 — Initial commercial model | Start with small capped prepaid contracts. Unused credit remains the old provider's liability. Credit/postpaid and escrow require explicit dispute terms. |
-| D5 — Blossom payments | Support native BUD-07 payment where offered, alongside a separately versioned grant-aware NMC/BTC/LTC option. No forced conversion or assertion that a native-coin BUD already exists. |
+| D3 — Unavailable old provider | Operator reconciliation is the default. |
+| D4 — Initial commercial model | Start with small capped prepaid contracts. |
+| D5 — Blossom payments | Support native BUD-07 payment where offered, alongside a separately versioned grant-aware NMC/BTC/LTC option. |
 
 These decisions create no additional M5/first-demo implementation, installation
 or release gate. Supporting interface, export and accounting rules below still
@@ -67,8 +67,9 @@ namespaced extensions MUST NOT change base action meaning, supply authority,
 or become mandatory while claiming base compatibility. Unknown mandatory
 versions/actions/constraints MUST refuse rather than silently downgrade.
 Capability naming follows LIP-0007/LIP-0008; this LIP assigns no leaf commands
-or new typed-name fields. Wallet wire `spend` and internal grant/executor `pay`
-retain their existing separate meanings.
+or new typed-name fields. Wallet wire `spend` and the internal grant/executor
+verb `pay` keep their existing names and their LIP-0006/LIP-0007 mapping;
+this LIP renames neither.
 
 Signed invocation time windows retain LIP-0008's `iat <= now < exp` checks
 without grace. Clock skew needs an explicit time profile; changing providers
@@ -82,6 +83,8 @@ allocation or billable attempt.
 An export profile MUST distinguish holder data, accounting evidence and
 execution credentials. A replacement provider MUST NOT interpret imported
 files as action authority or an unconsumed budget.
+Execution credentials are excluded from this export; a destination rejects
+such material without importing or using it.
 
 | Type | Data/evidence to consider | Boundary that does not transfer automatically |
 | --- | --- | --- |
@@ -135,9 +138,10 @@ The proposed cooperative handover is:
 
 Reissuance MUST NOT reset consumed allowance or convert uncertainty into a
 refund. An exact import retry returns its stored result without a new allocation;
-a conflicting migration ID/root or rollback MUST refuse. A partial export MUST
-NOT activate a transferred allocation. Separate data replicas may coexist,
-but independent journals cannot each spend the same apparent remainder.
+a conflicting migration ID/root or rollback MUST refuse. No export, complete
+or partial, activates a transferred allocation by itself. A partial export
+MUST NOT activate one, even with a replacement grant. Separate data replicas
+may coexist, but independent journals cannot each spend the same apparent remainder.
 Existing wallet state files cannot simply be copied and reopened under new
 configuration/key bindings; their current profile refuses that change.
 
@@ -268,9 +272,13 @@ Future conformance must publish valid neighbours beside these outcomes:
 
 | Valid control | Refusal or invariant |
 | --- | --- |
-| Same supported type/version, exact action and authenticated peer | Unknown mandatory profile/action/constraint, silent downgrade or extension changing base meaning refuses. |
-| Complete signed export, trusted keys and holder consent | Missing objects/sequence, wrong signer/destination or metadata-only authority refuses transferred-allocation activation. |
-| Old admissions fenced; reconciled exposure; replacement executor-bound grant | Both providers using one remainder, type-only substitution or a silent old-grant rebind refuses. |
+| Same supported type/version, exact action and authenticated peer; optional extensions preserve base compatibility | Unknown mandatory profile/action/constraint, silent downgrade, or an extension changing base meaning, supplying authority or becoming mandatory while claiming base compatibility refuses. |
+| Complete signed export, trusted keys, holder consent, verified old-grant closure and an issuer-authorized replacement grant and allocation for the new executor | Missing objects/sequence, wrong signer/destination or metadata-only authority refuses transferred-allocation activation. A complete, consented, provider-accepted export without a replacement grant, an unclosed old grant, or a closing receipt offered as revocation activates no allocation. |
+| Old admissions fenced; reconciled exposure; verified old-grant closure; issuer-authorized replacement executor-bound grant and allocation | Both providers using one remainder, type-only substitution or a silent old-grant rebind refuses. |
+| Same signed `iat`/`exp` honoured unchanged at the new provider | Provider change, re-encoding or the new provider's clock policy that extends the signed window or adds grace refuses. |
+| One logical request with its stored receipt | A re-signed request, alternate object ID or re-encoded receipt creates no second logical request, allocation or billable attempt. |
+| Export with holder data and accounting evidence only | Execution credentials in an export are refused and never imported or used. |
+| Durable bounded resource/cost reservation before the effect | Effect admission without a prior durable reservation refuses; no effect or new usage charge. |
 | Exact import retry with unchanged allocation/result | Replayed/stale/conflicting export, rollback or another full allocation cannot restore consumed authority. |
 | Retained uncertain outcomes and separately authorized nonconflicting emergency work | Timeout-based refund, ambiguous spend/send retry or reuse of uncertain remainder refuses; preserve old liability. |
 | Independently allocated data replicas | Two independent journals charging a shared apparent allocation refuse; copies alone grant no effects. |
