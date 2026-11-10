@@ -207,3 +207,10 @@ framed grant, explicit fees, payment evidence and exact offline replay, with
 wrong-chain refusals that leave no burns. A separate witness pairs v1 main
 refusal with valid regtest preparation. These tests neither contact mainnet nor
 broadcast the main-labelled plan, prove mainnet consensus or qualify a deployment.
+
+## 9. Proposed successor
+
+[LIP-0008](LIP-0008-grant-v4.md) proposes Grant v4 with directly signed rental
+limits and a distinct name-bound recipient mode. V3's optional `grantee_name`
+remains syntax-checked metadata; this cross-reference does not resolve it to
+authority or change any v3 bytes, domains or acceptance rule.

@@ -79,9 +79,22 @@ fetchable reference plus its id) to its first message; the gateway verifies it, 
 cached certificate for the same sender only with another one that is live. This is what makes agent-to-agent use
 work, where the verifier (another operator's agent) is not the issuer.
 
-**Issuance-time bound.** Without an anchor, the earliest possible issuance time is bounded below by the seal's
-confirmation (a certificate cannot name a seal before it exists). `not_before` earlier than the seal's block time is
-refused.
+**Acceptance-time rule.** `not_before` earlier than the seal's block time is
+refused. This constrains acceptance, not the signing time: a transaction ID can
+be known before confirmation and even before broadcast, so the grant can name
+its future seal in advance. A real cryptographic lower bound on construction
+requires a recent block hash inside the signed grant; LIP-0008 proposes that
+for a new version. No block-hash field is added to this draft's existing bytes.
+
+**Txid stability (informative successor note).** LIP-0008's proposed v4 profile
+requires transactions creating seals and carrying issuance commitments to spend
+only witness inputs (**MUST** within that draft profile), with an authenticated
+fixed transaction body. Legacy input malleability can make a pre-signed grant
+reference a txid that never confirms. The verifier then refuses: liveness is
+lost, but no unsafe admission follows. A malleated revocation still spends the
+same seal outpoint, which is what revocation observes. Current rental funding
+scripts are P2PKH and do not satisfy the proposed rule. This note changes
+neither the existing bytes here nor the normative historical v0.1 profile.
 
 ## 6. Parallel renters
 

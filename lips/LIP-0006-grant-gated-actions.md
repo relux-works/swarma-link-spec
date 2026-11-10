@@ -268,6 +268,15 @@ and reconcile the outcome; changing a nonce, key, root or journal to retry an
 uncertain effect is outside this recovery contract. There is no automatic
 pruning, migration or reset that restores consumed authority.
 
+### 7. Related design drafts
+
+[LIP-0007](LIP-0007-service-types.md) proposes service type/action tables and
+name self-declaration. [LIP-0008](LIP-0008-grant-v4.md) proposes signed resource
+limits and owner-pinned name recipients. Neither extends the wallet v1 actions,
+wire bytes, receipt pins or recovery rules described above. A future model
+proxy with its own chain observation is separate from the current proxy's
+gateway-supplied binding.
+
 ## Alternatives
 
 - A same-user CLI retains compatibility but cannot enforce custody against

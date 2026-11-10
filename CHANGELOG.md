@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.8 — 2026-11-10
+
+Adds Draft LIP-0007 for service types/actions and typed name self-declaration,
+and Draft LIP-0008 for Grant v4: directly signed rental limits, mirrored
+contract terms, operator-wide ceilings and name recipients pinned to current
+output ownership before channel-key checks. Includes v3 compatibility and a
+semantic conformance outline; exact wire bytes, ownership proofs and accounting
+profiles remain open. Binds closure to exact name outputs, including renewals;
+scopes budgets/single use to concrete executors with shared replica journals.
+Records proposed 60/90-minute risk cutoffs alongside node health and corrects
+LIP-0003's seal-time inference as an acceptance rule, with a recent-block
+commitment proposed for v4. Proposes witness-only seal/issuance funding inputs
+for txid stability, with an explicit gap for current P2PKH funding and fail-closed liveness
+boundaries. No implementation claim, normative adoption or historical
+conformance change.
+
+Second design review adds registration-instance pins across grant, agent pointer
+and verifier; typed signing from validated full objects; durable validated
+issuer-branch mempool closure; confirmation minima; dependent T/L/A issuance and
+the SW1 candidate; topology/trust boundaries and per-seal keys. Plans JCS exact
+unit schemas, canonical/signature/error/state vectors, runner and independent
+Swift verification. Static signing audit found both issuer paths recompute authenticated contract
+hashes, with no demonstrated oracle. Matched role/version migration and
+wire/profile decisions remain open; historical v0.1 is frozen, including its documented false closures.
+
 ## 0.1.7 — 2026-11-10
 
 Defines the common grant-gated service term and examples in LIP-0006. Records

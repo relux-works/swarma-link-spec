@@ -1,9 +1,18 @@
 # Key map
 
+The Grant v4 proposal in LIP-0008 separately binds a name-owner key and exact
+registration/update outpoint in the grant, agent pointer and independent
+verifier pins. It also proposes a derived key per seal with a typed issuer
+endorsement of the key/script/outpoint. These are distinct identity and script
+pins; derivation, custody, recovery and migration remain open. Distinct seal
+addresses reduce one linkage source; names/funding/anchors remain observable.
+
 Informative custody map for the rental and wallet profiles, not normative adoption.
 Deployment policy keeps the landlord grant key separate from the owner's personal Nostr key.
 By design, public keys and pins reach verifiers; hot service keys stay outside the agent's OS user.
 Rotation below names required operator work, not an automatic migration protocol.
+The table describes existing rental/wallet profiles; the v4 paragraph above is
+a separate design proposal.
 
 | Key / custodian | Signs or authorizes | Rotation / breakage | Theft and containment |
 | --- | --- | --- | --- |
@@ -34,7 +43,7 @@ wallet    -> receipt (service key)
 slot      -> bearer -> model proxy (window and limits)
 ```
 
-The seals belong to distinct profiles; `d/` is discovery only. Messaging-key
+The seals belong to distinct profiles; `d/` is discovery only. In v3, messaging-key
 rotation does not revoke grants. The proxy keeps the upstream API secret;
 slots receive bearers. Upstream API theft bypasses slot limits.
 Raw grant-key/money-key/RPC theft bypasses service quotas.
@@ -43,5 +52,7 @@ Preserve journals; deleting state restores no authority and undoes no effects.
 Basis: [public implementation at 11084e3a](https://github.com/relux-works/swarma-chain-lab/tree/11084e3a31175907e77644a7596e7802283e7c1e/experiments),
 [LIP-0004](lips/LIP-0004-landlord-grants.md), [LIP-0006](lips/LIP-0006-grant-gated-actions.md).
 Model caps denote signed contract terms proposed in [PR #60](https://github.com/relux-works/swarma-chain-lab/pull/60),
-not landed integration or mainnet qualification. A first observer cannot prove
-unseen grant-key changes; pin/state migration needs coordinated operator work.
+not landed integration or mainnet qualification. In v3, a first observer cannot
+prove unseen grant-key changes; pin/state migration needs coordinated operator work.
+The v4 draft instead binds closure to exact name outputs; see
+[LIP-0008](lips/LIP-0008-grant-v4.md).

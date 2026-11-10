@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.7
+**Version:** 0.1.8
 
 **Date:** 2026-11-10
 
@@ -54,7 +54,12 @@ v0.1 describes the shape that ran on Namecoin mainnet on 2026-11-08 (two full
 cycles, see [conformance](conformance/README.md)). Known gaps are listed in each
 part under "Limitations" and are not hidden by the normative text.
 
-## Draft implementation profiles in v0.1.7
+The normative v0.1 profile and evidence are frozen as historical. Its permanent
+read-failure and tip-change closures remain recorded, not recommended for a new
+working profile. Successor proposals distinguish transient refusal from proved
+closure and require their own adoption and conformance evidence.
+
+## Draft profiles and design proposals in v0.1.8
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -63,6 +68,19 @@ grants, optional social name metadata and separate discovery;
 and exact bare compatibility; [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
 describes grant-gated services and the concrete wallet service v1 profile,
 with examples and a separately scoped delegated-issuance capability.
+
+[LIP-0007](lips/LIP-0007-service-types.md) proposes service types, action tables
+and a typed self-declaration in a service's Namecoin value.
+[LIP-0008](lips/LIP-0008-grant-v4.md) proposes Grant v4 signed rental limits and
+name-output closure, owner-pinned recipients and concrete executor budgets.
+It also records issuer-instance renewal pins, typed self-computed signing
+digests, durable validated issuer-branch mempool closure, value-dependent
+confirmation minima, per-seal keys, a topology/threat model and a dependent
+issuance evaluation. Risk-tier freshness and the signing-time-bound correction
+remain proposals. Canonical/signature/error/state vectors, a public runner and
+an independent Swift implementation are planned. These two proposals
+specify design semantics with unresolved wire/proof details; they do not
+reconcile a v4 implementation or assert interoperability.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
