@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.1.10 — 2026-11-10
+
+Adds pre-freeze Swarma requirements to Draft LIP-0008: separate signed
+invocations; signed subject, command, arguments, ordered proof IDs, nonce,
+times and concrete executor; explicit issuance-capability paths of at most
+two authority links, fixed parent binding, at-use attenuation and per-ancestor
+budget accounting. Each grant keeps its complete action set under one seal.
+
+Aligns LIP-0007's lowercase slash-command naming and reserved `swarma/`
+namespace. Requires signed but non-authoritative metadata, signed type/version
+consistent with application hash domains, canonical object IDs and strict
+BIP-340 signatures without assuming unique signatures per message. Defines
+half-open time/intersection checks and receiver-recomputed proof bundles;
+reserves a future `policy` kind without syntax or an evaluator.
+Corrects LIP-0007's wallet-v1 action listing to wire `spend`, consistent with
+LIP-0006; `pay` retains its grant-scope/executor meaning.
+
+Adds paired conformance-plan cases for the new rules. UCAN is provenance only,
+with no new dependency or compatibility claim. General agent sub-delegation
+retains its separate both-owner gate. Exact wire/proof/accounting profiles,
+canonical fixtures and the post-freeze spike remain open; no implementation,
+runtime result, normative adoption or historical v0.1/v3/wallet-v1 change.
+
 ## 0.1.9 — 2026-11-10
 
 Records owner acceptance on 2026-11-10 of the proposed Grant v4 change: replace

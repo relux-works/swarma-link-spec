@@ -20,6 +20,9 @@ LIP-0003. This index does not change their status or the preserved evidence.
 | Question | Location and boundary |
 | --- | --- |
 | Typed service declaration and action profiles | [LIP-0007](lips/LIP-0007-service-types.md); member path, canonical bytes, key/endpoint profiles, size and parser coexistence remain open. A declaration is not authority. |
+| Pre-freeze invocation and capability naming | LIP-0008 section 12 fixes signed logical request fields, exact lowercase slash commands and the reserved `swarma/` namespace, with LIP-0007 alignment. Exact request/registry grammar, leaf assignments, principal/time/nonce encoding and legacy-action mappings remain open; no existing parser/action is extended. |
+| Bounded explicit issuance-capability paths | LIP-0008 requires at most two authority links, exact parent-ID binding, current checks and at-use attenuation at every link, plus per-ancestor budget accounting. Exact proof/wire/consent, shared-journal serialization and recovery need profiles. This does not settle the separate both-owner general agent sub-delegation decision. |
+| Canonical object identity and reserved stateless policy | LIP-0008 requires signed type/version, typed hash alignment, one canonical ID preimage per version and strict signature validation; signature inclusion, wire encoding and replay/journal keys remain open. The future `policy` kind needs a separate LIP, syntax/evaluator and vectors; unsupported policy authority refuses. |
 | Grant v4 exact encoding and resource accounting | [LIP-0008](lips/LIP-0008-grant-v4.md); signed limits and matching contract are the proposed design, with units, numeric bounds and reservation rules still requiring exact profiles. |
 | Issuer-output closure and grantee owner proof | LIP-0008 pins the landlord output, while a name-mode grantee binds any name plus its owner public key without an exact output pin. Issuer updates close; same-owner grantee renewal/channel rotation preserve the grant. Current owner proof, script coverage, reorgs and any separate grantee transfer-history policy remain open. |
 | Consent, renewal and channel updates | Issuer name updates require reissuance. Grantee renewal/rotation under the same owner keeps the grant and checks current listed keys. Exact consent and replacement-grant bytes remain open. |
@@ -47,5 +50,7 @@ signer service capability does not authorize arbitrary sub-delegation.
 Editorial and layout reconciliation, primary Core checks and historical wording
 fixes are tracked for the next build; they are not silently applied to frozen
 protocol files or evidence. LIP-0006's 32-record wallet journal limit remains a
-laboratory bound, not a production retention policy. Delegation/UCAN research is
-separate from this draft and grants no implicit delegated issuance authority.
+laboratory bound, not a production retention policy. UCAN-derived pre-freeze
+rules are expressed only as Swarma requirements in Draft LIP-0008. The planned
+post-freeze spike, evaluator/resolver implementation and independent vectors
+remain separate work and grant no implicit delegated issuance authority.

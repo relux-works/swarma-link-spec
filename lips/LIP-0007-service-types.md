@@ -40,7 +40,7 @@ the other rows are semantic candidates, not accepted wire action strings.
 
 | Type | Actions and required boundary |
 | --- | --- |
-| `wallet.nmc` | Existing v1: `balance`, `history`, `receive`, `budget`, `pay`; retain their current grant, proof and receipt rules. |
+| `wallet.nmc` | Existing v1: `balance`, `history`, `receive`, `budget`, `spend`; retain their current grant, proof and receipt rules. |
 | `model.proxy` | Invoke an explicitly selected model; account for requests, input/output tokens, cost and per-request output. |
 | `slot.station` | Admit access to a named rental slot/station and end access; bind the renter, resources and rental window. |
 | `mail.send` | Send mail; bind sender identity, allowed recipients and sending limits. |
@@ -51,11 +51,24 @@ the other rows are semantic candidates, not accepted wire action strings.
 Delegated issuance needs a separate type/action profile: no listed action implicitly permits
 issuing grants or passing authority onward.
 
+The wallet-v1 wire action `spend` maps to the existing grant-scope/executor
+verb `pay` under LIP-0006. This table does not rename that internal authority
+or change the wallet request schema.
+
 Each type profile defines exact action identifiers, parameters, target binding,
 units, admission, repeat handling, journal reservation, receipts and recovery.
 Unsupported types or actions refuse. A shared word such as "read" is not a
 substitute for the service's exact schema. New types or action meanings arrive
 through separate LIPs; changing a deployed type's meaning silently is excluded.
+
+For the proposed v4 registry, a capability binds a subject, exact command and
+applicable policy/constraints under [LIP-0008 section 12](LIP-0008-grant-v4.md#12-invocation-and-bounded-issuance-capability-chains).
+Command names MUST use lowercase slash-separated segments and exact leaf
+matching; a prefix or top command `/` grants nothing. The `swarma/` namespace
+is reserved for protocol-defined capabilities, not provider extensions.
+Exact grammar, leaf assignments and mapping from existing actions remain open.
+This does not rename wallet-v1 actions, adopt a policy evaluator or expand any
+existing closed parser. Registry additions still require separate profiles/LIPs.
 
 ### 2. Concrete executors and budget scope
 
@@ -144,6 +157,8 @@ credential forwarding or effect. A valid nearby request must remain admissible.
   complete-value size budget; integration with existing closed parsers.
 - Versioning and multi-service names; precise non-wallet action schemas and
   a separate type/action profile for delegated issuance.
+- Lowercase slash-command grammar, reserved `swarma/` leaf assignments and
+  legacy-action mappings aligned with LIP-0008; exact declaration/version bytes.
 - Trust provisioning, name/receipt-key rotation, old receipt verification and
   durable journal migration; remote transport and endpoint access policy.
 - Decision record, normative adoption and profile-specific public vectors.

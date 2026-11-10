@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.9
+**Version:** 0.1.10
 
 **Date:** 2026-11-10
 
@@ -59,7 +59,7 @@ read-failure and tip-change closures remain recorded, not recommended for a new
 working profile. Successor proposals distinguish transient refusal from proved
 closure and require their own adoption and conformance evidence.
 
-## Draft profiles and design decisions in v0.1.9
+## Draft profiles and design decisions in v0.1.10
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -82,6 +82,17 @@ proposal. Canonical/signature/error/state vectors, a public runner and
 an independent Swift implementation are planned. These two proposals
 specify design semantics with unresolved wire/proof details; they do not
 reconcile a v4 implementation or assert interoperability.
+
+The v4 pre-freeze requirements now include a separate signed invocation,
+bounded explicit issuance-capability paths (at most two authority links),
+at-use attenuation and ancestor budget accounting, exact service commands,
+non-authoritative signed metadata, typed envelopes, canonical object IDs,
+half-open time windows and receiver-verified proof bundles. The complete
+action set stays under one seal and each grant signs its concrete executor.
+General agent sub-delegation still needs its separate both-owner decision.
+A reserved stateless `policy` form has no adopted syntax or evaluator. These
+are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
+wire profiles and the post-freeze qualification spike remain open.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

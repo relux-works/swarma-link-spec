@@ -21,6 +21,9 @@ refuses admission. No exact grantee name output is signed into this binding.
 
 The grant names a concrete executor by service name and key. Limits belong to
 that executor; a single-use request also commits to its chosen executor.
+The action set shares one seal and closure; an invocation is a separate signed
+type. Bounded issuance-capability chains preserve every ancestor's constraints
+and consumed budget. They do not authorize free agent sub-delegation.
 
 These are proposed semantics, not an adopted or executable wire profile. This
 LIP deliberately leaves canonical bytes and ownership-proof encoding open.
@@ -69,6 +72,14 @@ data, covered transitively by the issuance commitment.
 Both parties' consent binds the matching contract. Changing any of these terms
 requires a newly agreed grant; an unsigned presentation or runtime configuration
 cannot override them.
+
+One grant MUST bind its complete closed action set to one seal. An action
+outside that set MUST refuse, even if its service type advertises it. Validated
+issuer closure of that seal closes admission to every action in the grant;
+splitting a request or presenting another proof path MUST NOT reopen them.
+This does not relabel a valid grantee use-branch spend as issuer revocation.
+An explicitly authorized child grant has its own seal and issuance evidence,
+while remaining dependent on its committed parent under section 12.
 
 The exact ordered schema, signature domain, consent binding and issuance
 encoding need version-specific canonical fixtures before implementation.
@@ -287,6 +298,11 @@ The verifier uses one consistent observation with pinned network/genesis:
    peer authentication and shared durable journal before authorizing a reserve
    or effect. A valid name or service type alone gives no action authority.
 
+The invocation and any committed issuance-capability chain MUST satisfy
+section 12 before any new reservation or effect. The grant's signed executor,
+the invocation's executor and the authenticated service's pinned name/key MUST
+agree; an invoker-selected executor never supplies missing grant authority.
+
 An executor is a particular service's Namecoin name plus pinned public key,
 not just `wallet.nmc` or another type. The executor profile binds that key to
 the service identity and receipt verification role; the name declaration alone
@@ -402,6 +418,14 @@ the tagged-hash approach of [BIP340](https://bips.dev/340/). BIP340's internal
 signature tags do not assign these application domains. Exact tag bytes,
 versioning and the object registry require fixtures before adoption.
 
+The object type and version MUST also be inside the signed canonical bytes.
+An unsigned transport label or the hash tag alone is insufficient. Signers
+and verifiers MUST reject unknown or mismatching type/version combinations;
+a grant, invocation or receipt cannot be reinterpreted as another type.
+The signed envelope and its application tagged hash MUST
+select the same registered type/version. Exact member paths, tag bytes and
+the registry remain open; this assigns no successor wire bytes.
+
 A signer MUST accept the complete object, validate its type, schema and
 authorized meaning, canonicalize it under the selected version, and compute
 the digest itself. It MUST NOT expose these authority keys as a raw-digest
@@ -430,6 +454,27 @@ integer numeric range or a canonical decimal-string representation with fixed
 grammar and bounds. No implicit number/string coercion or silent rounding is
 permitted. Those per-field choices and migration bytes remain open. Existing
 fixed-order v0.1/v3 and wallet-v1 bytes retain their own canonical rules.
+
+#### 8.1. Object identity and canonical signatures
+
+For each type/version, the profile MUST define one canonical ID preimage and
+one SHA-256 object ID. The preimage MUST bind the signed type/version and
+entire signed payload, including metadata; the exact signature inclusion and
+envelope layout remain open. A fixed canonical signed object MUST have one
+recomputed ID regardless of the proof bundle carrying it. A caller-supplied ID, alternate
+encoding or transport wrapper MUST NOT create a second accepted identity for
+those same canonical object bytes. Unknown or noncanonical representations
+MUST refuse rather than being silently transcoded into a different signed token.
+
+The signature profile MUST use strict BIP-340 validation of its 64-byte
+signature, including its range and even-Y verification rules, with one
+version-defined wire encoding. This is not a claim that a message has only
+one possible valid signature: BIP-340 permits different signing nonces.
+Re-signing or another object ID MUST NOT restore a seal, nonce claim,
+consumed parent budget or reservation. Stateful admission binds the underlying
+authority and logical request as well as object identity. Exact ID preimages,
+signature encoding, replay keys and cross-version journal bindings require
+fixtures; existing v3 signed-grant IDs and wallet-v1 commitments stay unchanged.
 
 ### 9. Dependent issuance transactions and profile timing
 
@@ -508,6 +553,157 @@ names, funding transactions, anchor dependencies, timing and disclosed grants
 can still link activity. This is no anonymity claim or modification to existing
 name-derived seal scripts.
 
+### 12. Invocation and bounded issuance-capability chains
+
+These are requirements for the proposed Swarma v4 profile before its freeze,
+not an implemented resolver or an adopted generic delegation facility.
+LIP-0006's signer service still needs explicit issue authority. General
+agent-issued child grants and sub-delegation remain a separate both-owner
+decision; the rules below do not grant that permission.
+
+#### 12.1. Signed invocation
+
+A grant and an invocation MUST be separate signed object types. An invocation
+MUST bind the following logical fields; these names do not assign a canonical
+JSON schema or change wallet-v1 request bytes:
+
+| Logical field | Required meaning |
+| --- | --- |
+| Subject | The exact authority-bearing resource/service target, constant along its proof chain; not an optional or wildcard principal. |
+| Command | One exact leaf action from the type profile's closed action table. |
+| Arguments | The complete typed action parameters and targets covered by the request signature. |
+| Ordered proof IDs | One ordered authority path from its trusted root to the final grant, including the exact committed issue-capability parent. |
+| Nonce | A request identity under the selected executor/journal profile; not a replacement for a seal or durable accounting. |
+| `exp` | Required finite, exclusive invocation expiry. |
+| `iat` | Signed claimed invocation time, not proof of actual signing time. |
+| Executor | The concrete service name and key, equal to a signed grant executor and the authenticated service pin. |
+
+The final audience/grantee MUST authenticate the invocation under the selected
+key/name-recipient profile. Type, version, subject, command, arguments, proof
+order, nonce, times and executor MUST all be signature-bound. Mutating any of
+them invalidates that request. Issuance locators and fetched evidence are not
+authority merely because a bundle contains them. Wallet-v1 `proof.use_txid`
+remains outside its unsigned-request hash; neither that commitment nor
+LIP-0002's different signed-envelope commitment is redefined here.
+
+#### 12.2. Proof path, attenuation and budget accounting
+
+Depth counts signed grant/issue-capability links, not the invocation or evidence
+objects. A direct landlord-to-grantee grant has depth 1. The maximum is depth 2:
+landlord to authorized delegated issuer, then delegated issuer to grantee.
+A third signed authority link MUST refuse; repeated IDs and cycles MUST refuse.
+
+Each link's audience MUST equal the next link's authenticated issuer under
+the exact principal/name-owner profile. The subject MUST remain constant.
+The root MUST be independently trusted for that subject; a self-signed bundle
+cannot select its own trust root. Every link MUST pass its own signature,
+current name/owner/instance, issuance, seal, interval and closure checks at use.
+An invalid or closed ancestor MUST refuse the dependent request, including
+when the child itself is current and correctly signed.
+
+A child MUST commit to the exact ID of the issue capability under which it
+was issued. That capability MUST explicitly authorize issuance for the child's
+subject, permitted commands, grantee, executor, limits and lifetime. Ordinary
+action authority, possession of a grant or an audience key MUST NOT imply
+re-delegation. A different proof path MUST NOT replace the committed parent
+or bypass its closure. Final requests MUST satisfy both the child's constraints
+and the issuing capability's permitted descendant-action constraints; an
+issuance command is not silently treated as an ordinary effect command.
+
+Known action sets and numeric ceilings MUST NOT widen in a child. Attenuation
+MUST also be checked against the actual invocation at execution: it MUST
+satisfy every link's applicable argument, target, executor, time and resource
+constraints. A child's claim to be narrower is insufficient. Missing authority,
+unknown constraint semantics or an unsupported proof profile MUST refuse;
+no unimplemented policy evaluator may stand in for these checks.
+
+Each child resource budget MUST be at most its parent's applicable ceiling.
+All direct and descendant consumption/reservations together MUST fit each
+ancestor's budget; siblings do not each inherit another full copy. The
+authoritative executor journal MUST atomically check and reserve the request
+against every applicable link before its effect. Each ancestor is accounted
+once for that request, not once per duplicate proof. Failed admission MUST
+create no effect or newly authorized partial allocation; uncertain existing
+reservations remain charged under their recovery profile. Restart, retry or
+reissuance MUST NOT reset an ancestor's consumed allowance.
+
+This chain uses one concrete executor and authoritative accounting domain.
+Independent executors require the explicit signed partitions of section 4;
+independent journals MUST NOT consume a shared apparent parent remainder.
+Distributed serialization, reservation/reconciliation encoding and recovery
+remain open, not an implementation claim.
+
+Proof bundles carry complete signed objects or exact resolvable references.
+The receiver MUST recompute each ID under section 8.1 and match it to the
+ordered path and committed parent. Unresolved, mismatched or ambiguous proofs
+MUST refuse before a new reservation/effect. A fetched token or cache entry
+does not prove its seal is live; all current-state checks still run. The bundle
+format, transport/resolution bounds and canonical proof encoding remain open.
+
+#### 12.3. Capability names and signed metadata
+
+A capability binds subject, command and applicable policy/constraints. Command
+names MUST use lowercase slash-separated segments under the versioned service
+action registry described in LIP-0007. Commands match exact leaf identifiers;
+neither a prefix nor the top command `/` grants sibling or descendant actions.
+The `swarma/` namespace is reserved for protocol-defined capabilities; a
+provider MUST NOT allocate its own commands there. Exact grammar, leaf names
+and registry assignments remain open and need their own profiles. This rule
+does not rename existing wallet-v1 actions or expand a closed parser.
+
+Metadata MUST be signed when included, but MUST NOT add authority or override
+an authority-bearing field. V3's `grantee_name`, social descriptions and a
+service self-declaration do not supply grants, identity pins, budgets or issue
+permission. The separate v4 name/owner recipient binding remains authoritative;
+placing a name in metadata is not that binding. A declaration may select a
+known interface and advertise an endpoint/key for verified discovery, but it
+cannot authorize an effect or replace an independently established trust pin.
+Changing signed metadata changes signed bytes; ignoring it for authority does
+not permit unsigned mutation.
+
+#### 12.4. Reserved stateless policy form
+
+Reserve `policy` as a future stateless-limit kind only. Its syntax, numeric
+semantics, evaluation bounds and exact registry encoding require a separate
+LIP and paired vectors. No evaluator or UCAN policy language is adopted here.
+A profile without that adopted capability MUST refuse a request requiring
+`policy`; it MUST NOT ignore it or convert it to unlimited authority. Any
+future stateless predicate remains separate from seal state, single-use claims
+and cumulative budgets, which require executor accounting.
+
+#### 12.5. Time terms and post-freeze work
+
+A validity interval is half-open: `[not_before, not_after)`. Invocation time is
+the signed `iat` claim; execution time is the verifier's trusted current time
+at the effect boundary. Invocation admission requires `iat <= now < exp`.
+All expiry values MUST be present and finite, with well-ordered bounded times;
+null/unbounded expiry and an added clock-grace allowance MUST refuse. `iat`
+does not establish a cryptographic signing-time bound; section 7 still applies.
+
+The usable window is the intersection of all link intervals and the invocation
+interval. An empty intersection MUST refuse. A child interval MUST NOT widen
+its parent's. Every link MUST be valid at execution, not only when parsed,
+issued or first observed. After observation work, the executor MUST recheck
+the intersection before a new reservation/effect. At `now == not_after` or
+`now == exp`, new admission MUST refuse; an expired middle link is sufficient.
+Pending/terminal replay and retained uncertainty keep their type-specific
+journal rules and never renew authority or permit another effect.
+
+The planned post-freeze spike measures size, verification cost and proof depth,
+and qualifies canonical bytes, proof resolution, accounting and any proposed
+policy evaluator with requirement-derived positive/negative fixtures. It does
+not select a library, publish a runner or establish interoperability now.
+
+Provenance only: these rules adapt UC1's review of
+[UCAN core](https://github.com/ucan-wg/spec/blob/8072f3f23f451eaa1271269fe763aebcf294f4db/README.md),
+[delegation](https://github.com/ucan-wg/delegation/blob/1cb32dbc9d4d15a23bf9844a02515d760b81e816/README.md)
+and [invocation](https://github.com/ucan-wg/invocation/blob/0f4c11325af6aca298b565cc19e90009d10e0197/README.md).
+They remain the Swarma profile, with no UCAN dependency, codec adoption or
+compatibility claim. The signature distinction above follows
+[BIP-340](https://github.com/bitcoin/bips/blob/d71d60687b4c250ae9c73c1cc29897dbd56e9903/bip-0340.mediawiki)
+Default/Alternative Signing and Verification, not an assumption of one unique
+signature per message.
+
 ## Alternatives
 
 Keeping limits only in the contract preserves the existing indirect commitment
@@ -563,6 +759,34 @@ post-refusal state. The semantic outline pairs these controls:
 | Typed endorsement for the exact per-seal key/script/outpoint | Different seal, swapped endorsement, untrusted issuer or substituted script refuses; separate valid per-seal keys remain admissible. |
 | Explicit supported admission profile and its required publication evidence | An unpublished preparation refuses in anchored mode; evidence failure cannot activate no-block-wait mode. |
 
+The additional pre-freeze rules need these paired public vectors. These are
+planned assertions, not results from a chain validator or policy evaluator:
+
+| Valid control | Refusal or invariant to assert |
+| --- | --- |
+| Separately signed grant and complete typed invocation | Substituted subject, command, arguments, proof order, nonce, times or executor fails the request binding; no new reservation/effect. |
+| Grant executor = invocation executor = authenticated service pin | Wrong executor, including another service of the same type, refuses without effect or new allocation. |
+| One granted action from the set under its live seal | An action outside the sealed set refuses; validated issuer closure refuses every action in that set, without relabeling a valid grantee use-spend. |
+| Trusted root, constant subject and exact audience-to-issuer alignment | A self-selected root, changed subject or wrong next issuer refuses even with otherwise valid signatures. |
+| Direct depth-1 grant; depth-2 explicitly authorized issuance path | A third authority link, duplicate link or cycle refuses before any new reservation/effect. |
+| Explicit issue capability covering this child and its descendant action | Ordinary action authority, audience-key possession or re-delegation without issue capability refuses. |
+| Narrower child action set, window and numeric ceilings; actual request fits every link | Wider child, larger ceiling or an invocation violating any ancestor constraint refuses, without trusting the child's attenuation assertion. |
+| Child commits the exact issue-capability parent ID | A substituted parent or alternative path cannot bypass that parent's closure; dependent admission refuses. |
+| Every link independently passes current names, issuance and seal checks | A closed seal, changed issuer instance or unproved/stale ancestor refuses even when the child alone passes. |
+| Complete ordered proof bundle with receiver-recomputed IDs | Unresolved proof, recomputed-ID mismatch, ambiguous reference or path-order mismatch refuses; a bundle/cache alone cannot supply live-seal evidence. |
+| Child budget within parent; serialized direct and sibling usage fits all ancestor ceilings | Child budget above parent or concurrent sibling/direct overspend refuses the excess request; no effect or newly authorized partial allocation on failure. |
+| Same authoritative journal survives an exact retry and restart | Re-signing, another object ID, reissuance or replica-local reset cannot recreate consumed ancestor allowance or a second logical effect. |
+| Explicit signed partitions assigned to independent executors | Two journals using the full same parent remainder refuse; each executor can use only its partition. |
+| Known exact leaf command and a registered protocol command | Prefix/top-command admission, an unknown leaf or provider allocation under reserved `swarma/` refuses. |
+| Signed descriptive metadata beside complete authority fields | Unsigned metadata mutation fails signature validation; signed metadata-only name/type/key/limit/issue assertions cannot add authority or replace pins. |
+| Supported existing typed limits with no required future policy form | A required reserved `policy` kind refuses while its separate profile/evaluator is absent; no ignored constraint or unlimited fallback. |
+| Matching signed type/version, canonical schema and application hash domain | Unsigned-label substitution, wrong type/version/tag, noncanonical encoding or unknown schema refuses. |
+| Same canonical signed object carried in different bundles | All compute the same profile-defined ID; an asserted alternate ID or wrapper-derived identity refuses. |
+| Valid strict BIP-340 signature, including another valid signing nonce | Invalid length/range/parity or changed-message signature refuses; a legitimately re-signed payload still cannot reset a logical request, seal or budget. |
+| Nonempty half-open intersection, all links live at execution | Empty/widened child interval, expired middle link or expiry during observation work refuses new admission; keep any existing uncertain reservation. |
+| `iat <= now < exp` and `not_before <= now < not_after` at the effect boundary | Future `iat`, null/unbounded expiry, added grace, `now == exp` or `now == not_after` refuses new admission; no inclusive-end weakening. |
+| Preserved v3 and wallet-v1 IDs, domains and their separate single-use commitments | Applying successor ID/request rules to historical bytes refuses substitution; legacy evidence and replay outcomes remain unchanged. |
+
 Publish canonical input bytes, typed digests, public keys/signatures, expected
 errors and state/journal transitions together with a deterministic runner.
 Include known-invalid controls proving the runner catches each claimed invariant,
@@ -576,6 +800,17 @@ This is a conformance plan, not a published runner or interoperability result.
 - Exact versioned bytes, signature domain, commitment/consent encoding, name
   outpoints, executor/single-use bindings, recent block field and cross-language
   vectors; reissuance after issuer channel updates and renewal.
+- Invocation subject/command/argument and ordered-proof schema, principal
+  encoding, time units/ranges, nonce/replay keys and bounded proof resolution;
+  capability registry grammar, leaf assignments and existing-action mappings.
+  The `swarma/` reservation and exact-match rule add no deployed action strings.
+- Explicit issuance-capability profile and both-owner general delegation scope;
+  parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
+  budget accounting, recovery and executor partitions. Depth is at most two
+  signed authority links; exact wire/consent and accounting fixtures remain open.
+- Signed metadata envelope, canonical object-ID preimages/signature inclusion,
+  strict signature wire representation and cross-version journal bindings.
+  The reserved future `policy` kind has no adopted evaluator or syntax.
 - Owner-key encoding and supported scripts; proof of current unspent name
   outputs, reorg policy, channel descriptors and Matrix key support.
 - Implementation and qualification of the decided 60/90-minute risk cutoffs;
