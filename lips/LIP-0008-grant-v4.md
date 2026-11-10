@@ -11,11 +11,13 @@ Grant v4 binds per-rental resource limits directly in the grant's signed scope.
 The contract mirrors those limits. Service configuration sets operator-wide
 ceilings and cannot supply or enlarge the tenant's missing authority.
 
-The grant binds the landlord name's owner key and exact output at issuance. A name-bound
-grantee also binds any Namecoin name, its exact output and the public key owning
-that output. Any later confirmed operation spending a bound name output closes
-the grant, including renewal. Every verifier on the same validated chain view
-can detect this without having observed the transition.
+The grant binds the landlord name's owner key and exact output at issuance.
+Spending that issuer output closes the grant, including renewal; a new verifier
+can detect this on the validated chain. A name-bound grantee instead binds any
+Namecoin name plus its owner public key. At admission the current owner must
+equal that key, then the current listed channel keys are checked. Same-owner
+renewal and channel-key rotation preserve the grant, while an owner mismatch
+refuses admission. No exact grantee name output is signed into this binding.
 
 The grant names a concrete executor by service name and key. Limits belong to
 that executor; a single-use request also commits to its chosen executor.
@@ -32,9 +34,11 @@ source of each rental's bounded authority. The matching contract preserves
 agreement on the same terms.
 
 A current name/key pair alone cannot reveal a transfer followed by a return
-to the same key. An exact name-output binding makes that transition visible
-as a spent output even to a first observer. The deliberate cost is that a
-renewal or channel-key update also ends grants bound to the old output.
+to the same key. The exact issuer name-output binding makes that transition
+visible even to a first observer. Its deliberate cost is that issuer renewal
+or issuer channel-key update ends grants bound to the old issuer output.
+Recipient channel keys instead follow current name resolution under the pinned
+owner key; exact recipient-output closure is not part of that rule.
 
 A service type alone cannot stop two independent executors from each consuming
 the same apparent budget. Concrete executor bindings and explicit partitions
@@ -60,7 +64,7 @@ v4 support. No v4 implementation or conformance result is claimed here.
 V4 binds the network/genesis, issuer, target, recipient, validity interval,
 seal, contract hash, landlord name/owner-key/output reference, concrete executor bindings,
 recent block reference and action/resource scope in its signed grant. Name-mode
-recipients also bind their own name output and owner key. These terms are signed
+recipients bind their name and owner key, without an exact name-output pin. These terms are signed
 data, covered transitively by the issuance commitment.
 Both parties' consent binds the matching contract. Changing any of these terms
 requires a newly agreed grant; an unsigned presentation or runtime configuration
@@ -71,31 +75,73 @@ encoding need version-specific canonical fixtures before implementation.
 V3 bytes and domains are not reinterpreted as v4. No JSON shown in this LIP is
 an executable fixture, and this LIP assigns no new OP_RETURN bytes.
 
-### 1.1. Txid stability before confirmation
+### 1.1. Witness and Legacy construction profiles
 
-In the proposed v4 funding profile, transactions creating grant seals and
-transactions carrying issuance commitments **MUST** spend only witness inputs.
-A mixed transaction with even one legacy input does not meet this requirement.
-This constrains funding inputs, not the script type of the newly created seal.
-The funding profile also fixes and authenticates the non-witness transaction
-body; a witness serialization flag alone is insufficient.
+The chain pin selects one transaction-construction profile: Witness (W) or
+Legacy (L). W is the default for a pinned UTXO chain with activated SegWit,
+including Namecoin, Bitcoin and Litecoin. L covers UTXO chains without SegWit.
+The selected profile belongs to the authenticated chain context; exact pin
+encoding and fixtures remain open. An unknown or mismatched profile refuses
+admission, without automatic fallback. Both profiles preserve the same signed
+grant semantics, name/seal checks, consent, limits and confirmation-risk rules.
+They differ in transaction construction and timing.
 
-Witness data is outside `txid` under [BIP141](https://bips.dev/141/). With fully
-signed witness inputs, third-party changes to input signature data cannot
-replace the pre-confirmation txid used by the grant or presentation. With
-legacy inputs, a valid transaction may confirm under a different txid from the
-one referenced by a pre-signed grant. The expected seal or commitment then
-fails to resolve as confirmed: admission fails closed. That is a liveness
-failure, not permission to accept a different object or bypass the chain check.
+In W, **every input** of a seal-creation transaction and of an issuance anchor
+**MUST** be native P2WPKH. Signatures use **SIGHASH_ALL only**, without
+ANYONECANPAY. The seal transaction's complete non-witness body is fixed and
+authenticated before the grant is signed; it is not rebuilt afterwards. The
+anchor is constructed after the grant is signed, then fixed and authenticated
+before any dependent reference uses its txid. A witness marker, a wrapped
+witness input or a single legacy input does not satisfy W. The rule constrains
+inputs, not the script type of the new seal output.
 
-Revocation checks follow the consumed seal outpoint. A malleated revocation
-still spends that same output and revokes under the selected observation rule;
-its own changed txid does not create a new live seal.
+Ordinary funding comes from confirmed UTXOs. W explicitly permits two
+unconfirmed protocol dependencies: the linkage output created with the seal,
+and a same-chain payment output spent by the anchor. These exceptions do not
+permit arbitrary unconfirmed wallet funding. Each permitted unconfirmed parent
+must also have a fixed authenticated body and only fully signed native P2WPKH
+inputs with SIGHASH_ALL, with its funding ancestry ending at confirmed UTXOs.
+The exact dependency and payment checks still need versioned fixtures.
+Seal and anchor may confirm in the same block, in dependency order. No mempool
+observation alone authorizes an effect, and inclusion or one-block latency is
+not guaranteed.
 
-Compatibility: the pinned rental implementation's funding policy uses legacy
-P2PKH funding scripts, distinct from its P2PKH seal script. It does not satisfy
-this proposed v4 witness-only funding rule. No migration, witness planner,
-re-signing, deployment or historical v0.1 change is implied by this draft.
+[BIP141](https://bips.dev/141/) excludes witness from `txid`; its protection
+against third-party signature-data malleability requires fully signed witness
+inputs. The SIGHASH_ALL rule uses the chain's standard witness signing preimage
+([BIP143](https://bips.dev/143/) for version 0), not a Link application tag.
+A changed transaction body or an authorized replacement invalidates the pending
+references even in W; it cannot silently rebind an existing signed grant.
+
+In L, the grant references **only confirmed outpoints**. The issuer waits for
+the seal transaction to confirm before signing its exact outpoint into the
+grant and building the issuance anchor. All anchor inputs, including linkage
+and payment outputs where used, are already confirmed. **No unconfirmed
+dependent chains** are allowed. A newly created seal and its issuance anchor
+therefore require two sequential confirmation stages in distinct blocks:
+seal first, anchor afterwards. An already confirmed pool seal has completed
+the first stage. Higher risk floors, censorship or reorgs can require more
+blocks; two stages are not a bounded delivery time or finality guarantee.
+
+A malleated or replaced parent invalidates the pending preparation or grant.
+Admission fails closed. Reissue from validated confirmed outputs and obtain
+new signatures/consent for changed signed terms; never substitute a different
+txid into an old signed object. This is a liveness cost, never permission for
+unsafe admission. Low-S and strict DER reduce particular malleability avenues
+where enforced by the chain's rules, but do not guarantee a stable legacy txid.
+[BIP66](https://bips.dev/66/) specifies strict DER; its presence alone does not
+provide W's dependency guarantee.
+
+Revocation in both profiles follows the consumed seal outpoint. A malleated
+revocation still spends that same output; its own txid cannot recreate a live
+seal. Account-based chains such as Ethereum and Tron are outside both profiles
+and require a separate seal design.
+
+Compatibility: the pinned rental implementation funds with legacy P2PKH. It
+does not satisfy W; its script choice alone does not prove L's confirmed-only
+construction and timing. W for Namecoin is the first implementation direction;
+L remains specification-only until a non-SegWit chain is pinned and qualified.
+No migration, implementation result or historical v0.1 change is implied.
 
 ### 2. Per-rental limits
 
@@ -131,11 +177,14 @@ per-rental cap absent from the grant. An accepted request must fit both the
 signed limits and applicable operator ceilings.
 
 Those ceilings and their enforcement configuration belong outside the agent's
-write authority. Under the immutable-boundaries design, a service reads the
-sealed configuration, checks it against the approved manifest before startup
-and refuses a mismatch. Changing operator ceilings requires a new reviewed
-package; a runtime request or writable local override cannot relax them. This
-is a deployment requirement, not evidence of completed host qualification.
+write authority. The administrator owns the sealed configuration; the service
+group has read-only access (file mode `0640`, directory mode `0750`). Before
+startup, the launching side checks the configuration hash against the sealed
+manifest and refuses to start on a mismatch. The service cannot rewrite the
+configuration at runtime. Changing operator ceilings requires a new reviewed
+package; a request or writable override cannot relax them. This is the lead's accepted
+deployment decision of 2026-11-10, not evidence of implementation or completed
+host qualification.
 
 For confirmation depth the effective minimum is the **maximum** of the
 issuer-signed minimum and the operator's risk floor. Configuration cannot lower
@@ -152,7 +201,7 @@ Uncertain effects retain their reservations until reconciled. Enforcement
 requires intact service credentials and journal; stealing the upstream API key
 can bypass this service's rental accounting.
 
-### 3. Name-output closure and recipient modes
+### 3. Issuer-output closure and recipient modes
 
 At issuance the signed grant binds the landlord's exact Namecoin name, its
 owner key and its current registration/update output, identified by transaction
@@ -165,7 +214,7 @@ acts as an additional seal; it does not replace the grant's separate seal.
 Every admission requires that same bound output to remain current and unspent
 on the verifier's validated active chain.
 
-Any later confirmed name operation spends that output and closes the grant:
+Any later confirmed issuer-name operation spends that output and closes the grant:
 key change, transfer, a return to the original key, value update or renewal.
 Equal current key/value bytes cannot recreate the old outpoint. A first observer
 can reject the spent binding without reconstructing the intermediate name
@@ -180,33 +229,39 @@ authoritative, so the calendar reminder is not an admission rule. After the
 renewal confirms, update the agent pointer and independent verifier pins through
 their authorized provisioning procedure, then issue replacement grants with
 fresh consent on the new output. No live grant is silently rebound. Renew
-between rentals where possible. Updating a channel descriptor has the same cost.
-Name continuity under an unchanged owner does not exempt an update. The pin
+between rentals where possible. Updating the issuer channel descriptor has the same cost.
+Issuer-name continuity under an unchanged owner does not exempt an update. The pin
 update/rollout procedure must fail closed while participants disagree. An
 alternative would verify the name history
 from the commitment height, requiring history-index support on every verifier;
 that is not this draft's chosen closure rule.
 
 A direct-key recipient remains bound to its signed request key. A name-mode
-recipient binds three signed facts: the exact Namecoin name, its current output
-at issuance and the public key owning that output. No `d/`, `id/` or other
-namespace prefix is an admission condition. Name and owner key are mandatory;
-the output binding additionally prevents transfer-and-return from restoring
-access. The v3 `grantee_key` field acquires no new owner-key meaning.
+recipient binds two signed facts: the exact Namecoin name and its owner public
+key. No `d/`, `id/` or other namespace prefix is an admission condition. The
+verifier resolves the name at check time, proves its current owner equals the
+pinned key, then accepts a request key listed for the selected channel in that
+same state. The v3 `grantee_key` field acquires no new owner-key meaning.
 
-The owner key has a different role from a listed channel key. An address or a
-key asserted inside the value does not prove control of the name output. A
-supported ownership-proof profile must connect the pin to that output's spending
-condition. Exact key encoding and script coverage remain open; unsupported or
-ambiguous proof refuses. Not every script can be reduced to one public key.
+A grantee channel-key rotation or renewal under the same owner preserves the
+grant. A removed channel key refuses requests, while a newly listed supported
+key may use the same live grant. An owner change that no longer matches the
+signed key voids admission. This current-owner comparison cannot by itself
+prove an unobserved transfer-and-return; permanent grantee-history closure
+would need a separate rule and evidence, not an invented exact-output pin.
 
-Missing, stale or malformed reads refuse without recording a permanent closure.
-A pending name spend can suspend admission under the selected profile; only
-proved active-chain facts establish the name-output closure described here.
-The separate issuer-seal mempool rule below is an explicit durable exception. Reorg
-handling must revalidate those facts; no permanent historical v0.1 read-failure
-rule is imported into this working draft. Journal records of already attempted
-effects remain durable regardless of the name's later chain state.
+The current output is evidence of ownership, not a signed grantee-output term.
+An address or key asserted inside the value does not prove control of that
+output. A supported ownership-proof profile must connect the pinned owner key
+to its spending condition. Exact key encoding and script coverage remain open;
+unsupported or ambiguous proof refuses. Not every script reduces to one key.
+
+Missing, stale or malformed reads refuse without recording permanent closure.
+Expired names refuse. A pending name spend can suspend admission under the
+selected observation profile; the confirmed issuer-output closure and current
+grantee-owner check remain distinct. Reorg handling revalidates those facts.
+The issuer-seal mempool rule below is an explicit durable exception. Journals
+of already attempted effects remain durable regardless of later name state.
 
 ### 4. Admission order and concrete executor
 
@@ -214,14 +269,15 @@ The verifier uses one consistent observation with pinned network/genesis:
 
 1. Resolve each bound name and its output. Check the landlord name, owner key,
    output, agent pointer and independent verifier pins agree on the issuer
-   instance, and that its output is still current and unspent. In name mode require the grantee output
-   to be unchanged and prove its owner equals the grant's pinned owner key,
-   before consulting channel keys. A changed output rejects even if the key
-   returned to its former value.
+   instance, and that its output is still current and unspent. In grantee name
+   mode prove the current name owner equals the signed owner key before
+   consulting channel keys. No exact grantee-output equality is required; a
+   changed issuer output rejects even if its key returned to the former value.
 2. Read the channel descriptor from that same name state and verify the request
    under a key listed for its selected channel. Unknown or removed keys refuse.
-   A confirmed update already closes the previous output-bound grant; a new
-   grant binds the replacement output and its permitted keys.
+   Same-owner grantee rotation/renewal keeps the grant; removed channel keys
+   refuse. An issuer-name update instead closes the old issuer-output binding
+   and requires a replacement grant.
 3. Require healthy observations, explicit freshness policy and unexpired names.
    Unavailable, stale, conflicting or unproved data never permits an effect.
 4. Check the durable closure journal, grant interval, issuer/target, confirmed issuance, separate seal,
@@ -313,7 +369,7 @@ was:
 | 90 min | 0.001% | 0.01 min/day |
 
 These are reported chain-gap measurements, not service availability or future
-bounds. Proposed defaults for review stop money/irreversible
+bounds. The lead's proposed defaults for review stop money/irreversible
 actions at 60 minutes and other privileged actions at 90 minutes, alongside the
 node-health checks. A service determines operation risk from its action profile;
 a caller cannot downgrade it. Exact age measure, clocks, independent-node
@@ -372,37 +428,36 @@ grammar and bounds. No implicit number/string coercion or silent rounding is
 permitted. Those per-field choices and migration bytes remain open. Existing
 fixed-order v0.1/v3 and wallet-v1 bytes retain their own canonical rules.
 
-### 9. Dependent issuance transactions (evaluation only)
+### 9. Dependent issuance transactions and profile timing
 
 Let seal transaction T create both the grant seal and an additional output L.
-After T's body is fixed, the parties sign a grant naming T's seal outpoint.
-Anchor A spends L and carries the commitment to that signed preparation. A
-therefore depends on the exact T; both may confirm in one block with T before A.
-The seal itself remains unspent. This avoids a circular dependency between a
-grant and the transaction that commits it. It does not guarantee inclusion,
-fees or one-block waiting time, and admission still requires confirmation.
+Here L names the linkage output, not the Legacy profile. After T's body is
+fixed, the parties sign a grant naming T's seal outpoint. Anchor A spends L and
+carries the commitment to that signed preparation. The seal remains unspent;
+separating its creation from the commitment avoids a circular grant/txid
+reference.
 
-A further proposal makes A also spend the exact renter payment output. This
-could bind confirmation of the anchor to that payment dependency. A replacement
-that removes that output leaves this A unable to confirm; no mempool-only
-issuance is permitted. A Namecoin transaction can directly spend only Namecoin
-outputs. BTC/LTC payments require their separate validated proofs and cannot be
-consumed by this Namecoin anchor. Output control, authorization, settlement
-destination, fees, consent coverage and the exact dependency proof remain open.
-There is no implemented payment/anchor optimization claim.
+Under W, the explicit dependency exception in section 1.1 allows A to spend
+unconfirmed L. T and A may confirm in one block, with T before A. Ordinary
+funding is confirmed and every T/A input is native P2WPKH with SIGHASH_ALL only.
+The linkage output must therefore be native P2WPKH to be spent by A under W;
+the seal output's script is independent of that input rule. A may also spend
+an exact unconfirmed same-chain payment output under the same validated-parent
+exception. This is a construction permission, not mempool-only issuance or a
+claim of implemented payment/anchor optimization.
 
-The following **SW1 candidate**, recorded for the funding work, is not an
-adopted input profile or a code change. Every T/A input is native P2WPKH;
-transaction signatures use SIGHASH_ALL without ANYONECANPAY. The parent is never
-rebuilt after the grant is signed. The seal output may remain P2PKH, while L is
-P2WPKH. Ordinary funding UTXOs are confirmed. A's deliberate spend of an
-unconfirmed L conflicts with a blanket confirmed-input rule; the new profile
-must explicitly specify and validate that parent-dependency exception, or wait
-for T to confirm. Whether a payment input may be unconfirmed needs the same
-explicit decision. No blanket exception is implied. The historical v0.1 anchor
-spends a P2PKH name output, so this candidate also requires a new profile and an
-authorized name move before applying its all-native-input rule. Namecoin support
-and the complete dependency/signing path require qualification.
+Under L, T confirms before the grant is signed and A is built. L and every
+other A input must already be confirmed; T and A cannot share a confirmation
+block. Parent malleation or replacement requires fail-closed reissuance, not
+rebinding. The two sequential stages do not promise a maximum waiting time.
+
+A Namecoin anchor can directly spend only Namecoin outputs. BTC/LTC payment
+paths keep their separate validated proofs; this draft does not turn a Namecoin
+anchor into a cross-chain spend. Output control, authorization, settlement
+destination, fees, consent coverage and exact dependency proofs remain open.
+The historical v0.1 anchor spends a P2PKH name output, so it cannot satisfy W's
+all-native-input rule unchanged. A new input/name profile and qualification are
+required; current legacy scripts do not establish L support either.
 
 If a successor anchor also updates a name, the profile must reconcile that
 operation with the signed name-output pin without a circular reference or an
@@ -453,7 +508,7 @@ name-derived seal scripts.
 ## Alternatives
 
 Keeping limits only in the contract preserves the existing indirect commitment
-but requires its bytes. Name-history verification can preserve grants across
+but requires its bytes. Issuer-name history verification can preserve grants across
 renewals but requires a trustworthy history index and complete proofs. Binding
 the exact output instead trades that dependency for mandatory reissuance after
 every name operation. A type-only executor cannot provide a shared global budget
@@ -461,7 +516,7 @@ across independently operated services.
 
 ## Security consequences
 
-The name resolver, ownership proof, receipt pins, service custody and durable
+The name resolver, issuer-output pin, grantee-owner proof, receipt pins, service custody and durable
 accounting form separate boundaries. A correct request signature proves neither
 fresh ownership nor remaining budget. A name value cannot attest its own owner.
 Expiry, unavailable chain data and unsupported units refuse admission without
@@ -483,14 +538,18 @@ post-refusal state. The semantic outline pairs these controls:
 | --- | --- |
 | Matching grant/contract limits and a request within all ceilings | Signed-limit mutation, contract mismatch, unknown kind/unit, missing required cap or cumulative/per-request overshoot: no effect or new authorized reservation. |
 | Signed default within maximum and remaining allowance | Default above per-request/cumulative bounds, missing authority or config-only rental limit: refuse; config cannot enlarge authority. |
-| Same bound name outputs, proved owner, listed channel key and fresh unexpired names | Spent/replaced output, owner mismatch, value-only assertion, unsupported proof, removed key or stale/expired/missing name: no effect. |
+| Same issuer output, matching current grantee owner and listed channel key on fresh unexpired names | Changed issuer output, grantee-owner mismatch, value-only owner assertion, unsupported proof, removed key or stale/expired/missing name: no effect. |
 | Arbitrary namespace with supported owner proof | Prefix-only admission or rejection is wrong; malformed exact names still refuse under the name profile. |
-| Unchanged name outputs and a newly started verifier | Transfer-and-return, renewal, same-key value/channel update: old outpoint is spent, so all such grants refuse even without local observation history. A reissued grant on the new output is the positive neighbour. |
+| Unchanged issuer output and a newly started verifier | Issuer transfer-and-return, renewal or same-key update spends the pinned output and refuses without local history. Fresh issuer pins and a replacement grant are the positive neighbour. |
+| Same-owner grantee renewal and a newly listed supported channel key under the same grant | Refusing solely because the grantee output changed is wrong; accepting a removed key or mismatched owner is wrong. Current-owner equality alone proves no permanent transfer-and-return history. |
 | Exact executor name/key and its allocated budget | Wrong executor of the same type, reused full budget at a second executor, partition overspend or single-use executor substitution: no effect. |
 | Replicas sharing one authoritative journal; recovery with chain evidence | Independent journals, lost journal authority, concurrent duplicate or uncertain retry: no second reservation/effect. |
 | Healthy independent node observations and action-specific age policy | Lagging/conflicting nodes or exceeded risk cutoff refuse; a healthy gap under the proposed cutoff alone is not node failure. |
 | Recent block committed in signed grant and verified on the selected chain | Seal confirmation alone proves no signing-time lower bound; unknown, stale or wrong-branch block reference refuses under the selected profile. |
-| Seal-creation and issuance transactions with only fully signed witness inputs | One legacy input or witness marker alone fails the proposed funding rule. A changed legacy txid that leaves the signed reference unconfirmed yields no admission; revocation still follows the spent seal outpoint. |
+| W with native P2WPKH/SIGHASH_ALL inputs, confirmed ordinary funding and validated linkage/payment dependencies | One legacy or wrapped input, another sighash mode, witness marker alone, unproved parent or arbitrary unconfirmed funding refuses; no effect before required confirmations. |
+| L with confirmed referenced outpoints and an anchor built after seal confirmation | An unconfirmed reference, dependent chain or same-block seal/anchor construction refuses. A changed parent requires reissuance; no silent txid substitution or unsafe admission. |
+| Matching authenticated chain/profile pin and identical grant checks under W and L | Unknown profile, profile substitution or automatic fallback refuses. Account-based chains have no seal profile here. |
+| Administrator-owned sealed config, service-group read-only access and matching manifest hash | Writable service config or a hash mismatch forbids startup; operator ceilings cannot change through a runtime override. New reviewed packages remain the authorized change path. |
 | Valid v3 and independently valid v4 fixtures | Version/domain substitution, ambiguous recipient mode, name without owner pin and silent downgrade: reject without changing preserved v3 results. |
 | Independent proxy observation and durable remaining allowance | Gateway-only authority assertion, spent seal, conflicting concurrent reservations or uncertain retry: no second effect or overspending. |
 | Matching issuer instance in grant, agent pointer and independent verifier pins | Expiry/re-registration, same-key new registration, pointer-only or presenter-chosen pin replacement refuses; authorized renewal plus new pins and a fresh grant is the positive neighbour. |
@@ -513,7 +572,7 @@ This is a conformance plan, not a published runner or interoperability result.
 
 - Exact versioned bytes, signature domain, commitment/consent encoding, name
   outpoints, executor/single-use bindings, recent block field and cross-language
-  vectors; reissuance after channel updates and renewal.
+  vectors; reissuance after issuer channel updates and renewal.
 - Owner-key encoding and supported scripts; proof of current unspent name
   outputs, reorg policy, channel descriptors and Matrix key support.
 - Adoption of the proposed 60/90-minute risk cutoffs, explicit freshness/clock
@@ -522,14 +581,16 @@ This is a conformance plan, not a published runner or interoperability result.
   consistency, recovery and anti-rollback requirements.
 - Limit-kind wire registry, asset/model identities, numeric bounds, cost units,
   rounding, price binding and reservation/reconciliation rules per service.
-- Witness-only funding/signature policy, exact input-profile validation and
-  migration from current P2PKH funding; normative adoption and independently
-  reviewed implementation.
+- Exact authenticated W/L chain-pin encoding, dependency/input validation,
+  migration from current P2PKH funding, chain-specific activation/risk rules,
+  normative adoption and independently reviewed implementation. L requires a
+  pinned non-SegWit chain before implementation qualification.
 - Issuer-instance pin provisioning and renewal rollout; typed-hash registry,
   matched producer/verifier migration and per-field JCS integer/string schemas.
 - Durable issuer-branch evidence, branch classification and replica recovery;
   value/depth tiers; explicit no-block-wait profile and its consent/evidence.
-- T/L/A and same-chain payment dependency, SW1 confirmed-input exceptions,
-  transaction authorization and fee/settlement control; per-seal key derivation,
+- T/L/A and same-chain payment dependency proofs under the explicit W exceptions
+  and L confirmation barrier, transaction authorization and fee/settlement
+  control; per-seal key derivation,
   custody/recovery and endorsement format; public runner and independent Swift
   implementation.

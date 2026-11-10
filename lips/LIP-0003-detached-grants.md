@@ -86,15 +86,17 @@ its future seal in advance. A real cryptographic lower bound on construction
 requires a recent block hash inside the signed grant; LIP-0008 proposes that
 for a new version. No block-hash field is added to this draft's existing bytes.
 
-**Txid stability (informative successor note).** LIP-0008's proposed v4 profile
-requires transactions creating seals and carrying issuance commitments to spend
-only witness inputs (**MUST** within that draft profile), with an authenticated
-fixed transaction body. Legacy input malleability can make a pre-signed grant
-reference a txid that never confirms. The verifier then refuses: liveness is
-lost, but no unsafe admission follows. A malleated revocation still spends the
-same seal outpoint, which is what revocation observes. Current rental funding
-scripts are P2PKH and do not satisfy the proposed rule. This note changes
-neither the existing bytes here nor the normative historical v0.1 profile.
+**Txid stability (informative successor note).** LIP-0008 proposes two
+construction profiles selected by the authenticated chain pin. W uses only
+native P2WPKH/SIGHASH_ALL seal and anchor inputs, confirmed ordinary funding
+and explicit validated unconfirmed linkage/payment dependencies. L waits for
+confirmed referenced outpoints and builds the anchor after seal confirmation;
+it permits no unconfirmed dependent chain. Both refuse changed references and
+require reissuance rather than unsafe admission or silent rebinding. Low-S
+and strict DER do not guarantee legacy txid stability. Revocation in either
+profile follows the consumed seal outpoint. Current P2PKH funding does not meet
+W or by itself establish L support. This note changes neither the existing
+bytes here nor the normative historical v0.1 profile.
 
 ## 6. Parallel renters
 

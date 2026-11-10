@@ -7,23 +7,33 @@ and Draft LIP-0008 for Grant v4: directly signed rental limits, mirrored
 contract terms, operator-wide ceilings and name recipients pinned to current
 output ownership before channel-key checks. Includes v3 compatibility and a
 semantic conformance outline; exact wire bytes, ownership proofs and accounting
-profiles remain open. Binds closure to exact name outputs, including renewals;
-scopes budgets/single use to concrete executors with shared replica journals.
+profiles remain open. Binds issuer closure to the exact name output, including
+issuer renewal. Grantee names bind their owner key, permitting same-owner
+renewal/channel rotation and checking current listed channel keys. General
+agent sub-delegation stays a separate open both-owner decision. Scopes budgets/
+single use to concrete executors with shared replica journals.
 Records proposed 60/90-minute risk cutoffs alongside node health and corrects
 LIP-0003's seal-time inference as an acceptance rule, with a recent-block
-commitment proposed for v4. Proposes witness-only seal/issuance funding inputs
-for txid stability, with an explicit gap for current P2PKH funding and fail-closed liveness
-boundaries. No implementation claim, normative adoption or historical
+commitment proposed for v4. Records chain-pin-selected W/L construction:
+W uses native P2WPKH/SIGHASH_ALL with explicit unconfirmed linkage/payment
+dependencies; L references confirmed outputs and builds the anchor after seal
+confirmation. Both keep the same grant checks and fail closed on changed
+parents; current P2PKH funding alone qualifies neither construction. No implementation claim, normative adoption or historical
 conformance change.
 
 Second design review adds registration-instance pins across grant, agent pointer
 and verifier; typed signing from validated full objects; durable validated
 issuer-branch mempool closure; confirmation minima; dependent T/L/A issuance and
-the SW1 candidate; topology/trust boundaries and per-seal keys. Plans JCS exact
+profile-specific timing; topology/trust boundaries and per-seal keys. Plans JCS exact
 unit schemas, canonical/signature/error/state vectors, runner and independent
 Swift verification. Static signing audit found both issuer paths recompute authenticated contract
 hashes, with no demonstrated oracle. Matched role/version migration and
 wire/profile decisions remain open; historical v0.1 is frozen, including its documented false closures.
+
+The lead's immutable-config decision assigns configuration to the administrator, with
+service-group read-only access (file `0640`, directory `0750`), a pre-start
+manifest hash check and new reviewed packages for ceiling changes. This is
+accepted design without an implementation or host-qualification claim.
 
 ## 0.1.7 — 2026-11-10
 

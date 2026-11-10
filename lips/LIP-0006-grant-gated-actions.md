@@ -22,7 +22,7 @@ A **grant-gated service** (Russian book term: *сервис по доверен�
 current grant authority before an effect and keeps its execution credentials
 and journal outside the client. Examples include wallet payments, model
 inference, rental slots/stations, mail sending, file/blob storage, name
-registration/updates, repository access, booking and Matrix room administration.
+registration/updates and repository access.
 Each needs a service-specific action and parameter contract; this list grants
 no action and adds none to the implemented wallet v1 closed set.
 
@@ -33,6 +33,8 @@ budgets, parent closure and delegation-chain verification. Neither `deliver`
 nor `pay` implies delegation. An agent's v3 messaging key gains no grant-issuing
 role. This capability is outside the current rental rehearsal and the wallet
 v1 actions; it has no adopted wire format or implementation claim here.
+General agent-issued child grants and sub-delegation remain a separate open
+both-owner decision; the signer capability does not settle that question.
 
 ## Motivation
 

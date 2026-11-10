@@ -48,9 +48,7 @@ the other rows are semantic candidates, not accepted wire action strings.
 | `names.nmc` | Register and update names; bind permitted names, operation stages, fees and ownership policy. |
 | `repo.git` | Read or push to a repository; bind repository identity, refs and allowed mutations. |
 
-Booking and Matrix room administration are additional service examples, with
-identifiers and action tables left to separate proposals. Delegated issuance
-also needs a separate type/action profile: no listed action implicitly permits
+Delegated issuance needs a separate type/action profile: no listed action implicitly permits
 issuing grants or passing authority onward.
 
 Each type profile defines exact action identifiers, parameters, target binding,
@@ -145,7 +143,7 @@ credential forwarding or effect. A valid nearby request must remain admissible.
 - Exact member path, wire spelling, canonical bytes, key/endpoint profiles and
   complete-value size budget; integration with existing closed parsers.
 - Versioning and multi-service names; precise non-wallet action schemas and
-  type identifiers for booking, Matrix administration and delegated issuance.
+  a separate type/action profile for delegated issuance.
 - Trust provisioning, name/receipt-key rotation, old receipt verification and
   durable journal migration; remote transport and endpoint access policy.
 - Decision record, normative adoption and profile-specific public vectors.

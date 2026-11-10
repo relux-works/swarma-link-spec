@@ -72,7 +72,7 @@ with examples and a separately scoped delegated-issuance capability.
 [LIP-0007](lips/LIP-0007-service-types.md) proposes service types, action tables
 and a typed self-declaration in a service's Namecoin value.
 [LIP-0008](lips/LIP-0008-grant-v4.md) proposes Grant v4 signed rental limits and
-name-output closure, owner-pinned recipients and concrete executor budgets.
+issuer-output closure, owner-pinned recipients and concrete executor budgets.
 It also records issuer-instance renewal pins, typed self-computed signing
 digests, durable validated issuer-branch mempool closure, value-dependent
 confirmation minima, per-seal keys, a topology/threat model and a dependent
