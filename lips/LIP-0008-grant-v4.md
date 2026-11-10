@@ -19,6 +19,11 @@ equal that key, then the current listed channel keys are checked. Same-owner
 renewal and channel-key rotation preserve the grant, while an owner mismatch
 refuses admission. No exact grantee name output is signed into this binding.
 
+A grant names its recipient in exactly one way, by key or by name, and carries
+no recipient name as metadata. Its signed validity window is a pair of block
+heights. Each seal has its own key, derived under BIP-32 in an account that
+holds only seal keys.
+
 The grant names a concrete executor by service name and key. Limits belong to
 that executor; a single-use request also commits to its chosen executor.
 The action set shares one seal and closure; an invocation is a separate signed
@@ -64,8 +69,8 @@ v4 support. No v4 implementation or conformance result is claimed here.
 
 ### 1. Versioned signed authority
 
-V4 binds the network/genesis, issuer, target, recipient, validity interval,
-seal, contract hash, landlord name/owner-key/output reference, concrete executor bindings,
+V4 binds the network/genesis, issuer, target, recipient, validity interval in
+block heights (section 7.1), seal, contract hash, landlord name/owner-key/output reference, concrete executor bindings,
 recent block reference and action/resource scope in its signed grant. Name-mode
 recipients bind their name and owner key, without an exact name-output pin. These terms are signed
 data, covered transitively by the issuance commitment.
@@ -253,6 +258,7 @@ key. No `d/`, `id/` or other namespace prefix is an admission condition. The
 verifier resolves the name at check time, proves its current owner equals the
 pinned key, then accepts a request key listed for the selected channel in that
 same state. The v3 `grantee_key` field acquires no new owner-key meaning.
+Section 3.1 fixes the two modes and the channel member.
 
 A grantee channel-key rotation or renewal under the same owner preserves the
 grant. A removed channel key refuses requests, while a newly listed supported
@@ -273,6 +279,50 @@ selected observation profile; the confirmed issuer-output closure and current
 grantee-owner check remain distinct. Reorg handling revalidates those facts.
 The issuer-seal mempool rule below is an explicit durable exception. Journals
 of already attempted effects remain durable regardless of later name state.
+
+### 3.1. Recipient by key or by name
+
+A v4 grant names its recipient in exactly one of two modes:
+
+| | Recipient by key | Recipient by name |
+| --- | --- | --- |
+| Signed in the grant | The request key | The exact Namecoin name and the public key that owns the name's output |
+| Recipient name in the grant | None: the mode has no name member | The signed name, which is the source of truth |
+| Request key | The signed key | Read at every admission from the channel member of the name's current value |
+| What the verifier proves first | Nothing about a name; no name is read | The name's current output is controlled by the signed owner key |
+| Change of the request key | A new grant | An update of the name by the same owner; the grant stays |
+
+1. A grant MUST select one mode. A verifier MUST refuse a grant that carries
+   both a request key and a recipient name, and a grant that carries neither.
+2. A grant by key MUST NOT carry a recipient name in any member, signed or
+   unsigned. V3's `grantee_name`, a name that the verifier checks for
+   spelling and never resolves, has no counterpart in v4. A name that a
+   verifier does not resolve can disagree with the key beside it, and the
+   reader of the grant cannot tell which of the two the issuer meant.
+3. A grant by name MUST NOT carry a request key. The name and its owner key
+   decide who the recipient is. The request key is whatever the name lists
+   for the channel at the moment of admission.
+4. The two keys of the name mode do different work. The owner key controls
+   the name's output; it proves which party the recipient is and signs
+   nothing in a request, so it can stay offline. The channel key signs
+   requests and is the key a service sees online. Losing the channel key
+   costs one name update by the owner. Losing the owner key loses the name.
+5. The channel is fixed by the profile under which the service authenticates
+   the request. The presenter cannot select a channel that the profile does
+   not define. An unknown channel, and a channel member that yields no key,
+   refuse.
+
+| Channel | Member of the recipient name's current value | Request authentication |
+| --- | --- | --- |
+| Nostr | The key that `nostr` yields for `_`: `nostr.names._`, or the key string ([LIP-0010](LIP-0010-name-value.md) section 4) | BIP-340 signature by that key |
+
+Another channel needs its own profile, which names the member and the
+signature scheme. Other entries of `nostr.names` are not the recipient.
+
+In the name mode a name and a key cannot disagree inside the grant, because
+the grant carries no request key. The remaining mismatch is between the
+signed owner key and the name's current owner: it refuses admission and
+records no closure, as section 3 states.
 
 ### 4. Admission order and concrete executor
 
@@ -408,6 +458,62 @@ binds construction to knowledge of that block hash, not to a precise wall-clock
 signing time. Block-time labels, a caller timestamp or a future seal outpoint
 cannot substitute. Exact field encoding, recency/reorg policy and vectors remain
 open; no such field is retroactively added to LIP-0003 bytes.
+
+### 7.1. Validity in block heights
+
+The signed window of a v4 grant is a pair of block heights,
+`not_before_height` and `not_after_height`, next to the committed recent block.
+These are logical names; their encoding needs fixtures like every other field.
+
+1. Both heights MUST be present, finite non-negative integers with
+   `not_before_height < not_after_height`. The window is half-open:
+   `[not_before_height, not_after_height)`.
+2. Let `H` be the height of the tip of the verifier's validated active chain
+   in the same consistent observation that supplies the name and seal reads.
+   Admission requires `not_before_height <= H < not_after_height`. No clock
+   enters this comparison, and no grace is added.
+3. Let `R` be the height of the committed recent block. A grant with
+   `not_before_height < R` MUST refuse: its window would open before the
+   grant could have been constructed.
+4. Every authority link of section 12 states its window in heights. A child
+   window lies inside its parent's, and the usable window is the intersection
+   of the link windows.
+5. The same measure applies to every other signed validity bound that a
+   verifier compares with chain state, including the expiry of a key
+   attestation. This LIP defines no attestation format.
+
+Heights are chosen for three reasons. The verifier already validates the
+chain, so the window needs no trusted clock, and every verifier on the same
+chain state computes the same `H`. Block timestamps are set by miners within
+consensus tolerances; the height is not adjustable. The other chain terms of
+the grant are already counted in blocks: the recent block reference, the
+confirmation depth and the 36000-block name expiry.
+
+The cost is that a window has no exact length in wall-clock time. In the
+sample of section 6 the mean interval was 9.88 minutes, so 1000 blocks took
+about 6.9 days, against 6.94 days at the nominal ten minutes. Single gaps
+vary far more: in that sample the tip was older than 60 minutes for 0.229% of
+the time and older than 90 minutes for 0.001%. A window therefore opens and
+closes at a moment that is known in blocks and only estimated in hours.
+
+While no block arrives, `H` does not advance and the window does not close.
+Section 6 covers that interval: the freshness cutoffs stop money and
+irreversible actions at a tip age of 60 minutes and other privileged actions
+at 90 minutes.
+
+A reorganisation can lower `H`. The verifier repeats the comparison on the
+chain it then validates, at the effect boundary. An effect that was already
+performed is not undone.
+
+For people, the contract shows approximate dates computed at issuance: the
+issuance time plus ten minutes for each block between the tip at issuance
+and the stated height. The contract marks them as estimates. The contract
+mirrors the two heights exactly, and a mismatch refuses like any other
+mirrored term. A date is never an admission input.
+
+The invocation keeps its own short interval in signed clock time, `iat` and
+`exp` (section 12.5). One request lives for seconds, which is below the
+resolution of a block. V3 keeps `not_before` and `not_after` in Unix seconds.
 
 ### 8. Typed signing and canonicalization plan
 
@@ -545,13 +651,77 @@ outpoint and the grant/profile context. The verifier checks that endorsement
 under its trusted issuer pin before accepting the seal or classifying an issuer
 spend. This is a per-seal script pin, separate from the name-owner key and
 registration-instance pins. Rotating or re-registering a name cannot substitute
-a new script for an existing seal. KDF/path, derivation authority, custody,
-recovery and exact endorsement bytes remain open.
+a new script for an existing seal. Section 11.1 proposes where the key comes
+from. Custody qualification, the recovery procedure and exact endorsement
+bytes remain open.
 
 Distinct seal addresses reduce linkage through a shared seal address. Public
 names, funding transactions, anchor dependencies, timing and disclosed grants
 can still link activity. This is no anonymity claim or modification to existing
 name-derived seal scripts.
+
+### 11.1. Derivation of seal keys (proposal)
+
+In v3 the seal pays to the grant key, so one secret signs grants under
+BIP-340 and seal spends under ECDSA (LIP-0004 section 5). BIP-340 advises
+against that. For nonces derived without fresh randomness it calls not
+reusing the same private key across signing schemes the most reliable
+safeguard, and it gives the example of RFC 6979 nonces in both schemes
+leaking the secret key. V4 separates the two uses.
+
+Seal keys are derived by BIP-32 in an account of the signer's seed that holds
+only seal keys. The construction profile of section 1.1 selects the layout:
+
+| Profile | Seal script | Path |
+| --- | --- | --- |
+| W | Native P2WPKH | `m/84'/7'/<seal-account>'/0/<i>`, the BIP-84 layout |
+| L | P2PKH | `m/44'/7'/<seal-account>'/0/<i>`, the BIP-44 layout |
+
+The coin type 7 is Namecoin's registered SLIP-0044 value. `<seal-account>`
+is a hardened account index reserved for seals, and `<i>` is the index of one
+seal. Section 1.1 constrains transaction inputs and leaves the seal's script
+type free; this proposal fixes it per profile so that the seal follows a
+layout that wallets already implement.
+
+1. The seal account is separate from the funding account. The name-owner key
+   and the grant key are outside both: the name-owner key stays in cold
+   custody, and the grant key signs no transaction.
+2. The signer alone holds the account's extended private key. The operator's
+   watch-only node MAY hold the account's extended public key to monitor seal
+   outputs.
+3. An index MUST NOT be used twice. The signer's journal records the index
+   with its seal before the first signature that uses the key.
+4. A verifier needs no knowledge of the derivation. It checks the typed
+   seal-key endorsement, signed by the grant key, that binds the public key
+   and script to the exact outpoint and grant. The path is an issuer-side
+   rule; a verifier cannot observe it and does not refuse for it.
+
+The layout has one known weakness. The seal indices are non-hardened, and
+BIP-32 states that an extended public key together with any non-hardened
+private key below it reveals the extended private key. A party that obtains
+the account's extended public key and one seal's private key can therefore
+compute every seal key of the account. That party can spend the seals, which
+closes the grants early and takes the seal amounts. It cannot sign a grant
+or an endorsement, move a name, or spend funding outputs, because those keys
+are outside the account.
+
+Hardened seal indices, `…/0'/<i>'`, remove the weakness. They also remove
+the extended public key: the watch-only node then imports each seal script
+one by one, from the endorsement or the signer's journal, and a lost journal
+cannot be rebuilt by scanning from a public key. The proposal keeps
+non-hardened indices and treats the extended public key as a secret of the
+operator. A deployment that must hand that key to another party uses
+hardened indices instead; rule 4 makes the two interchangeable for a
+verifier.
+
+The extended public key also links every seal of the account. Whoever holds
+it sees the per-seal addresses as one set, so it is not published.
+
+Three points need qualification before use: import of the account's public
+descriptor into a watch-only wallet of the pinned Namecoin Core build;
+support for coin type 7 and Namecoin addresses in the chosen signing device;
+and recovery, where the BIP-44 gap limit of 20 unused addresses assumes that
+indices are used in order.
 
 ### 12. Invocation and bounded issuance-capability chains
 
@@ -655,7 +825,8 @@ Metadata MUST be signed when included, but MUST NOT add authority or override
 an authority-bearing field. V3's `grantee_name`, social descriptions and a
 service self-declaration do not supply grants, identity pins, budgets or issue
 permission. The separate v4 name/owner recipient binding remains authoritative;
-placing a name in metadata is not that binding. A declaration may select a
+placing a name in metadata is not that binding, and a v4 grant carries no
+recipient name as metadata at all (section 3.1). A declaration may select a
 known interface and advertise an endpoint/key for verified discovery, but it
 cannot authorize an effect or replace an independently established trust pin.
 Changing signed metadata changes signed bytes; ignoring it for authority does
@@ -673,19 +844,22 @@ and cumulative budgets, which require executor accounting.
 
 #### 12.5. Time terms and post-freeze work
 
-A validity interval is half-open: `[not_before, not_after)`. Invocation time is
-the signed `iat` claim; execution time is the verifier's trusted current time
-at the effect boundary. Invocation admission requires `iat <= now < exp`.
-All expiry values MUST be present and finite, with well-ordered bounded times;
-null/unbounded expiry and an added clock-grace allowance MUST refuse. `iat`
-does not establish a cryptographic signing-time bound; section 7 still applies.
+A link's validity interval is half-open and stated in block heights:
+`[not_before_height, not_after_height)`, compared with the tip height `H` of
+section 7.1. Invocation time is the signed `iat` claim; execution time is the
+verifier's trusted current time at the effect boundary. Invocation admission
+requires `iat <= now < exp`. All bounds MUST be present and finite, with
+well-ordered values; a null or unbounded bound and an added grace allowance,
+in blocks or in clock time, MUST refuse. `iat` does not establish a
+cryptographic signing-time bound; section 7 still applies.
 
-The usable window is the intersection of all link intervals and the invocation
-interval. An empty intersection MUST refuse. A child interval MUST NOT widen
-its parent's. Every link MUST be valid at execution, not only when parsed,
-issued or first observed. After observation work, the executor MUST recheck
-the intersection before a new reservation/effect. At `now == not_after` or
-`now == exp`, new admission MUST refuse; an expired middle link is sufficient.
+The usable window is the intersection of all link intervals, in heights,
+together with the invocation interval, in clock time. An empty intersection
+MUST refuse. A child interval MUST NOT widen its parent's. Every link MUST be
+valid at execution, not only when parsed, issued or first observed. After
+observation work, the executor MUST recheck both measures before a new
+reservation/effect. At `H == not_after_height` or `now == exp`, new admission
+MUST refuse; an expired middle link is sufficient.
 Pending/terminal replay and retained uncertainty keep their type-specific
 journal rules and never renew authority or permit another effect.
 
@@ -783,8 +957,12 @@ planned assertions, not results from a chain validator or policy evaluator:
 | Matching signed type/version, canonical schema and application hash domain | Unsigned-label substitution, wrong type/version/tag, noncanonical encoding or unknown schema refuses. |
 | Same canonical signed object carried in different bundles | All compute the same profile-defined ID; an asserted alternate ID or wrapper-derived identity refuses. |
 | Valid strict BIP-340 signature, including another valid signing nonce | Invalid length/range/parity or changed-message signature refuses; a legitimately re-signed payload still cannot reset a logical request, seal or budget. |
-| Nonempty half-open intersection, all links live at execution | Empty/widened child interval, expired middle link or expiry during observation work refuses new admission; keep any existing uncertain reservation. |
-| `iat <= now < exp` and `not_before <= now < not_after` at the effect boundary | Future `iat`, null/unbounded expiry, added grace, `now == exp` or `now == not_after` refuses new admission; no inclusive-end weakening. |
+| Nonempty half-open intersection of link height windows, all links live at execution | Empty/widened child interval, expired middle link or expiry during observation work refuses new admission; keep any existing uncertain reservation. |
+| `iat <= now < exp` and `not_before_height <= H < not_after_height` at the effect boundary | Future `iat`, null/unbounded bound, added grace in blocks or time, `now == exp` or `H == not_after_height` refuses new admission; no inclusive-end weakening. |
+| Height window at or above the committed recent block's height | `not_before_height` below that block's height, a window given in seconds, or a date used as an admission input refuses; a long block gap alone neither closes nor extends the window, and the freshness cutoffs still apply. |
+| Grant by key with no recipient name; grant by name with name and owner key and no request key | Both a request key and a recipient name, neither of them, or a name carried as metadata refuses; a v3 `grantee_name` reading is not applied to v4. |
+| Name-mode request signed by the key the name currently yields for the Nostr channel | A former channel key, another `nostr.names` entry, a channel without a profile, or a value that yields no key refuses without closure; an owner-key mismatch refuses even when the channel key matches. |
+| Per-seal key behind a valid typed endorsement, whatever its derivation path | Reuse of a seal index by the signer, a seal paid to the grant key in v4, or an endorsement that names another key, script or outpoint refuses; the verifier never requires path knowledge. |
 | Preserved v3 and wallet-v1 IDs, domains and their separate single-use commitments | Applying successor ID/request rules to historical bytes refuses substitution; legacy evidence and replay outcomes remain unchanged. |
 
 Publish canonical input bytes, typed digests, public keys/signatures, expected
@@ -812,7 +990,12 @@ This is a conformance plan, not a published runner or interoperability result.
   strict signature wire representation and cross-version journal bindings.
   The reserved future `policy` kind has no adopted evaluator or syntax.
 - Owner-key encoding and supported scripts; proof of current unspent name
-  outputs, reorg policy, channel descriptors and Matrix key support.
+  outputs, reorg policy, channel profiles beyond Nostr and Matrix key support;
+  whether a grant by name may restrict the channels it admits.
+- Height windows: the recency bound between the committed block and the tip,
+  whether the invocation's `iat`/`exp` also move to heights, and how the
+  consent event's NIP-01 `created_at`, which stays in seconds, relates to the
+  window.
 - Implementation and qualification of the decided 60/90-minute risk cutoffs;
   explicit freshness/clock measure, independent-node health criteria and
   block-recency policy.
@@ -830,6 +1013,7 @@ This is a conformance plan, not a published runner or interoperability result.
   value/depth tiers; explicit no-block-wait profile and its consent/evidence.
 - T/L/A and same-chain payment dependency proofs under the explicit W exceptions
   and L confirmation barrier, transaction authorization and fee/settlement
-  control; per-seal key derivation,
-  custody/recovery and endorsement format; public runner and independent Swift
+  control; qualification of the per-seal derivation of section 11.1, the
+  choice between non-hardened and hardened seal indices, custody/recovery
+  and endorsement format; public runner and independent Swift
   implementation.

@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.1.13 — 2026-11-10
+
+Amends Draft LIP-0008 in three places, following Ivan Oparin's decisions of
+2026-11-10; the co-author's agreement is pending.
+
+Recipient (new section 3.1): a v4 grant names its recipient by key or by name,
+never both. A grant by key carries no recipient name; v3's unresolved
+`grantee_name` has no v4 counterpart. A grant by name carries the name and its
+owner key and no request key; the request key is read at admission from the
+channel member of the name's current value, which is `nostr.names._` or the
+key string for the Nostr channel (LIP-0010).
+
+Validity (new section 7.1, section 12.5 aligned): the signed window is
+`not_before_height` and `not_after_height`, half-open, compared with the height
+of the verifier's validated tip. The window may not open below the committed
+recent block. Contracts show approximate dates for people; a date is never an
+admission input. The invocation keeps `iat`/`exp` in clock time. States the
+variance from the section 6 sample and the interplay with the 60/90-minute
+freshness cutoffs.
+
+Seal keys (new section 11.1): BIP-32 derivation in an account that holds only
+seal keys, `m/84'/7'/<seal-account>'/0/<i>` in profile W and
+`m/44'/7'/<seal-account>'/0/<i>` in profile L. The signer holds the extended
+private key; a watch-only node may hold the extended public key. States the
+non-hardened-index weakness, its blast radius and the hardened alternative.
+The verifier checks the typed endorsement and needs no path.
+
+Adds five paired conformance-plan rows and updates the open questions and the
+key map. No bytes, fixtures, implementation or normative adoption; v3,
+wallet-v1 and historical v0.1 are unchanged.
+
 ## 0.1.12 — 2026-11-10
 
 Adds Draft LIP-0010, Name value. `swarma` is the only member of a name value

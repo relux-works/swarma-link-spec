@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.12
+**Version:** 0.1.13
 
 **Date:** 2026-11-10
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.12
+## Draft profiles and design decisions in v0.1.13
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -98,6 +98,17 @@ General agent sub-delegation still needs its separate both-owner decision.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.
+
+Three amendments of 2026-11-10 follow Ivan Oparin's decisions and await the
+co-author's agreement. A v4 grant names its recipient by key or by name and
+carries no recipient name as metadata; in the name mode the request key is
+read from the channel member of the name's current value, `nostr.names._` for
+the Nostr channel. The signed window is a pair of block heights compared with
+the validated tip, with approximate dates shown in the contract for people.
+Seal keys are derived under BIP-32 in a dedicated account, by the BIP-84
+layout in profile W and the BIP-44 layout in profile L with Namecoin's coin
+type 7; the verifier checks the typed endorsement and needs no path. These
+remain Draft semantics without bytes, fixtures or an implementation.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement
