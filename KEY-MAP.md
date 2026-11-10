@@ -4,8 +4,8 @@ The Grant v4 proposal in LIP-0008 separately binds a name-owner key and exact
 registration/update outpoint in the grant, agent pointer and independent
 verifier pins. It also proposes a derived key per seal with a typed issuer
 endorsement of the key/script/outpoint. These are distinct identity and script
-pins. LIP-0008 section 11.1 proposes BIP-32 derivation of seal keys in an
-account of their own, so that the grant key no longer spends seals; custody
+pins. LIP-0008 section 11.1 proposes BIP-32 derivation of the keys of
+revocable-only seals in an account of their own, so that the grant key no longer spends seals; custody
 qualification, recovery and migration remain open. Distinct seal
 addresses reduce one linkage source; names/funding/anchors remain observable.
 

@@ -105,10 +105,12 @@ carries no recipient name as metadata; in the name mode the request key is
 read from the channel member of the name's current value, `nostr.names._` for
 the Nostr channel. The signed window is a pair of block heights compared with
 the validated tip, with approximate dates shown in the contract for people.
-Seal keys are derived under BIP-32 in a dedicated account, by the BIP-84
-layout in profile W and the BIP-44 layout in profile L with Namecoin's coin
-type 7; the verifier checks the typed endorsement and needs no path. These
-remain Draft semantics without bytes, fixtures or an implementation.
+Keys of revocable-only seals are derived under BIP-32 in a dedicated account,
+on Namecoin by the BIP-84 layout in profile W and the BIP-44 layout in
+profile L with coin type 7; the single-use seal keeps two distinct branches
+and its output profile stays open. The verifier checks the typed endorsement
+and needs no path. These remain Draft semantics without bytes, fixtures or
+an implementation.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

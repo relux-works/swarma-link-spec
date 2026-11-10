@@ -21,8 +21,8 @@ refuses admission. No exact grantee name output is signed into this binding.
 
 A grant names its recipient in exactly one way, by key or by name, and carries
 no recipient name as metadata. Its signed validity window is a pair of block
-heights. Each seal has its own key, derived under BIP-32 in an account that
-holds only seal keys.
+heights. Each seal has its own key; the key of a revocable-only seal is
+derived under BIP-32 in an account that holds only seal keys.
 
 The grant names a concrete executor by service name and key. Limits belong to
 that executor; a single-use request also commits to its chosen executor.
@@ -334,11 +334,15 @@ The verifier uses one consistent observation with pinned network/genesis:
    mode prove the current name owner equals the signed owner key before
    consulting channel keys. No exact grantee-output equality is required; a
    changed issuer output rejects even if its key returned to the former value.
-2. Read the channel descriptor from that same name state and verify the request
-   under a key listed for its selected channel. Unknown or removed keys refuse.
-   Same-owner grantee rotation/renewal keeps the grant; removed channel keys
-   refuse. An issuer-name update instead closes the old issuer-output binding
-   and requires a replacement grant.
+2. Authenticate the request by the grant's signed recipient mode (section
+   3.1). By key: verify the request under the signed request key; no recipient
+   name exists and none is read. By name: read the channel member from that
+   same name state and verify the request under the key it yields for the
+   request's channel. A wrong key, an unknown channel and a removed key
+   refuse in either mode that can produce them. Same-owner grantee
+   rotation/renewal keeps a grant by name; removed channel keys refuse. An
+   issuer-name update instead closes the old issuer-output binding and
+   requires a replacement grant.
 3. Require healthy observations, explicit freshness policy and unexpired names.
    Unavailable, stale, conflicting or unproved data never permits an effect.
 4. Check the durable closure journal, grant interval, issuer/target, confirmed issuance, separate seal,
@@ -473,8 +477,10 @@ These are logical names; their encoding needs fixtures like every other field.
    Admission requires `not_before_height <= H < not_after_height`. No clock
    enters this comparison, and no grace is added.
 3. Let `R` be the height of the committed recent block. A grant with
-   `not_before_height < R` MUST refuse: its window would open before the
-   grant could have been constructed.
+   `not_before_height < R` MUST refuse. This is a policy against backdated
+   windows, proposed here and not yet decided. It is not a cryptographic
+   necessity: the committed block bounds when the grant was constructed and
+   does not by itself bound the window an issuer may sign.
 4. Every authority link of section 12 states its window in heights. A child
    window lies inside its parent's, and the usable window is the intersection
    of the link windows.
@@ -670,18 +676,29 @@ safeguard, and it gives the example of RFC 6979 nonces in both schemes
 leaking the secret key. V4 separates the two uses.
 
 Seal keys are derived by BIP-32 in an account of the signer's seed that holds
-only seal keys. The construction profile of section 1.1 selects the layout:
+only seal keys. The proposal covers the revocable-only seal: the seal of a
+grant that only its issuer may spend, where every spend is a revocation. On
+Namecoin the construction profile of section 1.1 selects the layout:
 
-| Profile | Seal script | Path |
+| Profile | Script of a revocable-only seal | Path on Namecoin |
 | --- | --- | --- |
 | W | Native P2WPKH | `m/84'/7'/<seal-account>'/0/<i>`, the BIP-84 layout |
 | L | P2PKH | `m/44'/7'/<seal-account>'/0/<i>`, the BIP-44 layout |
 
-The coin type 7 is Namecoin's registered SLIP-0044 value. `<seal-account>`
-is a hardened account index reserved for seals, and `<i>` is the index of one
-seal. Section 1.1 constrains transaction inputs and leaves the seal's script
-type free; this proposal fixes it per profile so that the seal follows a
-layout that wallets already implement.
+The coin type 7 is Namecoin's registered SLIP-0044 value. Another chain
+selected under W or L uses its own registered coin type. `<seal-account>` is
+a hardened account index reserved for seals, and `<i>` is the index of one
+seal. The single-key script is chosen for the revocable-only seal because
+wallets already implement that layout. Section 1.1 is unchanged: it
+constrains transaction inputs and leaves a seal's script type free.
+
+A single-use seal is outside this table. Its script must give the issuer's
+revocation and the grantee's use two cryptographically distinct branches
+(sections 4 and 5.1). A single-key output admits one key: with distinct keys
+the grantee cannot spend it, and with a shared key the two spends cannot be
+told apart, and a caller's label is not branch evidence. The output profile
+of the single-use seal, its endorsement and the source of its issuer-branch
+key stay open.
 
 1. The seal account is separate from the funding account. The name-owner key
    and the grant key are outside both: the name-owner key stays in cold
@@ -706,9 +723,10 @@ or an endorsement, move a name, or spend funding outputs, because those keys
 are outside the account.
 
 Hardened seal indices, `…/0'/<i>'`, remove the weakness. They also remove
-the extended public key: the watch-only node then imports each seal script
-one by one, from the endorsement or the signer's journal, and a lost journal
-cannot be rebuilt by scanning from a public key. The proposal keeps
+public derivation: an extended public key no longer yields the seal keys.
+The watch-only node then imports each seal script one by one, from the
+endorsement or the signer's journal, and a lost journal cannot be rebuilt by
+scanning from a public key. The proposal keeps
 non-hardened indices and treats the extended public key as a secret of the
 operator. A deployment that must hand that key to another party uses
 hardened indices instead; rule 4 makes the two interchangeable for a
@@ -853,9 +871,10 @@ well-ordered values; a null or unbounded bound and an added grace allowance,
 in blocks or in clock time, MUST refuse. `iat` does not establish a
 cryptographic signing-time bound; section 7 still applies.
 
-The usable window is the intersection of all link intervals, in heights,
-together with the invocation interval, in clock time. An empty intersection
-MUST refuse. A child interval MUST NOT widen its parent's. Every link MUST be
+Admission requires two predicates together: `H` lies in the intersection of
+all link height windows, and `iat <= now < exp` holds on the verifier's
+clock. Heights and clock times are never compared with each other. An empty
+intersection of the link windows MUST refuse. A child interval MUST NOT widen its parent's. Every link MUST be
 valid at execution, not only when parsed, issued or first observed. After
 observation work, the executor MUST recheck both measures before a new
 reservation/effect. At `H == not_after_height` or `now == exp`, new admission
@@ -960,9 +979,10 @@ planned assertions, not results from a chain validator or policy evaluator:
 | Nonempty half-open intersection of link height windows, all links live at execution | Empty/widened child interval, expired middle link or expiry during observation work refuses new admission; keep any existing uncertain reservation. |
 | `iat <= now < exp` and `not_before_height <= H < not_after_height` at the effect boundary | Future `iat`, null/unbounded bound, added grace in blocks or time, `now == exp` or `H == not_after_height` refuses new admission; no inclusive-end weakening. |
 | Height window at or above the committed recent block's height | `not_before_height` below that block's height, a window given in seconds, or a date used as an admission input refuses; a long block gap alone neither closes nor extends the window, and the freshness cutoffs still apply. |
-| Grant by key with no recipient name; grant by name with name and owner key and no request key | Both a request key and a recipient name, neither of them, or a name carried as metadata refuses; a v3 `grantee_name` reading is not applied to v4. |
+| Grant by key with no recipient name, its request verified under the signed key with no recipient-name read; grant by name with name and owner key and no request key | Both a request key and a recipient name, neither of them, or a name carried as metadata refuses; a by-key request under another key refuses; requiring a channel lookup for a grant by key is wrong; a v3 `grantee_name` reading is not applied to v4. |
 | Name-mode request signed by the key the name currently yields for the Nostr channel | A former channel key, another `nostr.names` entry, a channel without a profile, or a value that yields no key refuses without closure; an owner-key mismatch refuses even when the channel key matches. |
-| Per-seal key behind a valid typed endorsement, whatever its derivation path | Reuse of a seal index by the signer, a seal paid to the grant key in v4, or an endorsement that names another key, script or outpoint refuses; the verifier never requires path knowledge. |
+| Revocable-only seal on a single-key output of a per-seal key, behind a valid typed endorsement, whatever its derivation path | Reuse of a seal index by the signer, a seal paid to the grant key in v4, or an endorsement that names another key, script or outpoint refuses; the verifier never requires path knowledge. |
+| Single-use seal whose script has distinct issuer and grantee branches: use by the grantee's own key, and a validated issuer closure | A single-key output offered as a single-use seal, one shared key for both branches, or a caller's branch label in place of script evidence refuses. |
 | Preserved v3 and wallet-v1 IDs, domains and their separate single-use commitments | Applying successor ID/request rules to historical bytes refuses substitution; legacy evidence and replay outcomes remain unchanged. |
 
 Publish canonical input bytes, typed digests, public keys/signatures, expected
@@ -992,6 +1012,8 @@ This is a conformance plan, not a published runner or interoperability result.
 - Owner-key encoding and supported scripts; proof of current unspent name
   outputs, reorg policy, channel profiles beyond Nostr and Matrix key support;
   whether a grant by name may restrict the channels it admits.
+- Whether the rule `not_before_height >= R` of section 7.1 is retained as
+  policy; it needs an explicit decision.
 - Height windows: the recency bound between the committed block and the tip,
   whether the invocation's `iat`/`exp` also move to heights, and how the
   consent event's NIP-01 `created_at`, which stays in seconds, relates to the
@@ -1014,6 +1036,7 @@ This is a conformance plan, not a published runner or interoperability result.
 - T/L/A and same-chain payment dependency proofs under the explicit W exceptions
   and L confirmation barrier, transaction authorization and fee/settlement
   control; qualification of the per-seal derivation of section 11.1, the
-  choice between non-hardened and hardened seal indices, custody/recovery
-  and endorsement format; public runner and independent Swift
-  implementation.
+  choice between non-hardened and hardened seal indices with the custody
+  boundary of the account's extended public key, the output profile of the
+  single-use seal, custody/recovery and endorsement format; public runner
+  and independent Swift implementation.

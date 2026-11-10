@@ -21,13 +21,16 @@ variance from the section 6 sample and the interplay with the 60/90-minute
 freshness cutoffs.
 
 Seal keys (new section 11.1): BIP-32 derivation in an account that holds only
-seal keys, `m/84'/7'/<seal-account>'/0/<i>` in profile W and
-`m/44'/7'/<seal-account>'/0/<i>` in profile L. The signer holds the extended
-private key; a watch-only node may hold the extended public key. States the
-non-hardened-index weakness, its blast radius and the hardened alternative.
-The verifier checks the typed endorsement and needs no path.
+seal keys, for the revocable-only seal on Namecoin:
+`m/84'/7'/<seal-account>'/0/<i>` in profile W and
+`m/44'/7'/<seal-account>'/0/<i>` in profile L. The single-use seal keeps its
+two distinct branches and its output profile stays open. The signer holds the
+extended private key; a watch-only node may hold the extended public key.
+States the non-hardened-index weakness, its blast radius and the hardened
+alternative. The verifier checks the typed endorsement and needs no path.
 
-Adds five paired conformance-plan rows and updates the open questions and the
+The admission outline of section 4 authenticates the request by the signed
+recipient mode. Adds six paired conformance-plan rows and updates the open questions and the
 key map. No bytes, fixtures, implementation or normative adoption; v3,
 wallet-v1 and historical v0.1 are unchanged.
 
