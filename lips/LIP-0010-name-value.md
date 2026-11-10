@@ -236,9 +236,18 @@ identity, and the chain holds two unrelated names.
 
 **Deployment rule.** For every `id/<label>` it registers, a deployment
 registers `d/<label>` in the same operation, owned by the same cold key, and
-renews both. The rule applies when `<label>` is a valid `d/` label: lowercase
-letters, digits and single inner hyphens, at most 63 characters. An `id/`
-label with an underscore or a dot has no `d/` counterpart.
+renews both. The rule applies when `d/<label>` is a valid domain name under
+ifa-0001: `<label>` is at most 63 characters long, matches
+`^(xn--)?[a-z0-9]+(-[a-z0-9]+)*$` and is not wholly numeric. An `id/` label
+outside that set has no `d/` counterpart and nothing to pair:
+
+| `id/` name | `d/` counterpart | Reason |
+| --- | --- | --- |
+| `id/alice-cedar` | `d/alice-cedar` | Matches the grammar. |
+| `id/123four` | `d/123four` | Begins with a digit and is not wholly numeric. |
+| `id/xn--bcher-kva` | `d/xn--bcher-kva` | The `xn--` prefix of an internationalized name is permitted. |
+| `id/123` | None | Wholly numeric names are not permitted in `d/`. |
+| `id/alice_cedar`, `id/alice.cedar` | None | An underscore and a dot are outside the grammar. |
 
 The rule costs a second name: 0.01 NMC locked in the name output, the
 registration fees, and one more renewal per period. It is a deployment rule.
@@ -250,7 +259,9 @@ grant.
 The complete value MUST fit 520 bytes with every member counted, including
 the owner's. An issuer MUST measure the value before publishing it. The
 sizes below are the compact encodings with 64-character keys, the landlord
-pointer `id/example` and relay URLs of the form `wss://relay.example/`:
+pointer `id/example`, the relay URLs `wss://relay.example/` and
+`wss://relay2.example/`, and the owner members `"email":"cedar@example.org"`
+and `"name":"Cedar"`:
 
 | Value | Bytes | Left of 520 |
 | --- | ---: | ---: |
@@ -332,11 +343,19 @@ controls; each rejected case leaves no binding and no closure:
 | LIP-0004 agent value read by a transition reader | Its equality rule holds; a key string or owner members in that form refuse. |
 | Every size in section 8 recomputed from its bytes | A value of 521 bytes refuses. |
 | `id/<label>` with and without a registered `d/<label>` | The grant verdict is the same in both cases. |
+| Pairing applied to `id/alice-cedar`, `id/123four` and `id/xn--bcher-kva` | Requiring a pair for `id/123`, `id/alice_cedar` or `id/alice.cedar` is wrong: `d/` admits no such name. Excluding the `xn--` name from pairing is wrong. |
 
 ## Open questions
 
 - Exact canonical bytes of `swarma` once the next format moves to RFC 8785,
   and whether a reader checks member order inside `swarma`.
+- Section 2 rule 2 refuses the whole value for a duplicate or a fold alias of
+  `nostr`. The alternative reads an unambiguous `swarma` and treats such a
+  `nostr` as yielding no key. The four recorded decisions do not settle
+  this; it needs an explicit choice.
+- Section 7 pairs every `id/` name that has a `d/` counterpart, agents
+  included. A narrower inventory, for example landlord names only, is a
+  deployment choice that is not recorded yet.
 - The date after which readers stop accepting the LIP-0004 agent value.
 - A third `nostr` shape, an object with `pubkey` and a relay array, appears in
   one client's notes for `id/` names and is absent from the draft NIP-N0. It
