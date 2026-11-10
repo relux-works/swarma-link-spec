@@ -12,6 +12,12 @@ or automatic budget/credit migration is claimed. This is specification/book
 work, not an M5 or first-demo implementation requirement. No historical v0.1,
 wallet-v1/v3 or existing v4 draft bytes change; no implementation is added.
 
+Adds decision 0003 as v0.1 errata: a route-health precheck cannot suppress a
+spent/unknown/failed seal-state result or its durable refuse-and-close rule.
+Route-only failure alone creates no closure; the historical protocol body,
+evidence and documented failed-write/crash limitation remain unchanged. This
+clarifies §1.4 under existing §4 and decision 0002, without new runtime evidence.
+
 ## 0.1.10 — 2026-11-10
 
 Adds pre-freeze Swarma requirements to Draft LIP-0008: separate signed

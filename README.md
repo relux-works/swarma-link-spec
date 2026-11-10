@@ -59,6 +59,11 @@ read-failure and tip-change closures remain recorded, not recommended for a new
 working profile. Successor proposals distinguish transient refusal from proved
 closure and require their own adoption and conformance evidence.
 
+[Decision 0003](decisions/0003-seal-check-precedence.md) clarifies the historical
+v0.1 precheck wording: route readiness alone creates no closure, but every
+spent, unknown or failed seal-state read, including in a precheck, follows
+Observation §4 and refuses/closes. Historical protocol files remain unchanged.
+
 ## Draft profiles and design decisions in v0.1.11
 
 This revision reconciles informative draft descriptions with the public
