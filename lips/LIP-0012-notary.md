@@ -99,7 +99,7 @@ It has these logical fields; the table is not a byte fixture:
 | --- | --- |
 | Grant | The `grant_id` of the certified grant. |
 | Parent | For a child grant, the ID of the parent it was compared with. Absent otherwise. |
-| Checked | What the notary checked. For re-delegation: that the child does not exceed the parent, with the hashes of both contracts. |
+| Checked | The statement the notary makes: a kind from a closed set, and the values it is bound to. For re-delegation the kind is "child within parent", bound to the `contract_sha256` of the child and the `contract_sha256` of the parent. |
 | Notary | The notary's key and, when it is named, its name with the pins of LIP-0008 section 3. |
 | Notary seal | An outpoint that the notary alone can spend. |
 | Height | The height of the tip the notary's node validated. It is a claim of the signer. |
@@ -113,8 +113,9 @@ candidate. This LIP does not choose.
 
 A grant can require an attestation. The requirement is signed: it is part
 of the grant, or of the right of re-delegation under which the grant was
-issued, and it names the notary or the set of notaries that satisfy it. A
-parent can thus require that every child issued under it is certified.
+issued. It names the notary or the set of notaries that satisfy it, and the
+kind of statement it demands. A parent can thus require that every child
+issued under it is certified as within the parent.
 
 A verifier can also require a notary by its own policy, for a grant that
 does not ask for one. That is the laboratory's arrangement: a list of
@@ -133,8 +134,19 @@ verifier checks, on the same observation of its own node:
 1. the attestation's signature under a notary that the requirement names;
 2. that the attestation names this grant and, for a child, the parent
    that the child itself commits to;
-3. that the attestation's anchor is in the active chain;
-4. that the notary's seal is unspent, with the mempool included.
+3. that the Checked statement is of the kind the requirement demands and
+   is bound to this case: for "child within parent", its two contract
+   hashes equal the `contract_sha256` of this child and of that parent;
+4. that the attestation's anchor is in the active chain;
+5. that the notary's seal is unspent, with the mempool included.
+
+Step 3 is a check of its own. An attestation by the right notary for the
+right grant and parent, with a valid anchor and a live seal, does not
+satisfy the requirement if it states something else, for example that a
+recipient key belongs to a named party, or if it states "child within
+parent" for other contracts. The step verifies what the notary asserted.
+It does not verify that the assertion is true: whether the child's words
+are within the parent's stays the notary's judgement (section 6).
 
 A missing, unverifiable or withdrawn attestation refuses. An attestation
 never substitutes for a check of section 4: a certified grant with a spent
@@ -143,7 +155,7 @@ seal, an expired window or a closed ancestor refuses.
 ### 5. Revocation
 
 The notary revokes by spending its seal (N1). For a grant that requires the
-attestation, every verifier then refuses at step 4. The grant's own seal is
+attestation, every verifier then refuses at step 5. The grant's own seal is
 untouched: only the issuer can spend it, and the notary's spend does not
 make the grant's seal spent.
 
@@ -213,6 +225,7 @@ controls:
 | Valid control | Refusal or invariant |
 | --- | --- |
 | A child that requires a notary, with a valid attestation by a named notary whose seal is unspent | The same child without the attestation, with an attestation by a notary the requirement does not name, or with one that names another grant or another parent refuses. |
+| The same child with an attestation of the demanded kind, "child within parent", bound to the contract hashes of this child and its parent | An attestation that is valid in signature, IDs, anchor and seal but states another fact, or states "child within parent" for other contract hashes, refuses. |
 | The same child after the notary spent its seal, seen in the mempool | Refuses. The child's own seal is still unspent; reporting the grant's seal as spent is wrong. |
 | A certified child whose own seal is spent, whose window ended or whose parent is closed | Refuses; the attestation does not override section 4 of LIP-0008. |
 | A certified child with a wider action set or a higher ceiling than its parent | Refuses mechanically; an attestation does not waive the checks of section 12.2 of LIP-0008. |
@@ -222,8 +235,8 @@ controls:
 ## Open questions
 
 - Canonical bytes, type tag and signing domain of the attestation; the
-  field that carries the requirement in a grant and in a right of
-  re-delegation.
+  closed set of statement kinds; the field that carries the requirement in
+  a grant and in a right of re-delegation.
 - Where the attestation is anchored: an update of the notary's name or a
   LIP-0005 frame.
 - How a verifier pins a notary: by key, or by name with registration and
