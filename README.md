@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.17
+**Version:** 0.1.18
 
 **Date:** 2026-11-11
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.17
+## Draft profiles and design decisions in v0.1.18
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -101,8 +101,8 @@ re-delegation, and a child is never broader than its parent. Both owners
 concur. Issuance by the operator's signer is implemented first; re-delegation
 follows once the breadth check is designed. Scope written in words is not
 checked by a verifier; a separate check by a notary is the decided mechanism,
-and the notary has no specification yet. Whether a notary attestation is
-mandatory for every such child is proposed and not decided.
+and LIP-0012 proposes the notary. Whether a notary attestation is mandatory
+for every such child is proposed and not decided.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.
@@ -138,6 +138,15 @@ refers to the verdict in a LIP-0005 frame with action `0x03`. Closure still
 follows the seal spend alone, and a refund is a contract term. It records Ivan
 Oparin's decisions of 2026-11-11 and awaits the co-author's agreement. Nothing
 of it is implemented.
+
+[LIP-0012](lips/LIP-0012-notary.md) proposes the notary: an additional link
+that certifies a grant and can revoke it, performed by an agent or a person.
+For a child grant it certifies that the child does not exceed its parent,
+including the conditions written in words. The mechanism, a separate
+attestation with the notary's own seal, follows the laboratory comparison and
+is the draft's proposal. It records Ivan Oparin's decisions of 2026-11-11 and
+awaits the co-author's agreement. Nothing of it is implemented in a grant
+profile.
 
 On 2026-11-11 Ivan Oparin also decided six points that the drafts had
 listed as open. In LIP-0010: a duplicate or aliased `nostr` refuses the whole

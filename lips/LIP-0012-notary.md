@@ -1,0 +1,237 @@
+# LIP-0012: Notary
+
+- **Status:** Draft
+- **Created:** 2026-11-11
+- **Affects:** grant admission, re-delegation (LIP-0008 section 12.6), the
+  key map
+- **Builds on:** LIP-0004 and LIP-0008
+
+## Summary
+
+A child grant must not be broader than its parent. A verifier can compare
+action sets and numbers. It cannot compare conditions written in words. The
+notary is the party that does: it reads the child and the parent, and
+certifies that the child does not exceed the parent.
+
+A notary is an additional link beside the authority path. It certifies a
+grant and can revoke it. It creates no authority: a certified grant carries
+exactly the rights its issuer signed. A notary can be an agent or a person.
+
+Nothing in this LIP is implemented in a grant profile. The reference
+laboratory compared two ways of attaching a notary to a grant on regtest
+with one trusted node. This LIP proposes semantics on that basis, without
+canonical bytes.
+
+## Decisions recorded
+
+Ivan Oparin decided the following on 2026-11-11. The LIP stays Draft until
+the co-author agrees; adoption follows LIP-0001.
+
+| Decision | Direction |
+| --- | --- |
+| N1. Role | A notary is an additional link that certifies a grant and can revoke it. |
+| N2. Re-delegation | For a re-delegated grant the notary is the party that checks that the child does not exceed the parent's authority, and certifies it. |
+| N3. Performer | The notary can be an agent or a human. |
+| N4. Sensitive scenarios | Recommended: a grant with the right of re-delegation, plus a notary. |
+
+The four directions are the owner's. Everything else in this LIP is the
+draft's proposal and is not decided: the separate attestation with its own
+seal as the mechanism, revocation through that seal, how a grant requires a
+notary, the admission step, and every field of the attestation.
+
+## Motivation
+
+LIP-0008 section 12.6 makes child grants part of the protocol and requires
+that a child is never broader than its parent. Section 12.2 enforces this
+for known action sets and numeric ceilings, and refuses unknown constraint
+semantics. The contract text and the scope of a task are words. A program
+cannot tell whether "work on the project and its dependencies" is wider
+than "work on the project".
+
+Without a notary, a verifier of such a child either trusts the agent that
+issued it or refuses every child with textual conditions. With a notary, a
+named third party has read both documents and signed a statement that can
+be withdrawn.
+
+## Current state
+
+The specification has no notary. The laboratory experiment `notary` at
+`swarma-chain-lab` `839bdcca41cd17ffd7c4057de2dc88a521745515` compared two
+schemes on regtest, with one trusted node and synthetic statements:
+
+| Scheme | How the notary takes part | What withdrawal does |
+| --- | --- | --- |
+| Separate attestation | The notary signs a statement that names the hash of the grant and the notary's own seal, and anchors the hash of the statement. | The notary spends its seal. A verifier whose policy requires that notary refuses. The grant's own seal stays unspent. |
+| Co-signed issuance | The issuance transaction spends an output that needs the issuer's and the notary's signatures. | The notary spends its seal and withdraws the endorsement. The issuance is not reversed and the issuer's seal is not revoked. |
+
+The experiment states its conceptual default as the separate attestation,
+"subject to corrected verifier review and an explicitly selected
+trusted-notary policy". It is a laboratory comparison. It does not qualify a
+production policy, a grant contract or a name lifecycle, and its statements
+are not vectors. The notary's verdict in it concerns a fact about the grant;
+it does not compare a child with a parent.
+
+## Proposal
+
+### 1. The role
+
+A notary certifies facts that it checked itself. For a child grant the fact
+is: this child, issued under that parent, does not exceed the parent's
+authority, including the conditions written in words in both contracts.
+Other facts are possible, for example that a recipient key belongs to a
+named party; each attestation says what was checked.
+
+The performer is an agent or a person (N3). The protocol sees a key. Like
+the moderator of LIP-0011, an agent that performs the role does not prove
+how it reached its statement; the statement binds the notary's key and
+nothing more.
+
+The notary is not on the authority path. It issues no grant, holds no
+right of re-delegation by its role, and its attestation adds no action,
+limit or lifetime to the grant.
+
+### 2. The attestation
+
+An attestation is a signed object of its own type under LIP-0008 section 8.
+It has these logical fields; the table is not a byte fixture:
+
+| Field | Meaning |
+| --- | --- |
+| Grant | The `grant_id` of the certified grant. |
+| Parent | For a child grant, the ID of the parent it was compared with. Absent otherwise. |
+| Checked | What the notary checked. For re-delegation: that the child does not exceed the parent, with the hashes of both contracts. |
+| Notary | The notary's key and, when it is named, its name with the pins of LIP-0008 section 3. |
+| Notary seal | An outpoint that the notary alone can spend. |
+| Height | The height of the tip the notary's node validated. It is a claim of the signer. |
+| Signature | A signature by the notary key over the object's typed digest. |
+
+The hash of the attestation is anchored on chain. The laboratory anchors it
+in an update of the notary's own name; a LIP-0005 frame is the other
+candidate. This LIP does not choose.
+
+### 3. A grant that requires a notary
+
+A grant can require an attestation. The requirement is signed: it is part
+of the grant, or of the right of re-delegation under which the grant was
+issued, and it names the notary or the set of notaries that satisfy it. A
+parent can thus require that every child issued under it is certified.
+
+A verifier can also require a notary by its own policy, for a grant that
+does not ask for one. That is the laboratory's arrangement: a list of
+trusted notary identities in the verifier's configuration.
+
+Field names and encoding are open. The proposal of LIP-0008 section 12.6
+(e), an attestation required for every child whose scope is free text, is a
+policy on top of this mechanism and is not decided.
+
+### 4. Admission
+
+For a grant that requires a notary, admission adds one step to LIP-0008
+section 4, after the grant and every ancestor passed their own checks. The
+verifier checks, on the same observation of its own node:
+
+1. the attestation's signature under a notary that the requirement names;
+2. that the attestation names this grant and, for a child, the parent
+   that the child itself commits to;
+3. that the attestation's anchor is in the active chain;
+4. that the notary's seal is unspent, with the mempool included.
+
+A missing, unverifiable or withdrawn attestation refuses. An attestation
+never substitutes for a check of section 4: a certified grant with a spent
+seal, an expired window or a closed ancestor refuses.
+
+### 5. Revocation
+
+The notary revokes by spending its seal (N1). For a grant that requires the
+attestation, every verifier then refuses at step 4. The grant's own seal is
+untouched: only the issuer can spend it, and the notary's spend does not
+make the grant's seal spent.
+
+Two points are open. First, whether a verifier journals the notary's
+observed spend as a durable closure of that grant, like the issuer's spend
+in LIP-0008 section 5.1, or recomputes it from the active chain. The
+laboratory refuses on a spend seen in the mempool and keeps refusing after
+the withdrawal is reorganised out while it stays in the mempool; it does
+not decide durability. Second, whether another notary named by the same
+requirement can certify the same grant after a withdrawal, or the issuer
+must issue a new grant.
+
+For a grant that requires no notary, a withdrawal removes the endorsement
+for verifiers that asked for it by policy and changes nothing else.
+
+### 6. What the notary of a child checks
+
+The notary receives the child, the parent and both contracts. It verifies
+the mechanical part like any verifier: the parent carries the right of
+re-delegation, the child commits to it, action sets and ceilings do not
+widen. It then reads the conditions in words and decides whether the
+child's are within the parent's. The attestation records the hashes of what
+it read.
+
+The attestation is a statement of the notary, not a proof. A wrong
+statement is visible afterwards to anyone who holds both documents, and the
+parties' recourse against the notary is outside the protocol.
+
+## Alternatives
+
+Structured scope (LIP-0008 section 12.6, proposal a) removes the need for a
+notary wherever the scope fits the structure, because any verifier can then
+check the subset relation. It does not cover conditions that stay in prose.
+Refusing every child with textual conditions is safe and makes
+re-delegation unusable for contracts. Trusting the re-delegating agent
+leaves the check to the party whose authority is being limited. Co-signed
+issuance makes the notary's consent visible in the issuance transaction;
+the laboratory found that a later withdrawal does not reverse that
+issuance, and by construction a second notary needs a new joint issuance.
+
+## Security consequences
+
+A notary that signs carelessly, or whose key is stolen, certifies children
+that exceed their parents in words. It cannot widen the mechanical limits:
+the verifier still enforces action sets, ceilings, budgets and windows of
+every link.
+
+A notary can deny service: it can refuse to certify, and it can withdraw.
+A requirement that names a set of notaries, and a decided answer to the
+second open point of section 5, bound this.
+
+The notary learns the contents of both contracts. A deployment that cannot
+disclose them to a third party uses issuance by the operator's signer
+instead (LIP-0008 section 12.6).
+
+The notary, the moderator of LIP-0011 and the arbiter of a contract are
+three different third parties: the first certifies a grant before it is
+used, the second judges requests while it is used, the third decides a
+dispute after it. One party can hold more than one of these roles only if
+the contract says so.
+
+## Conformance impact
+
+No normative conformance class changes. A future vector set pairs these
+controls:
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| A child that requires a notary, with a valid attestation by a named notary whose seal is unspent | The same child without the attestation, with an attestation by a notary the requirement does not name, or with one that names another grant or another parent refuses. |
+| The same child after the notary spent its seal, seen in the mempool | Refuses. The child's own seal is still unspent; reporting the grant's seal as spent is wrong. |
+| A certified child whose own seal is spent, whose window ended or whose parent is closed | Refuses; the attestation does not override section 4 of LIP-0008. |
+| A certified child with a wider action set or a higher ceiling than its parent | Refuses mechanically; an attestation does not waive the checks of section 12.2 of LIP-0008. |
+| A grant that requires no notary, with and without an attestation | Both are admitted by a verifier without a notary policy; refusing for a missing attestation that nothing requires is wrong. |
+| An agent and a person as notary with the same attestation shape | Refusing an attestation because its notary is an agent, or because it is a person, is wrong. |
+
+## Open questions
+
+- Canonical bytes, type tag and signing domain of the attestation; the
+  field that carries the requirement in a grant and in a right of
+  re-delegation.
+- Where the attestation is anchored: an update of the notary's name or a
+  LIP-0005 frame.
+- How a verifier pins a notary: by key, or by name with registration and
+  owner key as for an issuer.
+- Durable closure or chain-relative refusal after the notary's seal spend;
+  whether another notary can certify after a withdrawal.
+- Whether the attestation of a child must be renewed when the parent's
+  contract is replaced.
+- Who pays the notary's seal and anchor, and the notary's fee, if any.
+- Whether the notary of a child and the moderator of the same contract can
+  be one party.

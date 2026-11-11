@@ -1071,8 +1071,8 @@ the grant, the right of re-delegation or the verifier's policy requires it;
 R4 recommends requiring it in sensitive scenarios.
 
 The notary is a party that compares a child with its parent and
-certifies that the child does not exceed it. The notary is not specified
-here; it needs its own LIP.
+certifies that the child does not exceed it. The notary is proposed in
+[LIP-0012](LIP-0012-notary.md).
 
 Re-delegation waits for the breadth check (R6). No such mechanism is
 designed for conditions in words, and the co-author's stated reason for the
@@ -1086,7 +1086,7 @@ the candidates for that mechanism:
 | (b) A maximum re-delegation depth in the parent grant; 0 means no right of re-delegation | One maximum for every grant: two links. |
 | (c) The child commits the parent's grant ID, and the verifier walks the chain to the root | Already required. |
 | (d) The sum of the children's budgets does not exceed the parent's, enforced at spend time, on chain where possible | Enforced by the authoritative executor journal before the effect. No on-chain enforcement is described. |
-| (e) A notary attestation is required for any child whose scope is free text | No notary in the specification. |
+| (e) A notary attestation is required for any child whose scope is free text | [LIP-0012](LIP-0012-notary.md) proposes the notary and how a grant requires one; whether free-text scope always requires it is not decided. |
 
 ## Alternatives
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.18 — 2026-11-11
+
+Adds Draft LIP-0012, Notary, by decisions of Ivan Oparin of 2026-11-11; the
+co-author's agreement is pending. A notary is an additional link that
+certifies a grant and can revoke it; for a child grant it certifies that the
+child does not exceed its parent, including conditions written in words; the
+performer is an agent or a person. The draft proposes the mechanism on the
+basis of the laboratory comparison: a separate signed attestation with the
+notary's own seal, a signed requirement in a grant or in a right of
+re-delegation, one added admission step, and revocation by spending the
+notary's seal. The grant's own seal is untouched by that. Durability of the
+refusal, certification by another notary after a withdrawal, the anchor and
+all bytes are open. LIP-0008 section 12.6 now points to this LIP. Nothing is
+implemented in a grant profile.
+
 ## 0.1.17 — 2026-11-11
 
 Amends Draft LIP-0008 by a decision of Ivan Oparin of 2026-11-11, with which

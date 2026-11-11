@@ -9,6 +9,9 @@ pins. LIP-0008 section 11.1 proposes BIP-32 derivation of the keys of
 revocable-only seals in an account of their own, so that the grant key no longer spends seals; custody
 qualification, recovery and migration remain open. Distinct seal
 addresses reduce one linkage source; names/funding/anchors remain observable.
+Draft LIP-0012 adds a notary key that signs attestations and a notary seal
+that only the notary spends; neither is in the table below, and the notary
+key signs no grant.
 
 Informative custody map for the rental and wallet profiles, not normative adoption.
 Deployment policy keeps the landlord grant key separate from the owner's personal Nostr key.
