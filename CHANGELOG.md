@@ -10,7 +10,9 @@ agent issues one only when it holds a grant with the right of re-delegation,
 which is the issue capability of section 12.2; a child is never broader than
 its parent. Countable conditions are checked mechanically, as section 12.2
 already requires. Scope expressed in words is not checked by this LIP and
-needs a separate mechanism, the notary, which has no specification yet.
+needs a separate mechanism; the notary is the party that performs that
+check and has no specification yet. Whether a notary attestation is
+mandatory for every child with textual scope stays a proposal.
 Re-delegation and issuance by the operator's signer are compared side by
 side. Five proposals for the "not broader" check are listed beside today's
 rules and are not decided. The section also states which key signs a child

@@ -1040,7 +1040,7 @@ The two ways of issuing compare as follows. Both use the same grant format.
 | --- | --- | --- |
 | Signer of the grant an agent receives | The agent that holds the right of re-delegation | The operator's signer service, with the grant key |
 | Authority path | Two links | One link |
-| Cost | Every link is checked at every request; textual conditions need a notary | Every grant passes through the operator's signer |
+| Cost | Every link is checked at every request; conditions in words are not checked by the verifier and need a separate check | Every grant passes through the operator's signer |
 | Use | Large swarms | Simple systems; the most sensitive resources |
 | Stage | Second, after the breadth check is designed | First |
 
@@ -1055,8 +1055,22 @@ needs a grant key of its own, separate from its channel key, is open.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and
-numeric ceilings and refuses unknown constraint semantics. The separate
-mechanism is the notary: a party that compares a child with its parent and
+numeric ceilings and refuses unknown constraint semantics. Two things are to
+be kept apart here.
+
+Decided: a separate mechanism is required to verify that a child's textual
+scope does not exceed its parent's (R3), and the party that performs this
+check for a re-delegated grant is the notary. A verifier's own mechanical
+check never establishes that textual scope is within the parent's, and
+nothing in this section lets a verifier treat it as established.
+
+Not decided: whether every child with textual scope must carry a notary
+attestation that the verifier checks at admission. That universal rule is
+proposal (e) below. Until it is decided, an attestation is required where
+the grant, the right of re-delegation or the verifier's policy requires it;
+R4 recommends requiring it in sensitive scenarios.
+
+The notary is a party that compares a child with its parent and
 certifies that the child does not exceed it. The notary is not specified
 here; it needs its own LIP.
 

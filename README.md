@@ -99,8 +99,10 @@ Agent-issued child grants are decided as part of the protocol (section 12.6,
 2026-11-11): an agent issues one only under a grant with the right of
 re-delegation, and a child is never broader than its parent. Both owners
 concur. Issuance by the operator's signer is implemented first; re-delegation
-follows once the breadth check is designed. Scope written in words needs a
-notary, which has no specification yet.
+follows once the breadth check is designed. Scope written in words is not
+checked by a verifier; a separate check by a notary is the decided mechanism,
+and the notary has no specification yet. Whether a notary attestation is
+mandatory for every such child is proposed and not decided.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.
