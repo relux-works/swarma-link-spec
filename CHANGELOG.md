@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.15 — 2026-11-11
+
+Adds Draft LIP-0011, Termination for violation, by decisions of Ivan Oparin
+of 2026-11-11; the co-author's agreement is pending. The contract carries the
+hash of the moderation rules and names who applies them, a model or a person.
+Each violation is a signed verdict record with the request hash, the violated
+rule and the hash of the moderator's response; verdicts of one grant form a
+chain. The transaction that spends the seal for a violation carries a
+72-byte LIP-0005 frame with the new action `0x03`: a termination commitment
+over `grant_id`, `contract_sha256` and `verdict_id`, and a blob-store pointer
+to the verdict. Closure does not depend on the reference; a refund is a
+contract term. LIP-0005 lists the action as proposed and not accepted by the
+reference parser. Nothing is implemented; no canonical bytes for the records;
+no change to v3, wallet-v1 or historical v0.1.
+
 ## 0.1.14 — 2026-11-11
 
 Amends Draft LIP-0008 by three decisions of Ivan Oparin of 2026-11-11; the

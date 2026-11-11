@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.14
+**Version:** 0.1.15
 
 **Date:** 2026-11-11
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.14
+## Draft profiles and design decisions in v0.1.15
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -122,6 +122,15 @@ as a limit and payment period only. A counted payment whose block is
 displaced is awaited for `N` blocks while it stays valid, and the grant is
 revoked when the same coins are spent differently. The co-author's agreement
 is pending; no implementation follows these rules yet.
+
+[LIP-0011](lips/LIP-0011-termination-for-violation.md) proposes termination
+for violation: the contract carries the hash of the moderation rules and names
+the applier, a model or a person; each violation is a signed verdict record
+with the request hash, the violated rule and the response hash; the seal spend
+refers to the verdict in a LIP-0005 frame with action `0x03`. Closure still
+follows the seal spend alone, and a refund is a contract term. It records Ivan
+Oparin's decisions of 2026-11-11 and awaits the co-author's agreement. Nothing
+of it is implemented.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

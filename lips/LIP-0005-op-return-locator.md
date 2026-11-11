@@ -39,7 +39,8 @@ Readers refuse every other encoding: OP_PUSHDATA1/2/4, a split id, OP_1..OP_16 f
 | --- | --- | --- |
 | `0x01` | grant issuance | `version(1) || commitment(32) || locator` |
 | `0x02` | anchor batch | `version(1) || batch_commitment(32) || locator` |
-| `0x03`-`0x7f` | reserved for Swarma Link | — |
+| `0x03` | termination for violation, proposed in [LIP-0011](LIP-0011-termination-for-violation.md); the reference parser does not accept it | `version(1) || termination_commitment(32) || locator` |
+| `0x04`-`0x7f` | reserved for Swarma Link | — |
 | `0x80`-`0xff` | experimental / private use | — |
 
 `commitment` for `0x01` is the issuance commitment defined by LIP-0004 (landlord grants):
