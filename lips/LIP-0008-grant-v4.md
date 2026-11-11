@@ -1205,8 +1205,8 @@ This is a conformance plan, not a published runner or interoperability result.
 - Explicit issuance-capability profile; the breadth-check mechanism that
   re-delegation waits for (section 12.6, R6), with five candidates: structured
   scope, per-grant depth, on-chain budget enforcement and a required notary
-  attestation for textual scope; the key with which an agent signs a child;
-  parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
+  attestation for textual scope; whether a re-delegating agent needs a grant
+  key of its own, separate from its channel key; parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
   budget accounting, recovery and executor partitions. Depth is at most two
   signed authority links; exact wire/consent and accounting fixtures remain open.
 - Signed metadata envelope, canonical object-ID preimages/signature inclusion,
