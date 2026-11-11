@@ -234,7 +234,9 @@ at `not_after_height`, or earlier when the issuer spends the seal.
 A shorter interval, such as an hour, is not a grant window. It is a period:
 a term of a typed limit ("so many requests per period") and of payment ("so
 much per period"). A period divides the one window for accounting and
-payment. A new period needs no new grant, no new seal and no chain record.
+payment. A new period needs no new grant, no new seal and no new issuance
+record. A payment for a period may itself be a chain transaction; that is
+the payment's record, not the grant's.
 Whether a period is counted in blocks or in clock time belongs to the limit's
 type profile and to the contract; this LIP does not fix it.
 
@@ -254,6 +256,13 @@ when its block is displaced. The issuer distinguishes two cases:
 | --- | --- |
 | The same payment transaction is still valid: it is back in the mempool or confirmed again in another block | Wait `N` blocks for it to confirm again. Revoke nothing. |
 | The coins of that payment are spent by a different transaction | Revoke: spend the seal. |
+
+A third state is neither of these. When the issuer's node cannot establish
+the state of the payment (the node is unavailable, its answers conflict, or
+the transaction is absent from its mempool without a conflicting spend in
+view), nothing is proved. Absence alone is not a conflicting spend. The
+issuer revokes nothing on that ground and reads again; how long it may wait
+in this state is part of the same open profile parameter.
 
 `N` is a parameter of the payment profile and has no value yet. What the
 issuer does when the payment is still valid and still unconfirmed after `N`
@@ -295,10 +304,19 @@ name on its validated active chain:
    current one, MUST be controlled by the bound owner key and MUST carry the
    `swarma` member under which the grant was issued: the same bytes, with the
    grant key equal to the grant's issuer key.
-4. An output on that stretch with another owner or another `swarma` closes
-   the grant for every verifier, permanently: a transfer, a change of the
-   grant key, and a change followed by a return are all in the history. No
-   local memory of earlier observations is needed for this verdict.
+4. An output on that stretch with another owner or another `swarma` refuses
+   the grant for every verifier that validates this chain: a transfer, a
+   change of the grant key, and a change followed by a return are all in the
+   history. No local memory of earlier observations is needed for this
+   verdict.
+5. The verdict of this walk is relative to the active chain. The verifier
+   computes it at every admission and writes no closure for it into its
+   durable journal. While the change stays in the active chain, the refusal
+   repeats at every check, for a verifier that saw the change and for one
+   that starts today alike. If a reorganisation removes the name operation
+   that changed the owner or `swarma`, and the history on the new active
+   chain satisfies rules 2 and 3, the grant is admissible again for both
+   verifiers. Their answers on the same validated chain are the same.
 
 Renewal closes nothing: it changes neither the owner nor `swarma`. The same
 holds for an update of the `nostr` member and of the owner's other members
@@ -306,10 +324,22 @@ holds for an update of the `nostr` member and of the owner's other members
 one grant early; the name rule ends all grants of an issuer whose name
 changed hands or whose grant key was replaced.
 
-A verifier MAY remember a name output that it already walked to the bound
-registration and stop a later walk there. The remembered result is a cache
-of a computation over the chain, not a source of authority. After a
-reorganisation the verifier repeats the walk on the chain it then validates.
+This differs from the two durable records of this LIP on purpose. A validated
+issuer spend of the seal seen in the mempool closes the grant durably
+(section 5.1), and the journal of effects already attempted stays whatever
+the chain does later. Those record what a verifier observed or did. The name
+rule records nothing: it is a property of the chain's history, and a history
+that a reorganisation replaced is no longer the chain's history. An effect
+performed while the grant was admissible is not undone by a later refusal,
+and a refusal is not undone for the time it lasted.
+
+A verifier MAY cache the result of a walk. A cached result is valid only for
+the predicate it was computed for: the same active chain up to the cached
+output, the same bound registration, owner key and `swarma`, and the same
+`R`. Reaching the registration once is not a result for another grant with
+another `R` or another issuer key. The cache is a saved computation, not a
+source of authority. After a reorganisation that touches the cached stretch
+the verifier discards it and repeats the walk on the chain it then validates.
 
 "Every verifier" means verifiers checking the same validated state; it does
 not promise instant observation across partitions or different tips. The
@@ -352,7 +382,7 @@ unsupported or ambiguous proof refuses. Not every script reduces to one key.
 
 Missing, stale or malformed reads refuse without recording permanent closure.
 Expired names refuse. A pending name spend can suspend admission under the
-selected observation profile; the issuer-history closure and the current
+selected observation profile; the issuer-history refusal and the current
 grantee-owner check remain distinct. Reorg handling revalidates those facts.
 The issuer-seal mempool rule below is an explicit durable exception. Journals
 of already attempted effects remain durable regardless of later name state.
@@ -420,8 +450,9 @@ The verifier uses one consistent observation with pinned network/genesis:
    request's channel. A wrong key, an unknown channel and a removed key
    refuse in either mode that can produce them. Same-owner grantee
    rotation/renewal keeps a grant by name; removed channel keys refuse. An
-   issuer-name update that changes the owner or `swarma` closes the grant
-   and requires a replacement grant; any other issuer-name update keeps it.
+   issuer-name update that changes the owner or `swarma` refuses the grant
+   on the chain that holds it and requires a replacement grant; any other
+   issuer-name update keeps it.
 3. Require healthy observations, explicit freshness policy and unexpired names.
    Unavailable, stale, conflicting or unproved data never permits an effect.
 4. Check the durable closure journal, grant interval, issuer/target, confirmed issuance, separate seal,
@@ -1014,6 +1045,10 @@ post-refusal state. The semantic outline pairs these controls:
 | Arbitrary namespace with supported owner proof | Prefix-only admission or rejection is wrong; malformed exact names still refuse under the name profile. |
 | Issuer renewal, `nostr` update or owner-member update after issuance, checked by a newly started verifier | The grant stays live; closing it for a renewal is wrong. Issuer transfer, transfer-and-return, grant-key change and change-and-return are found in the history and refuse without local memory. |
 | History walk that reaches the bound registration through the transaction index | A walk that ends at another registration (expiry and re-registration, same spelling, same key), an incomplete walk, or a node without the index refuses; a remembered walked output is a cache, and a presenter-supplied history is not accepted. |
+| An owner or grant-key change that stays in the active chain, checked by a verifier that saw it and by one that starts afterwards | Both refuse at every check, also after the key returned; admitting on the later return is wrong. |
+| The same change orphaned by a reorganisation, with `R` and the issuance kept and an unchanged history on the new chain | Both verifiers admit; a verifier that keeps a durable name closure from the orphaned branch is wrong, and so is one that reuses a cached walk across the reorganisation. A seal spend it saw in the mempool still closes durably. |
+| A grant whose window covers the whole term with hourly limit periods | Requiring a new grant, seal or issuance record at a period boundary is wrong; admission at `H == not_after_height` refuses. |
+| A counted payment displaced and seen again as the same valid transaction, then confirmed within `N` blocks | Revoking on the displacement is wrong. The same coins spent by another transaction revoke. An unavailable node or an absent transaction without a conflicting spend proves neither and revokes nothing. |
 | Same-owner grantee renewal and a newly listed supported channel key under the same grant | Refusing solely because the grantee output changed is wrong; accepting a removed key or mismatched owner is wrong. Current-owner equality alone proves no permanent transfer-and-return history. |
 | Exact executor name/key and its allocated budget | Wrong executor of the same type, reused full budget at a second executor, partition overspend or single-use executor substitution: no effect. |
 | Replicas sharing one authoritative journal; recovery with chain evidence | Independent journals, lost journal authority, concurrent duplicate or uncertain retry: no second reservation/effect. |

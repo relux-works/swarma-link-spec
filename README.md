@@ -2,7 +2,7 @@
 
 **Version:** 0.1.14
 
-**Date:** 2026-11-10
+**Date:** 2026-11-11
 
 **Status:** Draft
 
@@ -116,8 +116,8 @@ an implementation.
 Decisions of 2026-11-11 by Ivan Oparin change three rules of the v4 draft.
 The issuer name is bound by its registration and owner key: a grant lives
 while the name's updates change neither the owner nor `swarma`, the verifier
-walks the name's history through its transaction index, and a renewal closes
-nothing. One hire is one grant for the whole term in blocks, with the hour
+walks the name's history through its transaction index on the active chain,
+and a renewal closes nothing. One hire is one grant for the whole term in blocks, with the hour
 as a limit and payment period only. A counted payment whose block is
 displaced is awaited for `N` blocks while it stays valid, and the grant is
 revoked when the same coins are spent differently. The co-author's agreement

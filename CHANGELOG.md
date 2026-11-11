@@ -10,8 +10,11 @@ the issuer name's registration and owner key instead of its exact current
 output. It lives while the name's updates change neither the owner nor the
 `swarma` member. The verifier walks the name's history back to the bound
 registration through the node's transaction index; an owner or `swarma`
-change since the committed recent block closes the grant for every verifier
-without local memory. Renewal, a `nostr` update and owner-member updates
+change since the committed recent block refuses the grant for every verifier
+of that chain without local memory. The verdict is relative to the active
+chain and is not journalled: a change orphaned by a reorganisation no longer
+refuses, for a fresh and an existing verifier alike, while a seal spend seen
+in the mempool stays a durable closure. Renewal, a `nostr` update and owner-member updates
 close nothing. The earlier exact-output rule moves to Alternatives. The start
 point of the constrained stretch (the committed block) is this draft's
 choice and is listed as open.
