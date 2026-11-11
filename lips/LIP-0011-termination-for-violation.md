@@ -36,7 +36,8 @@ the co-author agrees; adoption follows LIP-0001.
 
 The four directions are the owner's. Everything else in this LIP is the
 draft's proposal and is not decided: the chain of previous verdicts, the
-record's fields beyond the three hashes of V2, the action number, the
+record's fields beyond the three items of V2 (the request hash, the
+violated rule and the response hash), the action number, the
 commitment formula and its prefix, the evidence states of section 4 and the
 reader's ordered checks.
 
@@ -195,7 +196,8 @@ adoption.
    A well-formed frame in a transaction that fails check 2 is not evidence
    about that grant. It neither terminates the grant nor shows a
    termination: the grant's seal is unspent, or was spent by another
-   transaction.
+   transaction, or was spent by this transaction through the recipient's
+   branch.
 3. The signer verifies the same facts before it spends the seal, and writes
    the verdict identifier into its journal before the first signature. It
    spends only the seal that is bound to that grant.
@@ -259,10 +261,12 @@ spend would add a second closure path that every verifier must watch.
 ## Security consequences
 
 The issuer can end any of its grants at any moment. This LIP does not limit
-that. It makes an unjustified termination visible: an issuer seal spend
-whose reference a reader checked and found invalid, or one that carries no
-reference where the issuer claimed a violation. A record that a reader could
-not fetch shows neither a justified nor an unjustified termination.
+that. It makes visible a termination whose claimed cause the reference does
+not support: an issuer seal spend whose reference a reader checked and found
+invalid, or one that carries no reference where the issuer claimed a
+violation. Whether such a termination breaks the contract is for the
+contract to say (rule 4). A record that a reader could not fetch shows
+nothing about the cause.
 
 The frame is public bytes, and anyone can copy a valid frame into another
 transaction. A copy proves nothing about the grant it names: the reader
