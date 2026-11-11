@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.16
+**Version:** 0.1.17
 
 **Date:** 2026-11-11
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.16
+## Draft profiles and design decisions in v0.1.17
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -95,7 +95,10 @@ at-use attenuation and ancestor budget accounting, exact service commands,
 non-authoritative signed metadata, typed envelopes, canonical object IDs,
 half-open time windows and receiver-verified proof bundles. The complete
 action set stays under one seal and each grant signs its concrete executor.
-General agent sub-delegation still needs its separate both-owner decision.
+Agent-issued child grants are decided as part of the protocol (section 12.6,
+2026-11-11): an agent issues one only under a grant with the right of
+re-delegation, and a child is never broader than its parent. Scope written in
+words needs a notary, which has no specification yet.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.

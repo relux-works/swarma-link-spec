@@ -855,10 +855,14 @@ indices are used in order.
 ### 12. Invocation and bounded issuance-capability chains
 
 These are requirements for the proposed Swarma v4 profile before its freeze,
-not an implemented resolver or an adopted generic delegation facility.
-LIP-0006's signer service still needs explicit issue authority. General
-agent-issued child grants and sub-delegation remain a separate both-owner
-decision; the rules below do not grant that permission.
+not an implemented resolver. LIP-0006's signer service still needs explicit
+issue authority.
+
+Earlier revisions left agent-issued child grants as a separate decision of
+both owners. Ivan Oparin decided on 2026-11-11 that child grants are part of
+the protocol; section 12.6 records the decision. The co-author's agreement
+is pending. The issue capability of this section is the right of
+re-delegation of that decision.
 
 #### 12.1. Signed invocation
 
@@ -1008,6 +1012,62 @@ compatibility claim. The signature distinction above follows
 Default/Alternative Signing and Verification, not an assumption of one unique
 signature per message.
 
+#### 12.6. Re-delegation (decision of 2026-11-11)
+
+Ivan Oparin decided the following on 2026-11-11. The co-author's agreement
+is pending; nothing of it is implemented.
+
+| Decision | Direction |
+| --- | --- |
+| R1. Child grants | Child grants are part of the protocol. An agent may issue a child grant only when it holds a grant with the right of re-delegation. A child grant is never broader in authority than its parent. |
+| R2. Countable conditions | Resources carried in the grant, such as limits, budgets, tokens, counts and expiry, are checked mechanically: the child's value is at most the parent's. |
+| R3. Conditions in words | Scope expressed in words cannot be checked mechanically. A separate mechanism is required to verify that a child's textual scope does not exceed its parent's. |
+| R4. Sensitive scenarios | Recommended: a grant with the right of re-delegation plus a notary. |
+| R5. Two ways of issuing | Re-delegation is the main mechanism for large swarms. Issuance of every grant by the operator's own signer stays the baseline for simpler systems and for the most sensitive ones. |
+
+The right of re-delegation is the issue capability of section 12.2. R1 and
+R2 are what section 12.2 already requires: the capability is explicit, a
+child commits to its exact ID, known action sets and numeric ceilings do not
+widen, the invocation satisfies every link, and descendants are accounted
+against every ancestor. Ordinary action authority still implies no
+re-delegation, and managing an agent implies none either.
+
+The two ways of issuing compare as follows. Both use the same grant format.
+
+| | Re-delegation | Issuance by the operator's signer |
+| --- | --- | --- |
+| Signer of the grant an agent receives | The agent that holds the right of re-delegation | The operator's signer service, with the grant key |
+| Authority path | Two links | One link |
+| Cost | Every link is checked at every request; textual conditions need a notary | Every grant passes through the operator's signer |
+| Use | Large swarms | Simple systems; the most sensitive resources |
+
+The child is signed by the recipient of the parent: "each link's audience
+MUST equal the next link's authenticated issuer" (section 12.2). For a
+parent issued by key, that is the grantee key. For a parent issued by name,
+it is the key the name's value yields for the selected profile under
+section 3.1. An agent's name value carries no `swarma.grant` member
+([LIP-0010](LIP-0010-name-value.md)), so the issuer rule of section 3
+applies to the root of the path only. Whether an agent that re-delegates
+needs a grant key of its own, separate from its channel key, is open.
+
+R3 is not met by this LIP. Conditions written in words live in the contract
+text and in task scope; section 12.2 compares only known action sets and
+numeric ceilings and refuses unknown constraint semantics. The separate
+mechanism is the notary: a party that compares a child with its parent and
+certifies that the child does not exceed it. The notary is not specified
+here; it needs its own LIP.
+
+Five ways to strengthen the "not broader" check are proposed and not
+decided:
+
+| Proposal | What section 12 says today |
+| --- | --- |
+| (a) Machine-readable scope: actions and resources as structured caveats, so that a child's scope is a subset any verifier can check | Known action sets and numeric ceilings must not widen; unknown constraint semantics refuse. No caveat language is adopted (section 12.4 reserves a stateless policy form). |
+| (b) A maximum re-delegation depth in the parent grant; 0 means no right of re-delegation | One maximum for every grant: two links. |
+| (c) The child commits the parent's grant ID, and the verifier walks the chain to the root | Already required. |
+| (d) The sum of the children's budgets does not exceed the parent's, enforced at spend time, on chain where possible | Enforced by the authoritative executor journal before the effect. No on-chain enforcement is described. |
+| (e) A notary attestation is required for any child whose scope is free text | No notary in the specification. |
+
 ## Alternatives
 
 Keeping limits only in the contract preserves the existing indirect commitment
@@ -1080,6 +1140,7 @@ planned assertions, not results from a chain validator or policy evaluator:
 | Trusted root, constant subject and exact audience-to-issuer alignment | A self-selected root, changed subject or wrong next issuer refuses even with otherwise valid signatures. |
 | Direct depth-1 grant; depth-2 explicitly authorized issuance path | A third authority link, duplicate link or cycle refuses before any new reservation/effect. |
 | Explicit issue capability covering this child and its descendant action | Ordinary action authority, audience-key possession or re-delegation without issue capability refuses. |
+| A child whose countable conditions are within its parent's and whose contract text equals the parent's | A child with a wider action set or a higher ceiling refuses mechanically. A child whose textual scope differs from the parent's is not shown to be within it by this LIP; treating the mechanical check as covering the text is wrong. |
 | Narrower child action set, window and numeric ceilings; actual request fits every link | Wider child, larger ceiling or an invocation violating any ancestor constraint refuses, without trusting the child's attenuation assertion. |
 | Child commits the exact issue-capability parent ID | A substituted parent or alternative path cannot bypass that parent's closure; dependent admission refuses. |
 | Every link independently passes current names, issuance and seal checks | A closed seal, changed issuer instance or unproved/stale ancestor refuses even when the child alone passes. |
@@ -1121,7 +1182,10 @@ This is a conformance plan, not a published runner or interoperability result.
   encoding, time units/ranges, nonce/replay keys and bounded proof resolution;
   capability registry grammar, leaf assignments and existing-action mappings.
   The `swarma/` reservation and exact-match rule add no deployed action strings.
-- Explicit issuance-capability profile and both-owner general delegation scope;
+- Explicit issuance-capability profile; the co-author's agreement on the
+  re-delegation decision of section 12.6, and its five proposals: structured
+  scope, per-grant depth, on-chain budget enforcement and a required notary
+  attestation for textual scope; the key with which an agent signs a child;
   parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
   budget accounting, recovery and executor partitions. Depth is at most two
   signed authority links; exact wire/consent and accounting fixtures remain open.

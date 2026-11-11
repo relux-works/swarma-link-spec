@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.17 — 2026-11-11
+
+Amends Draft LIP-0008 by a decision of Ivan Oparin of 2026-11-11; the
+co-author's agreement is pending. Nothing is implemented.
+
+New section 12.6, Re-delegation: child grants are part of the protocol; an
+agent issues one only when it holds a grant with the right of re-delegation,
+which is the issue capability of section 12.2; a child is never broader than
+its parent. Countable conditions are checked mechanically, as section 12.2
+already requires. Scope expressed in words is not checked by this LIP and
+needs a separate mechanism, the notary, which has no specification yet.
+Re-delegation and issuance by the operator's signer are compared side by
+side. Five proposals for the "not broader" check are listed beside today's
+rules and are not decided. The section also states which key signs a child
+and leaves open whether a re-delegating agent needs a grant key of its own.
+
+The section 12 preamble no longer calls agent-issued child grants a separate
+undecided question. No rule of sections 12.1 to 12.5 changes; the depth
+stays at two links.
+
 ## 0.1.16 — 2026-11-11
 
 Records six decisions of Ivan Oparin of 2026-11-11 on points that the drafts
