@@ -11,9 +11,12 @@ Grant v4 binds per-rental resource limits directly in the grant's signed scope.
 The contract mirrors those limits. Service configuration sets operator-wide
 ceilings and cannot supply or enlarge the tenant's missing authority.
 
-The grant binds the landlord name's owner key and exact output at issuance.
-Spending that issuer output closes the grant, including renewal; a new verifier
-can detect this on the validated chain. A name-bound grantee instead binds any
+The grant binds the landlord name's registration and owner key. It stays
+live while the name's later updates change neither the owner nor the `swarma`
+member; the verifier walks the name's history back to the bound registration
+through its transaction index. Renewal closes nothing, and a transfer, a
+re-registration and a grant-key change are visible to a verifier that starts
+today. A name-bound grantee instead binds any
 Namecoin name plus its owner public key. At admission the current owner must
 equal that key, then the current listed channel keys are checked. Same-owner
 renewal and channel-key rotation preserve the grant, while an owner mismatch
@@ -42,11 +45,13 @@ source of each rental's bounded authority. The matching contract preserves
 agreement on the same terms.
 
 A current name/key pair alone cannot reveal a transfer followed by a return
-to the same key. The exact issuer name-output binding makes that transition
-visible even to a first observer. Its deliberate cost is that issuer renewal
-or issuer channel-key update ends grants bound to the old issuer output.
-Recipient channel keys instead follow current name resolution under the pinned
-owner key; exact recipient-output closure is not part of that rule.
+to the same key. The history of the issuer name between the grant's
+construction and the current tip does reveal it, to a first observer too:
+every name operation spends the previous name output, so the transactions
+form one chain. Its cost is a transaction index on the verifier's node and
+one transaction read per name operation. Recipient channel keys follow
+current name resolution under the pinned owner key; no history walk is part
+of that rule.
 
 A service type alone cannot stop two independent executors from each consuming
 the same apparent budget. Concrete executor bindings and explicit partitions
@@ -70,7 +75,7 @@ v4 support. No v4 implementation or conformance result is claimed here.
 ### 1. Versioned signed authority
 
 V4 binds the network/genesis, issuer, target, recipient, validity interval in
-block heights (section 7.1), seal, contract hash, landlord name/owner-key/output reference, concrete executor bindings,
+block heights (section 7.1), seal, contract hash, landlord name, registration and owner key, concrete executor bindings,
 recent block reference and action/resource scope in its signed grant. Name-mode
 recipients bind their name and owner key, without an exact name-output pin. These terms are signed
 data, covered transitively by the issuance commitment.
@@ -217,40 +222,112 @@ Uncertain effects retain their reservations until reconciled. Enforcement
 requires intact service credentials and journal; stealing the upstream API key
 can bypass this service's rental accounting.
 
-### 3. Issuer-output closure and recipient modes
+### 2.1. One grant for the term; the period belongs to limits and payment
 
-At issuance the signed grant binds the landlord's exact Namecoin name, its
-owner key and its current registration/update output, identified by transaction
-ID and output index. The agent's landlord pointer and independently provisioned
-verifier pins MUST bind the same registration instance and owner key. A name
-string alone is insufficient: after expiry, a new registration cannot inherit
-the old issuer's authority, even under the same spelling or owner key. Expired
-names refuse without waiting for another registration. This name output
-acts as an additional seal; it does not replace the grant's separate seal.
-Every admission requires that same bound output to remain current and unspent
-on the verifier's validated active chain.
+This section records the decision of 2026-11-11 by Ivan Oparin.
 
-Any later confirmed issuer-name operation spends that output and closes the grant:
-key change, transfer, a return to the original key, value update or renewal.
-Equal current key/value bytes cannot recreate the old outpoint. A first observer
-can reject the spent binding without reconstructing the intermediate name
-history or relying on another verifier's durable closure flag. "Every verifier"
-means verifiers checking the same validated state; it does not promise instant
-observation across partitions or different tips.
+One hire is one grant. Its window covers the whole agreed term in block
+heights (section 7.1): about 13,000 blocks for three months at the nominal
+ten minutes. The chain holds one issuance record for the hire. The hire ends
+at `not_after_height`, or earlier when the issuer spends the seal.
 
-The operator tracks remaining lifetime in blocks, schedules access to the owner
-key, and renews before expiry. An operational proposal wakes the owner key about
-every 220 days per name; block age and the validated expiry rule remain
-authoritative, so the calendar reminder is not an admission rule. After the
-renewal confirms, update the agent pointer and independent verifier pins through
-their authorized provisioning procedure, then issue replacement grants with
-fresh consent on the new output. No live grant is silently rebound. Renew
-between rentals where possible. Updating the issuer channel descriptor has the same cost.
-Issuer-name continuity under an unchanged owner does not exempt an update. The pin
-update/rollout procedure must fail closed while participants disagree. An
-alternative would verify the name history
-from the commitment height, requiring history-index support on every verifier;
-that is not this draft's chosen closure rule.
+A shorter interval, such as an hour, is not a grant window. It is a period:
+a term of a typed limit ("so many requests per period") and of payment ("so
+much per period"). A period divides the one window for accounting and
+payment. A new period needs no new grant, no new seal and no chain record.
+Whether a period is counted in blocks or in clock time belongs to the limit's
+type profile and to the contract; this LIP does not fix it.
+
+The contract states what follows when a period is not paid. The protocol
+offers one consequence: the issuer ends the grant by spending the seal.
+
+### 2.2. Payment evidence after a reorganisation
+
+This section records the decision of 2026-11-11 by Ivan Oparin. No LIP held
+this rule before; it concerns the issuer's reaction to payment evidence and
+sits here beside the confirmation-depth rule.
+
+A payment that was counted for an issued grant can leave the active chain
+when its block is displaced. The issuer distinguishes two cases:
+
+| What the issuer's node shows for the counted payment | Issuer's action |
+| --- | --- |
+| The same payment transaction is still valid: it is back in the mempool or confirmed again in another block | Wait `N` blocks for it to confirm again. Revoke nothing. |
+| The coins of that payment are spent by a different transaction | Revoke: spend the seal. |
+
+`N` is a parameter of the payment profile and has no value yet. What the
+issuer does when the payment is still valid and still unconfirmed after `N`
+blocks is not decided. The reference booking service at chain-lab
+`839bdcca41cd17ffd7c4057de2dc88a521745515` implements the earlier rule: it
+requests revocation as soon as the block of a counted payment is displaced
+or the payment disappears, and a payment that returns does not clear that
+request.
+
+### 3. Issuer registration, owner key and recipient modes
+
+This section records the decision of 2026-11-11 by Ivan Oparin. It replaces
+the earlier draft rule that bound the grant to the exact current output of
+the issuer name and closed it on every name operation, renewal included.
+
+At issuance the signed grant binds three facts about the issuer: the exact
+Namecoin name, the registration of that name, and the owner key. The
+registration is identified by the transaction and output that first
+registered the name (`name_firstupdate`). The owner key is the key that
+controls the name's outputs. The agent's landlord pointer and independently
+provisioned verifier pins MUST bind the same registration and owner key. A
+name string alone is insufficient: after expiry, a new registration cannot
+inherit the old issuer's authority, even under the same spelling or owner
+key. Expired names refuse without waiting for another registration.
+
+The grant lives while the name's updates change neither the owner nor the
+`swarma` member. At every admission the verifier walks the history of the
+name on its validated active chain:
+
+1. Start at the name's current output. Each name operation spends the
+   previous name output, so the verifier follows that input to the previous
+   operation, transaction by transaction, through the node's transaction
+   index.
+2. The walk MUST reach the bound registration. A walk that ends at another
+   registration, or that cannot be completed, refuses: the name was
+   re-registered, or the history is not available.
+3. Let `R` be the height of the grant's committed recent block (section 7).
+   The name output that was current at `R`, and every later output up to the
+   current one, MUST be controlled by the bound owner key and MUST carry the
+   `swarma` member under which the grant was issued: the same bytes, with the
+   grant key equal to the grant's issuer key.
+4. An output on that stretch with another owner or another `swarma` closes
+   the grant for every verifier, permanently: a transfer, a change of the
+   grant key, and a change followed by a return are all in the history. No
+   local memory of earlier observations is needed for this verdict.
+
+Renewal closes nothing: it changes neither the owner nor `swarma`. The same
+holds for an update of the `nostr` member and of the owner's other members
+([LIP-0010](LIP-0010-name-value.md)). The seal remains the only way to end
+one grant early; the name rule ends all grants of an issuer whose name
+changed hands or whose grant key was replaced.
+
+A verifier MAY remember a name output that it already walked to the bound
+registration and stop a later walk there. The remembered result is a cache
+of a computation over the chain, not a source of authority. After a
+reorganisation the verifier repeats the walk on the chain it then validates.
+
+"Every verifier" means verifiers checking the same validated state; it does
+not promise instant observation across partitions or different tips. The
+walk needs the transactions of the name's history. A node without a
+transaction index, and a light client without proofs for every step, cannot
+perform it and refuse.
+
+The operator still tracks the name's remaining lifetime in blocks, schedules
+access to the owner key and renews before expiry. An operational proposal
+wakes the owner key about every 220 days per name; block age and the
+validated expiry rule remain authoritative, so the calendar reminder is not
+an admission rule. Grants, agent pointers and verifier pins survive a
+renewal unchanged.
+
+Which point starts the constrained stretch of rule 3 is this draft's choice:
+the committed recent block. The decision fixes the rule (registration, owner
+key, unchanged owner and `swarma`, history walk) and does not name that
+point; the choice needs confirmation.
 
 A direct-key recipient remains bound to its signed request key. A name-mode
 recipient binds two signed facts: the exact Namecoin name and its owner public
@@ -275,7 +352,7 @@ unsupported or ambiguous proof refuses. Not every script reduces to one key.
 
 Missing, stale or malformed reads refuse without recording permanent closure.
 Expired names refuse. A pending name spend can suspend admission under the
-selected observation profile; the confirmed issuer-output closure and current
+selected observation profile; the issuer-history closure and the current
 grantee-owner check remain distinct. Reorg handling revalidates those facts.
 The issuer-seal mempool rule below is an explicit durable exception. Journals
 of already attempted effects remain durable regardless of later name state.
@@ -328,12 +405,14 @@ records no closure, as section 3 states.
 
 The verifier uses one consistent observation with pinned network/genesis:
 
-1. Resolve each bound name and its output. Check the landlord name, owner key,
-   output, agent pointer and independent verifier pins agree on the issuer
-   instance, and that its output is still current and unspent. In grantee name
-   mode prove the current name owner equals the signed owner key before
-   consulting channel keys. No exact grantee-output equality is required; a
-   changed issuer output rejects even if its key returned to the former value.
+1. Resolve each bound name. Check that the landlord name, registration and
+   owner key in the grant, the agent pointer and the independent verifier
+   pins agree, and walk the issuer name's history under section 3: it reaches
+   the bound registration, and since the committed block neither the owner
+   nor `swarma` changed. A grant-key change rejects even if the key returned
+   to the former value. In grantee name mode prove the current name owner
+   equals the signed owner key before consulting channel keys. No exact
+   grantee-output equality is required.
 2. Authenticate the request by the grant's signed recipient mode (section
    3.1). By key: verify the request under the signed request key; no recipient
    name exists and none is read. By name: read the channel member from that
@@ -341,8 +420,8 @@ The verifier uses one consistent observation with pinned network/genesis:
    request's channel. A wrong key, an unknown channel and a removed key
    refuse in either mode that can produce them. Same-owner grantee
    rotation/renewal keeps a grant by name; removed channel keys refuse. An
-   issuer-name update instead closes the old issuer-output binding and
-   requires a replacement grant.
+   issuer-name update that changes the owner or `swarma` closes the grant
+   and requires a replacement grant; any other issuer-name update keeps it.
 3. Require healthy observations, explicit freshness policy and unexpired names.
    Unavailable, stale, conflicting or unproved data never permits an effect.
 4. Check the durable closure journal, grant interval, issuer/target, confirmed issuance, separate seal,
@@ -619,9 +698,9 @@ The historical v0.1 anchor spends a P2PKH name output, so it cannot satisfy W's
 all-native-input rule unchanged. A new input/name profile and qualification are
 required; current legacy scripts do not establish L support either.
 
-If a successor anchor also updates a name, the profile must reconcile that
-operation with the signed name-output pin without a circular reference or an
-immediately spent binding. T/L/A alone does not resolve that question; the
+If a successor anchor also updates a name, that update keeps the grant as
+long as it changes neither the owner nor `swarma` (section 3); the earlier
+concern about an immediately spent name-output pin no longer applies. The
 historical name-update anchor is not automatically the new v4 construction.
 
 ### 10. Threat model and topology
@@ -900,15 +979,16 @@ signature per message.
 ## Alternatives
 
 Keeping limits only in the contract preserves the existing indirect commitment
-but requires its bytes. Issuer-name history verification can preserve grants across
-renewals but requires a trustworthy history index and complete proofs. Binding
-the exact output instead trades that dependency for mandatory reissuance after
-every name operation. A type-only executor cannot provide a shared global budget
+but requires its bytes. Binding the exact current output of the issuer name
+needs no history index, and it forces reissuance after every name operation,
+renewal included; that was this draft's earlier rule. The adopted rule
+verifies the issuer name's history instead: grants survive renewals, at the
+price of a transaction index and complete history on every verifier. A type-only executor cannot provide a shared global budget
 across independently operated services.
 
 ## Security consequences
 
-The name resolver, issuer-output pin, grantee-owner proof, receipt pins, service custody and durable
+The name resolver, issuer registration pin and history walk, grantee-owner proof, receipt pins, service custody and durable
 accounting form separate boundaries. A correct request signature proves neither
 fresh ownership nor remaining budget. A name value cannot attest its own owner.
 Expiry, unavailable chain data and unsupported units refuse admission without
@@ -930,9 +1010,10 @@ post-refusal state. The semantic outline pairs these controls:
 | --- | --- |
 | Matching grant/contract limits and a request within all ceilings | Signed-limit mutation, contract mismatch, unknown kind/unit, missing required cap or cumulative/per-request overshoot: no effect or new authorized reservation. |
 | Signed default within maximum and remaining allowance | Default above per-request/cumulative bounds, missing authority or config-only rental limit: refuse; config cannot enlarge authority. |
-| Same issuer output, matching current grantee owner and listed channel key on fresh unexpired names | Changed issuer output, grantee-owner mismatch, value-only owner assertion, unsupported proof, removed key or stale/expired/missing name: no effect. |
+| Issuer history from the bound registration with unchanged owner and `swarma` since the committed block, matching current grantee owner and listed channel key on fresh unexpired names | Changed issuer owner or `swarma` on that stretch, grantee-owner mismatch, value-only owner assertion, unsupported proof, removed key or stale/expired/missing name: no effect. |
 | Arbitrary namespace with supported owner proof | Prefix-only admission or rejection is wrong; malformed exact names still refuse under the name profile. |
-| Unchanged issuer output and a newly started verifier | Issuer transfer-and-return, renewal or same-key update spends the pinned output and refuses without local history. Fresh issuer pins and a replacement grant are the positive neighbour. |
+| Issuer renewal, `nostr` update or owner-member update after issuance, checked by a newly started verifier | The grant stays live; closing it for a renewal is wrong. Issuer transfer, transfer-and-return, grant-key change and change-and-return are found in the history and refuse without local memory. |
+| History walk that reaches the bound registration through the transaction index | A walk that ends at another registration (expiry and re-registration, same spelling, same key), an incomplete walk, or a node without the index refuses; a remembered walked output is a cache, and a presenter-supplied history is not accepted. |
 | Same-owner grantee renewal and a newly listed supported channel key under the same grant | Refusing solely because the grantee output changed is wrong; accepting a removed key or mismatched owner is wrong. Current-owner equality alone proves no permanent transfer-and-return history. |
 | Exact executor name/key and its allocated budget | Wrong executor of the same type, reused full budget at a second executor, partition overspend or single-use executor substitution: no effect. |
 | Replicas sharing one authoritative journal; recovery with chain evidence | Independent journals, lost journal authority, concurrent duplicate or uncertain retry: no second reservation/effect. |
@@ -944,7 +1025,7 @@ post-refusal state. The semantic outline pairs these controls:
 | Administrator-owned sealed config, service-group read-only access and matching manifest hash | Writable service config or a hash mismatch forbids startup; operator ceilings cannot change through a runtime override. New reviewed packages remain the authorized change path. |
 | Valid v3 and independently valid v4 fixtures | Version/domain substitution, ambiguous recipient mode, name without owner pin and silent downgrade: reject without changing preserved v3 results. |
 | Independent proxy observation and durable remaining allowance | Gateway-only authority assertion, spent seal, conflicting concurrent reservations or uncertain retry: no second effect or overspending. |
-| Matching issuer instance in grant, agent pointer and independent verifier pins | Expiry/re-registration, same-key new registration, pointer-only or presenter-chosen pin replacement refuses; authorized renewal plus new pins and a fresh grant is the positive neighbour. |
+| Matching issuer registration and owner key in grant, agent pointer and independent verifier pins | Expiry/re-registration, same-key new registration, pointer-only or presenter-chosen pin replacement refuses; a renewal keeps grant, pointer and pins as they are. |
 | Complete validated objects and distinct typed signing domains | Caller-supplied digest, wrong object tag/version, malformed or changed canonical bytes refuse without a signature/effect; current static provenance audit does not replace these successor vectors. |
 | Exact-unit numeric values within the chosen range or string schema | Overflow, parser rounding, duplicate properties, invalid Unicode and silent number/string conversion refuse; include URL escaping and non-ASCII ordering fixtures. |
 | Valid issuer-branch mempool evidence durably recorded, then restart/replacement | Permanent refusal survives eviction and a competing grantee use-spend. A valid use-branch spend alone must not be mislabeled as issuer closure; transient read/tip errors create no closure. |
@@ -996,8 +1077,10 @@ This is a conformance plan, not a published runner or interoperability result.
 ## Open questions
 
 - Exact versioned bytes, signature domain, commitment/consent encoding, name
-  outpoints, executor/single-use bindings, recent block field and cross-language
-  vectors; reissuance after issuer channel updates and renewal.
+  registration reference, executor/single-use bindings, recent block field and
+  cross-language vectors; the start point of the issuer-history constraint
+  (this draft uses the committed recent block) and history proofs for a
+  verifier without a full node.
 - Invocation subject/command/argument and ordered-proof schema, principal
   encoding, time units/ranges, nonce/replay keys and bounded proof resolution;
   capability registry grammar, leaf assignments and existing-action mappings.
@@ -1029,7 +1112,7 @@ This is a conformance plan, not a published runner or interoperability result.
   migration from current P2PKH funding, chain-specific activation/risk rules,
   normative adoption and independently reviewed implementation. L requires a
   pinned non-SegWit chain before implementation qualification.
-- Issuer-instance pin provisioning and renewal rollout; typed-hash registry,
+- Issuer registration pin provisioning; typed-hash registry,
   matched producer/verifier migration and per-field JCS integer/string schemas.
 - Durable issuer-branch evidence, branch classification and replica recovery;
   value/depth tiers; explicit no-block-wait profile and its consent/evidence.

@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.13
+**Version:** 0.1.14
 
 **Date:** 2026-11-10
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.13
+## Draft profiles and design decisions in v0.1.14
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -76,8 +76,9 @@ with examples and a separately scoped delegated-issuance capability.
 
 [LIP-0007](lips/LIP-0007-service-types.md) proposes service types, action tables
 and a typed self-declaration in a service's Namecoin value.
-[LIP-0008](lips/LIP-0008-grant-v4.md) proposes Grant v4 signed rental limits and
-issuer-output closure, owner-pinned recipients and concrete executor budgets.
+[LIP-0008](lips/LIP-0008-grant-v4.md) proposes Grant v4 signed rental limits,
+an issuer name pinned by registration and owner key with a history walk,
+owner-pinned recipients and concrete executor budgets.
 It also records issuer-instance renewal pins, typed self-computed signing
 digests, durable validated issuer-branch mempool closure, value-dependent
 confirmation minima, per-seal keys, a topology/threat model and a dependent
@@ -111,6 +112,16 @@ profile L with coin type 7; the single-use seal keeps two distinct branches
 and its output profile stays open. The verifier checks the typed endorsement
 and needs no path. These remain Draft semantics without bytes, fixtures or
 an implementation.
+
+Decisions of 2026-11-11 by Ivan Oparin change three rules of the v4 draft.
+The issuer name is bound by its registration and owner key: a grant lives
+while the name's updates change neither the owner nor `swarma`, the verifier
+walks the name's history through its transaction index, and a renewal closes
+nothing. One hire is one grant for the whole term in blocks, with the hour
+as a limit and payment period only. A counted payment whose block is
+displaced is awaited for `N` blocks while it stays valid, and the grant is
+revoked when the same coins are spent differently. The co-author's agreement
+is pending; no implementation follows these rules yet.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

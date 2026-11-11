@@ -1,8 +1,9 @@
 # Key map
 
-The Grant v4 proposal in LIP-0008 separately binds a name-owner key and exact
-registration/update outpoint in the grant, agent pointer and independent
-verifier pins. It also proposes a derived key per seal with a typed issuer
+The Grant v4 proposal in LIP-0008 separately binds the issuer name's
+registration and owner key in the grant, agent pointer and independent
+verifier pins; the verifier walks the name's history, and a renewal closes
+nothing. It also proposes a derived key per seal with a typed issuer
 endorsement of the key/script/outpoint. These are distinct identity and script
 pins. LIP-0008 section 11.1 proposes BIP-32 derivation of the keys of
 revocable-only seals in an account of their own, so that the grant key no longer spends seals; custody
@@ -56,5 +57,6 @@ Basis: [public implementation at 11084e3a](https://github.com/relux-works/swarma
 Model caps denote signed contract terms proposed in [PR #60](https://github.com/relux-works/swarma-chain-lab/pull/60),
 not landed integration or mainnet qualification. In v3, a first observer cannot
 prove unseen grant-key changes; pin/state migration needs coordinated operator work.
-The v4 draft instead binds closure to exact name outputs; see
+The v4 draft instead finds a changed owner or grant key in the issuer name's
+history, without local memory; see
 [LIP-0008](lips/LIP-0008-grant-v4.md).

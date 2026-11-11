@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.1.14 — 2026-11-11
+
+Amends Draft LIP-0008 by three decisions of Ivan Oparin of 2026-11-11; the
+co-author's agreement is pending.
+
+Issuer name (section 3 rewritten; section 4 step 1 aligned): the grant binds
+the issuer name's registration and owner key instead of its exact current
+output. It lives while the name's updates change neither the owner nor the
+`swarma` member. The verifier walks the name's history back to the bound
+registration through the node's transaction index; an owner or `swarma`
+change since the committed recent block closes the grant for every verifier
+without local memory. Renewal, a `nostr` update and owner-member updates
+close nothing. The earlier exact-output rule moves to Alternatives. The start
+point of the constrained stretch (the committed block) is this draft's
+choice and is listed as open.
+
+Term and period (new section 2.1): one grant per hire for the whole term in
+block heights, about 13,000 blocks for three months; early end by seal
+spend; an hour is a period of a limit and of payment, never a grant window.
+
+Payment after a reorganisation (new section 2.2): a displaced payment that
+stays valid is awaited for `N` blocks and nothing is revoked; the same coins
+spent by a different transaction revoke. `N` and the still-unconfirmed case
+are open. The reference booking service implements the earlier rule.
+
+Conformance plan rows, open questions, key map, README and index follow. No
+bytes, fixtures or implementation; v3, wallet-v1 and historical v0.1 are
+unchanged.
+
 ## 0.1.13 — 2026-11-10
 
 Amends Draft LIP-0008 in three places, following Ivan Oparin's decisions of
