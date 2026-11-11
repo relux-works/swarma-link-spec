@@ -97,8 +97,10 @@ half-open time windows and receiver-verified proof bundles. The complete
 action set stays under one seal and each grant signs its concrete executor.
 Agent-issued child grants are decided as part of the protocol (section 12.6,
 2026-11-11): an agent issues one only under a grant with the right of
-re-delegation, and a child is never broader than its parent. Scope written in
-words needs a notary, which has no specification yet.
+re-delegation, and a child is never broader than its parent. Both owners
+concur. Issuance by the operator's signer is implemented first; re-delegation
+follows once the breadth check is designed. Scope written in words needs a
+notary, which has no specification yet.
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.

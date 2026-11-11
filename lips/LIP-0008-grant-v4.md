@@ -860,9 +860,9 @@ issue authority.
 
 Earlier revisions left agent-issued child grants as a separate decision of
 both owners. Ivan Oparin decided on 2026-11-11 that child grants are part of
-the protocol; section 12.6 records the decision. The co-author's agreement
-is pending. The issue capability of this section is the right of
-re-delegation of that decision.
+the protocol, and Alexey Grigorev concurred the same day; section 12.6
+records the decision and its staging. The issue capability of this section
+is the right of re-delegation of that decision.
 
 #### 12.1. Signed invocation
 
@@ -1014,8 +1014,9 @@ signature per message.
 
 #### 12.6. Re-delegation (decision of 2026-11-11)
 
-Ivan Oparin decided the following on 2026-11-11. The co-author's agreement
-is pending; nothing of it is implemented.
+Ivan Oparin decided the following on 2026-11-11, and Alexey Grigorev
+concurred the same day and added the staging of R6. Nothing of it is
+implemented.
 
 | Decision | Direction |
 | --- | --- |
@@ -1024,6 +1025,7 @@ is pending; nothing of it is implemented.
 | R3. Conditions in words | Scope expressed in words cannot be checked mechanically. A separate mechanism is required to verify that a child's textual scope does not exceed its parent's. |
 | R4. Sensitive scenarios | Recommended: a grant with the right of re-delegation plus a notary. |
 | R5. Two ways of issuing | Re-delegation is the main mechanism for large swarms. Issuance of every grant by the operator's own signer stays the baseline for simpler systems and for the most sensitive ones. |
+| R6. Staging | Issuance by the operator's own signer is implemented first. Re-delegation by an agent follows once a mechanism exists that checks that a child is not broader than its parent. |
 
 The right of re-delegation is the issue capability of section 12.2. R1 and
 R2 are what section 12.2 already requires: the capability is explicit, a
@@ -1040,6 +1042,7 @@ The two ways of issuing compare as follows. Both use the same grant format.
 | Authority path | Two links | One link |
 | Cost | Every link is checked at every request; textual conditions need a notary | Every grant passes through the operator's signer |
 | Use | Large swarms | Simple systems; the most sensitive resources |
+| Stage | Second, after the breadth check is designed | First |
 
 The child is signed by the recipient of the parent: "each link's audience
 MUST equal the next link's authenticated issuer" (section 12.2). For a
@@ -1057,8 +1060,11 @@ mechanism is the notary: a party that compares a child with its parent and
 certifies that the child does not exceed it. The notary is not specified
 here; it needs its own LIP.
 
-Five ways to strengthen the "not broader" check are proposed and not
-decided:
+Re-delegation waits for the breadth check (R6). No such mechanism is
+designed for conditions in words, and the co-author's stated reason for the
+staging is that it is not yet clear how to check them. Five ways to
+strengthen the "not broader" check are proposed and not decided; they are
+the candidates for that mechanism:
 
 | Proposal | What section 12 says today |
 | --- | --- |
@@ -1182,8 +1188,8 @@ This is a conformance plan, not a published runner or interoperability result.
   encoding, time units/ranges, nonce/replay keys and bounded proof resolution;
   capability registry grammar, leaf assignments and existing-action mappings.
   The `swarma/` reservation and exact-match rule add no deployed action strings.
-- Explicit issuance-capability profile; the co-author's agreement on the
-  re-delegation decision of section 12.6, and its five proposals: structured
+- Explicit issuance-capability profile; the breadth-check mechanism that
+  re-delegation waits for (section 12.6, R6), with five candidates: structured
   scope, per-grant depth, on-chain budget enforcement and a required notary
   attestation for textual scope; the key with which an agent signs a child;
   parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling

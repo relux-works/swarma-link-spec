@@ -2,8 +2,8 @@
 
 ## 0.1.17 — 2026-11-11
 
-Amends Draft LIP-0008 by a decision of Ivan Oparin of 2026-11-11; the
-co-author's agreement is pending. Nothing is implemented.
+Amends Draft LIP-0008 by a decision of Ivan Oparin of 2026-11-11, with which
+Alexey Grigorev concurred the same day. Nothing is implemented.
 
 New section 12.6, Re-delegation: child grants are part of the protocol; an
 agent issues one only when it holds a grant with the right of re-delegation,
@@ -15,6 +15,10 @@ Re-delegation and issuance by the operator's signer are compared side by
 side. Five proposals for the "not broader" check are listed beside today's
 rules and are not decided. The section also states which key signs a child
 and leaves open whether a re-delegating agent needs a grant key of its own.
+
+Staging (R6): issuance by the operator's signer is implemented first;
+re-delegation follows once a mechanism exists that checks that a child is not
+broader than its parent. The five proposals are the candidates.
 
 The section 12 preamble no longer calls agent-issued child grants a separate
 undecided question. No rule of sections 12.1 to 12.5 changes; the depth
