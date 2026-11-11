@@ -11,7 +11,13 @@ chain. The transaction that spends the seal for a violation carries a
 72-byte LIP-0005 frame with the new action `0x03`: a termination commitment
 over `grant_id`, `contract_sha256` and `verdict_id`, and a blob-store pointer
 to the verdict. Closure does not depend on the reference; a refund is a
-contract term. LIP-0005 lists the action as proposed and not accepted by the
+contract term. An independent reader authenticates the grant and requires
+the carrying transaction to spend that grant's seal under the issuer's
+authorization, so a frame copied into another transaction is not evidence.
+The evidence is verified, invalid, absent or not established; an unfetched
+record is not established and is never reported as a termination without
+cause. The four owner directions are listed apart from the draft's own
+proposals. LIP-0005 lists the action as proposed and not accepted by the
 reference parser. Nothing is implemented; no canonical bytes for the records;
 no change to v3, wallet-v1 or historical v0.1.
 

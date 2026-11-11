@@ -34,6 +34,12 @@ the co-author agrees; adoption follows LIP-0001.
 | V3. Reference on chain | The seal spend references that verdict in `OP_RETURN`, the same way the issuance references the contract. |
 | V4. Refund | Whether a prepayment is refunded depends on the contract. It is not a rule of the protocol. |
 
+The four directions are the owner's. Everything else in this LIP is the
+draft's proposal and is not decided: the chain of previous verdicts, the
+record's fields beyond the three hashes of V2, the action number, the
+commitment formula and its prefix, the evidence states of section 4 and the
+reader's ordered checks.
+
 ## Motivation
 
 An issuer can always spend a seal: it holds the seal key. Without a record,
@@ -69,7 +75,11 @@ contract hash, like every other term.
 | Moderator | The key that signs verdict records, and the kind of applier behind it: a model or a person. For a model the contract also names the model and the hash of its configuration. |
 
 The moderator can be the issuer's own service or another party. A person and
-a model are equal in this LIP: each signs a verdict with the moderator key.
+a model are equal in this LIP: each verdict is signed with the moderator key.
+When the applier is a model, the key is held by the service that runs the
+model and by that service's operator; the model does not hold it. The model
+name and configuration hash in the contract are that operator's claim about
+what ran. They are not a proof of execution.
 The protocol binds the hash of the rules and never interprets the text.
 
 Field names and their place in the contract's canonical bytes are open. The
@@ -102,8 +112,14 @@ the two hashes. The request is itself signed by the recipient's request key,
 so a disclosed request also shows who sent it.
 
 Verdicts for one grant form a chain through the previous-verdict field. The
-last one therefore proves the earlier ones: a termination after the second
-violation refers to the second verdict, and the first is reachable from it.
+last one commits to the bytes of the earlier ones: a termination after the
+second violation refers to the second verdict, and the first is named by it.
+The commitment does not replace the earlier records. A reader fetches each
+predecessor and checks it like the last one: grant, contract, rules hash,
+moderator key, signature and an ordinal lower by one. The chain proves
+neither that a judgement is right nor that an earlier record is still
+available. What counts as a separate violation, for example two verdicts on
+one request that was sent twice, is a matter of the rules text and is open.
 
 ### 3. The reference in the seal spend
 
@@ -156,18 +172,49 @@ adoption.
    the issuer's spend of its seal under the existing rules, whatever outputs
    that transaction has. A verifier MUST NOT keep a grant open because the
    `OP_RETURN` is absent, malformed, or points to a record it cannot fetch.
-2. The reference is evidence for the parties and an arbiter. A reader checks,
-   in this order: the exact frame and action; the commitment recomputed from
-   `grant_id`, `contract_sha256` and `verdict_id`; that the fetched record
-   hashes to `verdict_id`; the record's grant, contract and rules hash
-   against the contract; the signature under the moderator key that the
-   contract names; and the chain of previous verdicts.
+2. The reference is evidence for the parties and an arbiter. A reader does
+   not assume that the transaction was built by a signer that followed
+   rule 3. It checks, in this order:
+   1. the grant and its contract, authenticated on their own: the grant's
+      signature and issuance under its profile, its `grant_id`, its
+      `contract_sha256`, and the seal outpoint the grant names;
+   2. that the transaction which carries the frame spends exactly that seal
+      outpoint, and spends it under the issuer's authorization for that
+      seal. For a seal with a recipient branch, a spend through the
+      recipient's branch is a use of the grant and is not termination
+      evidence, whatever outputs it carries;
+   3. the exact frame and action, and that the frame is the only
+      `OP_RETURN` output;
+   4. the commitment recomputed from `grant_id`, `contract_sha256` and
+      `verdict_id`;
+   5. that the fetched record hashes to `verdict_id`;
+   6. the record's grant, contract and rules hash against the contract;
+   7. the signature under the moderator key that the contract names;
+   8. every previous verdict, as section 2 describes.
+
+   A well-formed frame in a transaction that fails check 2 is not evidence
+   about that grant. It neither terminates the grant nor shows a
+   termination: the grant's seal is unspent, or was spent by another
+   transaction.
 3. The signer verifies the same facts before it spends the seal, and writes
    the verdict identifier into its journal before the first signature. It
    spends only the seal that is bound to that grant.
-4. A termination presented as a violation whose reference is missing or does
-   not verify closes the grant all the same. Under the contract it is a
-   termination without cause; what follows is a contract matter.
+4. The evidence has one of four states for a reader, and closure is the same
+   in all of them:
+
+   | State | When | What it shows |
+   | --- | --- | --- |
+   | Verified | Every check of rule 2 passed. | The issuer ended the grant with a verdict signed by the contract's moderator under the contract's rules. |
+   | Invalid | The reader holds the bytes and a check of rule 2 fails: the frame, the commitment, the record hash, a field, the signature or a predecessor. | The reference does not support the termination. |
+   | Absent | The issuer spent the seal and the transaction carries no action `0x03` frame. | A revocation with no verdict claimed on chain (rule 6). |
+   | Not established | The reader could not fetch the record or a predecessor, or could not read the transaction. | Nothing. The reader has no evidence in either direction. |
+
+   A reader MUST NOT report the state "not established" as invalid, as
+   absent, or as a termination without cause. A failed fetch is a fact about
+   the reader's storage path. When the record is fetched later, the state
+   becomes verified or invalid; the facts of the contract did not change in
+   between. What each state means for cause and for refund is a term of the
+   contract. This LIP supplies no default consequence for any of them.
 5. A verdict closes nothing. Only the seal spend ends the grant. A verdict
    that does not end the contract, such as a first warning, is recorded and
    delivered to the recipient and needs no transaction.
@@ -187,7 +234,7 @@ adoption.
 | 7 | Off chain | Issuer's signer | The verdict checked against the contract and journalled. |
 | 8 | On chain | Issuer's signer | The seal spend with the termination reference. |
 | 9 | On chain, read by each verifier | Verifiers | Closure of the grant on the seal spend, in the mempool or in a block. |
-| 10 | Off chain | Recipient or arbiter | The path back: transaction, commitment, verdict record, request and response hashes, disclosed bytes, rules hash, rules text. |
+| 10 | Off chain | Recipient or arbiter | The path back: the grant and its seal outpoint, the transaction that spends that seal under the issuer's authorization, commitment, verdict record and its predecessors, request and response hashes, disclosed bytes, rules hash, rules text. |
 | 11 | Off chain | Parties | Refund or no refund, as the contract says. |
 
 Steps 3 to 6 repeat for every violation. Steps 7 to 9 happen once.
@@ -212,8 +259,16 @@ spend would add a second closure path that every verifier must watch.
 ## Security consequences
 
 The issuer can end any of its grants at any moment. This LIP does not limit
-that. It makes an unjustified termination visible: a seal spend that claims a
-violation and has no valid verdict.
+that. It makes an unjustified termination visible: an issuer seal spend
+whose reference a reader checked and found invalid, or one that carries no
+reference where the issuer claimed a violation. A record that a reader could
+not fetch shows neither a justified nor an unjustified termination.
+
+The frame is public bytes, and anyone can copy a valid frame into another
+transaction. A copy proves nothing about the grant it names: the reader
+requires the transaction to spend that grant's seal under the issuer's
+authorization. Without that check a copied frame would attach a false
+termination record to a grant that is still open.
 
 A verdict proves that the moderator key signed that statement about those
 hashes. It does not prove that the judgement is right. A model's response can
@@ -241,7 +296,9 @@ controls; each refused case leaves the closure rules untouched:
 | --- | --- |
 | Seal spend with a well-formed action `0x03` frame whose commitment recomputes and whose verdict verifies under the contract's moderator key | A wrong action or version, an extra `OP_RETURN`, a commitment over another grant, contract or verdict, or a pointer that differs from `verdict_id` fails the evidence check. |
 | Verdict whose rules hash, grant and contract equal the contract's | A verdict for another grant or contract, another rules hash, or a signature by a key the contract does not name fails. |
-| Second verdict whose previous-verdict field names the first | A broken or reordered chain, or a repeated ordinal, fails. |
+| Second verdict whose previous-verdict field names the first | A broken or reordered chain, a repeated ordinal, or a predecessor that fails its own grant, contract, rules or signature check fails. |
+| A valid frame for grant B in the transaction that spends B's seal by the issuer | The same frame in a transaction that spends another grant's seal, in one that spends no seal, and in a spend of B's seal through the recipient's branch is not evidence about B. B's closure follows only from its own seal. |
+| Valid termination whose record is fetched and verifies | The same termination read while the record is unavailable has the state "not established", and after recovery "verified"; reporting it as without cause is wrong. A fetched record with a wrong hash or a bad signature is "invalid", a different state. |
 | Issuer seal spend with a valid reference, and one without any `OP_RETURN` | Both close the grant; keeping a grant open because the reference is missing, malformed or unfetchable is wrong. |
 | Disclosed request and response bytes that hash to the record's two hashes | Other bytes fail; the record alone is not accepted as proof of content. |
 | A first verdict that the rules treat as a warning | No transaction is required and the grant stays open; closing on a verdict without a seal spend is wrong. |
