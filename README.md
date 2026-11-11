@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.15
+**Version:** 0.1.16
 
 **Date:** 2026-11-11
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.15
+## Draft profiles and design decisions in v0.1.16
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -131,6 +131,15 @@ refers to the verdict in a LIP-0005 frame with action `0x03`. Closure still
 follows the seal spend alone, and a refund is a contract term. It records Ivan
 Oparin's decisions of 2026-11-11 and awaits the co-author's agreement. Nothing
 of it is implemented.
+
+On 2026-11-11 Ivan Oparin also decided six points that the drafts had
+listed as open. In LIP-0010: a duplicate or aliased `nostr` refuses the whole
+value, and the pair rule covers every `id/` name with a `d/` counterpart. In
+LIP-0008: a window may not open below the committed block's height; the
+invocation's `iat`/`exp` stay in clock time; the revocable-only seal uses the
+single-key script of its construction profile; non-hardened seal indices are
+the default, with the extended public key as the operator's secret. The
+co-author's agreement on all of them is pending.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

@@ -588,7 +588,7 @@ These are logical names; their encoding needs fixtures like every other field.
    enters this comparison, and no grace is added.
 3. Let `R` be the height of the committed recent block. A grant with
    `not_before_height < R` MUST refuse. This is a policy against backdated
-   windows, proposed here and not yet decided. It is not a cryptographic
+   windows, decided by Ivan Oparin on 2026-11-11. It is not a cryptographic
    necessity: the committed block bounds when the grant was constructed and
    does not by itself bound the window an issuer may sign.
 4. Every authority link of section 12 states its window in heights. A child
@@ -628,8 +628,8 @@ mirrors the two heights exactly, and a mismatch refuses like any other
 mirrored term. A date is never an admission input.
 
 The invocation keeps its own short interval in signed clock time, `iat` and
-`exp` (section 12.5). One request lives for seconds, which is below the
-resolution of a block. V3 keeps `not_before` and `not_after` in Unix seconds.
+`exp` (section 12.5); Ivan Oparin decided this on 2026-11-11. One request
+lives for seconds, which is below the resolution of a block. V3 keeps `not_before` and `not_after` in Unix seconds.
 
 ### 8. Typed signing and canonicalization plan
 
@@ -836,9 +836,10 @@ Hardened seal indices, `…/0'/<i>'`, remove the weakness. They also remove
 public derivation: an extended public key no longer yields the seal keys.
 The watch-only node then imports each seal script one by one, from the
 endorsement or the signer's journal, and a lost journal cannot be rebuilt by
-scanning from a public key. The proposal keeps
-non-hardened indices and treats the extended public key as a secret of the
-operator. A deployment that must hand that key to another party uses
+scanning from a public key. Non-hardened indices are the default, with the
+extended public key kept as a secret of the operator; Ivan Oparin decided
+this on 2026-11-11, together with the single-key script of the
+revocable-only seal in each construction profile. A deployment that must hand that key to another party uses
 hardened indices instead; rule 4 makes the two interchangeable for a
 verifier.
 
@@ -1130,12 +1131,9 @@ This is a conformance plan, not a published runner or interoperability result.
 - Owner-key encoding and supported scripts; proof of current unspent name
   outputs, reorg policy, channel profiles beyond Nostr and Matrix key support;
   whether a grant by name may restrict the channels it admits.
-- Whether the rule `not_before_height >= R` of section 7.1 is retained as
-  policy; it needs an explicit decision.
 - Height windows: the recency bound between the committed block and the tip,
-  whether the invocation's `iat`/`exp` also move to heights, and how the
-  consent event's NIP-01 `created_at`, which stays in seconds, relates to the
-  window.
+  and how the consent event's NIP-01 `created_at`, which stays in seconds,
+  relates to the window.
 - Implementation and qualification of the decided 60/90-minute risk cutoffs;
   explicit freshness/clock measure, independent-node health criteria and
   block-recency policy.
@@ -1154,7 +1152,7 @@ This is a conformance plan, not a published runner or interoperability result.
 - T/L/A and same-chain payment dependency proofs under the explicit W exceptions
   and L confirmation barrier, transaction authorization and fee/settlement
   control; qualification of the per-seal derivation of section 11.1, the
-  choice between non-hardened and hardened seal indices with the custody
-  boundary of the account's extended public key, the output profile of the
+  custody boundary of the account's extended public key under the decided
+  non-hardened default, the output profile of the
   single-use seal, custody/recovery and endorsement format; public runner
   and independent Swift implementation.

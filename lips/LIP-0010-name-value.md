@@ -26,7 +26,8 @@ profile, and no implementation of these rules is claimed.
 
 ## Decisions recorded
 
-Ivan Oparin decided the following on 2026-11-10. The LIP stays Draft until the
+Ivan Oparin decided D1 to D4 on 2026-11-10 and D5 and D6 on 2026-11-11. The
+LIP stays Draft until the
 co-author agrees; adoption follows LIP-0001.
 
 | Decision | Direction |
@@ -35,6 +36,8 @@ co-author agrees; adoption follows LIP-0001.
 | D2. Agent key once | The agent key appears once, in `nostr.names._`, following NIP-05. `swarma.agent` keeps only `landlord`. The verifier reads the agent key from `nostr`, so `nostr` becomes mandatory for an agent name. The rule behind it: each entity is self-sufficient, and links exist only where they are needed. |
 | D3. Both forms of `nostr` | The reader accepts `"nostr":"<hex>"` and the NIP-05 object `{"names":…,"relays":…}`. Both yield the same key for `_`. A shape the reader does not understand does not invalidate the `swarma` authority. |
 | D4. `d/` optional | In the protocol `d/` is discovery only and confers no authority. Deployment registers `d/<label>` and `id/<label>` as a pair. |
+| D5. Duplicate or aliased `nostr` | A duplicate or a fold alias of `nostr` at the top level refuses the whole value, like one of `swarma` (section 2 rule 2). The alternative, reading an unambiguous `swarma` and treating such a `nostr` as yielding no key, is not taken. |
+| D6. Breadth of the pair rule | The deployment registers `d/<label>` for every `id/` name that has a `d/` counterpart, agents included (section 7). |
 
 ## Motivation
 
@@ -349,13 +352,6 @@ controls; each rejected case leaves no binding and no closure:
 
 - Exact canonical bytes of `swarma` once the next format moves to RFC 8785,
   and whether a reader checks member order inside `swarma`.
-- Section 2 rule 2 refuses the whole value for a duplicate or a fold alias of
-  `nostr`. The alternative reads an unambiguous `swarma` and treats such a
-  `nostr` as yielding no key. The four recorded decisions do not settle
-  this; it needs an explicit choice.
-- Section 7 pairs every `id/` name that has a `d/` counterpart, agents
-  included. A narrower inventory, for example landlord names only, is a
-  deployment choice that is not recorded yet.
 - The date after which readers stop accepting the LIP-0004 agent value.
 - A third `nostr` shape, an object with `pubkey` and a relay array, appears in
   one client's notes for `id/` names and is absent from the draft NIP-N0. It

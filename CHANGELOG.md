@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.16 — 2026-11-11
+
+Records six decisions of Ivan Oparin of 2026-11-11 on points that the drafts
+listed as open; the co-author's agreement is pending. No rule changes: each
+text already described the decided option.
+
+LIP-0010: D5, a duplicate or a fold alias of `nostr` at the top level refuses
+the whole value; D6, the pair rule covers every `id/` name that has a `d/`
+counterpart, agents included. The two matching open questions are removed.
+
+LIP-0008: the rule that a window may not open below the committed recent
+block (section 7.1 rule 3) is decided policy; the invocation's `iat`/`exp`
+stay in clock time; the single-key script of the revocable-only seal per
+construction profile and non-hardened seal indices by default, with the
+extended public key as an operator secret, are decided (section 11.1). The
+matching open questions and index rows are updated. The universal seal-script
+restriction withdrawn in 0.1.13 stays withdrawn; the single-use seal's output
+profile stays open.
+
 ## 0.1.15 — 2026-11-11
 
 Adds Draft LIP-0011, Termination for violation, by decisions of Ivan Oparin
