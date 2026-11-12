@@ -85,7 +85,9 @@ key are its first two rows, and the principal's Nostr key is the personal
 key that the deployment policy above keeps apart from the grant key. Under
 K2 the name-owner key of an agent name is one of its operator's cold keys,
 and the agent's Nostr key is the fifth row. How an agent's Nostr key reaches
-its gateway is not decided.
+its gateway is not decided; the last section of this map proposes a flow.
+The trust anchor that K4 waits for is proposed in
+[LIP-0015](lips/LIP-0015-trust-root-and-statements.md).
 
 ## Grant v3: clarifications for names and keys
 
@@ -177,3 +179,77 @@ takes a 32-byte digest and does not hash input again (`docs/nostr.md`). So
 there is no grant-key purpose, no seal spend and no typed display yet, and a
 name whose owner key that interface holds cannot be updated until it signs
 name operations.
+
+## Proposed key layout and registration flow
+
+The two parts of this section are proposals. Nothing in them is decided.
+Each owner decides the layout for their own side; both owners decide the
+registration flow.
+
+### Key layout
+
+K1 names three keys and says nothing about where they come from. If all
+three are derived from one seed, the backup of that seed is the root of the
+name, the funds and the grant key together. The proposal keeps the
+name-owner key on a seed of its own and gives every other purpose its own
+hardened account:
+
+| Purpose | Derivation | Holder | Replaced by |
+| --- | --- | --- | --- |
+| Principal's Nostr key, also the grantee key in Goal 1 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
+| Funding | `m/84'/7'/0'` | The owner's key service, with presence | Moving the funds |
+| Name owner | A separate seed; BIP-84 `m/84'/7'/0'`, one fresh address per name | The owner only, never on an agent host | A name update to a new owner address |
+| Grant key | `m/44'/1237'/1'/0/g'`, with a hardened generation `g` | The owner's key service, with presence per signature and typed display | Generation `g+1`, then an update of `swarma.landlord.grant`, which ends the v3 grants of the old key |
+| Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service (LIP-0014 section 6.3) | An update of the notary's own name |
+| Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
+| v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
+
+Three reasons carry the layout. The grant key sits under coin type 1237 and
+not under Namecoin's coin type 7: a Namecoin wallet restored from the same
+seed then never scans it, and so never offers the v3 seals, which pay the
+grant key, as coins to spend. Spending them would revoke the grants. A
+hardened generation means that one leaked grant key reveals no other
+generation. And a name-owner key on its own seed does not share a backup
+with keys that are used every day; a party that obtains the name-owner key
+can move the name before its owner replaces anything.
+
+Inside one account the levels below the account are not hardened. An
+extended public key together with one private key below it reveals the
+account's other private keys (LIP-0008 section 11.1), so name outputs do not
+share an account with funding addresses.
+
+Backups: two offline copies of the main seed in two places, the name-owner
+seed on paper only, and beside each a public description of paths, account
+indices, generations and names, so that a restore does not depend on memory.
+
+The alternative is one seed for everything: fewer backups, and one root.
+
+### Registering an agent's identity
+
+Under K2 the operator owns the agent's name and the agent holds only its
+Nostr key. The proposed flow lets no private key leave the host that
+generated it, and needs no signature by the operator's own keys at
+registration:
+
+1. The agent's gateway host generates the agent's Nostr key and prints only
+   the public key.
+2. The operator compares that public key on a second channel.
+3. The value is built by the reference builder in the exact LIP-0004 agent
+   shape, with the key in `swarma.agent.nostr` and in `nostr.names._`, until
+   LIP-0010 readers are deployed.
+4. The funding wallet registers the name. It signs the reservation and,
+   after the maturity depth, the first update, whose destination is a fresh
+   name-owner address of the operator, derived from the operator's
+   name-owner public account. That the first update accepts a destination
+   on Namecoin Core 28 is not verified; it is to be checked on regtest
+   first.
+5. Both owners' nodes then show the name as an agent name with the gateway's
+   key, a landlord pointer that resolves to a grant key, and the derived
+   address as the owner.
+6. Later updates, such as a new Nostr key, are signed by the name-owner key.
+   For a name whose owner key a key service holds, they wait until that
+   service signs name operations.
+
+The alternative derives agent keys from the operator's seed and exports them
+to the gateway. It allows a restore of an agent key from the seed and needs
+an export interface; a lost agent key can instead be replaced by an update.

@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.21
+**Version:** 0.1.22
 
 **Date:** 2026-11-12
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.21
+## Draft profiles and design decisions in v0.1.22
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -200,6 +200,23 @@ table gives the effect of each name change on v3 and on v4. No agent holds a
 grant key on v3. The landlord pointer is a name on v3 and binds a
 registration and owner key only in v4. Three requirements on a key service
 follow: a grant-key purpose, presence per signature and typed display.
+
+Two further drafts are proposals with nothing decided; both owners decide
+them. [LIP-0015](lips/LIP-0015-trust-root-and-statements.md) proposes the
+trust anchor that signed configuration waits for: a pin written at
+installation outside the agent's reach, the root name resolved on the
+loader's own node, and typed statements signed by the grant key under
+separate signing domains, for configuration sections, root rotation and
+certificates that bind other keys to a name. A statement binds and gives no
+authority. [LIP-0016](lips/LIP-0016-certificate-store.md) proposes the store
+for such statements: signed records, a signed head over the complete set
+anchored as LIP-0005 action `0x06`, each anchor spending the previous head's
+output, and hosts trusted for availability only. The key map adds a proposed
+key layout, with the name-owner key on a seed of its own, and a proposed
+flow for registering an agent's identity in which no private key leaves its
+host. LIP-0010 section 8 adds a proposed plan for the 520 bytes of a value.
+An organization identity and release statements for binaries are sketches
+in LIP-0015 and are not proposed.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

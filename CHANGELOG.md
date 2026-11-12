@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.1.22 — 2026-11-12
+
+Adds two Draft proposals in which nothing is decided; both owners decide
+them. LIP-0015, Trust-root pin and typed statements, proposes the trust
+anchor that the owners' decision K4 of 2026-11-12 waits for: a pin written
+once at installation where the agent's OS user cannot write, naming the root
+name with its registration, owner script and grant key; resolution of that
+name on the loader's own node at every load; a separate signing domain for
+every kind of object the grant key signs; configuration statements with a
+sequence number against rollback; a root rotation statement; and certificate
+statements that bind messaging, commit-signing and release keys to a name
+without giving authority. LIP-0016, Certificate store, proposes where such
+statements are published: signed records, a signed head over the complete
+set, an anchor as LIP-0005 action `0x06` whose transaction spends the
+previous head's output, and providers trusted for availability only, so that
+a dropped record and a withheld newer head are both detected.
+
+The key map gains two proposals: a key layout with the name-owner key on a
+seed of its own and a hardened account per purpose, and a flow for
+registering an agent's identity in which the gateway generates the agent's
+key and the funding wallet registers the name to the operator's owner
+address. LIP-0010 section 8 gains a proposed plan for the 520 bytes: a name
+carries only keys a reader must resolve on chain, and other bindings go to
+the certificate store. An organization identity and release statements for
+binaries are recorded as sketches in LIP-0015 and as open questions. LIP-0005
+lists action `0x06` as proposed. Nothing is implemented.
+
 ## 0.1.21 — 2026-11-12
 
 The key map records four owners' decisions of 2026-11-12. A principal has

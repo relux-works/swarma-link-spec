@@ -304,6 +304,20 @@ so a record holds the root and five agents with labels of up to 15
 characters. The typed service declaration of LIP-0007 is not counted here and
 needs its own budget inside the same 520 bytes.
 
+**Budget plan (proposal, not decided; deciders: the specification's
+authors).** A landlord value with a NIP-05 object and one relay takes 294
+bytes and leaves 226. The plan keeps it that way:
+
+1. A name carries only the keys that some reader must resolve on chain: the
+   grant key or the notary key in `swarma`, and the Nostr key in `nostr`.
+2. Every other key or binding is a signed statement in the certificate store
+   of [LIP-0016](LIP-0016-certificate-store.md), anchored by LIP-0005
+   frames: messaging device keys, commit-signing keys, release keys and
+   organization membership.
+3. A further key enters a name only when a verifier must resolve it on
+   chain, and then with a shape of its own in this LIP.
+4. About 150 bytes stay reserved for the service declaration of LIP-0007.
+
 ### 9. Notary name (Draft amendment of 2026-11-12)
 
 A verifier of a child grant must learn a notary's key from a source that the
