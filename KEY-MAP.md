@@ -219,7 +219,7 @@ grant key on a Mac lives in the macOS Keychain, not in the keyvault:
 
 | Requirement | How K5 meets it |
 | --- | --- |
-| A grant-key purpose of its own on secp256k1 | One Keychain item holds one software secp256k1 key that is used for nothing else. It signs grants under BIP-340 and spends v3 seals under ECDSA. The Secure Enclave holds P-256 keys only, so on a Mac a secp256k1 key is a software key in either custody. |
+| A grant-key purpose of its own on secp256k1 | One Keychain item holds one software secp256k1 key that is used for nothing else. It signs grants under BIP-340 and spends v3 seals under ECDSA. The Secure Enclave holds no secp256k1 keys (its elliptic-curve keys are P-256), so on a Mac a secp256k1 key is a software key in either custody. |
 | Presence per signature | The item is read under Touch ID, once for every signature. |
 | Typed display | Before the prompt the signer shows every field of what is signed: the grant, the contract behind `landlord_sig`, the seal spend. |
 
