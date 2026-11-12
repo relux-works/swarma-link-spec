@@ -22,7 +22,9 @@ table lists where each key is published before and after LIP-0010 readers.
 Three requirements on a key service follow from the grant key's formats: a
 grant-key purpose with BIP-340 and, on v3, an ECDSA seal spend; presence per
 signature; and typed display with the hash computed by the service. The
-keyvault interface at `swarma-keyvault` `41e0c71` meets none of them yet.
+keyvault interface at `swarma-keyvault` `662623f9` prepares the grant root
+by BIP-85 at `m/83696968'/2'/7'` and does not sign with it yet. A grant key
+is replaced by a new recovery group.
 LIP-0010 section 6 states the v3 cost of rewriting a name before its readers
 are upgraded.
 
