@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.19
+**Version:** 0.1.20
 
 **Date:** 2026-11-12
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.19
+## Draft profiles and design decisions in v0.1.20
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -101,8 +101,8 @@ re-delegation, and a child is never broader than its parent. Both owners
 concur. Issuance by the operator's signer is implemented first; re-delegation
 follows once the breadth check is designed. Scope written in words is not
 checked by a verifier; a separate check by a notary is the decided mechanism,
-and LIP-0012 proposes the notary. Whether a notary attestation is mandatory
-for every such child is proposed and not decided.
+and LIP-0012 proposes the notary. Since 2026-11-12 a notary attestation is
+mandatory for every child, whatever its scope (LIP-0014).
 A reserved stateless `policy` form has no adopted syntax or evaluator. These
 are Swarma requirements with UCAN provenance, not UCAN compatibility; exact
 wire profiles and the post-freeze qualification spike remain open.
@@ -169,6 +169,22 @@ first proof has passed and both owners approve enforcing mode. Draft
 vectors in [`vectors/LIP-0013/`](vectors/LIP-0013/) are recomputed by the
 reference checker in [`tools/trustcheck`](tools/trustcheck). Nothing of it is
 implemented in a product.
+
+[LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) proposes
+notary-certified re-delegation and records the owners' decisions of
+2026-11-12. Every child grant is admitted only with a valid notary
+attestation, and every verifier still checks the countable conditions of the
+child itself: a wider child refuses for that reason even when it is
+certified. The parent's signed right of re-delegation names one to four
+notaries by `id/` name; each publishes its attestation key in its own name,
+in a `swarma` shape that a Draft amendment of LIP-0010 proposes. The notary
+is neither the delegator nor the delegatee. On Grant v3 the landlord's
+signer issues the child on a signed request of the parent's grantee, under
+contract profile `swarma-trust-contract/2`, and no v3 byte changes. The
+draft proposes the attestation object, its anchor as LIP-0005 action `0x04`,
+the order of an executor's checks and the refusal codes. It belongs to the
+second phase of Goal 1: after the first proof, in shadow mode first, and no
+part of the first proof. Nothing of it is implemented.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

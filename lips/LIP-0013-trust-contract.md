@@ -5,6 +5,9 @@
 - **Affects:** the contract preimage of v3 trust grants, agent-to-agent
   instructions, admission of a peer instruction by an executor
 - **Builds on:** LIP-0004; relates to LIP-0007 and LIP-0008
+- **Extended by:** LIP-0014, which proposes profile `swarma-trust-contract/2`
+  with a parent binding and a right of re-delegation; a reader of profile
+  `/1` refuses it as `CONTRACT_PROFILE`
 - **Vectors:** [`vectors/LIP-0013/trust-vectors.json`](../vectors/LIP-0013/trust-vectors.json),
   checked by [`tools/trustcheck`](../tools/trustcheck)
 

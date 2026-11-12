@@ -39,6 +39,11 @@ co-author agrees; adoption follows LIP-0001.
 | D5. Duplicate or aliased `nostr` | A duplicate or a fold alias of `nostr` at the top level refuses the whole value, like one of `swarma` (section 2 rule 2). The alternative, reading an unambiguous `swarma` and treating such a `nostr` as yielding no key, is not taken. |
 | D6. Breadth of the pair rule | The deployment registers `d/<label>` for every `id/` name that has a `d/` counterpart, agents included (section 7). |
 
+The owners decided on 2026-11-12 that a notary publishes its attestation key
+in its own `id/` name ([LIP-0014](LIP-0014-notary-certified-redelegation.md),
+D3). Section 9 is a Draft amendment that proposes the shape for it. The
+shape itself is not decided.
+
 ## Motivation
 
 The reference reader of the landlord profile compares the complete value with
@@ -118,12 +123,14 @@ a second `swarma` is refused before anything is read.
 
 ### 3. `swarma` stays strict
 
-`swarma` is a JSON object with exactly one member, `landlord` or `agent`:
+`swarma` is a JSON object with exactly one member: `landlord`, `agent` or,
+under the amendment of section 9, `notary`:
 
 | Name | Value of `swarma` | Meaning |
 | --- | --- | --- |
 | Landlord name | `{"landlord":{"grant":"<grant key>"}}` | The key that signs grants issued under this name. |
 | Agent name | `{"agent":{"landlord":"<landlord name>"}}` | The landlord name whose grant key issues grants for this agent. |
+| Notary name (section 9) | `{"notary":{"attest":"<attestation key>"}}` | The key that signs this notary's attestations. |
 
 A key is a valid secp256k1 x-only public key written as 64 lowercase
 hexadecimal characters. Inside `swarma` a reader MUST refuse a missing,
@@ -279,6 +286,9 @@ and `"name":"Cedar"`:
 | Agent, NIP-05 object and one relay | 240 | 280 |
 | Agent, NIP-05 object and two relays | 264 | 256 |
 | Agent, NIP-05 object, `email` and `name` members of the owner | 180 | 340 |
+| Notary (section 9), no `nostr` | 99 | 421 |
+| Notary, key string | 174 | 346 |
+| Notary, NIP-05 object | 190 | 330 |
 | `d/` record, root key only | 92 | 428 |
 | `d/` record, root key and one agent label `cedar` | 167 | 353 |
 
@@ -287,6 +297,44 @@ One more agent in a `d/` record costs 70 bytes plus the length of its label,
 so a record holds the root and five agents with labels of up to 15
 characters. The typed service declaration of LIP-0007 is not counted here and
 needs its own budget inside the same 520 bytes.
+
+### 9. Notary name (Draft amendment of 2026-11-12)
+
+A verifier of a child grant must learn a notary's key from a source that the
+notary alone controls and that the parent grant can name. The parent names
+the notary by `id/` name ([LIP-0014](LIP-0014-notary-certified-redelegation.md)
+section 7), and that name's value carries the key in a third `swarma` shape:
+
+```json
+{"swarma":{"notary":{"attest":"<attestation key>"}}}
+```
+
+1. `notary` is an object with exactly one member, `attest`, a key under the
+   rules of section 3. The strictness of section 3 applies unchanged: a
+   missing, additional, duplicate, reordered, `null` or aliased member
+   refuses.
+2. A name has one shape. A value whose `swarma` holds `notary` together with
+   `landlord` or `agent` refuses. A party that is a landlord or an agent and
+   also certifies uses a separate name for the notary role.
+3. The attestation key signs attestations and nothing else. It issues no
+   grant, and a grant signed by it refuses. It is a different key by role
+   from a grant key and from the key that `nostr` yields; a reader permits
+   equal keys and never requires or infers equality.
+4. `nostr` is optional in a notary value and names the key under which the
+   notary can be reached. It confers no authority.
+5. An update that changes `attest` changes which attestations verify:
+   those signed by the old key refuse, and the notary signs them again
+   under the new key. The update closes no grant: a child certified under
+   the old key refuses until it is certified again, and grants that name
+   the notary by name are not reissued.
+6. Only the checks of LIP-0014 read this shape. A LIP-0004 reader refuses a
+   notary value as an unknown shape, which is harmless: no v3 grant check
+   reads a notary's name.
+
+The list of a principal's notaries is not a member of the principal's own
+value. It is signed in each parent grant (LIP-0014 section 2). A list in the
+value would be read at check time and not at issuance, and a member added
+to `swarma` refuses under section 3.
 
 ## Alternatives
 
@@ -346,6 +394,7 @@ controls; each rejected case leaves no binding and no closure:
 | LIP-0004 agent value read by a transition reader | Its equality rule holds; a key string or owner members in that form refuse. |
 | Every size in section 8 recomputed from its bytes | A value of 521 bytes refuses. |
 | `id/<label>` with and without a registered `d/<label>` | The grant verdict is the same in both cases. |
+| Notary value with `attest` alone, with and without `nostr` (section 9) | `notary` beside `landlord` or `agent`, a second member inside `notary`, and an `attest` that is not a valid key refuse. A change of `attest` closes no grant. |
 | Pairing applied to `id/alice-cedar`, `id/123four` and `id/xn--bcher-kva` | Requiring a pair for `id/123`, `id/alice_cedar` or `id/alice.cedar` is wrong: `d/` admits no such name. Excluding the `xn--` name from pairing is wrong. |
 
 ## Open questions
@@ -360,6 +409,9 @@ controls; each rejected case leaves no binding and no closure:
   owner members.
 - Whether a transfer of `id/<label>` requires the transfer of `d/<label>` in
   the same deployment procedure.
+- Whether a v4 parent pins a notary name by its registration and owner key
+  (LIP-0012 open questions), and whether the notary shape needs a member for
+  a second, pending key during a rotation.
 - Decision record, normative adoption and public vectors.
 
 ## Sources

@@ -1015,8 +1015,9 @@ signature per message.
 #### 12.6. Re-delegation (decision of 2026-11-11)
 
 Ivan Oparin decided the following on 2026-11-11, and Alexey Grigorev
-concurred the same day and added the staging of R6. Nothing of it is
-implemented.
+concurred the same day and added the staging of R6. The owners' decision of
+2026-11-12 on notary certification follows the table and the comparison of
+the two ways of issuing. Nothing of either is implemented.
 
 | Decision | Direction |
 | --- | --- |
@@ -1050,43 +1051,61 @@ parent issued by key, that is the grantee key. For a parent issued by name,
 it is the key the name's value yields for the selected profile under
 section 3.1. An agent's name value carries no `swarma.grant` member
 ([LIP-0010](LIP-0010-name-value.md)), so the issuer rule of section 3
-applies to the root of the path only. Whether an agent that re-delegates
-needs a grant key of its own, separate from its channel key, is open.
+applies to the root of the path only. On v3 only the landlord's grant key
+signs a grant (LIP-0004 section 2), so an agent signs no child there: the
+landlord's signer issues the child on the delegator's signed request
+([LIP-0014](LIP-0014-notary-certified-redelegation.md) section 5). Whether
+an agent that re-delegates on v4 needs a grant key of its own, separate from
+its channel key, is open.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and
-numeric ceilings and refuses unknown constraint semantics. Two things are to
-be kept apart here.
+numeric ceilings and refuses unknown constraint semantics. Two decisions
+cover them.
 
-Decided: a separate mechanism is required to verify that a child's textual
+Decided on 2026-11-11: a separate mechanism is required to verify that a child's textual
 scope does not exceed its parent's (R3), and the party that performs this
 check for a re-delegated grant is the notary. A verifier's own mechanical
 check never establishes that textual scope is within the parent's, and
 nothing in this section lets a verifier treat it as established.
 
-Not decided: whether every child with textual scope must carry a notary
-attestation that the verifier checks at admission. That universal rule is
-proposal (e) below. Until it is decided, an attestation is required where
-the grant, the right of re-delegation or the verifier's policy requires it;
-R4 recommends requiring it in sensitive scenarios.
+Decided on 2026-11-12 by the owners: every child grant carries a notary
+attestation that the verifier checks at admission, whatever the child's
+scope. A child without a valid attestation refuses. The attestation is
+required in addition to the mechanical checks of section 12.2 and never in
+place of one: a child that is wider in an action set, a ceiling, a budget or
+a window refuses for that reason even when it is certified. The same
+decision fixes these points, recorded as D1 to D12 in
+[LIP-0014](LIP-0014-notary-certified-redelegation.md):
+
+| Point | Decision of 2026-11-12 |
+| --- | --- |
+| Which children | Every child is certified (D1). A root grant with a right of re-delegation names its notaries and needs no attestation (D2). |
+| Who certifies | The parent's signed right of re-delegation names one to four notaries by name; each publishes its attestation key in its own name (D3). One of them is enough (D9). The notary is the issuer's within one owner and an agreed third party across owners (D8). |
+| Budgets | Children draw on a separate pool that the parent signs, in partitions (D6). |
+| Depth | Two links (D7). |
+| Withdrawal | Durable; the same child may be certified again after a plain withdrawal and may not after one for cause (D5). |
+| Anchor and cost | One LIP-0005 frame per attestation (D10); the issuer pays within one owner, the contract decides across owners (D11). |
+| Staging | After the first proof of LIP-0013, in shadow mode first; enforcing mode for children needs each owner's separate approval (D4). In Goal 1 `instruct`, `review` and `land` are delegable and `spend` is not (D12). |
 
 The notary is a party that compares a child with its parent and
-certifies that the child does not exceed it. The notary is proposed in
-[LIP-0012](LIP-0012-notary.md).
+certifies that the child does not exceed it. [LIP-0012](LIP-0012-notary.md)
+proposes the role, and LIP-0014 proposes the fields, the checks and their
+order.
 
-Re-delegation waits for the breadth check (R6). No such mechanism is
-designed for conditions in words, and the co-author's stated reason for the
-staging is that it is not yet clear how to check them. Five ways to
-strengthen the "not broader" check are proposed and not decided; they are
-the candidates for that mechanism:
+The breadth check that R6 waits for is now designed in LIP-0014, as a draft
+without an implementation: the countable part is checked by every verifier,
+and the part in words by the notary. Of the five ways to strengthen the "not
+broader" check that this section proposed on 2026-11-11, the decision of
+2026-11-12 settles three:
 
-| Proposal | What section 12 says today |
+| Proposal | State after the decision of 2026-11-12 |
 | --- | --- |
-| (a) Machine-readable scope: actions and resources as structured caveats, so that a child's scope is a subset any verifier can check | Known action sets and numeric ceilings must not widen; unknown constraint semantics refuse. No caveat language is adopted (section 12.4 reserves a stateless policy form). |
-| (b) A maximum re-delegation depth in the parent grant; 0 means no right of re-delegation | One maximum for every grant: two links. |
+| (a) Machine-readable scope: actions and resources as structured caveats, so that a child's scope is a subset any verifier can check | Not decided. Known action sets and numeric ceilings must not widen; unknown constraint semantics refuse. No caveat language is adopted (section 12.4 reserves a stateless policy form). |
+| (b) A maximum re-delegation depth in the parent grant; 0 means no right of re-delegation | Decided: two links (D7). LIP-0014 proposes the member `depth` with the values 0 and 1. |
 | (c) The child commits the parent's grant ID, and the verifier walks the chain to the root | Already required. |
-| (d) The sum of the children's budgets does not exceed the parent's, enforced at spend time, on chain where possible | Enforced by the authoritative executor journal before the effect. No on-chain enforcement is described. |
-| (e) A notary attestation is required for any child whose scope is free text | [LIP-0012](LIP-0012-notary.md) proposes the notary and how a grant requires one; whether free-text scope always requires it is not decided. |
+| (d) The sum of the children's budgets does not exceed the parent's, enforced at spend time, on chain where possible | Decided: a separate signed pool with a partition per child (D6), serialized at issuance and enforced by each executor's journal. No on-chain enforcement is described. |
+| (e) A notary attestation is required for any child whose scope is free text | Decided more broadly: for every child (D1). |
 
 ## Alternatives
 
@@ -1202,11 +1221,11 @@ This is a conformance plan, not a published runner or interoperability result.
   encoding, time units/ranges, nonce/replay keys and bounded proof resolution;
   capability registry grammar, leaf assignments and existing-action mappings.
   The `swarma/` reservation and exact-match rule add no deployed action strings.
-- Explicit issuance-capability profile; the breadth-check mechanism that
-  re-delegation waits for (section 12.6, R6), with five candidates: structured
-  scope, per-grant depth, on-chain budget enforcement and a required notary
-  attestation for textual scope; whether a re-delegating agent needs a grant
-  key of its own, separate from its channel key; parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
+- Explicit issuance-capability profile; the v4 bytes of the breadth check
+  that LIP-0014 drafts for v3 (section 12.6); structured scope and on-chain
+  budget enforcement, which stay proposed; whether a re-delegating agent on
+  v4 needs a grant key of its own, separate from its channel key;
+  parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
   budget accounting, recovery and executor partitions. Depth is at most two
   signed authority links; exact wire/consent and accounting fixtures remain open.
 - Signed metadata envelope, canonical object-ID preimages/signature inclusion,

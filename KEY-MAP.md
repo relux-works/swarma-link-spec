@@ -11,7 +11,11 @@ qualification, recovery and migration remain open. Distinct seal
 addresses reduce one linkage source; names/funding/anchors remain observable.
 Draft LIP-0012 adds a notary key that signs attestations and a notary seal
 that only the notary spends; neither is in the table below, and the notary
-key signs no grant.
+key signs no grant. Draft LIP-0014 names where they live: the attestation
+key is published in the notary's own `id/` name, in the `swarma.notary`
+shape that LIP-0010 section 9 proposes, and is replaced by an update of that
+name; the seal pays a different key; and the attestation key is held by a
+key service that signs on request and does not export it.
 
 Informative custody map for the rental and wallet profiles, not normative adoption.
 Deployment policy keeps the landlord grant key separate from the owner's personal Nostr key.

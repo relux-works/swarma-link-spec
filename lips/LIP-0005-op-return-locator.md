@@ -40,7 +40,9 @@ Readers refuse every other encoding: OP_PUSHDATA1/2/4, a split id, OP_1..OP_16 f
 | `0x01` | grant issuance | `version(1) || commitment(32) || locator` |
 | `0x02` | anchor batch | `version(1) || batch_commitment(32) || locator` |
 | `0x03` | termination for violation, proposed in [LIP-0011](LIP-0011-termination-for-violation.md); the reference parser does not accept it | `version(1) || termination_commitment(32) || locator` |
-| `0x04`-`0x7f` | reserved for Swarma Link | — |
+| `0x04` | notary attestation, proposed in [LIP-0014](LIP-0014-notary-certified-redelegation.md); the reference parser does not accept it | `version(1) || attestation_commitment(32) || locator` |
+| `0x05` | notary withdrawal for cause, proposed in LIP-0014; the reference parser does not accept it | `version(1) || withdrawal_commitment(32) || locator` |
+| `0x06`-`0x7f` | reserved for Swarma Link | — |
 | `0x80`-`0xff` | experimental / private use | — |
 
 `commitment` for `0x01` is the issuance commitment defined by LIP-0004 (landlord grants):
@@ -71,7 +73,8 @@ endpoint or trigger a fetch. No new name field is implied by this format.
 
 Reserved and experimental ranges are allocations for future profiles, not
 currently accepted values. The reference parser accepts only the two defined
-actions and the five defined location types, with their exact pointer lengths.
+actions, `0x01` and `0x02`, and the five defined location types, with their
+exact pointer lengths. Actions `0x03` to `0x05` are proposals of Draft LIPs.
 
 ### Sizes
 

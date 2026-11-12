@@ -33,8 +33,11 @@ budgets, parent closure and delegation-chain verification. Neither `deliver`
 nor `pay` implies delegation. An agent's v3 messaging key gains no grant-issuing
 role. This capability is outside the current rental rehearsal and the wallet
 v1 actions; it has no adopted wire format or implementation claim here.
-General agent-issued child grants and sub-delegation remain a separate open
-both-owner decision; the signer capability does not settle that question.
+Agent-issued child grants are since decided as part of the protocol
+(LIP-0008 section 12.6, 2026-11-11), and every child needs a notary
+attestation ([LIP-0014](LIP-0014-notary-certified-redelegation.md),
+2026-11-12). The signer capability described here still authorizes no
+sub-delegation.
 
 ## Motivation
 

@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.1.20 — 2026-11-12
+
+Adds Draft LIP-0014, Notary-certified re-delegation, and records the owners'
+decisions of 2026-11-12 as D1 to D12. Every child grant is admitted only
+with a valid notary attestation, whatever its scope; a root grant with a
+right of re-delegation names its notaries and needs none. The parent's signed
+right of re-delegation names one to four notaries by `id/` name, and each
+notary publishes its attestation key in its own name; one attestation is
+enough. Within one owner the notary is the issuer's, and across owners it is
+an agreed third party. A withdrawal is durable, and the same child may be
+certified again after a plain withdrawal only. Children draw on a separate
+signed pool; depth stays at two links; one LIP-0005 frame anchors each
+attestation. Staging: after the first proof of LIP-0013, in shadow mode
+first, with a separate approval of enforcing mode for children by each
+owner; in Goal 1 `instruct`, `review` and `land` are delegable and `spend`
+is not.
+
+The draft proposes, without deciding them: the seven members of the right of
+re-delegation; contract profile `swarma-trust-contract/2`, which adds a scope
+text hash, the parent's grant id, an ordinal and the right to profile `/1`;
+the kind-8186 delegation request by which the parent's grantee asks the
+landlord's signer for a child on v3; the object
+`swarma-notary-attestation/1` with its signing domain; the anchor as action
+`0x04` and a withdrawal for cause as action `0x05`; the order of an
+executor's checks, in which every mechanical comparison precedes the
+attestation; and the refusal codes, with separate codes for a notary that is
+the delegator, the delegatee or an executor. No v3 byte changes.
+
+Follows the decision in other drafts. LIP-0008 section 12.6 records it and
+marks three of its five proposals as settled. LIP-0012 gains the directions
+N5 to N10 and a section on designation and independence, and closes its
+open points on the anchor, on naming a notary and on withdrawal. LIP-0010
+gains section 9, a Draft amendment with a third `swarma` shape for a
+notary's attestation key. LIP-0005 lists actions `0x04` and `0x05` as
+proposed. LIP-0006 no longer calls agent-issued child grants an open
+decision. Nothing is implemented.
+
 ## 0.1.19 — 2026-11-12
 
 Adds Draft LIP-0013, the trust contract profile `swarma-trust-contract/1` and
