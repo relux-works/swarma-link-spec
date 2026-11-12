@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
@@ -171,4 +173,65 @@ func TestEnvelopeSignatureVerifiesIndependently(t *testing.T) {
 	if !sig.Verify(idb, pk) || e.Pubkey != bip340Index0Public {
 		t.Fatal("E-V1 signature does not verify under bip340-0")
 	}
+}
+
+// Claim: rule 1 (CONTRACT_ENCODING) owns the sign and the character rules of
+// section 2.1 for every member: a minus sign on each integer member, and a
+// non-ASCII character, a control character or an escape other than \" and \\
+// in each string member, refuse as CONTRACT_ENCODING, never as the member's
+// value code. Controls: the unmodified contracts parse, a 281-byte ASCII note
+// is still CONTRACT_NOTE, a budget above the maximum is still CONTRACT_BUDGET
+// and a quote and backslash in note stay valid. Limit: one spelling per
+// member and defect, built from the generator's valid contracts.
+func TestLexicalRulesRefuseAtRuleOne(t *testing.T) {
+	spend := baseContract()
+	spend.Actions, spend.SpendBudget = []string{"instruct", "spend"}, vSpendLimit
+	land := baseContract()
+	land.Actions, land.Repos = []string{"instruct", "land", "review"}, []string{vRepoAlpha}
+	expect := func(name string, raw []byte, want string) {
+		t.Helper()
+		if _, got := ParseContract(raw); got != want {
+			t.Errorf("%s: got %q, want %q (%s)", name, got, want, raw)
+		}
+	}
+	for _, c := range []Contract{baseContract(), spend, land} {
+		expect("control "+strings.Join(c.Actions, ","), compact(c), "")
+	}
+	for _, f := range []string{"spend_budget", "not_before", "not_after"} {
+		raw := string(compact(spend))
+		i := strings.Index(raw, `"`+f+`":`) + len(f) + 3
+		expect("sign "+f, []byte(raw[:i]+"-"+raw[i:]), "CONTRACT_ENCODING")
+	}
+	type mut struct {
+		name string
+		c    Contract
+		f    func(*Contract, string)
+	}
+	muts := []mut{
+		{"profile", baseContract(), func(c *Contract, x string) { c.Profile += x }},
+		{"network", baseContract(), func(c *Contract, x string) { c.Network += x }},
+		{"landlord_name", baseContract(), func(c *Contract, x string) { c.LandlordName += x }},
+		{"agent_name", baseContract(), func(c *Contract, x string) { c.AgentName += x }},
+		{"grantee_key", baseContract(), func(c *Contract, x string) { c.GranteeKey += x }},
+		{"actions", baseContract(), func(c *Contract, x string) { c.Actions = []string{"instruct", "review" + x} }},
+		{"repos", land, func(c *Contract, x string) { c.Repos = []string{vRepoAlpha + x} }},
+		{"note", baseContract(), func(c *Contract, x string) { c.Note = "n" + x }},
+	}
+	for _, m := range muts {
+		for _, x := range []string{"é", "\n", "\t", "\x7f", " "} {
+			c := m.c
+			c.Actions, c.Repos = slices.Clone(m.c.Actions), slices.Clone(m.c.Repos)
+			m.f(&c, x)
+			expect(fmt.Sprintf("char %q in %s", x, m.name), compact(c), "CONTRACT_ENCODING")
+		}
+	}
+	long := baseContract()
+	long.Note = strings.Repeat("a", MaxNoteBytes+1)
+	expect("control note 281 ASCII", compact(long), "CONTRACT_NOTE")
+	over := spend
+	over.SpendBudget = MaxMoney + 1
+	expect("control budget above max", compact(over), "CONTRACT_BUDGET")
+	quoted := baseContract()
+	quoted.Note = `a "quote" and a \ backslash`
+	expect("control quote and backslash", compact(quoted), "")
 }

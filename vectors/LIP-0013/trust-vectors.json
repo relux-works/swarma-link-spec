@@ -260,9 +260,9 @@
     },
     {
       "id": "C-N22-note-non-ascii",
-      "claim": "note with a UTF-8 non-ASCII character",
+      "claim": "a UTF-8 non-ASCII character in note breaks the character rule of section 2.1, rule 1, before the note rule",
       "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"main\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-keeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"review\"],\"repos\":[],\"spend_budget\":0,\"not_before\":1794528000,\"not_after\":1797120000,\"note\":\"café\"}",
-      "expect": "CONTRACT_NOTE"
+      "expect": "CONTRACT_ENCODING"
     },
     {
       "id": "C-N23-profile",
@@ -299,6 +299,30 @@
       "claim": "a network other than main or regtest",
       "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"testnet\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-keeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"review\"],\"repos\":[],\"spend_budget\":0,\"not_before\":1794528000,\"not_after\":1797120000,\"note\":\"\"}",
       "expect": "CONTRACT_FIELD"
+    },
+    {
+      "id": "C-N29-budget-negative",
+      "claim": "a signed integer breaks rule 1 before the budget rule",
+      "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"main\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-keeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"spend\"],\"repos\":[],\"spend_budget\":-1,\"not_before\":1794528000,\"not_after\":1797120000,\"note\":\"\"}",
+      "expect": "CONTRACT_ENCODING"
+    },
+    {
+      "id": "C-N30-not-before-negative",
+      "claim": "a signed not_before breaks rule 1 before the window rule",
+      "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"main\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-keeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"review\"],\"repos\":[],\"spend_budget\":0,\"not_before\":-1,\"not_after\":1797120000,\"note\":\"\"}",
+      "expect": "CONTRACT_ENCODING"
+    },
+    {
+      "id": "C-N31-note-escaped-lf",
+      "claim": "an escape other than quote and backslash in note breaks rule 1 before the note rule",
+      "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"main\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-keeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"review\"],\"repos\":[],\"spend_budget\":0,\"not_before\":1794528000,\"not_after\":1797120000,\"note\":\"a\\nb\"}",
+      "expect": "CONTRACT_ENCODING"
+    },
+    {
+      "id": "C-N32-agent-non-ascii",
+      "claim": "a non-ASCII character in a name breaks rule 1 before the name rule",
+      "contract": "{\"profile\":\"swarma-trust-contract/1\",\"network\":\"main\",\"landlord_name\":\"id/ivanopcode\",\"agent_name\":\"id/ivanopcode-kéeper\",\"grantee_key\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"actions\":[\"instruct\",\"review\"],\"repos\":[],\"spend_budget\":0,\"not_before\":1794528000,\"not_after\":1797120000,\"note\":\"\"}",
+      "expect": "CONTRACT_ENCODING"
     }
   ],
   "bindings": [

@@ -163,7 +163,9 @@ Grant v3. It defines only the preimage of the v3 `contract_sha256`: four
 actions, `instruct`, `land`, `review` and `spend`, the v3 scope and budget each
 one implies, and the consent tags of a trust grant. No v3 byte, signing domain
 or `rental.Check` rule changes. It also proposes the kind-8185 signed
-instruction envelope and the order of an executor's admission checks. Draft
+instruction envelope and the order of an executor's admission checks; an
+executor stays in shadow mode, where peer messages remain data, until the
+first proof has passed and both owners approve enforcing mode. Draft
 vectors in [`vectors/LIP-0013/`](vectors/LIP-0013/) are recomputed by the
 reference checker in [`tools/trustcheck`](tools/trustcheck). Nothing of it is
 implemented in a product.

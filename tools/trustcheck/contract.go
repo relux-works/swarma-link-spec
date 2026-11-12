@@ -166,6 +166,23 @@ func isRepoURL(s string) bool {
 	return true
 }
 
+// lexicallyCanonical applies the section 2.1 rules that re-encoding equality
+// does not decide: no integer carries a sign, and every string value, note
+// included, is printable ASCII (0x20 to 0x7E) after unescaping, so the only
+// escapes the canonical bytes can contain are \" and \\.
+func lexicallyCanonical(c Contract) bool {
+	if c.SpendBudget < 0 || c.NotBefore < 0 || c.NotAfter < 0 {
+		return false
+	}
+	strs := append([]string{c.Profile, c.Network, c.LandlordName, c.AgentName, c.GranteeKey, c.Note}, c.Actions...)
+	for _, s := range append(strs, c.Repos...) {
+		if !isPrintableASCII(s) {
+			return false
+		}
+	}
+	return true
+}
+
 // ParseContract applies LIP-0013 section 2.3 in its fixed order and returns
 // the first refusal code, or "" for a valid contract.
 func ParseContract(raw []byte) (Contract, string) {
@@ -179,8 +196,10 @@ func ParseContract(raw []byte) (Contract, string) {
 		return c, "CONTRACT_ENCODING"
 	}
 	// Exact canonical bytes: field set, order, duplicates, whitespace, number
-	// and string spelling are all decided by re-encoding equality.
-	if c.Actions == nil || c.Repos == nil || !bytes.Equal(compact(c), raw) {
+	// and string spelling are decided by re-encoding equality; the sign and
+	// the character repertoire by lexicallyCanonical. Rule 1 owns every
+	// lexical property, so later rules see only canonical values.
+	if c.Actions == nil || c.Repos == nil || !bytes.Equal(compact(c), raw) || !lexicallyCanonical(c) {
 		return c, "CONTRACT_ENCODING"
 	}
 	if c.Profile != ProfileID {
@@ -189,7 +208,7 @@ func ParseContract(raw []byte) (Contract, string) {
 	if (c.Network != "main" && c.Network != "regtest") ||
 		!isStation(c.LandlordName) || !isStation(c.AgentName) || c.LandlordName == c.AgentName ||
 		!isPubkey(c.GranteeKey) ||
-		c.NotBefore < 0 || c.NotAfter <= c.NotBefore || c.NotAfter > MaxTime {
+		c.NotAfter <= c.NotBefore || c.NotAfter > MaxTime {
 		return c, "CONTRACT_FIELD"
 	}
 	if len(c.Actions) == 0 || !strictlyAscending(c.Actions) {
@@ -210,10 +229,10 @@ func ParseContract(raw []byte) (Contract, string) {
 		}
 	}
 	spend := slices.Contains(c.Actions, "spend")
-	if spend != (c.SpendBudget > 0) || c.SpendBudget < 0 || c.SpendBudget > MaxMoney {
+	if spend != (c.SpendBudget > 0) || c.SpendBudget > MaxMoney {
 		return c, "CONTRACT_BUDGET"
 	}
-	if len(c.Note) > MaxNoteBytes || !isPrintableASCII(c.Note) {
+	if len(c.Note) > MaxNoteBytes {
 		return c, "CONTRACT_NOTE"
 	}
 	return c, ""

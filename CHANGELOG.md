@@ -13,9 +13,20 @@ tags, with `t` unchanged, `booking` over the contract bytes and `privacy` over
 `swarma-trust-privacy-v1`. No v3 byte, signing domain or `rental.Check` rule
 changes. The envelope section fixes the exact tags, the body hash, the nonce
 journal, the time window and the admission check order. Kind 8185 is unused
-in chain-lab and here.
+in chain-lab and here; it remains a draft allocation, an open question.
 
-Adds draft vectors in `vectors/LIP-0013/` (4 valid and 28 invalid contracts,
+Admission needs enforcing mode. Shadow mode is the default: the executor
+reports its verification results, every peer message stays data and only
+the owner directs. Enforcing mode follows only after the first proof has
+passed and both owners have approved it; a switch is not retroactive, and
+scenarios cover no proof, one approval, both approvals and an envelope
+verified while still in shadow mode. The `review` action authorizes who may
+review and does not change a repository's reviewer policy. Refusal codes
+follow one layer: a sign on an integer and a non-ASCII character or a control
+escape in any string, the note included, refuse as `CONTRACT_ENCODING` before
+any value rule.
+
+Adds draft vectors in `vectors/LIP-0013/` (4 valid and 32 invalid contracts,
 15 bindings, 26 envelopes signed with BIP-340 published test keys) and the
 reference checker `tools/trustcheck`. Nothing is implemented in a product.
 

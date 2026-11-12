@@ -174,13 +174,19 @@ func Generate() ([]byte, error) {
 		{"C-N19-escaped-spelling", "an escaped spelling of an action name", rep(v1, `["instruct",`, `["`+backslash+`u0069nstruct",`), "CONTRACT_ENCODING"},
 		{"C-N20-trailing-newline", "a trailing LF", v1 + "\n", "CONTRACT_ENCODING"},
 		{"C-N21-note-281", "note of 281 bytes", rep(v1, `"note":""`, `"note":"`+strings.Repeat("a", MaxNoteBytes+1)+`"`), "CONTRACT_NOTE"},
-		{"C-N22-note-non-ascii", "note with a UTF-8 non-ASCII character", rep(v1, `"note":""`, `"note":"caf`+"é"+`"`), "CONTRACT_NOTE"},
+		{"C-N22-note-non-ascii", "a UTF-8 non-ASCII character in note breaks the character rule of section 2.1, rule 1, before the note rule", rep(v1, `"note":""`, `"note":"caf`+"\u00e9"+`"`), "CONTRACT_ENCODING"},
 		{"C-N23-profile", "another profile string", rep(v1, `swarma-trust-contract/1`, `swarma-trust-contract/2`), "CONTRACT_PROFILE"},
 		{"C-N24-window", "not_after equal to not_before", rep(v1, `"not_after":1797120000`, `"not_after":1794528000`), "CONTRACT_FIELD"},
 		{"C-N25-grantee-uppercase", "uppercase key hex", rep(v1, bip340Index0Public, strings.ToUpper(bip340Index0Public)), "CONTRACT_FIELD"},
 		{"C-N26-grantee-off-curve", "BIP-340 vector 5 key, not on the curve", rep(v1, bip340Index0Public, bip340OffCurvePublic), "CONTRACT_FIELD"},
 		{"C-N27-agent-is-landlord", "agent_name equal to landlord_name", rep(v1, q(vAgent), q(vLandlord)), "CONTRACT_FIELD"},
 		{"C-N28-network", "a network other than main or regtest", rep(v1, `"network":"main"`, `"network":"testnet"`), "CONTRACT_FIELD"},
+		// Rule 1 owns every lexical property: a sign or a character outside
+		// printable ASCII refuses as CONTRACT_ENCODING before any value rule.
+		{"C-N29-budget-negative", "a signed integer breaks rule 1 before the budget rule", rep(v3, `"spend_budget":1000000`, `"spend_budget":-1`), "CONTRACT_ENCODING"},
+		{"C-N30-not-before-negative", "a signed not_before breaks rule 1 before the window rule", rep(v1, `"not_before":1794528000`, `"not_before":-1`), "CONTRACT_ENCODING"},
+		{"C-N31-note-escaped-lf", "an escape other than quote and backslash in note breaks rule 1 before the note rule", rep(v1, `"note":""`, `"note":"a`+backslash+`nb"`), "CONTRACT_ENCODING"},
+		{"C-N32-agent-non-ascii", "a non-ASCII character in a name breaks rule 1 before the name rule", rep(v1, q(vAgent), q("id/ivanopcode-k\u00e9eper")), "CONTRACT_ENCODING"},
 	}
 	vf.BadContracts = bad
 

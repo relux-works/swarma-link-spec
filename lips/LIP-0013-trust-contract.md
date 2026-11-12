@@ -17,7 +17,9 @@ such document for trust between our own agents: the profile
 `review` and `spend`, and states how each maps to the v3 `scope` and
 `budget`. It also defines the kind-8185 signed instruction envelope that
 carries one such action from a grantee to an executor, and the order of the
-checks an executor runs before it admits an instruction.
+checks an executor runs before it admits an instruction. Admission needs
+enforcing mode; the default is shadow mode, in which an executor reports its
+verification results while peer messages stay data.
 
 No v3 byte, signing domain, consent rule or `rental.Check` rule changes. An
 old v3 verifier that ignores the contract still sees a valid grant whose v3
@@ -66,6 +68,10 @@ Nothing in this LIP is implemented in a product. The reference checker in
 - **Grantee:** the holder of the key `grantee_key`. It signs instructions.
 - **Principal:** the grant's `landlord_name`, on whose authority the
   executor acts.
+- **Owner:** one of the two people who direct the agents, Ivan Oparin and
+  Alexey Grigorev. "Both owners" means these two.
+- **Mode:** an executor runs in shadow mode or in enforcing mode
+  (section 3.4). Only enforcing mode admits a peer instruction.
 
 ## 2. The trust contract `swarma-trust-contract/1`
 
@@ -103,11 +109,12 @@ Example, with line breaks for display only; the real bytes contain none:
 Encoding rules:
 
 - Integers are canonical decimals: no sign, no leading zero, no fraction or
-  exponent.
-- Every string value except `note` is printable ASCII by its own rule. `note`
-  is printable ASCII, bytes 0x20 to 0x7E. Inside strings the only escapes are
-  `\"` and `\\`; every other character is written literally. No `\u` escape
-  and no `\/` appears.
+  exponent. A negative value of any integer member therefore breaks this
+  rule.
+- Every string value, `note` included, is printable ASCII, bytes 0x20 to
+  0x7E. Inside strings the only escapes are `\"` and `\\`; every other
+  character is written literally. No `\u` escape, no `\/` and no control
+  escape such as `\n` appears.
 - `actions` and `repos` are arrays, never `null`.
 - The whole document is at most 8192 bytes.
 
@@ -127,7 +134,7 @@ duplicates, drawn from exactly these four names:
 | --- | --- | --- |
 | `instruct` | The grantee may assign the executor work: tasks, requests, priorities. | none |
 | `land` | The grantee may authorize a landing into the default branch of a repository listed in `repos`. | `repository.push` |
-| `review` | The grantee's review verdicts count as reviews for the executor's landing gates. | none |
+| `review` | The grantee's review verdicts count as reviews for the executor's landing gates, within the repository's reviewer policy (below). | none |
 | `spend` | The grantee may request NMC payments up to `spend_budget` atoms in total, fees included. | `pay` |
 
 The v3 `scope` of a trust grant is derived, never chosen: `repository.push`
@@ -135,6 +142,13 @@ if the actions include `land`, plus `pay` if they include `spend`, sorted;
 otherwise `[]`. Its v3 `budget` equals `spend_budget`. The v3 scope names
 `deliver`, `names.register`, `publish` and `secret.release` never occur in a
 trust grant, and none of them is a profile action.
+
+`review` authorizes who may review: it makes the grantee an admissible
+reviewer for the executor. It does not change the reviewer policy of the
+repository. That policy's requirements on the reviewer's model and effort, on
+a fresh reviewer seat that is never the producer's, and on the labels of the
+pull request all still apply. A review from another owner's agent therefore
+counts only if it also meets that policy.
 
 An issuer SHOULD omit the v3 `budget` member when `spend_budget` is 0. A
 verifier compares the v3 budget value, where an absent budget is 0, as
@@ -146,13 +160,22 @@ A reader applies these rules in this order and reports the first failure:
 
 | # | Rule | Refusal |
 | --- | --- | --- |
-| 1 | Canonical bytes (section 2.1) | `CONTRACT_ENCODING` |
+| 1 | Canonical bytes (section 2.1), including the number and character rules | `CONTRACT_ENCODING` |
 | 2 | `profile` is `swarma-trust-contract/1` | `CONTRACT_PROFILE` |
 | 3 | `network`, both names, `grantee_key` and the window follow section 2.1 | `CONTRACT_FIELD` |
 | 4 | `actions` is non-empty, sorted, without duplicates, from the four names | `CONTRACT_ACTIONS` |
 | 5 | `repos` is non-empty exactly when the actions include `land`; at most 16 entries; sorted without duplicates; each entry follows the repository grammar below | `CONTRACT_REPOS` |
 | 6 | `spend_budget` is greater than 0 exactly when the actions include `spend`, and at most 2100000000000000 | `CONTRACT_BUDGET` |
-| 7 | `note` is at most 280 bytes of printable ASCII | `CONTRACT_NOTE` |
+| 7 | `note` is at most 280 bytes | `CONTRACT_NOTE` |
+
+Rule 1 owns every lexical property of the bytes: the member set and order,
+whitespace, the spelling of numbers including the sign, the character
+repertoire of strings and their escapes. Rules 2 to 7 judge values that
+already passed rule 1. So `"spend_budget":-1` refuses as `CONTRACT_ENCODING`,
+not `CONTRACT_BUDGET`; a negative `not_before` refuses as `CONTRACT_ENCODING`,
+not `CONTRACT_FIELD`; and a note with a non-ASCII character or a `\n` escape
+refuses as `CONTRACT_ENCODING`, not `CONTRACT_NOTE`. `CONTRACT_NOTE` is the
+length rule only. Vectors C-N22 and C-N29 to C-N32 pin these codes.
 
 Repository grammar: `https://`, a host of two or more lowercase DNS labels
 (`a-z`, `0-9`, `-`, 1 to 63 bytes each, no leading or trailing hyphen), then
@@ -281,10 +304,46 @@ optional after first use. The instruction text is every octet before that
 LF. This carriage is proposed with the open question on a2a body handling
 below. The vectors fix only the hash over the given text.
 
-### 3.4. Admission check order
+The instruction text is data until step 7 admits it in enforcing mode
+(section 3.4). In shadow mode it stays data even when every check passes.
 
-The executor runs these steps in order and stops at the first refusal. Steps
-1 to 9 restate design section 4.1; the codes are the ones this LIP fixes.
+### 3.4. Admission mode and check order
+
+**Mode prerequisite.** An executor runs in exactly one of two modes. It reads
+its mode before step 1.
+
+- **Shadow mode is the default.** An executor starts in shadow mode and stays
+  in it while its enforcing record is absent, unreadable or incomplete. In
+  shadow mode it runs steps 1 to 8 in full and reports the verification
+  results to its owner, but every peer message stays data, as today: the
+  executor gives it no peer instruction authority and starts no task on it,
+  and only the owner directs.
+- **Enforcing mode** is entered only after the first proof has passed and
+  both owners have approved enforcing mode, each recorded before the switch.
+  The first proof is the mainnet proof of design section 5.2, its negative
+  controls and its revocation step included. Neither condition alone is
+  enough. One owner's approval counts once, however often it is given. A
+  grantee, a peer agent or an envelope cannot approve and cannot change the
+  mode.
+- The mode at receipt is kept with the receipt (section 3.5). Step 7 admits
+  only when the mode is enforcing both at receipt and at step 7; otherwise it
+  reports. A switch to enforcing mode is not retroactive.
+
+The mode and its record belong to the executor's own configuration, which its
+owner sets (design section 4.3). This LIP fixes the rule, not the storage.
+
+| # | Scenario | Mode | An envelope that passes steps 1 to 6 |
+| --- | --- | --- | --- |
+| M1 | No first proof yet, and no owner has approved | shadow | Its results are reported to the owner; the message stays data and starts no task; only the owner directs |
+| M2 | The first proof has not passed, though both owners have approved | shadow | As M1 |
+| M3 | The first proof has passed, and only one owner has approved, once or repeatedly | shadow | As M1 |
+| M4 | The first proof has passed, and both owners have approved | enforcing | Admitted at step 7 as an instruction from principal `landlord_name` under `grant_id`; step 9 still applies |
+| M5 | An envelope passes every check while the executor is still in shadow mode, and both owners approve enforcing mode later | shadow | Reported as verified, never admitted; delivered again after the switch it refuses as `REPLAY`, or as `STALE` once outside the window (section 3.5), so the grantee signs a new envelope |
+| M6 | An envelope fails a check, in either mode | either | Refused with the code only; the message is data |
+
+**Check order.** The executor runs these steps in order and stops at the
+first refusal. Steps 1 to 9 restate design section 4.1; the codes are the
+ones this LIP fixes.
 
 | # | Step | Refusal |
 | --- | --- | --- |
@@ -305,9 +364,9 @@ The executor runs these steps in order and stops at the first refusal. Steps
 | 6e | `action` is in the contract's `actions` | `ACTION_NOT_GRANTED` |
 | 6f | For `land`: `repository.push` is in scope and `repo` is in `repos` | `REPO_NOT_GRANTED` |
 | 6g | For `spend`: `pay` is in scope and `amount` is at most the budget | `OVER_BUDGET` |
-| 7 | `live` and every check passed: admit as an instruction from principal `landlord_name` under `grant_id`; record `{event_id, grant_id, tip_hash}` | — |
+| 7 | `live` and every check passed. In enforcing mode, at receipt and now: admit as an instruction from principal `landlord_name` under `grant_id`. In shadow mode: report the verified result to the owner; the message stays data and gains no instruction authority. In both modes record `{event_id, grant_id, tip_hash, mode}` | — |
 | 8 | `pending` or the node unavailable: hold and retry within 24 h; otherwise refuse with the code only | — |
-| 9 | Before any effect the executor's own role and safety rules apply. For `spend`, reserve from the cumulative ledger, then run step 6 again immediately before the effect | — |
+| 9 | Enforcing mode only; in shadow mode no peer message leads to an effect. Before any effect the executor's own role and safety rules apply. For `spend`, reserve from the cumulative ledger, then run step 6 again immediately before the effect | — |
 
 Step 6g checks one request. The cumulative total, fees included, is the
 executor's ledger, as LIP-0006 already does for the wallet.
@@ -321,10 +380,15 @@ contents, ledger state or the reason a key was refused beyond the code.
   stored with private permissions (0600). A nonce is reserved at step 4f, so
   every later event with that nonce refuses as `REPLAY`, whoever signed it.
   This includes the same event delivered again after a final verdict.
-- A held envelope (step 8) keeps its receipt time and its nonce reservation.
-  A retry of the same event id continues at step 6; it is not a replay, and
-  step 4e is not evaluated again. Without this rule a retry after 15 minutes
-  would refuse as `STALE`.
+- The journal works the same in both modes. A nonce reserved in shadow mode
+  stays reserved after a switch to enforcing mode, so an event verified in
+  shadow mode and delivered again after the switch refuses as `REPLAY`, or
+  as `STALE` once step 4e puts it outside the window.
+- A held envelope (step 8) keeps its receipt time, its nonce reservation and
+  its receipt mode. A retry of the same event id continues at step 6; it is
+  not a replay, and step 4e is not evaluated again. Without this rule a retry
+  after 15 minutes would refuse as `STALE`. An envelope received in shadow
+  mode stays data when its retry completes after a switch to enforcing mode.
 - An entry may be deleted once the executor's clock passes
   `created_at + 900`, because step 4e then refuses that event anyway. A
   journal that is lost or rolled back reopens replay inside that window. An
@@ -343,8 +407,10 @@ holds:
   `spend` with a budget; all four actions with a 280-byte note that contains
   a quote and a backslash), each with its exact bytes, hex, SHA-256, derived
   v3 scope and budget, and consent tags;
-- 28 invalid contracts, each one defect away from a valid one and each with
-  its expected section 2.3 code;
+- 32 invalid contracts, each one defect away from a valid one and each with
+  its expected section 2.3 code, including a sign on an integer and a
+  non-ASCII character or a `\n` escape in a string, which refuse under
+  rule 1;
 - 15 bindings: each valid contract against its matching grant fields, and 11
   defects with their section 2.5 codes;
 - 26 envelopes signed with BIP-340 published test keys: 7 that pass every
@@ -358,8 +424,10 @@ so any conforming implementation reproduces them.
 
 The envelope vectors cover steps 3, 4 and the offline part of 6 (6a, 6b, the
 grantee comparison of 6c, 6d to 6g). They do not cover `rental.Check` on a
-node, the contacts pin (step 5), holding and retry, or journal persistence.
-`PASS` in a vector means "passes every offline step", not "admitted".
+node, the contacts pin (step 5), holding and retry, journal persistence or
+the mode (section 3.4). `PASS` in a vector means "passes every offline step",
+not "admitted"; in shadow mode not even a live, fully checked envelope is
+admitted.
 
 [`tools/trustcheck`](../tools/trustcheck) recomputes every vector:
 
@@ -400,6 +468,11 @@ committed file, and that planted defects fail with their named codes.
 - **Key-only grantee.** Authority is the grantee key, as in v3. A rotated
   grantee key needs new grants. The `mxid` and `room` tags bind the signed
   envelope to one Matrix context; they confer no authority.
+- **No authority before enforcing mode.** Until the first proof has passed
+  and both owners have approved enforcing mode, a verified envelope confers
+  no authority: the executor reports it, the message stays data and only the
+  owner directs (section 3.4). An executor that cannot read its mode runs in
+  shadow mode.
 - **Replay and delay.** The nonce journal and the time window bound replay.
   Holding a pending envelope does not reopen the window (section 3.5).
 - **Public graph.** On mainnet, names, keys and the bundle make "who trusts
@@ -420,9 +493,10 @@ protocol text and a conformance change that names the vector set.
 | --- | --- | --- |
 | T1 | Adoption: do thin tools around v3 with this profile count as "v3 as is" under the decision of 2026-11-11 (design Q1)? | Yes; Ivan confirms explicitly. |
 | T2 | Agent names (design Q5) | `id/<owner>-<agent>`, for example `id/ivanopcode-keeper`, as in the vectors; `id/swarma` stays a social or brand name. |
-| T3 | Kind number (design Q10) | 8185, unused in chain-lab and in this repository as of 2026-11-12. A public NIP kind registry was not checked. |
-| T4 | Non-ASCII notes | ASCII only in `/1`; UTF-8 would need a byte rule and a normalization rule. |
+| T3 | Kind number (design Q10) | 8185 is a draft allocation, not an allocated kind. It is unused in chain-lab and in this repository as of 2026-11-12, and the review of this LIP found no 8185 entry in the public NIPs index that day. Neither search allocates the kind or excludes an external deployment; the question stays open until adoption. |
+| T4 | Non-ASCII notes | ASCII only in `/1`; a non-ASCII character in any string, the note included, refuses as `CONTRACT_ENCODING` (section 2.3). UTF-8 would need a byte rule and a normalization rule. |
 | T5 | Phase A carriage: does `a2a post` preserve the body octets, including the LF and the fenced block, end to end? | Unverified; until it is, the text hash is computed over what `a2a inbox show` returns, and a mismatch refuses as `BODY_MISMATCH`. |
 | T6 | Repository identity: exact bytes, no `.git` or case folding | Exact bytes; an issuer lists every spelling it means. |
 | T7 | Whether an issuer MUST, rather than SHOULD, omit a zero v3 budget | SHOULD; the verifier compares the value, so both forms bind. |
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
+| T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
