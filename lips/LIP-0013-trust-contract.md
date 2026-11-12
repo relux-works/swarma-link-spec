@@ -6,8 +6,10 @@
   instructions, admission of a peer instruction by an executor
 - **Builds on:** LIP-0004; relates to LIP-0007 and LIP-0008
 - **Extended by:** LIP-0014, which proposes profile `swarma-trust-contract/2`
-  with a parent binding and a right of re-delegation; a reader of profile
-  `/1` refuses it as `CONTRACT_PROFILE`
+  with a parent binding and a right of re-delegation. A reader of profile
+  `/1` refuses a complete contract of that profile as `CONTRACT_ENCODING`,
+  because it has fifteen members; an eleven-member object that carries only
+  the `/2` profile string refuses as `CONTRACT_PROFILE`
 - **Vectors:** [`vectors/LIP-0013/trust-vectors.json`](../vectors/LIP-0013/trust-vectors.json),
   checked by [`tools/trustcheck`](../tools/trustcheck)
 

@@ -86,9 +86,13 @@ attestation for every child removes the classification (D1).
   describe semantics without bytes.
 - LIP-0013 defines the one-hop trust grant on v3, profile
   `swarma-trust-contract/1`. It has no parent binding and no right of
-  re-delegation. Its reference checker refuses the profile string
-  `swarma-trust-contract/2` as `CONTRACT_PROFILE`, so a reader of profile `/1`
-  fails closed on a contract of this LIP.
+  re-delegation. A reader of profile `/1` fails closed on a contract of this
+  LIP, in one of two ways. A complete contract of this LIP has fifteen
+  members, and that reader refuses it as `CONTRACT_ENCODING`, because its
+  rule 1 knows only the eleven-member set. An eleven-member object in which
+  only the profile string is `swarma-trust-contract/2` passes rule 1 and
+  refuses as `CONTRACT_PROFILE`; vector C-N23 of LIP-0013 is that second
+  case.
 - The laboratory experiment `notary` of LIP-0012 certifies the exact bytes of
   one grant. It does not compare a child with a parent.
 - The v3 reference path has no delegation code. A v3 grant is valid only
@@ -168,18 +172,46 @@ these fifteen members in this order:
 | 14 | `delegate` | the object of section 2 |
 | 15 | `note` | as in LIP-0013 section 2.1 |
 
-A reader applies rules 1 to 7 of LIP-0013 section 2.3, with the profile
-string of this section in rule 2 and `scope_text_sha256` judged under rule 3,
-and then:
+### 3.1. Which rules a reader applies
+
+A reader that supports both profiles selects the rules by the member set of
+the object, before it judges any value:
+
+| Member names of the object, in order | Rules |
+| --- | --- |
+| The eleven of LIP-0013 section 2.1 | Profile `/1`: LIP-0013 section 2.3, unchanged |
+| The fifteen of this section | Profile `/2`: the rules below |
+| Any other set or order | Refusal as `CONTRACT_ENCODING` |
+
+For the fifteen-member set the rules are those of LIP-0013 section 2.3 with
+three differences. Rule 1 judges the canonical bytes against the fifteen
+members of this section in their order. Rule 2 requires the profile string
+of this section. Rule 3 also judges `scope_text_sha256`. Rules 4 to 7 are
+unchanged, and two rules follow them:
 
 | # | Rule | Refusal |
 | --- | --- | --- |
 | 8 | `ordinal` is 0 to 16, and `parent_grant_id` is `""` exactly when `ordinal` is 0. A contract with a parent has `delegate.depth` 0 | `CONTRACT_PARENT` |
 | 9 | `delegate` follows section 2 | `CONTRACT_DELEGATE`, or `DELEGATE_NO_NOTARY` for `depth` 1 without a notary |
 
-The consent tags, the binding to the grant and the derived v3 scope are those
-of LIP-0013 sections 2.2, 2.4 and 2.5. A grant under profile `/2` is an
-ordinary valid v3 grant.
+A member set and its profile string must agree. Fifteen members with the
+string `swarma-trust-contract/1`, and eleven members with the string
+`swarma-trust-contract/2`, both refuse as `CONTRACT_PROFILE` under rule 2 of
+the selected rules. A reader that implements profile `/1` alone knows one
+member set: it refuses every fifteen-member object as `CONTRACT_ENCODING`
+under its rule 1.
+
+### 3.2. Binding to the grant
+
+The consent tags and the derived v3 scope are those of LIP-0013 sections 2.2
+and 2.4. The binding to the grant is LIP-0013 section 2.5 with one
+substitution: its check 2, "the contract passes section 2.3", runs the rules
+that the member set selects under section 3.1. Checks 1 and 3 to 6, the
+contract hash, the equality of the common fields, the derived scope, the
+budget and the consent tags, are the same for both profiles. A grant under
+profile `/2` is an ordinary valid v3 grant.
+
+### 3.3. Scope text
 
 The scope text is a separate document. Its exact octets hash to
 `scope_text_sha256`, and it travels with the bundle. Text narrows only: like
@@ -394,17 +426,21 @@ requirement of the grant.
 
 A verifier runs every mechanical check itself, on its own node, before it
 looks at the attestation. It then requires a valid attestation for every
-child (D1). The steps below extend step 6 of LIP-0013 section 3.4 after 6d,
-for a presented grant `C`. The verifier stops at the first refusal; steps 6e
-to 6g then run against `C`.
+child (D1).
+
+Step 6d of LIP-0013 section 3.4 runs the binding of section 3.2, with the
+rules that the contract's member set selects. A valid contract of either
+profile therefore passes 6d, and a malformed one refuses there with its
+contract code. The steps below follow 6d for a presented grant `C`. The
+verifier stops at the first refusal; steps 6e to 6g then run against `C`.
 
 | # | Step | Refusal |
 | --- | --- | --- |
-| V1 | `C`'s contract passes section 3. A contract with an empty `parent_grant_id` is a root: the remaining steps do not apply | `CONTRACT_PARENT`, `CONTRACT_DELEGATE`, `DELEGATE_NO_NOTARY` |
+| V1 | `C`'s contract passed 6d. A contract of profile `/1`, and a contract of profile `/2` with an empty `parent_grant_id`, is a root: the remaining steps do not apply | none here; a contract that fails section 3 refused at 6d as `CONTRACT_ENCODING`, `CONTRACT_PROFILE`, `CONTRACT_FIELD`, `CONTRACT_PARENT`, `CONTRACT_DELEGATE` or `DELEGATE_NO_NOTARY` |
 | V2 | The bundle holds, as complete objects, `P`'s presentation and contract, the delegation request (v3), the predecessors of a presented attestation, and each scope text whose hash is not empty; each object hashes to the value that names it | `DELEGATION_BUNDLE` |
 | V3 | The `grant_id` recomputed from `P` equals `C.parent_grant_id` | `PARENT_ID_MISMATCH` |
-| V4 | `P` has no parent and no id repeats; `P.delegate.depth` is 1 | `CHAIN_DEPTH`, `NOT_DELEGABLE` |
-| V5 | `P` passes the v3 check of LIP-0004 section 5 on the verifier's own node, with the pins taken from `P` and `P.grantee_key` as presenter, and then LIP-0013 section 2.5 | `PARENT_NOT_LIVE` |
+| V4 | `P` has no parent and no id repeats; `P`'s contract has profile `/2` and `P.delegate.depth` is 1. A parent of profile `/1` carries no right of re-delegation | `CHAIN_DEPTH`, `NOT_DELEGABLE` |
+| V5 | `P` passes the v3 check of LIP-0004 section 5 on the verifier's own node, with the pins taken from `P` and `P.grantee_key` as presenter, and then the binding of section 3.2 under the rules that `P`'s member set selects | `PARENT_NOT_LIVE` |
 | V6 | Subject | `SUBJECT_MISMATCH` |
 | V7 | The delegation request (v3) | `DELEGATION_REQUEST` |
 | V8 | Agent and grantee are listed | `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED` |
@@ -417,7 +453,7 @@ to 6g then run against `C`.
 | V15 | `budget.pool` equals `P.delegate.budget`; `budget.child` equals `C.spend_budget`; `after` equals `before` plus `child` and is at most `pool`. For ordinal 1, `before` is 0 and `prev_attestation_id` is empty. Otherwise each predecessor back to ordinal 1 has the same parent, an ordinal one lower, a designated notary and a valid signature, and its `after` equals the next one's `before` | `ATTESTATION_ARITHMETIC` |
 | V16 | `tip_hash` is the active-chain block at `tip_height`; `tip_height` is at least the confirmation height of `C`'s issuance; `attested_at` is at most the verifier's clock plus 120 s | `ATTESTATION_TIP` |
 | V17 | The anchor of section 6.4 is confirmed in the active chain and commits to this `attestation_id` | `ATTESTATION_ANCHOR` |
-| V18 | `notary_seal` exists with the named script and is unspent, the mempool included | `NOTARY_WITHDRAWN` |
+| V18 | `notary_seal` exists with the named script and is unspent, the mempool included, and the verifier's journal holds no withdrawal of this attestation (section 10) | `NOTARY_WITHDRAWN` |
 
 V6 to V9 precede V10 on purpose. A child that is wider in an action, a
 repository, a budget, a window or an ordinal refuses with that code even when
@@ -617,6 +653,8 @@ valid neighbour:
 
 | Valid control | Refusal or invariant |
 | --- | --- |
+| A valid contract of profile `/1`, and a valid root and a valid child of profile `/2`, each read by a reader of both profiles | Fifteen members with the `/1` string and eleven members with the `/2` string refuse as `CONTRACT_PROFILE`. A `/2` object with a missing, additional, reordered or duplicated member among the four new ones refuses as `CONTRACT_ENCODING`. A reader of profile `/1` alone refuses every fifteen-member object as `CONTRACT_ENCODING`. |
+| A valid child whose parent is a valid contract of profile `/2`, admitted through 6d and V5 | The same child presented with a parent of profile `/1` refuses as `NOT_DELEGABLE`. |
 | A root under profile `/2` with a well-formed right of re-delegation | `depth` 1 without a notary refuses as `DELEGATE_NO_NOTARY`; each other malformed member refuses as `CONTRACT_DELEGATE`. |
 | A certified child with `textual` `none`, `identical` and `within` | The same child without an attestation refuses as `CHILD_NOT_CERTIFIED`. |
 | A certified child within its parent | One widening at a time, each with a valid attestation: actions, repositories, budget, window start, window end, agent, grantee, ordinal 0 and an ordinal above `max_children`. Each refuses with its mechanical code and never as `CHILD_NOT_CERTIFIED`. |
@@ -628,6 +666,7 @@ valid neighbour:
 | Two links | A third link and a repeated id refuse as `CHAIN_DEPTH`. |
 | On a node: a live parent, a confirmed anchor, an unspent notary seal | A spent parent seal refuses as `PARENT_NOT_LIVE` while the child's seal is unspent. A notary seal spent in the mempool refuses as `NOTARY_WITHDRAWN` while the child's seal is unspent. An unconfirmed anchor is pending and not refused. A reorganised tip refuses as `ATTESTATION_TIP`. |
 | The same child certified again after a plain withdrawal | Certified again after a withdrawal for cause refuses. |
+| A verifier that journalled the notary's spend, after the spend is reorganised out of the chain | The withdrawn attestation still refuses as `NOTARY_WITHDRAWN`; admitting it again because the seal looks unspent is wrong. A fresh attestation of the same child by a named notary after that plain withdrawal is admitted. |
 | An agent and a person as notary with the same attestation shape | Refusing because the notary is an agent, or because it is a person, is wrong. |
 
 ## Open questions
