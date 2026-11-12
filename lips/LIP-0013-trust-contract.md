@@ -457,9 +457,10 @@ committed file, and that planted defects fail with their named codes.
   encodings of one contract would give two hashes for one meaning.
 - **Envelope tags in any order** (the kind-8183 precedent): rejected for a
   single event shape per instruction.
-- **Wait for v4:** v4 has no adopted bytes. It remains the target for Goal 2
-  (public bounty), which needs per-action signed limits and name-bound
-  grantees.
+- **Wait for v4:** v4 has no adopted bytes. By the owner's decision of
+  2026-11-12 the first public demonstration also runs on the implemented v3
+  rental profile, as it is, and v4 follows that demonstration. Per-action
+  signed limits and name-bound grantees come with v4.
 
 ## Security consequences
 

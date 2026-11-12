@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.22
+**Version:** 0.1.23
 
 **Date:** 2026-11-12
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.22
+## Draft profiles and design decisions in v0.1.23
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -199,7 +199,11 @@ while a change of the grant key ends every grant signed by the old key; a
 table gives the effect of each name change on v3 and on v4. No agent holds a
 grant key on v3. The landlord pointer is a name on v3 and binds a
 registration and owner key only in v4. Three requirements on a key service
-follow: a grant-key purpose, presence per signature and typed display.
+follow: a grant-key purpose, presence per signature and typed display. By
+Ivan Oparin's decision of 2026-11-12 the landlord grant key is held, for the
+interim, as a software secp256k1 item in the Mac Keychain, read under Touch
+ID per signature with every signed field shown first; the keyvault's BIP-85
+path is the later target, once its grant-signing purpose is qualified.
 
 Two further drafts are proposals with nothing decided; both owners decide
 them. [LIP-0015](lips/LIP-0015-trust-root-and-statements.md) proposes the

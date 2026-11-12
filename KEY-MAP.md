@@ -89,6 +89,16 @@ its gateway is not decided; the last section of this map proposes a flow.
 The trust anchor that K4 waits for is proposed in
 [LIP-0015](lips/LIP-0015-trust-root-and-statements.md).
 
+Ivan Oparin decided a fifth point on 2026-11-12, for the landlord grant
+keys he holds:
+
+| Decision | Direction |
+| --- | --- |
+| K5. Interim custody of the grant key | Until the keyvault's grant-signing purpose is qualified, the landlord grant key on a Mac is a software secp256k1 key stored as a generic-password item of the macOS Keychain, in the login or data-protection keychain. Every signature needs Touch ID, and the signer shows every field of what it signs before the prompt. The key is not exported. It is replaced by creating a new item and publishing the new public key in `swarma.landlord.grant`. |
+
+No date is set for the qualification that ends the interim. The section
+"Requirements on a key service" below places K5 beside the keyvault path.
+
 The scope of K2 is open; the owners decide it. A worker agent is an agent
 identity that serves single tasks and that a grant names by key. Whether
 such an identity also has its own `id/` name is not decided. The proposal is
@@ -195,15 +205,34 @@ it prepares a third purpose, the landlord's grant root
 `m/83696968'/2'/7'`, one secp256k1 key for BIP-340 and ECDSA together with
 the P2PKH seal script of that key. The source states that this is public
 preparation data only and conveys no storage, owner enrollment, presence or
-signing capability. That path governs where the grant key comes from.
+signing capability. That path is where the grant key comes from once the
+keyvault's grant-signing purpose is qualified. It is the later target, not
+today's custody.
 
-So the first requirement has its derivation. Signing a grant, the ECDSA
-seal spend, presence per signature and typed display are later stages of
-that interface. A name whose owner key the interface holds cannot be updated
-until it signs name operations.
+So the first requirement has its derivation there. Signing a grant, the
+ECDSA seal spend, presence per signature and typed display are later stages
+of that interface. A name whose owner key the interface holds cannot be
+updated until it signs name operations.
 
-The profile fixes one path per recovery group, so a grant key is replaced by
-a new recovery group with new words. The name-owner key publishes the new
+**Interim custody, decided (K5).** Until that qualification the landlord
+grant key on a Mac lives in the macOS Keychain, not in the keyvault:
+
+| Requirement | How K5 meets it |
+| --- | --- |
+| A grant-key purpose of its own on secp256k1 | One Keychain item holds one software secp256k1 key that is used for nothing else. It signs grants under BIP-340 and spends v3 seals under ECDSA. The Secure Enclave holds P-256 keys only, so on a Mac a secp256k1 key is a software key in either custody. |
+| Presence per signature | The item is read under Touch ID, once for every signature. |
+| Typed display | Before the prompt the signer shows every field of what is signed: the grant, the contract behind `landlord_sig`, the seal spend. |
+
+The key is generated on the Mac that holds it and is not exported; only its
+public key leaves the machine. It is replaced by a new Keychain item,
+followed by an update of `swarma.landlord.grant` signed by the name-owner
+key. On v3 that update ends every grant of the old key, as the table of
+name changes above says, and the old item is kept until it has spent the
+seals of the old grants. K5 decides the custody and its three properties.
+No tool that implements it is released, and nothing about it is qualified.
+
+For the later target, the keyvault profile fixes one path per recovery
+group, so a grant key is replaced by a new recovery group with new words. The name-owner key publishes the new
 key by an update of `swarma.landlord.grant`, and the old group keeps the old
 key until it has spent the seals of the old grants. The owners accept this
 for v3, where a change of the grant key ends every grant of the old key in
@@ -221,23 +250,26 @@ K1 names three keys and says nothing about where they come from. If all
 three are derived from one seed, the backup of that seed is the root of the
 name, the funds and the grant key together. The proposal keeps the
 name-owner key on a seed of its own and gives every other purpose its own
-hardened path. The grant key's path is not proposed here: the keyvault
-fixes it, as the previous section says.
+hardened path. The grant key is not part of the proposal: its interim
+custody is decided (K5), and the keyvault fixes its later path, as the
+previous section says.
 
 | Purpose | Derivation | Holder | Replaced by |
 | --- | --- | --- | --- |
 | Principal's Nostr key, also the grantee key in Goal 1 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
 | Funding | `m/84'/7'/0'` | The owner's key service, with presence | Moving the funds |
 | Name owner | A separate seed; BIP-84 `m/84'/7'/0'`, one fresh address per name | The owner only, never on an agent host | A name update to a new owner address |
-| Grant key | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display | A new recovery group with new words, then an update of `swarma.landlord.grant` by the name-owner key, which ends the v3 grants of the old key; the old group keeps the old key until the old seals are spent |
+| Grant key, interim (decided, K5) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with every signed field shown first; not exported | A new item, then an update of `swarma.landlord.grant` by the name-owner key, which ends the v3 grants of the old key; the old item is kept until the old seals are spent |
+| Grant key, later target | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display, once its grant-signing purpose is qualified | A new recovery group with new words, then the same update of `swarma.landlord.grant`; the old group keeps the old key until the old seals are spent |
 | Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
 | Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
 
-Two reasons carry the layout. The grant key is derived outside every wallet
-account: a Namecoin wallet restored from the same seed never scans a BIP-85
-path, and so never offers the v3 seals, which pay the grant key, as coins to
-spend. Spending them would revoke the grants. And a name-owner key on its
+Two reasons carry the layout. The grant key stays outside every wallet
+account, in both custodies: a Keychain item is in no wallet, and a Namecoin
+wallet restored from the seed never scans a BIP-85 path. So no wallet offers
+the v3 seals, which pay the grant key, as coins to spend. Spending them would
+revoke the grants. And a name-owner key on its
 own seed does not share a backup with keys that are used every day; a party
 that obtains the name-owner key can move the name before its owner replaces
 anything.

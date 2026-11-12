@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.23 — 2026-11-12
+
+The key map records Ivan Oparin's decision of 2026-11-12 on the interim
+custody of the landlord grant key (K5). Until the keyvault's grant-signing
+purpose is qualified, for which no date is set, the key on a Mac is a
+software secp256k1 key stored as a generic-password item of the macOS
+Keychain, in the login or data-protection keychain. Every signature needs
+Touch ID, the signer shows every field of what it signs before the prompt,
+and the key is not exported. It is replaced by a new item and an update of
+`swarma.landlord.grant` by the name-owner key. The keyvault's BIP-85 path at `m/83696968'/2'/7'`, which 0.1.21 and
+0.1.22 gave as where the grant key comes from, is now stated as the later
+target. The proposed key layout lists both custodies. No tool that
+implements the interim custody is released.
+
+One sentence of LIP-0013 contradicted the owner's decision of 2026-11-12 on
+the order of work: it named v4 as the target for the public demonstration.
+That demonstration runs on the implemented v3 rental profile, and v4
+follows it.
+
 ## 0.1.22 — 2026-11-12
 
 Adds two Draft proposals in which nothing is decided; both owners decide
