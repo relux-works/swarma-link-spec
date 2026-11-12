@@ -18,7 +18,8 @@ previous head's output, and providers trusted for availability only, so that
 a dropped record and a withheld newer head are both detected.
 
 The key map gains two proposals: a key layout with the name-owner key on a
-seed of its own and a hardened account per purpose, and a flow for
+seed of its own, a hardened path per purpose and the grant key at the
+keyvault's fixed BIP-85 path, and a flow for
 registering an agent's identity in which the gateway generates the agent's
 key and the funding wallet registers the name to the operator's owner
 address. LIP-0010 section 8 gains a proposed plan for the 520 bytes: a name
@@ -49,7 +50,9 @@ table lists where each key is published before and after LIP-0010 readers.
 Three requirements on a key service follow from the grant key's formats: a
 grant-key purpose with BIP-340 and, on v3, an ECDSA seal spend; presence per
 signature; and typed display with the hash computed by the service. The
-keyvault interface at `swarma-keyvault` `41e0c71` meets none of them yet.
+keyvault interface at `swarma-keyvault` `662623f9` prepares the grant root
+by BIP-85 at `m/83696968'/2'/7'` and does not sign with it yet. A grant key
+is replaced by a new recovery group.
 LIP-0010 section 6 states the v3 cost of rewriting a name before its readers
 are upgraded.
 

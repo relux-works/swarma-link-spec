@@ -150,7 +150,10 @@ cannot be added to a v3 agent value, by the first clarification.
 ## Requirements on a key service
 
 K1 gives the grant key to a service that signs for its holder. Three
-requirements follow from the formats that key signs.
+requirements follow from the formats that key signs. They concern a
+principal's own key service, as used for the trust grants of LIP-0013. An
+operator's signer that issues rental grants without a person is bounded by
+its operator ceilings instead (LIP-0006).
 
 1. **A grant-key purpose of its own on secp256k1,** separate from the Nostr
    key and from funding keys. It signs grants under BIP-340. On v3 it also
@@ -169,16 +172,34 @@ requirements follow from the formats that key signs.
    it covers the grant, the contract hash that `landlord_sig` signs, and the
    terms of a child grant (LIP-0014 section 5).
 
-None of the three is met by the keyvault interface at
-[`swarma-keyvault` `41e0c71`](https://github.com/relux-works/swarma-keyvault/tree/41e0c71b0ddb2a102ae5dbc0184c60dfc10f3819),
-read on 2026-11-12. Its recovery command derives two purposes from one
-mnemonic, a Nostr leaf without presence and a Namecoin account, and its
-documentation states that it implements no address registration, transaction
-signing or broadcasting (`docs/recovery.md`). Its Nostr signing command
-takes a 32-byte digest and does not hash input again (`docs/nostr.md`). So
-there is no grant-key purpose, no seal spend and no typed display yet, and a
-name whose owner key that interface holds cannot be updated until it signs
-name operations.
+The keyvault interface was read on 2026-11-12 at two revisions. At
+[`swarma-keyvault` `41e0c71`](https://github.com/relux-works/swarma-keyvault/tree/41e0c71b0ddb2a102ae5dbc0184c60dfc10f3819)
+its recovery command derives two purposes from one mnemonic, a Nostr leaf
+without presence and a Namecoin account, and its documentation states that
+it implements no address registration, transaction signing or broadcasting
+(`docs/recovery.md`). Its Nostr signing command takes a 32-byte digest and
+does not hash input again (`docs/nostr.md`).
+
+At [`662623f9`](https://github.com/relux-works/swarma-keyvault/tree/662623f94494df9a8c1f14a552da51d248ff4f79)
+it prepares a third purpose, the landlord's grant root
+(`internal/keyvault/recovery_root_grants.go`): profile
+`namecoin-landlord-root/1`, derived by BIP-85 at the fixed path
+`m/83696968'/2'/7'`, one secp256k1 key for BIP-340 and ECDSA together with
+the P2PKH seal script of that key. The source states that this is public
+preparation data only and conveys no storage, owner enrollment, presence or
+signing capability. That path governs where the grant key comes from.
+
+So the first requirement has its derivation. Signing a grant, the ECDSA
+seal spend, presence per signature and typed display are later stages of
+that interface. A name whose owner key the interface holds cannot be updated
+until it signs name operations.
+
+The profile fixes one path per recovery group, so a grant key is replaced by
+a new recovery group with new words. The name-owner key publishes the new
+key by an update of `swarma.landlord.grant`, and the old group keeps the old
+key until it has spent the seals of the old grants. The owners accept this
+for v3, where a change of the grant key ends every grant of the old key in
+any case.
 
 ## Proposed key layout and registration flow
 
@@ -192,26 +213,26 @@ K1 names three keys and says nothing about where they come from. If all
 three are derived from one seed, the backup of that seed is the root of the
 name, the funds and the grant key together. The proposal keeps the
 name-owner key on a seed of its own and gives every other purpose its own
-hardened account:
+hardened path. The grant key's path is not proposed here: the keyvault
+fixes it, as the previous section says.
 
 | Purpose | Derivation | Holder | Replaced by |
 | --- | --- | --- | --- |
 | Principal's Nostr key, also the grantee key in Goal 1 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
 | Funding | `m/84'/7'/0'` | The owner's key service, with presence | Moving the funds |
 | Name owner | A separate seed; BIP-84 `m/84'/7'/0'`, one fresh address per name | The owner only, never on an agent host | A name update to a new owner address |
-| Grant key | `m/44'/1237'/1'/0/g'`, with a hardened generation `g` | The owner's key service, with presence per signature and typed display | Generation `g+1`, then an update of `swarma.landlord.grant`, which ends the v3 grants of the old key |
-| Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service (LIP-0014 section 6.3) | An update of the notary's own name |
+| Grant key | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display | A new recovery group with new words, then an update of `swarma.landlord.grant` by the name-owner key, which ends the v3 grants of the old key; the old group keeps the old key until the old seals are spent |
+| Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
 | Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
 
-Three reasons carry the layout. The grant key sits under coin type 1237 and
-not under Namecoin's coin type 7: a Namecoin wallet restored from the same
-seed then never scans it, and so never offers the v3 seals, which pay the
-grant key, as coins to spend. Spending them would revoke the grants. A
-hardened generation means that one leaked grant key reveals no other
-generation. And a name-owner key on its own seed does not share a backup
-with keys that are used every day; a party that obtains the name-owner key
-can move the name before its owner replaces anything.
+Two reasons carry the layout. The grant key is derived outside every wallet
+account: a Namecoin wallet restored from the same seed never scans a BIP-85
+path, and so never offers the v3 seals, which pay the grant key, as coins to
+spend. Spending them would revoke the grants. And a name-owner key on its
+own seed does not share a backup with keys that are used every day; a party
+that obtains the name-owner key can move the name before its owner replaces
+anything.
 
 Inside one account the levels below the account are not hardened. An
 extended public key together with one private key below it reveals the
