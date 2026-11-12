@@ -87,6 +87,14 @@ K2 the name-owner key of an agent name is one of its operator's cold keys,
 and the agent's Nostr key is the fifth row. How an agent's Nostr key reaches
 its gateway is not decided.
 
+The scope of K2 is open; the owners decide it. A worker agent is an agent
+identity that serves single tasks and that a grant names by key. Whether
+such an identity also has its own `id/` name is not decided. The proposal is
+that names go to the standing roles that the owners register under K3, such
+as keepers, orchestrators and notaries, and that a worker identity stays
+key-only in grants. The alternative gives every worker identity a name, at
+the cost of one registration and its renewals per identity.
+
 ## Grant v3: clarifications for names and keys
 
 These four points restate rules of LIP-0004 and LIP-0010 for a deployment
