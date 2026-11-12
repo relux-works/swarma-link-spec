@@ -212,6 +212,12 @@ Readers built before this LIP refuse an agent value without
 upgraded before a name is rewritten in the new form. This is a compatibility
 requirement, not evidence that installed consumers were upgraded.
 
+The cost of breaking it is concrete for Grant v3. A LIP-0004 reader that
+meets one owner member in a landlord value cannot read the grant key, and
+every v3 grant under that name refuses at that verifier until the value is
+restored; the refusal records no closure. The [key map](../KEY-MAP.md)
+lists where each key may be published before and after the upgrade.
+
 ### 7. `d/` and the pair rule
 
 The protocol rule is unchanged. A `d/` record is discovery data. It grants,

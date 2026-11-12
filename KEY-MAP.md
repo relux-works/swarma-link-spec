@@ -67,3 +67,113 @@ prove unseen grant-key changes; pin/state migration needs coordinated operator w
 The v4 draft instead finds a changed owner or grant key in the issuer name's
 history, without local memory; see
 [LIP-0008](lips/LIP-0008-grant-v4.md).
+
+## Decisions of 2026-11-12
+
+The owners decided four points about keys and identities on 2026-11-12. They
+change no grant format.
+
+| Decision | Direction |
+| --- | --- |
+| K1. Three keys per principal | A principal has a name-owner key, a Nostr key and a grant key. There is no separate administrative key for now. |
+| K2. Agents have their own identities | An agent has its own `id/` name. The person who operates the agent holds that name's owner key. The agent controls only its Nostr key, and a change of that key is a name update by the person. The agent's landlord pointer names its operator's landlord name. |
+| K3. Stable roles | Only an owner creates an identity. Project roles are stable, and the owners register them. An agent registers no identity for another agent. |
+| K4. No signed configuration sections yet | Sections of an agent host's configuration are not signed until a trust anchor exists. A key named in the same file is no anchor: whoever can rewrite the section can rewrite the key. |
+
+K1 adds no row to the table above. The name-owner key and the landlord grant
+key are its first two rows, and the principal's Nostr key is the personal
+key that the deployment policy above keeps apart from the grant key. Under
+K2 the name-owner key of an agent name is one of its operator's cold keys,
+and the agent's Nostr key is the fifth row. How an agent's Nostr key reaches
+its gateway is not decided.
+
+## Grant v3: clarifications for names and keys
+
+These four points restate rules of LIP-0004 and LIP-0010 for a deployment
+that issues v3 grants. They add no rule.
+
+**Only the exact LIP-0004 values.** Until every verifier of a name runs a
+LIP-0010 reader, an issuer MUST write that name only in the exact value
+shapes of LIP-0004 section 1. A LIP-0004 reader compares the whole value
+with the bytes of its own builder, so any additional member, inside `swarma`
+or beside it, makes the value unreadable. Every v3 grant under that name
+then refuses at every such verifier until the value is restored. The
+refusal records no closure. LIP-0010 section 6 already requires that every
+consumer is upgraded before a name is rewritten.
+
+Where each key is published follows from that:
+
+| Key | LIP-0004 value, in use for v3 | After LIP-0010 readers are deployed | Authority |
+| --- | --- | --- | --- |
+| Name-owner key | Not in the value. It is the key of the name's output script. | The same | Controls updates and transfers of the name |
+| Grant key | `swarma.landlord.grant` | The same | Signs grants |
+| Principal's Nostr key | `nostr.names._` | `nostr`, as a key string or a NIP-05 object | None |
+| Agent's Nostr key | `swarma.agent.nostr` and `nostr.names._`, which must be equal | `nostr` only | The agent's address; a grantee key only where a grant names it |
+| Any further key or pointer of the owner | Nowhere: it refuses the whole value | A member outside `swarma`, which a Link reader ignores | None |
+| Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only |
+
+**What a name change does to existing grants.** Grant v3 binds no owner key.
+The owner-key binding is a rule of the v4 draft (LIP-0008 section 3).
+
+| Change to a name | Effect on v3 grants (LIP-0004 section 5) | Effect on v4 grants (LIP-0008 section 3, Draft) |
+| --- | --- | --- |
+| Transfer of a landlord name to a new owner, value unchanged | Nothing closes; the grants stay live | Every grant of that issuer refuses |
+| Change of the grant key in `swarma.landlord.grant` | Every grant signed by the old key stops verifying. A verifier that had observed the old key records a durable closure; a verifier that had not refuses because the name's current key did not sign the grant. Old seals can still be spent only by the old key | Every grant of that issuer refuses |
+| Change of a principal's Nostr key | No closure | No closure |
+| Change of an agent's Nostr key | No closure of grants whose executor is that agent. A grant that names the old key as grantee no longer admits the agent and is issued again | A grantee bound by name keeps its grants |
+| Change of an agent's landlord pointer | Every grant whose executor is that agent closes, for a verifier that had observed the old pointer; a verifier that had not refuses because the agent no longer points to the landlord the grant names | The pointer no longer binds the grant's issuer, and the grant refuses |
+| Any added member | Every grant under that name refuses, without closure, until the exact value is restored | Outside `swarma`: nothing. Inside `swarma`: every grant of that issuer refuses |
+| Renewal, same value and same owner | Nothing | Nothing |
+
+Two consequences follow for a v3 deployment. An issuer that plans to replace
+its grant key does so before it issues the grants it wants to keep. And a
+party that obtains a name-owner key can transfer a v3 landlord name without
+closing a grant: a v3 verifier notices only a later change of the grant key.
+On v3 the defence is custody of the name-owner key and verifiers that keep
+their journals.
+
+**No agent grant keys on v3.** A v3 grant is valid only under the landlord's
+grant key (LIP-0004 section 2), and an agent's value has no grant member. In
+Goal 1 no agent therefore holds a grant key. A child grant is issued by the
+landlord's signer on the delegator's signed request (LIP-0014 section 5). A
+notary holds an attestation key, which signs no grant.
+
+**The landlord pointer is a name on v3.** The agent's value names its
+landlord by `id/` name, and a v3 verifier pins the network, the genesis, the
+agent name, the landlord name and the seal script. The landlord's key is
+what that name's current value says. Binding the pointer to the issuer's
+registration and owner key is a rule of the v4 draft. A key fingerprint
+cannot be added to a v3 agent value, by the first clarification.
+
+## Requirements on a key service
+
+K1 gives the grant key to a service that signs for its holder. Three
+requirements follow from the formats that key signs.
+
+1. **A grant-key purpose of its own on secp256k1,** separate from the Nostr
+   key and from funding keys. It signs grants under BIP-340. On v3 it also
+   spends seals under ECDSA, because a v3 seal pays the grant key (LIP-0004
+   section 5). LIP-0008 section 11.1 states the risk of one secret under two
+   schemes; until v4 separates them, BIP-340 uses fresh auxiliary randomness
+   and ECDSA uses RFC 6979.
+2. **Presence per signature.** The holder confirms each signature of the
+   grant key. The same holds for any key that a grant names as grantee,
+   before the executors that admit it enter enforcing mode (LIP-0013 section
+   3.4): a key that signs without its holder can be used by any process of
+   the same OS user.
+3. **Typed display.** The service parses the object it is asked to sign,
+   shows its fields, and computes the hash itself. It signs no digest that a
+   caller supplies. LIP-0008 section 8 requires this of a v4 signer; for v3
+   it covers the grant, the contract hash that `landlord_sig` signs, and the
+   terms of a child grant (LIP-0014 section 5).
+
+None of the three is met by the keyvault interface at
+[`swarma-keyvault` `41e0c71`](https://github.com/relux-works/swarma-keyvault/tree/41e0c71b0ddb2a102ae5dbc0184c60dfc10f3819),
+read on 2026-11-12. Its recovery command derives two purposes from one
+mnemonic, a Nostr leaf without presence and a Namecoin account, and its
+documentation states that it implements no address registration, transaction
+signing or broadcasting (`docs/recovery.md`). Its Nostr signing command
+takes a 32-byte digest and does not hash input again (`docs/nostr.md`). So
+there is no grant-key purpose, no seal spend and no typed display yet, and a
+name whose owner key that interface holds cannot be updated until it signs
+name operations.

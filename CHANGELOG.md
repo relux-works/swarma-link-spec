@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.1.21 — 2026-11-12
+
+The key map records four owners' decisions of 2026-11-12. A principal has
+three keys: the name-owner key, the Nostr key and the grant key, with no
+administrative key for now. An agent has its own `id/` name; its operator
+holds the owner key and the agent controls only its Nostr key. Only an owner
+creates an identity. Sections of an agent host's configuration are not
+signed until a trust anchor exists.
+
+The key map also restates four Grant v3 rules, without adding one. A name is
+written only in the exact LIP-0004 value shapes until every verifier runs a
+LIP-0010 reader: one additional member makes the value unreadable and every
+v3 grant under the name refuses, without closure, until the value is
+restored. A table gives the effect of each name change on v3 and on v4
+grants: v3 binds no owner key, so a transfer closes nothing there, and a
+change of the grant key ends every grant signed by the old key. No agent
+holds a grant key on v3. The landlord pointer is a name on v3. A second
+table lists where each key is published before and after LIP-0010 readers.
+
+Three requirements on a key service follow from the grant key's formats: a
+grant-key purpose with BIP-340 and, on v3, an ECDSA seal spend; presence per
+signature; and typed display with the hash computed by the service. The
+keyvault interface at `swarma-keyvault` `41e0c71` meets none of them yet.
+LIP-0010 section 6 states the v3 cost of rewriting a name before its readers
+are upgraded.
+
 ## 0.1.20 — 2026-11-12
 
 Adds Draft LIP-0014, Notary-certified re-delegation, and records the owners'

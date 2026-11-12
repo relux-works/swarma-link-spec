@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.20
+**Version:** 0.1.21
 
 **Date:** 2026-11-12
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.20
+## Draft profiles and design decisions in v0.1.21
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -185,6 +185,21 @@ draft proposes the attestation object, its anchor as LIP-0005 action `0x04`,
 the order of an executor's checks and the refusal codes. It belongs to the
 second phase of Goal 1: after the first proof, in shadow mode first, and no
 part of the first proof. Nothing of it is implemented.
+
+The [key map](KEY-MAP.md) records four owners' decisions of 2026-11-12: a
+principal has three keys, the name-owner key, the Nostr key and the grant
+key, without an administrative key; an agent has its own name whose owner
+key its operator holds; only an owner creates an identity; and sections of
+an agent host's configuration are not signed until a trust anchor exists.
+It also restates four Grant v3 rules for deployments. A name is written only
+in the exact LIP-0004 values until LIP-0010 readers are deployed, because
+one additional member makes every v3 grant under that name refuse. Grant v3
+binds no owner key, so a transfer of a landlord name closes nothing there,
+while a change of the grant key ends every grant signed by the old key; a
+table gives the effect of each name change on v3 and on v4. No agent holds a
+grant key on v3. The landlord pointer is a name on v3 and binds a
+registration and owner key only in v4. Three requirements on a key service
+follow: a grant-key purpose, presence per signature and typed display.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement
