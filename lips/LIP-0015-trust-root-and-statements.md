@@ -80,8 +80,11 @@ that account's authentication. The pin is not secret.
 
 ## 2. Signing domains of the grant key
 
-Every object the grant key signs is hashed with its own ASCII prefix before
-the SHA-256 of its canonical bytes, in the fixed-prefix style of LIP-0004:
+Every statement the grant key signs under BIP-340 is hashed with its own
+ASCII prefix before the SHA-256 of its canonical bytes, in the fixed-prefix
+style of LIP-0004. Transaction signatures are outside this section: the
+grant key's ECDSA spend of a v3 seal follows the chain's transaction rules,
+and this LIP changes nothing in it.
 
 | Domain | Object | State |
 | --- | --- | --- |
@@ -157,6 +160,12 @@ A change of the grant key on chain is accepted by step 3 only together with
 such a statement signed by the old key, or after a person writes a new pin.
 A process of the agent's OS user can do neither.
 
+A rotation statement is authenticated against the key it replaces and never
+against the name's current key. The first one verifies under the pinned
+grant key, and each later one under the `new_grant_key` of the statement
+before it, in `seq` order. A statement that does not continue this chain
+from the pin is ignored, and step 3 then fails as `ROOT_KEY_CHANGED`.
+
 ## 6. Certificate statements
 
 A certificate statement says that a key of another system belongs to the
@@ -181,12 +190,26 @@ The signature is BIP-340 by `issuer_key` over
 `SHA-256("swarma-cert-v1" || statement bytes)`. `statement_id` is the SHA-256
 of the compact object `{"statement":…,"signature":…}`.
 
-A verifier resolves `issuer_name` on its own node, requires the name's
-current grant key to equal `issuer_key`, checks the window, and for one
-subject takes the statement with the highest `seq` it has seen. A statement
-is revoked by a later one for the same subject whose `not_after` is the
-time of revocation, or by a change of the grant key, which ends every
-statement the old key signed.
+A verifier judges a statement in two separate steps.
+
+**Authentic.** The bytes are canonical, `issuer_name` resolves on the
+verifier's own node, the name's current grant key equals `issuer_key`, and
+the signature verifies. The window is no part of this step: a statement
+whose window has ended, or has not begun, is still authentic.
+
+**Current binding.** Statements have the same subject when `issuer_name`,
+`subject_kind` and the bytes of `subject` are equal. For one subject the
+verifier first takes the authentic statement with the highest `seq` it has
+seen, and only then reads that statement's window. The subject is bound
+exactly when the window contains the verifier's clock. A statement with a
+lower `seq` never binds, even when its own window is still open.
+
+A statement is revoked by a later one for the same subject whose `not_after`
+is the time of revocation. The revocation has the highest `seq`, so the
+subject is unbound from then on, and the earlier certificate cannot bind
+again. A revocation is an authentic statement like any other and concerns
+its own subject only. A change of the grant key ends every statement the old
+key signed.
 
 A certificate is a binding and not authority. It tells a transport that a
 device belongs to the operator of a name. It replaces no grant, and a
@@ -227,7 +250,9 @@ and never in a name value.
 
 None. A future vector set pairs each failure of section 4 with a valid
 neighbour, and checks that a signature under one domain of section 2 fails
-under every other.
+under every other. For section 6 it pairs a bound subject with the same
+subject after its revocation, and checks that the earlier certificate with
+an open window does not bind once a higher `seq` exists.
 
 ## Related sketches, not proposed here
 

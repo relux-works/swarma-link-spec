@@ -12,8 +12,8 @@
 A host that stores signed statements can drop one, or serve last month's
 set, and a reader who trusts the host does not notice. This LIP proposes a
 store in which the host provides availability only. Every record is a
-signed statement that verifies against its issuer's grant key on chain. The
-issuer signs a head over the complete set, and anchors each head in a
+signed statement that a reader authenticates itself, against keys it
+resolves on chain. The issuer signs a head over the complete set, and anchors each head in a
 transaction that spends an output of the previous head's transaction. A
 reader recomputes the head, checks its anchor on its own node, and checks
 that the head's output is unspent. A dropped record changes the head, and an
@@ -35,10 +35,17 @@ own node and the fetched files.
 ## 1. Records
 
 A record is a signed statement of LIP-0015: a certificate statement, a
-configuration statement or a root rotation statement. Each verifies by
-itself against the grant key that its issuer's name yields on the reader's
-node. The store adds nothing to a record and cannot make an invalid one
+configuration statement or a root rotation statement. A certificate or
+configuration statement is authentic by itself, against the grant key that
+its issuer's name yields on the reader's node. A root rotation statement is
+signed by the key it replaces, so it never verifies under the current key:
+only a loader with a pin evaluates it, along the chain of LIP-0015
+section 5. The store adds nothing to a record and cannot make an invalid one
 valid.
+
+A record that is authentic and a subject that is currently bound are two
+different facts (LIP-0015 section 6). The store keeps records; whether a
+subject is bound is computed from them.
 
 ## 2. The head
 
@@ -63,8 +70,11 @@ The signature is BIP-340 by `issuer_key` over
 the compact object `{"head":…,"signature":…}`.
 
 The set of a head holds every statement the issuer still publishes,
-revocations included: a statement is revoked by a later statement (LIP-0015
-section 6), and both stay in the set.
+revocations and ended statements included: a statement is revoked by a later
+statement (LIP-0015 section 6), and both stay in the set. A set published
+after a change of the grant key also holds the root rotation statements that
+lead to the new key, so that a loader pinned to an earlier key can follow
+them.
 
 ## 3. The anchor
 
@@ -108,12 +118,22 @@ A reader, for one issuer:
 | 3 | The number of fetched statements equals `count`, and their ids give `set_sha256` | `STORE_INCOMPLETE` |
 | 4 | The anchor of section 3 is confirmed in the active chain and commits to this `head_id` | `HEAD_ANCHOR` |
 | 5 | `head_outpoint` is unspent, the mempool included | `HEAD_SUPERSEDED` |
-| 6 | Each statement verifies under LIP-0015 | the code of LIP-0015 |
+| 6 | Each certificate and configuration statement is authentic under LIP-0015 section 6: canonical bytes, the issuer's current key, the signature. Its window is not judged here. A root rotation statement is only matched to its listed id | `STORE_RECORD_INVALID` |
+| 7 | For each subject, take the authentic statement with the highest `seq`, and only then read its window: the subject is bound when the window contains the reader's clock | none; an unbound subject is a result and no failure of the set |
+
+Steps 1 to 6 establish that the set is complete and authentic. Step 7 reads
+the current bindings from it. A retained revocation, or a certificate whose
+window has ended, passes step 6 and leaves its own subject unbound in
+step 7. Every other subject of the set keeps its binding. An earlier
+certificate of a revoked subject does not bind again, because step 7 never
+selects a statement below the highest `seq`.
 
 A missing record never reads as "no certificate". It fails step 3. A host
 that serves an older complete set fails step 5, also for a reader that has
-never seen this issuer before. A reader that cannot complete the steps has
-no verified set and treats the keys it wanted to look up as unbound.
+never seen this issuer before. A host that replaces a record by one with a
+forged signature changes that record's id and fails step 3. A reader that
+cannot complete steps 1 to 6 has no verified set and treats the keys it
+wanted to look up as unbound.
 
 Commit-signing keys are records too: a `git-signing-ssh` statement binds a
 commit-signing key to the name. The signatures on a provider repository's
@@ -135,8 +155,9 @@ commits then lead back to the grant key, though a reader does not need them.
 - A host that drops, adds or alters a record is detected by steps 3 and 6.
   A host that withholds a newer head is detected by step 5.
 - A stolen grant key signs a new head. A change of the grant key ends every
-  head and statement the old key signed; the issuer publishes a new set
-  under the new key, starting again at `seq` 1.
+  head and every certificate and configuration statement the old key signed.
+  The issuer publishes a new set under the new key, starting again at `seq`
+  1; it carries the root rotation statement, which the old key signed.
 - The set of an issuer is public, and with it the list of devices and keys
   the issuer binds. A statement holds nothing private.
 - Each head costs one transaction with one input and the anchor output. No
@@ -144,9 +165,14 @@ commits then lead back to the grant key, though a reader does not need them.
 
 ## Conformance impact
 
-None. A future vector set pairs a complete set with one dropped record, one
-altered record, a head with a spent output, and a head signed by a key that
-is no longer the name's grant key.
+None. A future vector set pairs these controls:
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| A complete set with certificates of subjects A and B, both bound | The same set with one record dropped fails as `STORE_INCOMPLETE`. |
+| The set after A is revoked: A's certificate, A's revocation and B's certificate | The set is still complete and authentic. A is unbound and B stays bound; discarding the set because the revocation's window has ended is wrong. A's earlier certificate, whose own window is still open, does not bind. |
+| Every record with its issuer's signature | A record replaced by one with a forged signature fails as `STORE_INCOMPLETE`, because its id changes. A head that lists a record whose signature does not verify fails as `STORE_RECORD_INVALID`. |
+| The newest head | A head whose output is spent fails as `HEAD_SUPERSEDED`; a head signed by a key that is no longer the name's grant key fails as `HEAD_SIGNATURE`. |
 
 ## Open questions
 
