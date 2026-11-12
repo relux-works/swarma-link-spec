@@ -12,8 +12,8 @@
 A host that stores signed statements can drop one, or serve last month's
 set, and a reader who trusts the host does not notice. This LIP proposes a
 store in which the host provides availability only. Every record is a
-signed statement that a reader authenticates itself, against keys it
-resolves on chain. The issuer signs a head over the complete set, and anchors each head in a
+signed statement, and each type of record is checked under its own rules.
+The issuer signs a head over the complete set, and anchors each head in a
 transaction that spends an output of the previous head's transaction. A
 reader recomputes the head, checks its anchor on its own node, and checks
 that the head's output is unspent. A dropped record changes the head, and an
@@ -34,18 +34,25 @@ own node and the fetched files.
 
 ## 1. Records
 
-A record is a signed statement of LIP-0015: a certificate statement, a
-configuration statement or a root rotation statement. A certificate or
-configuration statement is authentic by itself, against the grant key that
-its issuer's name yields on the reader's node. A root rotation statement is
-signed by the key it replaces, so it never verifies under the current key:
-only a loader with a pin evaluates it, along the chain of LIP-0015
-section 5. The store adds nothing to a record and cannot make an invalid one
-valid.
+A record is a signed statement of LIP-0015, of one of three types. The
+first member of the object names the type, and a reader selects the rules by
+it:
 
-A record that is authentic and a subject that is currently bound are two
-different facts (LIP-0015 section 6). The store keeps records; whether a
-subject is bound is computed from them.
+| Type | First member | What the store reader checks | Who decides its effect |
+| --- | --- | --- | --- |
+| Certificate statement | `profile` = `swarma-cert-statement/1` | Authentic under LIP-0015 section 6: the eleven members in canonical bytes, `issuer_name` equal to the head's, `issuer_key` equal to the name's current grant key, the signature under `swarma-cert-v1` | The store reader, in step 7 of section 5 |
+| Configuration statement | `schema` = `swarma-config-statement/1` | Authentic under LIP-0015 section 3: the six members in canonical bytes, `root_name` equal to the head's `issuer_name`, the signature by that name's current grant key under `swarma-config-v1` | A loader with a pin, under LIP-0015 section 4 |
+| Root rotation statement | `schema` = `swarma-root-rotate/1` | Inclusion only: its id is one the head lists. Its signature is not verified here, because the key it replaces signed it and not the current key | A loader with a pin, along the chain of LIP-0015 section 5 |
+
+The id of a record of any type is the SHA-256 of the compact object
+`{"statement":…,"signature":…}`, as LIP-0015 section 6 defines it for a
+certificate. An object with any other first member is no record of this
+store.
+
+Three facts are kept apart. A record is included when the signed head lists
+its id. A certificate or a configuration statement is authentic when it
+passes its row above. A subject is currently bound when step 7 says so. The
+store adds nothing to a record and cannot make an invalid one valid.
 
 ## 2. The head
 
@@ -118,15 +125,25 @@ A reader, for one issuer:
 | 3 | The number of fetched statements equals `count`, and their ids give `set_sha256` | `STORE_INCOMPLETE` |
 | 4 | The anchor of section 3 is confirmed in the active chain and commits to this `head_id` | `HEAD_ANCHOR` |
 | 5 | `head_outpoint` is unspent, the mempool included | `HEAD_SUPERSEDED` |
-| 6 | Each certificate and configuration statement is authentic under LIP-0015 section 6: canonical bytes, the issuer's current key, the signature. Its window is not judged here. A root rotation statement is only matched to its listed id | `STORE_RECORD_INVALID` |
-| 7 | For each subject, take the authentic statement with the highest `seq`, and only then read its window: the subject is bound when the window contains the reader's clock | none; an unbound subject is a result and no failure of the set |
+| 6 | Each record is checked by its type, under its row of section 1. A certificate statement is authentic under LIP-0015 section 6, and its window is not judged here. A configuration statement is authentic under LIP-0015 section 3, and its expiry is not judged here. A root rotation statement is included and nothing more. A listed object of no known type fails | `STORE_RECORD_INVALID` |
+| 7 | Certificates only: for each certificate subject, take the authentic certificate statement with the highest `seq`, and only then read its window. The subject is bound when the window contains the reader's clock | none; an unbound subject is a result and no failure of the set |
 
-Steps 1 to 6 establish that the set is complete and authentic. Step 7 reads
-the current bindings from it. A retained revocation, or a certificate whose
-window has ended, passes step 6 and leaves its own subject unbound in
-step 7. Every other subject of the set keeps its binding. An earlier
-certificate of a revoked subject does not bind again, because step 7 never
-selects a statement below the highest `seq`.
+Steps 1 to 6 establish that the set is complete, that its certificate and
+configuration statements are authentic, and that its rotation statements
+are included. They do not establish that a rotation statement is validly
+signed. Step 7 reads the current certificate bindings. A retained
+revocation, or a certificate whose window has ended, passes step 6 and
+leaves its own subject unbound in step 7. Every other subject of the set
+keeps its binding. An earlier certificate of a revoked subject does not
+bind again, because step 7 never selects a statement below the highest
+`seq`.
+
+Step 7 gives a configuration statement no effect. A loader takes an
+authentic configuration statement from the set and accepts it only under
+LIP-0015 section 4: its pin, the expiry, the rollback mark and the hash of
+the section. The same loader evaluates a rotation statement from the set
+under LIP-0015 section 5. A valid configuration or rotation statement in a
+set therefore never affects whether a certificate subject is bound.
 
 A missing record never reads as "no certificate". It fails step 3. A host
 that serves an older complete set fails step 5, also for a reader that has
@@ -171,7 +188,10 @@ None. A future vector set pairs these controls:
 | --- | --- |
 | A complete set with certificates of subjects A and B, both bound | The same set with one record dropped fails as `STORE_INCOMPLETE`. |
 | The set after A is revoked: A's certificate, A's revocation and B's certificate | The set is still complete and authentic. A is unbound and B stays bound; discarding the set because the revocation's window has ended is wrong. A's earlier certificate, whose own window is still open, does not bind. |
-| Every record with its issuer's signature | A record replaced by one with a forged signature fails as `STORE_INCOMPLETE`, because its id changes. A head that lists a record whose signature does not verify fails as `STORE_RECORD_INVALID`. |
+| Every record with its issuer's signature | A record replaced by one with a forged signature fails as `STORE_INCOMPLETE`, because its id changes. A head that lists a certificate whose signature does not verify fails as `STORE_RECORD_INVALID`. |
+| A mixed set: a live certificate, a valid unexpired configuration statement and a root rotation statement | The set passes steps 1 to 6 and the certificate's subject is bound. Judging the configuration statement by the certificate members, and discarding the set because it lacks them, is wrong. |
+| The same mixed set with each record of its own type | A configuration statement whose signature does not verify under `swarma-config-v1`, one whose `root_name` differs from the head's `issuer_name`, a configuration statement signed under the certificate domain, and a listed object with an unknown first member each fail as `STORE_RECORD_INVALID`. |
+| A rotation statement in the set that continues the chain from a loader's pin | A rotation statement with a bad signature leaves the set readable, because the store checks its inclusion only; the loader refuses it under LIP-0015 section 5. Reporting it as verified by the store is wrong. |
 | The newest head | A head whose output is spent fails as `HEAD_SUPERSEDED`; a head signed by a key that is no longer the name's grant key fails as `HEAD_SIGNATURE`. |
 
 ## Open questions

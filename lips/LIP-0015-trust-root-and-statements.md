@@ -124,6 +124,12 @@ The signature is BIP-340 by the root's grant key over
 `SHA-256("swarma-config-v1" || statement bytes)`. The 16-byte prefix has no
 terminator or length.
 
+A configuration statement is authentic when its six members are in canonical
+bytes and this signature verifies under the grant key that `root_name`
+yields. Being authentic does not make it accepted: a loader accepts it only
+through the steps of section 4. It has no `issuer_key`, no subject kind and
+no opening time; the certificate rules of section 6 do not apply to it.
+
 ## 4. Verification at load
 
 The loader runs these steps each time it loads a signed section and stops at
