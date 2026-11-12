@@ -310,6 +310,12 @@ for one that is a person. The seal named by member 17 pays a key distinct from
 `notary_key`, for the reason LIP-0008 section 11.1 gives for grant and seal
 keys: one secret should not sign under two schemes.
 
+Deployment note. On a host that has no key service, a notary may hold its
+attestation key in a file under a separate OS user, with mode 0600, that no
+agent's OS user can read. This is an exception and not the target. Each owner
+approves it for each notary on such a host, and it ends when a key service is
+available there.
+
 ### 6.4. Anchor and seal
 
 The notary anchors each attestation in one zero-value `OP_RETURN` output, in a
@@ -639,5 +645,6 @@ valid neighbour:
   attestation now.
 - The v4 bytes of the right of re-delegation, and whether a re-delegating
   agent on v4 needs a grant key of its own (LIP-0008 section 12.6).
-- Whether the tools around v3 that this LIP needs count as "v3 as is"
-  (question T1 of LIP-0013).
+- D4 places the pieces of this LIP after the first proof, as tools around v3
+  that change no v3 byte. Question T1 of LIP-0013, whether such tools count
+  as "v3 as is", has no explicit answer yet.
