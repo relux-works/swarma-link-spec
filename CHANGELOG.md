@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.19 — 2026-11-12
+
+Adds Draft LIP-0013, the trust contract profile `swarma-trust-contract/1` and
+the kind-8185 instruction envelope for Grant v3, for Goal 1 as agreed by both
+co-leads on 2026-11-12. The profile defines only the preimage of the v3
+`contract_sha256`: canonical compact JSON in a fixed field order; the actions
+`instruct`, `land`, `review` and `spend`, of which `land` implies the v3 scope
+`repository.push` and `spend` implies `pay` with a budget equal to
+`spend_budget`; the validity rules with their refusal codes; and the consent
+tags, with `t` unchanged, `booking` over the contract bytes and `privacy` over
+`swarma-trust-privacy-v1`. No v3 byte, signing domain or `rental.Check` rule
+changes. The envelope section fixes the exact tags, the body hash, the nonce
+journal, the time window and the admission check order. Kind 8185 is unused
+in chain-lab and here.
+
+Adds draft vectors in `vectors/LIP-0013/` (4 valid and 28 invalid contracts,
+15 bindings, 26 envelopes signed with BIP-340 published test keys) and the
+reference checker `tools/trustcheck`. Nothing is implemented in a product.
+
 ## 0.1.18 — 2026-11-11
 
 Adds Draft LIP-0012, Notary, by decisions of Ivan Oparin of 2026-11-11; the

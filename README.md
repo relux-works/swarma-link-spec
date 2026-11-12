@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.18
+**Version:** 0.1.19
 
-**Date:** 2026-11-11
+**Date:** 2026-11-12
 
 **Status:** Draft
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.18
+## Draft profiles and design decisions in v0.1.19
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -157,6 +157,17 @@ single-key script of its construction profile; non-hardened seal indices are
 the default, with the extended public key as the operator's secret. The
 co-author's agreement on all of them is pending.
 
+[LIP-0013](lips/LIP-0013-trust-contract.md) proposes the trust contract
+profile `swarma-trust-contract/1` for Goal 1, trust between our own agents on
+Grant v3. It defines only the preimage of the v3 `contract_sha256`: four
+actions, `instruct`, `land`, `review` and `spend`, the v3 scope and budget each
+one implies, and the consent tags of a trust grant. No v3 byte, signing domain
+or `rental.Check` rule changes. It also proposes the kind-8185 signed
+instruction envelope and the order of an executor's admission checks. Draft
+vectors in [`vectors/LIP-0013/`](vectors/LIP-0013/) are recomputed by the
+reference checker in [`tools/trustcheck`](tools/trustcheck). Nothing of it is
+implemented in a product.
+
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement
 executor-bound grants, Namecoin discovery and separate authorization,
@@ -200,6 +211,12 @@ serif print theme; HTML is an intermediate artifact in the release workspace.
 | WeasyPrint | `weasyprint --stylesheet <serif-print-theme.css> <html> swarma-link-spec-v<version>.pdf` | Whole-specification PDF. |
 | Poppler | `pdftotext swarma-link-spec-v<version>.pdf -` | Extracted text on stdout for section coverage checks. |
 | GitHub CLI | `gh release create v<version> --verify-tag swarma-link-spec-v<version>.pdf swarma-link-spec-v<version>.pdf.sha256` | Release with PDF and SHA-256 assets. |
+| Go 1.26, `tools/trustcheck` | LIP-0013 reference checker: `go -C tools/trustcheck run . check ../../vectors/LIP-0013/trust-vectors.json` | One `PASS`/`FAIL` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result, 1 on a mismatch, 2 on a usage or input error. |
+| Go 1.26, `tools/trustcheck` | Regenerate the LIP-0013 vectors: `go -C tools/trustcheck run . gen > vectors/LIP-0013/trust-vectors.json` | The vector file, byte for byte deterministic; review it as a diff. |
+| Go 1.26, `tools/trustcheck` | Checker self-tests: `go -C tools/trustcheck test ./...` | Test result on stdout: BIP-340 vector 0 reproduced, generator equal to the committed file, planted defects caught. |
 
 Source review precedes tagging and rendering. This repository has no general
-executable conformance runner.
+executable conformance runner; `tools/trustcheck` checks only the LIP-0013
+draft vectors. Its one direct dependency is `github.com/btcsuite/btcd/btcec/v2`
+v2.3.5, the BIP-340 library the chain-lab v3 code uses; it reads no network,
+node, clock or key file.
