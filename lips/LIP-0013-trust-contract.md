@@ -541,22 +541,23 @@ origin would narrow what a run can do under a listed grant; it is a policy
 language at the key holder, and the first version lists grants, parents and
 contracts and says what that leaves open.
 
-Cases (owner decision pending: J7). Every case runs against the real signing endpoint with real callers;
-a helper that is handed a trusted run identifier tests nothing. On a
-refusal the test checks that no signature exists. Today no gate exists, and
-the signatures that the first three rows refuse are given:
+Cases (owner decision pending: J7). Their identifiers begin with S7, for
+this decision. Every case runs against the real signing endpoint with real
+callers; a helper that is handed a trusted run identifier tests nothing. On
+a refusal the test checks that no signature exists. Today no gate exists,
+and the signatures that S7-1 to S7-3 refuse are given:
 
-| Valid control | Refusal or invariant |
-| --- | --- |
-| A run whose origin lists `Gy` signs an envelope under `Gy` | Same identity and key: a run whose origin is `G2`, without `Gy` in its row, asks for a signature under `Gy`: `GRANT_NOT_FOR_RUN`. This is the case of the first paragraph. |
-| A typed envelope under a listed grant, and a kind-8186 request under a parent listed for delegation, are both signed | An otherwise valid kind-8186 request for a parent that is not listed; an arbitrary event; a supplied digest; a batch or alternate route: refused. A blanket ban on kind 8186 fails the control. |
-| A run created by the owner's command signs under the owner's row | A caller that supplies the owner's label or another run's identifier; a copied handle; a reused process id; a reconnect after the key holder restarted: refused, and never the owner's row. |
-| From no grant, a run whose origin lists the contract obtains the consent; the issuer signs the grant; with "and use" the new grant becomes usable by that run, and a later envelope under it is signed | A consent for a contract that is not listed: `CONSENT_NOT_FOR_RUN`. A grant that does not contain the consent the key holder signed is not added to the row. Placeholder grant ids and a grant consented in advance hide the case and are not this test. |
-| A second instruction under the same origin continues the run | An instruction admitted under another grant gets a run and a channel of its own, or stays data. Changing a label on the same channel is not that. |
-| A run started or resumed from a run keeps the origin and the current row | After the process and the session were re-created, and after an older table was put back: no signature under a grant missing from the current row; the old table is unreadable. |
-| A known caller and a readable row: signed | Three separate negatives: an unknown caller; no row; an unreadable or corrupt table: nothing is signed, and no fallback to every grant of the identity. |
-| At a receiver: a valid request is admitted on its own checks, whatever untrusted run label accompanies it | A request with an invalid grant, path or bound is refused although a label says the gate passed. The signed bytes are not altered in this test. |
-| A permission is in force and a signature is released. A removal recorded after a release leaves that signature as it is and refuses the next request; a retried enrollment without a removal changes nothing; a grant that the operator lists again in a newer table version is usable again | The operator removes the permission while a request is in flight, and the removal is recorded before the release: no signature is released. The origin's consent entry says "and use", grant `G` is enrolled, the operator removes `G` from `use` and keeps the consent entry; the run shows the same `G` with the same journalled consent again: `G` is not added, and a signature under `G` refuses as `GRANT_NOT_FOR_RUN`, also after a restart of the key holder. A removal that races the enrollment itself ends with `G` denied. With the consent entry still present, a new consent to the same contract is signed and its new grant enrolls: that is what the standing entry means, and removing the entry stops it. |
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S7-1 | A run whose origin lists `Gy` signs an envelope under `Gy` | Same identity and key: a run whose origin is `G2`, without `Gy` in its row, asks for a signature under `Gy`: `GRANT_NOT_FOR_RUN`. This is the case of the first paragraph. |
+| S7-2 | A typed envelope under a listed grant, and a kind-8186 request under a parent listed for delegation, are both signed | An otherwise valid kind-8186 request for a parent that is not listed; an arbitrary event; a supplied digest; a batch or alternate route: refused. A blanket ban on kind 8186 fails the control. |
+| S7-3 | A run created by the owner's command signs under the owner's row | A caller that supplies the owner's label or another run's identifier; a copied handle; a reused process id; a reconnect after the key holder restarted: refused, and never the owner's row. |
+| S7-4 | From no grant, a run whose origin lists the contract obtains the consent; the issuer signs the grant; with "and use" the new grant becomes usable by that run, and a later envelope under it is signed | A consent for a contract that is not listed: `CONSENT_NOT_FOR_RUN`. A grant that does not contain the consent the key holder signed is not added to the row. Placeholder grant ids and a grant consented in advance hide the case and are not this test. |
+| S7-5 | A second instruction under the same origin continues the run | An instruction admitted under another grant gets a run and a channel of its own, or stays data. Changing a label on the same channel is not that. |
+| S7-6 | A run started or resumed from a run keeps the origin and the current row | After the process and the session were re-created, and after an older table was put back: no signature under a grant missing from the current row; the old table is unreadable. |
+| S7-7 | A known caller and a readable row: signed | Three separate negatives: an unknown caller; no row; an unreadable or corrupt table: nothing is signed, and no fallback to every grant of the identity. |
+| S7-8 | At a receiver: a valid request is admitted on its own checks, whatever untrusted run label accompanies it | A request with an invalid grant, path or bound is refused although a label says the gate passed. The signed bytes are not altered in this test. |
+| S7-9 | A permission is in force and a signature is released. A removal recorded after a release leaves that signature as it is and refuses the next request; a retried enrollment without a removal changes nothing; a grant that the operator lists again in a newer table version is usable again | The operator removes the permission while a request is in flight, and the removal is recorded before the release: no signature is released. The origin's consent entry says "and use", grant `G` is enrolled, the operator removes `G` from `use` and keeps the consent entry; the run shows the same `G` with the same journalled consent again: `G` is not added, and a signature under `G` refuses as `GRANT_NOT_FOR_RUN`, also after a restart of the key holder. A removal that races the enrollment itself ends with `G` denied. With the consent entry still present, a new consent to the same contract is signed and its new grant enrolls: that is what the standing entry means, and removing the entry stops it. |
 
 A deployment check goes with these cases and is no protocol vector: a
 repository token or a wallet RPC within the run's reach produces the

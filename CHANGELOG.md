@@ -36,8 +36,7 @@ operation; an issuer funds every operation of its name from coins that no
 hot service can spend. A verifier that saw the change and one that starts
 later can differ, and the text says so. A new open question asks whether
 the issuer rule should carry the writer rule that LIP-0014 drafts for a
-notary. The conformance row for an unconfirmed parent gives the txid reason
-for a legacy input only.
+notary.
 
 LIP-0013 section 3.6 (J7): the service that holds an agent's key binds each
 run to its origin and signs only what its operator listed for that origin,
