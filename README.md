@@ -251,7 +251,10 @@ profile: `swarma` is the only member Link defines, the reader ignores the
 owner's other members and stays strict inside `swarma`; the agent key is
 written once, in `nostr` in the NIP-05 shape, and both published forms of
 `nostr` yield the same key. `d/` stays discovery only, with a deployment rule
-to register `d/<label>` together with `id/<label>`. It records Ivan Oparin's
+to register `d/<label>` together with `id/<label>`. A note of 2026-11-13
+records that this pair is a convention outside Namecoin consensus and that
+an additional convention with a single level of registration is under
+consideration; it changes no rule. The LIP records Ivan Oparin's
 four decisions of 2026-11-10 and awaits the co-author's agreement. No reader
 implements these rules yet; LIP-0004 values keep their own rules.
 

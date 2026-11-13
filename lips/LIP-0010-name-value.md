@@ -270,6 +270,17 @@ registration fees, and one more renewal per period. It is a deployment rule.
 A verifier does not check it, and a missing `d/` name does not weaken a
 grant.
 
+**Note, not normative.** Recorded on 2026-11-13 at Ivan Oparin's direction.
+The pair of `id/<label>` and `d/<label>` is a convention outside Namecoin
+consensus: consensus gives a prefix no meaning and relates no two names. The
+convention misleads. A person reads `id/<label>` and `<label>.bit` as one
+identity, while the chain holds two unrelated names, and the pair lasts only
+as long as one owner registers and renews both. An additional naming
+convention with a single level of registration is therefore under
+consideration, and the authors' own parsers would handle only that level.
+This note defines nothing of that convention and changes no rule: the
+protocol rule and the deployment rule of this section stand.
+
 ### 8. Size
 
 The complete value MUST fit 520 bytes with every member counted, including
@@ -427,6 +438,9 @@ controls; each rejected case leaves no binding and no closure:
   yields no key here. It is added if the draft adopts it.
 - How the LIP-0007 service declaration shares the 520 bytes with `nostr` and
   owner members.
+- An additional naming convention with a single level of registration; the
+  authors' own parsers would then handle only that level (the note that
+  closes section 7). No prefix, grammar or migration is defined.
 - Whether a transfer of `id/<label>` requires the transfer of `d/<label>` in
   the same deployment procedure.
 - Whether a v4 parent pins a notary name by its registration and owner key
