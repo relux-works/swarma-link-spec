@@ -548,9 +548,10 @@ The alternative before the owners is the name alone, as the first paragraph
 describes it: no pin and no walk, and a notary's name that changes hands
 passes on the right to certify.
 
-Cases. Each uses a verifier that starts after the events and holds no
-journal. Under the name-only rule in force a verifier reads no history, so
-it admits the refusals of the first six rows and of the eighth:
+Cases (owner decision pending: J3). Each uses a verifier that starts after
+the events and holds no journal. Under the name-only rule in force a
+verifier reads no history, so it admits the refusals of the first six rows
+and of the eighth:
 
 | Valid control | Refusal or invariant |
 | --- | --- |
@@ -846,9 +847,9 @@ the seal of a child that a thief of the delegation key signed. That costs
 one more key and a change of the endorsement rule of LIP-0008 section 11.1
 for children; the proposal is to decide it with the v4 bytes.
 
-Cases. All are v4 cases; no v4 implementation exists, and no result is
-claimed. "Today" is the rule in force, under which the channel key signs
-children:
+Cases (owner decision pending: J4). All are v4 cases; no v4 implementation
+exists, and no result is claimed. "Today" is the rule in force, under which
+the channel key signs children:
 
 | Valid control | Refusal or invariant |
 | --- | --- |
