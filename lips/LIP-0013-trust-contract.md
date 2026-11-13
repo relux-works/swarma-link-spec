@@ -479,11 +479,11 @@ committed file, and that planted defects fail with their named codes.
   no authority: the executor reports it, the message stays data and only the
   owner directs (section 3.4). An executor that cannot read its mode runs in
   shadow mode.
-- **One identity, every run.** A grant is issued to an identity and is not
-  used up by a run. Every run of that identity holds all of its grants. An
-  agent that works for two parties can thereby pass one party's instruction
-  into an action under the other party's grant. The case is open question
-  T10.
+- **One key, every run.** A grant is issued to a key. Every run of the agent
+  that holds the key can act under every grant issued to it, whichever
+  party's work that run is doing. An agent that works for two parties can
+  thereby carry one party's instruction into an action under the other
+  party's grant. The case is open question T10.
 - **Replay and delay.** The nonce journal and the time window bound replay.
   Holding a pending envelope does not reopen the window (section 3.5).
 - **Public graph.** On mainnet, names, keys and the bundle make "who trusts
@@ -511,4 +511,4 @@ protocol text and a conformance change that names the vector set.
 | T7 | Whether an issuer MUST, rather than SHOULD, omit a zero v3 budget | SHOULD; the verifier compares the value, so both forms bind. |
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
-| T10 | A gap found in review: a grant binds an identity, not a run. Worker `W` holds a grant from owner A for an action in A's service, and is the executor of a grant that lets an orchestrator of owner B instruct it. B's orchestrator instructs `W`; working on that instruction, `W` calls A's service under its own grant. Every check of section 3.4 passes, and B's orchestrator obtains an action in A's service that A gave `W` for other work. LIP-0014 closes the case where the relayed work goes to another agent under a child grant; it does not cover an agent that acts itself. | Candidate fix, a proposal that the owners decide: the delivery daemon that holds the agent's keys signs a session's requests only under the grants listed for that run. This adds no record to the chain. Undecided. |
+| T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Worker `W` is the grantee of a grant from principal A for an action at A's executor. `W` also admits instructions from an orchestrator of another party, B, under a second grant. B's orchestrator instructs `W`, and in the course of that work `W` sends A's executor an envelope under its own grant. A's executor runs section 3.4, every check passes, and in enforcing mode it admits the envelope as an instruction on A's authority. B's orchestrator has obtained an action that A gave `W` for other work, and A's executor has no input that tells the two apart. LIP-0014 gives a relaying agent a child grant that fits the relayed work. It does not stop the agent from sending under a wider grant of its own, and it does not apply when the agent acts itself. | Candidate fix, a proposal that the owners decide: the gateway that holds the agent's key signs a run's envelopes only under the grants listed for that run. This adds no record to the chain. Undecided. |

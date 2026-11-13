@@ -261,6 +261,13 @@ Two rules bound this: a requirement may name up to four notaries, any one of
 which is enough (N6), and after a plain withdrawal another named notary can
 certify the same grant (N8).
 
+Naming several notaries, and naming them by name, has limits that LIP-0014
+records as open gaps with the case that shows each: a notary does not see a
+sibling that another notary certified under the same ordinal; a withdrawal
+for cause by one notary reaches neither another named notary nor a verifier
+that starts later; and a notary's name that changes hands passes on the
+right to certify.
+
 The notary learns the contents of both contracts. A deployment that cannot
 disclose them to a third party uses issuance by the operator's signer
 instead (LIP-0008 section 12.6).

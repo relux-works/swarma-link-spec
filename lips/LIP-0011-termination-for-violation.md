@@ -317,13 +317,13 @@ controls; each refused case leaves the closure rules untouched:
 - The definition of the request bytes for each service profile, and a salt
   against guessing short requests. One profile is known to break the
   assumption that a disclosed request shows its sender (a gap found in
-  review): a rental message carried under NIP-17 and NIP-59. The sender signs
-  the seal event, whose content is the encrypted message; the message itself
-  is an unsigned event inside it. A hash of the readable message is then a
-  hash of bytes nobody signed, and the message proves its sender only
-  together with the signed seal and the means to decrypt it. What the
-  request bytes of that profile are, and what a disclosure must contain, is
-  open.
+  review): a renter's message in the rental profile, which travels under
+  NIP-17 and NIP-59. There the sender signs the seal event, whose content is
+  the encrypted message; the message itself is an unsigned event inside the
+  seal. A hash of the readable message is then a hash of bytes nobody
+  signed, and the message proves its sender only together with the signed
+  seal and the means to decrypt it. What the request bytes of that profile
+  are, and what a disclosure must contain, is open.
 - How the rules text expresses which verdict ends the contract, and whether
   that threshold is also a machine-readable contract term.
 - Replacement of the moderator key during a contract.

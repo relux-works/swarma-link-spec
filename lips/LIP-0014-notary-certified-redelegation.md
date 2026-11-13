@@ -68,9 +68,11 @@ as part of that work. The executor may also hold its own standing grant over
 the sub-executor, with more repositories than the principal gave the
 orchestrator. If the executor relays the orchestrator's work under that
 standing grant, the orchestrator obtains through the executor what the
-principal refused it. A child grant bound to the orchestrator's grant removes
-this: the sub-executor admits the relayed work only under a grant that is
-within the orchestrator's.
+principal refused it. A child grant bound to the orchestrator's grant gives
+the executor a grant for exactly that work: relayed under the child, the work
+is admitted only within the orchestrator's grant. The executor still holds
+its standing grant, and no check makes it relay under the child; LIP-0013
+lists that as open question T10.
 
 LIP-0008 section 12.6 already decides that a child is never broader than its
 parent (R1), that countable conditions are compared mechanically (R2), and
@@ -218,9 +220,9 @@ The scope text is a separate document. Its exact octets hash to
 the note of LIP-0013, it can never add an action, a repository, a budget or
 time. It is meant to restrict what the structured members already allow. A
 wrong judgement about text therefore cannot widen a mechanical limit. No
-step of section 8 compares an instruction with the text, so the restriction
-itself is not enforced at admission; this is a gap listed under Open
-questions.
+step of section 8 and no step of LIP-0013 section 3.4 compares an
+instruction with the text. Whether an executor honours the text is left to
+that executor, which is a gap listed under Open questions.
 
 ## 4. What a child binds
 
@@ -396,10 +398,11 @@ Each notary publishes its attestation key in its own `id/` name, in the
 ```
 
 The notary rotates its key by updating that name with its name-owner key. The
-grants that name it are not reissued. The parent binds the notary by name
-only: it does not bind the registration or the owner of that name, which is a
-gap listed under Open questions. Attestations under the old key then
+grants that name it are not reissued. Attestations under the old key then
 refuse (section 8, V12), and the notary signs them again under the new key.
+The parent binds the notary by name only. It binds neither the registration
+nor the owner of that name, so the same update is open to whoever holds the
+name later. This is a gap listed under Open questions.
 
 A name has one `swarma` shape, so a notary name is neither a landlord name nor
 an agent name. An owner who certifies children of their own grants registers
@@ -483,11 +486,12 @@ The attestation is required in addition, also when `textual` is `none` or
 `identical`, for four reasons. The rule has no branch that a child can use to
 skip certification. Every certified child has a seal that a party outside the
 path can spend. No single verifier sees the siblings of a child; a notary
-sees the children it certified itself, and its chain of attestations makes
-the pool arithmetic checkable for them (section 9). With more than one named
-notary no party sees all siblings, which is a gap listed under Open
-questions. A named party has recorded both contract hashes, the arithmetic
-and the tip it saw.
+sees the children it certified itself and the chain it is shown, and its
+attestations make the pool arithmetic checkable along that chain (section
+9). With more than one named notary, a notary does not see a sibling that
+another notary certified under the same ordinal, which is a gap listed under
+Open questions. A named party has recorded both contract hashes, the
+arithmetic and the tip it saw.
 
 ### 8.2. Where "not certified" is visible
 
@@ -524,15 +528,19 @@ executors keep independent journals. Children run at different agents, so:
 - The sum over children is serialized at issuance: the signer reserves the
   ordinal and the amount durably before it signs (section 5). The notary keeps
   the same ledger per parent and certifies only when `after` is at most
-  `pool`.
+  `pool`. Section 5 describes v3, where that signer is the landlord's. On v4
+  the delegator signs the children, and the only ledger of the sum outside
+  the delegator is a notary's.
 
 A verifier checks the arithmetic of the chain it receives (V15). From one
 bundle it cannot see a fork: two attestations with one parent and one ordinal
 for different children. Such a pair, both signed by the notary, is complete
 evidence of the notary's equivocation for anyone who holds both. A pair
-signed by two different named notaries is evidence against neither of them,
-and nothing in this draft detects it. A pair for the same child after a
-withdrawal is a new certification of that child (section 10) and no fork.
+signed by two different named notaries shows no fault of either notary. It
+shows that the child signer used one ordinal twice, and no rule of this
+draft brings the two attestations before one party (Open questions). A pair
+for the same child after a withdrawal is a new certification of that child
+(section 10) and no fork.
 
 A consumed ordinal and its budget stay consumed when the child is revoked or
 its attestation withdrawn. LIP-0008 section 12.2 requires that reissuance
@@ -571,10 +579,9 @@ verdict record of LIP-0011 is.
 After a withdrawal for cause a named notary MUST NOT certify that child again,
 the landlord's signer revokes the child when it observes the frame, and an
 executor that observed it journals the child as closed. The delegator requests
-a new child with a new ordinal. These three duties bind the parties that
-observed the frame. A verifier that observed neither the frame nor the
-revocation is not protected by them, which is a gap listed under Open
-questions.
+a new child with a new ordinal. These duties reach only a party that
+observed the frame. Another named notary and a verifier that starts later
+have no step that looks for it, which is a gap listed under Open questions.
 
 ## 11. Staging and the mapping to v3 and v4
 
@@ -596,7 +603,7 @@ for one-hop grants does not include it.
 | Right of re-delegation and parent binding | Contract members of profile `/2`, bound by `contract_sha256` | Signed scope and the issue capability of LIP-0008 section 12.2 |
 | Attestation, anchor and notary seal | This LIP | The same object |
 | Revocation of a parent | One transaction spends the parent's and every child's seal | A closed ancestor refuses its descendants |
-| Agents that sign grants | None | Open: which key signs a child, and what happens to children when that key changes (Open questions) |
+| Agents that sign grants | None | The delegator signs the child with the parent's recipient key (LIP-0008 section 12.6). Whether an agent needs a key of its own for that, and what happens to its children when the key changes, is open (Open questions) |
 
 Depth stays at two links (D7). Work below a child's executor is covered by a
 new root grant from the principal.
@@ -627,20 +634,26 @@ the owner approves each spend, the payment is approved per spend.
 
 - **A stolen or careless attestation key** certifies children that exceed
   their parents in words. It cannot widen an action set, a repository list, a
-  budget or a window, because every verifier enforces those itself. The
-  notary's name-owner key rotates the attestation key, which makes every
-  attestation under the old key refuse at once.
+  window or a child's own budget, because every verifier enforces those
+  itself. The sum over siblings is different: no verifier sees it, and it
+  rests on the child signer's reservation and on the attestation chain
+  (section 9). The notary's name-owner key rotates the attestation key, which
+  makes every attestation under the old key refuse at once.
 - **An unavailable notary** stops new children and new certifications.
   Certified children keep working: admission reads the seal and the anchor,
   not the notary's service. Naming up to four notaries bounds the outage. It
-  also splits the ledger of the pool between them: the arithmetic of section
-  9 is then checked per notary and not for the parent as a whole (Open
+  also gives the pool more than one ledger: each notary certifies against its
+  own record (section 6.2), and two notaries can each certify a child under
+  one ordinal (Open questions).
+- **A withdrawal for cause does not reach everyone.** It binds the parties
+  that observed its frame. Another named notary can certify the child again,
+  and a verifier that starts later admits it (Open questions).
+- **The notary's name can change hands.** After a transfer, or after an
+  expiry and a new registration, the holder of a notary's name publishes its
+  own attestation key and can certify under every parent that names it (Open
   questions).
-- **The notary's name can change hands.** A transfer or a new registration of
-  a notary's name gives its new holder the right to certify under every
-  parent that names it (Open questions).
-- **Scope text binds nobody at admission.** The text is judged once, by the
-  notary. No executor compares later instructions with it (Open questions).
+- **Scope text binds nobody at admission.** The notary judges the text once.
+  No admission step compares an instruction with it (Open questions).
 - **Self-certification.** V13 refuses a notary key equal to the delegator's
   or the delegatee's key and a notary name equal to an executor's. Different
   keys do not prove different parties; the control is that the issuer, not the
@@ -684,7 +697,7 @@ valid neighbour:
 | A request signed by the parent's grantee for this contract and ordinal | A request by another key, or for another contract or ordinal, refuses as `DELEGATION_REQUEST`. |
 | Two links | A third link and a repeated id refuse as `CHAIN_DEPTH`. |
 | On a node: a live parent, a confirmed anchor, an unspent notary seal | A spent parent seal refuses as `PARENT_NOT_LIVE` while the child's seal is unspent. A notary seal spent in the mempool refuses as `NOTARY_WITHDRAWN` while the child's seal is unspent. An unconfirmed anchor is pending and not refused. A reorganised tip refuses as `ATTESTATION_TIP`. |
-| The same child certified again after a plain withdrawal | Certified again after a withdrawal for cause refuses. |
+| The same child certified again after a plain withdrawal | Certified again after a withdrawal for cause refuses at an executor that journalled the frame. For a verifier that did not observe it, see the second planned case below. |
 | A verifier that journalled the notary's spend, after the spend is reorganised out of the chain | The withdrawn attestation still refuses as `NOTARY_WITHDRAWN`; admitting it again because the seal looks unspent is wrong. A fresh attestation of the same child by a named notary after that plain withdrawal is admitted. |
 | An agent and a person as notary with the same attestation shape | Refusing because the notary is an agent, or because it is a person, is wrong. |
 
@@ -694,24 +707,24 @@ depends on an open question below:
 
 | Case | Today | Depends on |
 | --- | --- | --- |
-| Two children of one parent, both with ordinal 1, each certified by a different named notary, with budgets that together exceed the pool | Each is admitted on its own bundle | The pool across several notaries |
-| A child whose attestation was withdrawn for cause, presented with a fresh attestation by another named notary to a verifier that saw neither the frame nor a revocation | Admitted | A withdrawal for cause is invisible to a new verifier |
+| Two children of one parent, both with ordinal 1, each certified by a different named notary | Each is admitted on its own bundle, also when their budgets together exceed the pool or `max_children` is 1 | The pool across several notaries |
+| A child whose attestation was withdrawn for cause, presented with a fresh attestation by another named notary while the child's own seal is unspent, to a verifier that observed neither the frame nor a revocation | Admitted | A withdrawal for cause is invisible to a new verifier |
 
 ## Open questions
 
 ### Gaps found in review
 
-Two independent reviews of this draft found five gaps. Each is given with a
-counterexample that the rules of this draft admit. The fixes named are
-candidates: proposals that the owners decide. This LIP chooses none of them.
+Two independent reviews of the design found five gaps in this LIP. Each is
+given with the case that shows it. The fixes named are candidates: proposals
+that the owners decide. This LIP chooses none of them.
 
-| Gap | Counterexample under this draft | Candidate fixes (proposals; the owners decide) |
+| Gap | The case that shows it | Candidate fixes (proposals; the owners decide) |
 | --- | --- | --- |
-| **The pool across several notaries.** A parent names up to four notaries, any one of them is enough (D3, D9), and each keeps its own ledger of the pool. | A parent has a pool of 100 and names notaries N1 and N2. Child A takes 60 and is certified by N1; child B takes 60 and is certified by N2. Both attestations carry ordinal 1, `before` 0 and `after` 60. Each passes V15 on its own bundle, and the two children hold 120 together. Neither notary signed two attestations for one ordinal, so the pair proves no equivocation. On v3 the landlord's signer assigns the ordinals, so the case needs an error or a compromise of that signer. On v4 the delegator signs the children itself and reaches the case directly. | (a) The anchor of each attestation spends an output of the anchor of the previous attestation for the same parent, so that consensus orders them. (b) The parent fixes the share of each executor, and each executor sums the spending of its children by the parent's id; moving budget between shares is then an agreed state of its own. |
-| **A withdrawal for cause is invisible to a new verifier.** The frame of section 10 commits to the attestation id and the child's grant id. The duty not to certify again binds notaries, and only those that saw the frame. | Notary N1 withdraws its attestation of child C for cause. The delegatee obtains a new attestation of C from N2, which the parent also names and which did not see the frame. A verifier that starts afterwards receives C with N2's attestation, and every step from V10 to V18 passes. | A state per `child_grant_id` that a verifier finds on its own node, such as an indexable marker, with rules for completeness and for competing attestations of one child. |
-| **The notary is bound by name only.** V12 reads the current value of the notary's name. | The notary's name expires and another party registers it, or the name is transferred. The new holder publishes its own key under `swarma.notary.attest` and can certify a child of every parent that names this notary. Nothing in the parent tells a verifier that the name changed hands. For an issuer name the v4 draft binds the registration and the owner key (LIP-0008 section 3); for a notary name nothing does, on v3 or on v4. | The same binding for a notary name: its registration and its owner key, signed in the right of re-delegation. |
-| **The key that signs a child on v4.** An agent's name carries a landlord pointer and a messaging key and no other key (LIP-0010). | If the delegator signs a child with its messaging key, that key is held by the delivery daemon of the host the agent runs on, and the host may belong to another operator: the separation of keys in the key map is lost. When the agent moves to another host its messaging key changes, and this draft does not say whether a child is checked against the key at issuance or against the current key. On v3 the landlord signs the child, and the delegation request of section 5 is signed with that same messaging key. | A separate re-delegation key of the agent, or signing by the landlord only; a rule for the children of an agent whose key changes. |
-| **Scope text is not enforced.** Section 3.3 lets a text narrow a grant. The notary judges the child's text against the parent's once, at certification. | A child's text limits the work to one component of a repository. An instruction outside that component, within the child's actions and repositories, passes every step of section 8 and steps 6e to 6g of LIP-0013: no executor compares an instruction with the text. Whether one text is "not broader" than another cannot be computed either. | A child inherits the parent's text unchanged, by hash, and narrows only machine fields: repository, branch, action, recipients, amounts. |
+| **The pool across several notaries.** A parent names up to four notaries, and any one of them is enough (D3, D9). Each certifies against its own record of the parent's children (section 6.2). | A parent has a pool of 100 and names notaries N1 and N2. Child A takes 60 and is certified by N1; child B takes 60 and is certified by N2. Both children carry ordinal 1, and both attestations carry `before` 0 and `after` 60. Each child passes V9 and V15 on its own bundle, and the two hold 120 together. Neither notary signed two attestations for one ordinal, so the pair shows no equivocation of a notary. The case needs a child signer that uses one ordinal twice. On v3 that is the landlord's signer, which admits an ordinal once for a parent and reserves the amount before it signs (section 5), so the case needs an error or a compromise of that signer. On v4 the delegator signs the children and reaches the case alone. In Goal 1 the pool is 0 (D12) and no amount is at stake; the same pair still gives a parent with `max_children` 1 two children. | (a) The anchor of each attestation spends an output of the anchor of the previous attestation for the same parent, so that consensus orders the attestations of one parent. (b) The parent fixes a share for each executor, and each executor sums what the children presented to it spend, by the parent's id; moving budget between shares then needs an agreed state of its own. |
+| **A withdrawal for cause is invisible to a new verifier.** The frame of section 10 is addressed by the attestation id: its commitment covers that id and the child's grant id, and its locator points at the attestation. No step of section 8 looks for it. | Notary N1 withdraws its attestation of child C for cause. N2, which the parent also names, did not observe the frame and certifies C again when it is asked. A verifier that starts afterwards receives C with N2's attestation, and every step from V10 to V18 passes: V18 reads N2's seal and the verifier's own journal. The case holds while C's own seal is unspent: until the landlord's signer has revoked C, or for as long as that signer has not observed the frame. To find the frame from the child's id, a verifier would have to test every `0x05` frame on the chain against that id. No rule asks for that, and none says when such a search is complete. | A state per `child_grant_id` that a verifier finds on its own node, such as a marker it can index, with rules for completeness and for competing attestations of one child. |
+| **The notary is bound by name only.** V12 accepts the key that the notary's name yields at check time. | A notary's name is transferred, or it expires and another party registers it. The new holder publishes its own key under `swarma.notary.attest`. From then on its attestations pass V12 for every parent that names this notary, and the attestations of the earlier holder refuse. Nothing in the parent tells a verifier that the name changed hands. A v4 grant binds the registration and the owner key of its issuer's name (LIP-0008 section 3); nothing binds a notary's name, on v3 or on v4. | The binding that a v4 grant has for its issuer's name, applied to a notary's name: its registration and its owner key. |
+| **The key an agent signs a child with on v4.** LIP-0008 section 12.6 has the parent's recipient sign the child: the grantee key, or for a parent issued by name the key that the name yields. An agent's name yields one key, its Nostr key (LIP-0010). Whether a re-delegating agent needs a key of its own is open there. | The agent's Nostr key is held by the gateway of the host the agent runs on (key map). When that host is run by an operator other than the agent's own, a key that signs grants is in that operator's hands, and one key signs both messages and grants; for a principal the key map keeps those two apart. A change of that key is a name update by the operator (K2), for example when the agent moves to another host under the registration flow that the key map proposes. A v4 parent issued by name survives the change (LIP-0008 section 3). Neither LIP says whether a child signed with the old key is checked against the key at its issuance or against the current one, or whether the children are issued again. On v3 the landlord signs the child; the delegator's request of section 5 is signed with `P.grantee_key`, which for an agent is that same Nostr key. | A separate re-delegation key of the agent, or signing by the landlord only; a rule for the children of an agent whose key changes. |
+| **Scope text is not enforced.** Section 3.3 lets a text narrow a grant. The notary judges the child's text against the parent's once, at certification. | A child's text limits the work to one component of a repository. An instruction that concerns another component, within the child's actions and repositories, passes every step of section 8 and steps 6e to 6g of LIP-0013, because no step compares an instruction with the text. The notary's `within` is a judgement as well: no verifier can recompute it. | A child carries the parent's text unchanged, by hash, and narrows only machine fields, such as repository, branch, action, recipients and amounts. |
 
 ### Other open questions
 

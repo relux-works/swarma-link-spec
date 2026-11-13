@@ -222,16 +222,17 @@ host. LIP-0010 section 8 adds a proposed plan for the 520 bytes of a value.
 An organization identity and release statements for binaries are sketches
 in LIP-0015 and are not proposed.
 
-Two independent reviews of the drafts found eight gaps. Version 0.1.24
-records each as an open question with a counterexample that the current
-rules admit, and names candidate fixes as proposals that the owners decide;
-no mechanism is chosen. Five concern notary-certified re-delegation
-(LIP-0014): the pool when a parent names several notaries, a withdrawal for
-cause that a new verifier cannot see, the notary bound by name only, the key
-that signs a child on v4, and scope text that no executor enforces. The
-others: replacing a leaked grant key stops grants more slowly and less
-finally than a seal spend (LIP-0008); a grant binds an identity and not a
-run (LIP-0013); and under NIP-59 the judged message bytes carry no sender
+Two independent reviews of the design found eight gaps. Version 0.1.24
+records each as an open question with the case that shows it, and names
+candidate fixes as proposals that the owners decide; no mechanism is chosen.
+Five concern notary-certified re-delegation (LIP-0014): the pool when a
+parent names several notaries, a withdrawal for cause that a new verifier
+does not see, the notary bound by name only, the key an agent signs a child
+with on v4, and scope text that no admission step enforces. The others:
+replacing a leaked grant key stops an issuer's grants more slowly and less
+finally than a seal spend stops one (LIP-0008); a grant is issued to a key,
+so every run of an agent can act under it, whichever party's work the run
+does (LIP-0013); and under NIP-59 the judged message bytes carry no sender
 signature (LIP-0011). Sentences that implied these cases were covered are
 corrected.
 
