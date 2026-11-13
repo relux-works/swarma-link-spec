@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.26 — 2026-11-13
+
+LIP-0008, the conformance row for an unconfirmed parent under profile W. The
+row gave one reason why a funding transaction with a legacy or a wrapped
+input refuses: a third party could change its txid. That reason holds for a
+legacy input. A wrapped witness input is signed in the witness, which BIP141
+keeps out of the txid, and BIP141 requires its scriptSig to be exactly the
+push of the redeem script. It refuses because profile W admits native
+P2WPKH inputs only (section 1.1). The row now gives each reason. The valid
+control and both refusals are unchanged.
+
 ## 0.1.25 — 2026-11-13
 
 Ten rows of the action tables render whole again. Each row gave its payload
