@@ -681,7 +681,9 @@ transfer of the name, or after its expiry and a new registration, the new
 holder publishes its own key under `swarma.notary.attest`. Its attestations
 then pass V12 for every parent that names this notary, the attestations of
 the earlier holder refuse, and nothing in the parent tells a verifier that
-the name changed hands.
+the name changed hands. This holds on v3 and on v4: a v4 grant binds the
+registration and the owner key of its issuer's name (LIP-0008 section 3),
+and nothing binds a notary's name.
 
 Under this subsection a parent binds each notary as LIP-0008 section 3 binds
 an issuer: by the exact name, the registration of that name and its owner
@@ -1156,14 +1158,15 @@ its store was lost. D7, D10 and D12 are unchanged, and the landlord's
 reservation on v3 is kept.
 
 Three further designs were set aside. Shares for each executor, in which
-each executor sums what the children presented to it spend, bound
-consumption and leave the number of compartments open. A chain of spends
-through the attestation anchors, in which the anchor of each attestation
-spends an output of the anchor of the previous one, gives an order of
-allocations at the price of an input and an output for each anchor, and
-the executor must still account consumption. One ledger notary, or all
-notaries together, would give one child for each row by trust in one
-party; it changes D9 and adds a party that must always be reachable.
+each executor sums what the children presented to it spend, by the parent's
+id, bound consumption and leave the number of compartments open; moving
+budget between shares would need an agreed state of its own. A chain of
+spends through the attestation anchors, in which the anchor of each
+attestation spends an output of the anchor of the previous one, gives an
+order of allocations at the price of an input and an output for each anchor,
+and the executor must still account consumption. One ledger notary, or all
+notaries together, would give one child for each row by trust in one party;
+it changes D9 and adds a party that must always be reachable.
 
 Cases (owner decision pending: J1). A suite that feeds a contract with rows to a parser of the text in
 force and counts the rejection proves nothing; each case names the fixture
@@ -1227,7 +1230,7 @@ Draft text for it, under a pending owner decision (J2).
 ### 10.1. One certifier for each row, and the withdrawal for cause
 
 Owner decision pending: J2. Every rule of this subsection is Draft text
-that narrows D5 and D9; it uses the rows of section 9.1. Until the decision
+that touches D5 and D9; it uses the rows of section 9.1. Until the decision
 a withdrawal for cause reaches only the parties that observed its frame.
 The frame of section 10 is addressed by the attestation id: its commitment
 covers that id and the child's grant id, and its locator points at the
@@ -1395,14 +1398,16 @@ seal, and without the output the principal can stop one child only by
 closing the whole parent. If D5 must hold as written from the first
 version, (b) is the answer on v3 as well. D1 is unchanged.
 
-Two further designs were set aside. A complete, authenticated index of
-cause frames would give the stronger form without an output in principle.
-A frame can be found from a child id, but authenticating it needs the
-withdrawn attestation, which the presenter withholds; treating an
-unauthenticated match as a hold lets anyone who knows a child id stop that
-child; and it misses a child signed again under the same ordinal. It is
-not designed, and it would need rules for completeness, availability and
-reorganisations. A child that names its own notary gives a choice at
+Two further designs were set aside. A state for each child that a verifier
+finds on its own node, such as a marker it can index, would give the
+stronger form without an output in principle, as a complete, authenticated
+index of cause frames. A frame can be found from a child id, but
+authenticating it needs the withdrawn attestation, which the presenter
+withholds; treating an unauthenticated match as a hold lets anyone who
+knows a child id stop that child; and it misses a child signed again under
+the same ordinal. It is not designed, and it would need rules for
+completeness, availability, reorganisations and competing attestations of
+one child. A child that names its own notary gives a choice at
 issuance; on v4 the delegator then signs the child again and names the
 other notary.
 
