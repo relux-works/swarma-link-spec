@@ -15,14 +15,17 @@ ordinal twice, which on v4 is the delegator itself. A withdrawal for cause
 reaches only the parties that observed its frame: another named notary can
 certify the child again, and a verifier that starts later admits it. The
 notary is bound by name only, so a transfer or a new registration of that
-name passes on the right to certify. On v4 an agent would sign a child with
-its Nostr key, the only key its name carries, which the host's gateway
-holds; nothing says what happens to the children when that key changes. No
-admission step compares an instruction with a scope text. The Motivation,
-sections 3.3, 7, 8.1, 9 and 10, the security section and one conformance row
-implied that these cases were covered and now state the limit; the table of
-section 11 names the open point. LIP-0012 points to the three gaps that
-concern the notary.
+name passes on the right to certify. On v4 an agent signs a child with its
+Nostr key, the only key its name carries, which the host's gateway holds.
+Under the current rules for a parent issued by name, a child signed with a
+key that the name no longer lists refuses at use, so a change of that key
+stops the agent's children; whether that rule stays, and whether the agent
+gets a key of its own, is open. No admission step compares an instruction
+with a scope text. The Motivation, sections 3.3, 7, 8.1, 9 and 10, the
+security section and one conformance row implied that these cases were
+covered and now state the limit; the table of section 11 names the rule in
+force and the open point. LIP-0012 points to the three gaps that concern
+the notary.
 
 LIP-0008: replacing a leaked grant key takes effect only once the update is
 confirmed and is undone by a reorganisation, while a seal spend closes a
@@ -36,9 +39,9 @@ so a disclosed message does not by itself show its sender; the sentence that
 said it does is corrected.
 
 Conformance plans: LIP-0014 lists two cases that are admitted today and are
-planned as negative cases of a v4 vector set. LIP-0008 adds a permitted
-unconfirmed parent with a legacy input or with funding that does not end at
-confirmed outputs, which section 1.1 already refuses.
+planned as negative cases of a v4 vector set. LIP-0008 adds two cases for a
+permitted unconfirmed parent: a legacy input of its own, and a legacy input
+in a further unconfirmed transaction that funds it. Both refuse.
 
 Key map, K5: the interim grant key is an item of the data protection
 keychain. Version 0.1.23 also named the login keychain; that keychain is
