@@ -992,13 +992,14 @@ that the owners decide. This LIP chooses none of them.
 - Under J4, two further choices of the owners. Whether the delegation signer
   needs a person for each signature, as the key map requires of a grant key,
   or signs unattended inside the parent's right of re-delegation; the
-  proposal is unattended signing, with presence staying at the principal's
-  grant key (K5 of the key map). And whether the parent also names the key
-  that every child's seal pays, held by the delegating operator apart from
-  the signer, so that the operator can spend the seal of a child that a
-  thief of the delegation key signed. That costs one more key and a change
-  of the endorsement rule of LIP-0008 section 11.1 for children; the
-  proposal is to decide it with the v4 bytes.
+  proposal is unattended signing, because the right of re-delegation and
+  the notary bound what the signer can sign, with presence staying at the
+  principal's grant key (K5 of the key map). And whether the parent also
+  names the key that every child's seal pays, held by the delegating
+  operator apart from the signer, so that the operator can spend the seal
+  of a child that a thief of the delegation key signed. That costs one more
+  key and a change of the endorsement rule of LIP-0008 section 11.1 for
+  children; the proposal is to decide it with the v4 bytes.
 - D4 places the pieces of this LIP after the first proof, as tools around v3
   that change no v3 byte. Question T1 of LIP-0013, whether such tools count
   as "v3 as is", has no explicit answer yet.
