@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.27 — 2026-11-13
+
+LIP-0010, section 7: a note that is not normative, recorded at Ivan Oparin's
+direction. The pair of `id/<label>` and `d/<label>` is a convention outside
+Namecoin consensus and misleads: a person reads the two as one identity, and
+the chain holds two unrelated names. An additional naming convention with a
+single level of registration is under consideration, and the authors' own
+parsers would handle only that level. Nothing of that convention is defined.
+The protocol rule and the deployment rule of section 7 are unchanged, and
+the list of open questions names the point.
+
 ## 0.1.26 — 2026-11-13
 
 LIP-0008, the conformance row for an unconfirmed parent under profile W. The
