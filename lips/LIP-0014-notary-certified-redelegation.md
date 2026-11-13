@@ -63,14 +63,14 @@ anchor, and the action `0x05`.
 
 ### Decisions pending
 
-Two additions to the decisions above wait for an owner's decision. Their
+Two additions to the decisions above wait for the owners' decision. Their
 rules stand in this LIP as Draft text, each marked "owner decision pending"
-with a label of this table. Nothing of them is adopted until the decision.
+with a label of this table. None of them is adopted before the decision.
 
-| Label | Adds to | Direction of the Draft text |
-| --- | --- | --- |
-| J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Sections 2, 7.1 and 8, step V12. |
-| J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else. Section 11.1. v3 does not change. |
+| Label | Adds to | Direction of the Draft text | Until the decision |
+| --- | --- | --- | --- |
+| J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Sections 2 and 7.1; section 8, step V12. | A parent binds a notary by name only (section 7). |
+| J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
 
 ## Motivation
 
@@ -142,7 +142,7 @@ executor explicitly; section 2 carries those lists.
 A right of re-delegation is the signed member `delegate` of a grant's terms.
 On v3 it is a member of the contract (section 3) and is bound through
 `contract_sha256`. On v4 it belongs to the signed scope; this LIP defines no
-v4 bytes. On v3 it has exactly these eight members in this order:
+v4 bytes. It has exactly these seven members in this order:
 
 | Member | Type | Rule |
 | --- | --- | --- |
@@ -152,17 +152,14 @@ v4 bytes. On v3 it has exactly these eight members in this order:
 | `grantees` | array of strings | The x-only keys a child may name as `grantee_key`: sorted, without duplicates, 64 lowercase hex each. 1 to 16 entries when `depth` is 1. No wildcard. |
 | `budget` | integer | Atoms that all children together may receive as `spend_budget`. Greater than 0 exactly when `actions` includes `spend`; at most 2100000000000000. It is separate from the grant's own `spend_budget` (section 9). |
 | `max_children` | integer | 1 to 16 when `depth` is 1. The largest ordinal a child may carry. |
-| `notaries` | array of objects | The notaries whose attestation satisfies D1: 1 to 4 objects when `depth` is 1, sorted by `name`, without a repeated name. Each object has exactly the members `name`, `registration` and `owner`, in this order (section 7.1). Owner decision pending: J3; until it, each entry is the `id/` name alone. |
-| `checkpoint` | string | The hash of a block of the active chain, 64 lowercase hex, from which the ownership of every named notary must be unbroken (section 7.1); `""` when `depth` is 0. v3 only: on v4 the grant's committed recent block takes its place. Owner decision pending: J3; until it, the member does not exist and the object has seven members. |
+| `notaries` | array of strings | The `id/` names of the notaries whose attestation satisfies D1: sorted, without duplicates, 1 to 4 entries when `depth` is 1. |
 
-When `depth` is 0 every array is empty, `budget` and `max_children` are 0 and
-`checkpoint` is `""`.
+When `depth` is 0 every array is empty and `budget` and `max_children` are 0.
 
 A right of re-delegation with `depth` 1 and no notary is malformed and
 refuses as `DELEGATE_NO_NOTARY`. Every other violation of this table refuses
-as `CONTRACT_DELEGATE`, a notary entry that is a bare name or lacks one of
-its three members included. This is how D1 and D3 become a field check: a
-grant cannot give the right to re-delegate without saying who certifies.
+as `CONTRACT_DELEGATE`. This is how D1 and D3 become a field check: a grant
+cannot give the right to re-delegate without saying who certifies.
 
 Only `depth` 1 gives the right. Ordinary action authority, possession of a
 grant, management of an agent and an audience key give none (LIP-0008 sections
@@ -171,6 +168,18 @@ grant, management of an agent and an audience key give none (LIP-0008 sections
 In Goal 1 a right of re-delegation MUST NOT list `spend`, and its `budget` is
 0 (D12). The budget members and the arithmetic of sections 6 and 9 stay in the
 format for a later decision.
+
+Owner decision pending: J3. Under section 7.1 two members of this table
+change. Each entry of `notaries` becomes an object, and the right gains an
+eighth member after `notaries`:
+
+| Member | Type | Rule |
+| --- | --- | --- |
+| `notaries` | array of objects | 1 to 4 objects when `depth` is 1, sorted by `name`, without a repeated name. Each object has exactly the members `name`, `registration` and `owner` (section 7.1). |
+| `checkpoint` | string | The hash of a block of the active chain, 64 lowercase hex: the block from which section 7.1 constrains the history of a notary's name. `""` when `depth` is 0. v3 only: on v4 the grant's committed recent block takes its place. |
+
+A notary entry that is a bare name then refuses as `CONTRACT_DELEGATE`, like
+every other violation of the table.
 
 ## 3. The contract profile `swarma-trust-contract/2`
 
@@ -291,9 +300,8 @@ the named notaries. A signature given over a hash alone does not meet this.
 A verifier checks the request mechanically: its shape and signature, that
 the signer is `P.grantee_key`, that `created_at` lies inside `P`'s window, and
 that `parent`, `contract` and `ordinal` equal the child's. Any failure refuses
-as `DELEGATION_REQUEST`. On v4 the delegator signs the child itself, with
-the key that section 11 names, and no
-request exists.
+as `DELEGATION_REQUEST`. On v4 no request exists: the child itself carries
+the signature of the key that section 11 names.
 
 ## 6. The attestation
 
@@ -415,8 +423,10 @@ Each notary publishes its attestation key in its own `id/` name, in the
 The notary rotates its key by updating that name with its name-owner key. The
 grants that name it are not reissued. Attestations under the old key then
 refuse (section 8, V12), and the notary signs them again under the new key.
-A name alone would leave the same update open to whoever holds the name
-later; section 7.1 binds the registration and the owner of the name as well.
+The parent binds the notary by name only. It binds neither the registration
+nor the owner of that name, so the same update is open to whoever holds the
+name later. Section 7.1 holds Draft text that binds both (owner decision
+pending: J3).
 
 A name has one `swarma` shape, so a notary name is neither a landlord name nor
 an agent name. An owner who certifies children of their own grants registers
@@ -447,14 +457,19 @@ requirement of the grant.
 ### 7.1. Pins, checkpoint and writer
 
 Owner decision pending: J3. Every rule of this subsection is Draft text that
-adds to D3. Until the decision a parent binds a notary by name only, and a
-transfer of the notary's name, or its expiry and a new registration, passes
-the right to certify to the new holder.
+adds to D3. Until the decision a parent binds a notary by name only: V12
+accepts the key that the notary's name yields at check time. After a
+transfer of the name, or after its expiry and a new registration, the new
+holder publishes its own key under `swarma.notary.attest`. Its attestations
+then pass V12 for every parent that names this notary, the attestations of
+the earlier holder refuse, and nothing in the parent tells a verifier that
+the name changed hands.
 
-A parent binds each notary as LIP-0008 section 3 binds an issuer: by the
-exact name, the registration of that name and its owner key. The attestation
-key stays free to change under the same owner. Each entry of
-`delegate.notaries` is an object with exactly three members in this order:
+Under this subsection a parent binds each notary as LIP-0008 section 3 binds
+an issuer: by the exact name, the registration of that name and its owner
+key. The attestation key stays free to change under the same owner. Each
+entry of `delegate.notaries` is an object with exactly three members, as in
+this example:
 
 ```json
 {"name":"id/acme-notary","registration":{"txid":"<64 hex>","vout":0},"owner":"<owner pin>"}
@@ -462,22 +477,44 @@ key stays free to change under the same owner. Each entry of
 
 `registration` is the transaction and output that first registered the name.
 `owner` is the owner pin, in the encoding that LIP-0008 section 3 will fix.
-`delegate.checkpoint` is the hash of a block of the active chain; the
-stretch of the name's history that the rules constrain starts there.
+`delegate.checkpoint` is the hash of a block of the active chain. The rules
+constrain the history of the name from the output that was current at that
+block to the current output, and they call this part of the history the
+stretch.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
-| J3.1 | A right of re-delegation MUST bind, for each notary, the name, the registration and the owner key. | A bare name, or an entry without one of the three members: `CONTRACT_DELEGATE` |
+| J3.1 | A right of re-delegation MUST bind, for each notary, the exact name, the registration of that name and its owner key. | A bare name: `CONTRACT_DELEGATE` |
 | J3.2 | At every admission of a child the verifier MUST walk the history of the name of the notary whose attestation is presented, under rules 1 and 2 of LIP-0008 section 3. The walk MUST reach the bound registration. The bound registration MUST be confirmed at or below the checkpoint block, and an unexpired output of that registration MUST be current at the checkpoint. Every output from the one that was current at the checkpoint to the current one MUST be controlled by the bound owner key. | A checkpoint that precedes the registration, one at which the name has no output, and one that is not in the active chain: `NOTARY_CHECKPOINT`. An expired name, a walk that ends at another registration, and an owner change on the stretch: `NOTARY_NAME_CHANGED` |
-| J3.3 | The value of `swarma.notary.attest` MAY change on that stretch. The attestation key is the one the current value yields. The comparison MUST NOT be an equality of the whole `swarma` member. | none |
-| J3.4 | The value in force is the value of the operation that created the name's current output. That operation MUST have been authorized by the bound owner: the name input it spends MUST be controlled by the bound owner key, and the signature on that input MUST commit to the output that carries the value. The first owner-proof profile accepts `SIGHASH_ALL` without `ANYONECANPAY` only. For a `name_update` the name input is the previous name output. For a `name_firstupdate` it is the `name_new` output; a fee input is no substitute. The bound registration is no exception. A value that fails this is not eligible until the bound owner makes a name update of its own, which may repeat the value unchanged. The rule looks at one operation; it does not trace a value back through history. | `NOTARY_VALUE_UNAUTHORIZED` |
-| J3.5 | Where nothing is proved, the verifier refuses and holds no evidence of a transfer: an incomplete walk, a node without the transaction index, an owner proof or a signature-hash type that the profile does not support, a history supplied by the presenter. | `NOTARY_HISTORY_UNAVAILABLE` |
+| J3.3 | The value of `swarma.notary.attest` MAY change on the stretch. The attestation key is the one the current value yields. The comparison MUST NOT be an equality of the whole `swarma` member. | none |
+| J3.4 | The value in force is the value of the operation that created the name's current output. That operation MUST have been authorized by the bound owner: the name input it spends MUST be controlled by the bound owner key, and the signature on that input MUST commit to the output that carries the value. The first owner-proof profile accepts `SIGHASH_ALL` without `ANYONECANPAY` only. For a `name_update` the name input is the previous name output. For a `name_firstupdate` it is the `name_new` output; a fee input is no substitute. The bound registration is no exception. A value that fails this is not eligible until the bound owner makes a name update of its own, which may repeat the value unchanged. The rule looks at one operation; it does not trace a value back through history. | `NOTARY_VALUE_UNAUTHORIZED`. A signature-hash type outside the profile refuses under J3.5 |
+| J3.5 | Where nothing is proved, the verifier refuses, and the refusal is not evidence of a transfer: an incomplete walk, a node without the transaction index, an owner proof or a signature-hash type that the profile does not support, a history supplied by the presenter. | `NOTARY_HISTORY_UNAVAILABLE` |
 | J3.6 | A presentation MUST NOT move the start of the stretch. A later issuance locator, a new anchor of the same parent and a newer attestation leave the signed checkpoint where it is. | none of its own |
 | J3.7 | Only the notary of the presented attestation is walked. The state of another notary of the same parent does not affect this child. | none of its own |
 | J3.8 | A cached walk is valid only for its predicate: this name, registration, owner pin and checkpoint, the active chain up to the cached output, and the notary rule "owner unbroken, value written by the owner". A result cached for an issuer's rule, which also requires an unchanged `swarma`, MUST NOT be used for a notary, nor the reverse (LIP-0008 section 3). | none of its own |
 | J3.9 | Before it signs a parent, the issuer's signer MUST run J3.2 and J3.4 for every notary it names, so that it does not sign a parent under which every child refuses. | none at a verifier |
 
-All of these refusals come before `NOTARY_KEY`, and none records a closure.
+Within V12 the order is the checkpoint and the walk, then the writer, then
+the key, so `NOTARY_NAME_CHANGED`, `NOTARY_VALUE_UNAUTHORIZED` and
+`NOTARY_HISTORY_UNAVAILABLE` come before `NOTARY_KEY`. None of them records
+a closure.
+
+The three parts close different cases. The pins refuse a name whose owner
+is no longer the pinned one, and a name that was registered anew after an
+expiry, also under the same spelling and the same owner key. The walk over
+the stretch refuses a transfer and return, which a comparison of the
+current owner alone does not show to a verifier that starts later. The
+checkpoint puts the start of the stretch into the signed parent. A start
+taken from the presentation would be the presenter's choice, because the
+issuance locator is unsigned (LIP-0004 section 2): a presenter could show a
+later anchor of the same parent and leave an earlier transfer outside the
+stretch. A requirement of the bound owner for every output since the
+registration would end the use of a notary's name, and not only the parents
+that pin the old owner, whenever the name-owner key is replaced. The writer
+rule refuses a value that the pinned owner did not write; a comparison of
+owners passes such a value. A parent that pinned the attestation key itself
+would have to be issued again at every rotation of that key, against
+section 7.
 
 The writer rule J3.4 has no exception for the registration, because
 receiving an output is not consent. A party `U` that holds a `name_new`
@@ -487,14 +524,19 @@ the value and pay the name output to the address of an honest owner `O`.
 because every output on the stretch is `O`'s, and without J3.4 `U` would
 certify. Under J3.4 the operation that created the current output is the
 registration, its `name_new` input was `U`'s, and the child refuses until
-`O` makes an update of its own. These transaction facts were read in the
-source of Namecoin Core, release nc28.0; no node was run for them.
+`O` makes an update of its own. The transaction facts of this case come
+from reading the source of Namecoin Core, release nc28.0; no node was run
+for them.
 
-The rules do not cover four things. A thief of the notary's name-owner key
-writes a new attestation key under the same owner; the defence is cold
-custody, as for an issuer. A notary that replaces its owner key needs new
-parents. A notary whose name another party registered for it makes one name
-update of its own before a parent can use it. And a reorganisation that
+One case stays open under these rules. A thief of the notary's name-owner
+key writes a new attestation key under the same owner, and the rules pass,
+because the bound owner key signed that update. The defence is cold custody
+of the key, as for an issuer.
+
+The rules have these costs. Each notary entry carries two pins, and the
+parent carries one block hash. A notary that replaces its owner key needs
+new parents. A notary whose name another party registered for it makes one
+name update of its own before a parent can use it. A reorganisation that
 drops the checkpoint block refuses every child of that parent, without
 closure, until the chain holds the block again or the parent is issued
 again; the issuer SHOULD sign a block that is buried under its own risk
@@ -503,6 +545,10 @@ policy.
 The owner-pin encoding and the script coverage of the owner proof are open
 in LIP-0008 section 3. Until they exist an unsupported proof refuses under
 J3.5, and byte vectors of profile `/2` wait for them.
+
+The alternative before the owners is the name alone, as the first paragraph
+describes it: no pin and no walk, and a notary's name that changes hands
+passes on the right to certify.
 
 ## 8. The verifier's checks
 
@@ -685,29 +731,50 @@ new root grant from the principal.
 ### 11.1. The delegation key on v4
 
 Owner decision pending: J4. Every rule of this subsection is Draft text. It
-replaces, for the link below an issue capability, the rule in force of
-LIP-0008 section 12.6, under which the parent's recipient key signs the
-child. For an agent that key is its Nostr key, which the gateway of its
-host holds: one key then signs messages and grants, a host run by another
-operator can re-delegate, and every change of the key stops every child the
-agent signed. The bytes of the delegation key are fixed with the v4 bytes.
+replaces the rule in force for the link below an issue capability. Under
+that rule an agent that its parent names by name signs child grants with
+the key that also signs its messages. v3 does not change.
 
-The v4 issue capability carries one more member, the delegation key, an
-x-only key. The principal signs it with the parent, and the grantee's
-consent covers it. No name is read for it.
+By the rule in force the parent's recipient signs the child (LIP-0008
+section 12.6): the grantee key, or for a parent issued by name the key that
+the name yields at admission. An agent's name yields one key, its Nostr key
+(LIP-0010), and the gateway of the agent's host holds that key (key map).
+One key then signs both messages and grants, which the key map keeps apart
+for a principal, and when another operator runs the host, a key that signs
+grants is in that operator's hands. A change of the key is a name update by
+the agent's operator (K2 of the key map), for example when the agent moves
+to another host under the registration flow that the key map proposes. The
+parent survives the change, because its request key is read from the name's
+current value at every admission (LIP-0008 section 3.1). A child signed
+with the earlier key refuses at use for as long as the name lists another
+key, because its issuer does not equal the parent's recipient (LIP-0008
+section 12.2); nothing records a closure, and a child signed with the new
+key passes that comparison. Every change of the agent's Nostr key therefore
+stops the children it signed. On v3 the landlord signs the child, and the
+delegator's request of section 5 is signed with `P.grantee_key`, which for
+an agent is that same Nostr key.
+
+Under this subsection the v4 issue capability carries one more member, the
+delegation key (`delegate.key`), an x-only key. The principal signs it with
+the parent, and the grantee's consent covers it. No name is read for it.
+Its bytes are fixed with the v4 bytes.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
 | J4.1 | An issue capability MUST name one delegation key. A v4 child MUST be signed by the delegation key of the capability it commits to. | A child signed by any other key, the parent's request key and a key that the grantee's name lists for a channel included: `CHILD_SIGNER` |
-| J4.2 | For LIP-0008 section 12.2 the authenticated issuer of the link after an issue capability is that capability's delegation key. The delegation key signs child grants and nothing else: no invocation, no envelope, no consent, no name operation, no transaction. The request key of the same grant MUST NOT sign a child grant. | `CHILD_SIGNER` |
-| J4.3 | Keys are compared as secret authorities, by their 32-byte x coordinate: an x-only key equals a compressed key with that coordinate under either parity byte. (a) Parent checks, on the bytes and pins of `P`, when `P` is validated. The delegation key MUST differ from the issuer's grant key; from the parent's request key, for a recipient by key, or the owner key of the recipient's name, for a recipient by name; from the owner key bound for the issuer's name; from the owner key pinned for each notary (section 7.1); and from the key of `P`'s own seal, taken from its endorsement (LIP-0008 section 11.1). (b) Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the recipient's name yields at that admission, for a recipient by name; from the attestation key that the notary of `C`'s attestation yields at that admission; from the key of `C`'s seal; and from `C`'s own recipient key, or the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). (c) Where an owner pin is not one key, and for keys that no verifier sees, such as funding and fee keys, the separation is a custody duty of J4.4 and is not checked on the wire. | (a) `P` is unusable as a parent, and every child refuses as `DELEGATE_KEY_REUSE`. (b) That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
+| J4.2 | For LIP-0008 section 12.2 the authenticated issuer of the link after an issue capability is that capability's delegation key. The delegation key signs child grants and nothing else: no invocation, no envelope, no consent, no name operation, no transaction. The request key of the same grant MUST NOT sign a child grant. | A child signed by the request key: `CHILD_SIGNER` (J4.1) |
+| J4.3 | Keys are compared as secret authorities, by their 32-byte x coordinate: an x-only key equals a compressed key with that coordinate under either parity byte. | none of its own |
+| J4.3 (a) | Parent checks, on the bytes and pins of `P`, when `P` is validated. The delegation key MUST differ from the issuer's grant key; from `P`'s request key, when `P` names its recipient by key, or from the owner key of the recipient's name, when `P` names its recipient by name; from the owner key bound for the issuer's name; from the owner key pinned for each notary (section 7.1, under J3); and from the key of `P`'s own seal, taken from its endorsement (LIP-0008 section 11.1). | `P` is unusable as a parent, and every child refuses as `DELEGATE_KEY_REUSE` |
+| J4.3 (b) | Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the name of `P`'s recipient yields at that admission, when `P` names its recipient by name; from the attestation key that the notary of `C`'s attestation yields at that admission; from the key of `C`'s seal; and from `C`'s own recipient key, or from the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). | That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
+| J4.3 (c) | Where an owner pin is not one key, and for keys that no verifier sees, such as funding and fee keys, the separation is a custody duty of J4.4. It is not checked on the wire. | none at a verifier |
 | J4.4 | The delegation key is held by a signing service of the party that consented to the parent as its recipient: for a recipient by name, the operator who holds that name's owner key; for a recipient by key, the operator of that key's key holder. In both modes the service runs outside the delegating agent's OS user and outside the service that holds the request or channel key, and it holds no name-owner key, seal key or funding key. Before it signs, the service MUST take the complete child and, on its own node, check that `P` is live under every admission rule, its closure journal included, and the comparisons of section 4. It computes the digest itself (LIP-0008 section 8) and MUST NOT sign a digest that a caller supplies. It MUST authenticate the caller and sign only for a caller that its operator listed for delegation under `P`; possession of the messaging key is not the authority to ask. | No signature exists |
-| J4.5 | What a name update does to children. A rotation of the delegating agent's channel key under the same owner, a renewal and a change of host stop no child. An update that makes a channel key equal to the delegation key refuses children for as long as it holds (J4.3 (b)). A change of the name's owner refuses a parent by name and with it every child (LIP-0008 section 3). A parent by key is not portable through any name. | As the rule named |
+| J4.5 | What a name update does to children. A rotation of the delegating agent's channel key under the same owner, a renewal and a change of host stop no child. An update that makes a channel key equal to the delegation key refuses children for as long as it holds (J4.3 (b)). A change of the name's owner refuses a parent by name and with it every child (LIP-0008 section 3). A parent by key is not portable through any name. | `DELEGATE_KEY_REUSE` while a channel key equals the delegation key; `PARENT_NOT_LIVE` for every child after a change of the name's owner |
 | J4.6 | Replacing the delegation key requires a new parent. A move of custody that cannot keep exclusive control of the key MUST NOT begin before the old parent is closed. | none at a verifier |
-| J4.7 | v3 is unchanged: the landlord's grant key signs the child on a kind-8186 request signed by `P.grantee_key` (section 5). A delegation key gives nothing on v3. | As on v3 |
+| J4.7 | v3 is unchanged: the landlord's grant key signs the child on a kind-8186 request signed by `P.grantee_key` (section 5). A delegation key gives nothing on v3. | none new |
 
-A verifier repeats every check of J4.4 at use. The checks of the signing
-service spare a wasted child and bound a thief of the caller's channel.
+A verifier repeats the checks of J4.4 on the parent and on the child at use.
+The checks of the signing service spare a wasted child and bound a thief of
+the caller's channel.
 
 Where V7 checks the delegation request on v3, a v4 verifier checks the
 child's signature under the parent's delegation key, the parent checks of
@@ -715,20 +782,37 @@ J4.3 (a) with `P`, and the child checks of J4.3 (b) with `C`.
 
 A thief of the delegation key endorses a seal of its own, so the delegating
 operator has no seal of such a child to spend, as the owner of a leaked
-grant key has none (LIP-0008, open questions). Four things stop the child.
-The principal spends the parent's seal. A named notary refuses to certify,
-or withdraws. For a parent by name, the delegating operator changes the
-owner of the agent's name. And the right of re-delegation bounds the thief
-to the grantees and agents that the principal signed (section 2). A closure
-that a verifier never observed is not known to it.
+grant key has none (LIP-0008, open questions). Three things stop such a
+child: the principal spends the parent's seal; a named notary refuses to
+certify it, or withdraws its attestation; and, for a parent by name, the
+delegating operator changes the owner of the agent's name. The right of
+re-delegation bounds what the thief can sign to the grantees and executors
+that the principal signed (section 2). A closure that a verifier never
+observed is not known to it.
 
-Two things stay outside these rules. Different keys do not prove different
-custodians: that the delegation key and the messaging key are in different
-hands is established by the owner's approval of a deployment, and a second
+The rules leave four limits. Different keys do not prove different
+custodians: whether the delegation key and the messaging key are in
+different hands is established by the owner's approval of a deployment, not
+by a verifier. The signing service of J4.4 is a hot service, and a second
 OS user on a host whose administrator is not the operator is no separation
-from that administrator. And the delegating operator loses the stop it has
-under the rule in force, a rotation of the channel key; it keeps the change
-of the name's owner.
+from that administrator. The signing service cannot tell what the agent's
+model intends from what the agent's host does; it can bound what it signs.
+And the delegating operator loses the stop it has under the rule in force,
+a rotation of the channel key; it keeps the change of the name's owner.
+
+The owners choose between this text and four alternatives. Keeping the rule
+in force keeps what the second paragraph lists: one key for messages and
+grants, a host operator who can re-delegate, and children that stop with
+every change of the key. Signing by the landlord only, on v4 as on v3,
+needs no new key and stays the baseline (R5 of LIP-0008 section 12.6), but
+it is not re-delegation by an agent, which the owners decided as R1.
+Checking a child
+against the key that the name listed at the child's issuance needs the
+name's value at a past height for every child and a rule against
+backdating, and a key that was replaced because it leaked keeps every child
+it signed before. A delegation key published in the agent's name is a new
+shape of the name value that every reader must learn (LIP-0010), and every
+rotation of it is a name update.
 
 Each party pays for its own effects under D11. A payment for a notary's seal,
 anchor or fee from an owner's funds follows that owner's spending rule; where
@@ -830,7 +914,9 @@ valid neighbour:
 | An agent and a person as notary with the same attestation shape | Refusing because the notary is an agent, or because it is a person, is wrong. |
 
 Cases for section 7.1 (owner decision pending: J3). Each uses a verifier that
-starts after the events and holds no journal:
+starts after the events and holds no journal. Under the name-only rule in
+force a verifier reads no history, so it admits the refusals of the first
+six rows and of the eighth:
 
 | Valid control | Refusal or invariant |
 | --- | --- |
@@ -839,11 +925,11 @@ starts after the events and holds no journal:
 | An unchanged history since the checkpoint | A transfer and return on the stretch, with the current owner and key identical to the control, refuses. |
 | The checkpoint signed in the parent | A valid later re-anchor of the same parent, presented to skip a transfer: the stretch still starts at the checkpoint, and the child refuses. |
 | A value written by the bound owner in an update | An output of the bound owner whose value a previous holder wrote in the transfer refuses as `NOTARY_VALUE_UNAUTHORIZED` until the owner updates. The fixture puts the checkpoint after the transfer; otherwise the ownership walk refuses first. |
-| The owner's own registration; a registration by another party paid to the owner, followed by the owner's update that repeats the value; after that an ordinary rotation by the owner | A `name_firstupdate` signed by another party, with that party's key in the value, paid to the pinned owner, without a later update: `NOTARY_VALUE_UNAUTHORIZED`. An owner-signed fee input beside the other party's `name_new` input, and an owner input signature that does not commit to the value output, refuse in the same way. |
+| The owner's own registration; a registration by another party paid to the owner, followed by the owner's update that repeats the value; after that an ordinary rotation by the owner | A `name_firstupdate` signed by another party, with that party's key in the value, paid to the pinned owner, without a later update: `NOTARY_VALUE_UNAUTHORIZED`. The same registration with a fee input that the owner signed beside the other party's `name_new` input refuses in the same way: a fee input is no name input. |
 | The notary rotates `attest` under the same owner and signs again: admitted | The attestation under the old key refuses as `NOTARY_KEY`; refusing the new one because `attest` changed is wrong. |
-| A complete walk on the verifier's node under a supported owner proof | One historical name transaction missing while every other read works; a node without the index; an unsupported script or signature-hash type; a history supplied by the presenter: `NOTARY_HISTORY_UNAVAILABLE`, and the journal holds no closure afterwards. |
-| The notary of the presented attestation is intact; another notary named by the same parent changed hands or cannot be read | The child is still admitted. A verifier that walks every named notary fails this. |
-| An entry with name, registration and owner; a checkpoint in the active chain at or after the registration | A bare name: `CONTRACT_DELEGATE`. A checkpoint before the registration, and one not in the active chain: `NOTARY_CHECKPOINT`. After a reorganisation that drops the checkpoint the child refuses without closure, and is admitted again when the block is back. |
+| A complete walk on the verifier's node under a supported owner proof | One historical name transaction missing while every other read works; a node without the index; an unsupported script; a signature on the name input of another type than `SIGHASH_ALL` without `ANYONECANPAY`, one that does not commit to the value output included; a history supplied by the presenter: `NOTARY_HISTORY_UNAVAILABLE`, and the journal holds no closure afterwards. |
+| The notary of the presented attestation is intact; another notary named by the same parent changed hands or cannot be read | The child is still admitted. A verifier that walks every named notary fails this. Run together with the matching case of section 11.1. |
+| An entry with name, registration and owner; a checkpoint in the active chain at or after the registration | A bare name: `CONTRACT_DELEGATE`. A checkpoint before the registration, and one not in the active chain: `NOTARY_CHECKPOINT`; a check that the hash merely exists is not enough. After a reorganisation that drops the checkpoint the child refuses without closure, and is admitted again when the block is back. |
 
 Cases for section 11.1 (owner decision pending: J4). All are v4 cases; no v4
 implementation exists, and no result is claimed. "Today" is the rule in
@@ -854,10 +940,10 @@ force, under which the channel key signs children:
 | A child signed by the parent's delegation key, with a full valid path | The same child, otherwise valid and bound to the parent, signed by the key the grantee's name lists, or by the parent's request key: `CHILD_SIGNER`. That child is the valid one today. The syntax of the new member must not be what refuses. |
 | Owner, issuer, request, channel, delegation, attestation and seal keys all distinct | A parent whose delegation key equals, one at a time: the issuer's grant key; the owner key bound for the issuer's name; the request key, for a recipient by key; the owner key of the recipient's name, for a recipient by name; a pinned notary owner key; the parent's seal key, given as a compressed key with either parity: `DELEGATE_KEY_REUSE` for every child. A verifier that drops any one comparison fails the variant that names it. No rule today forbids a key in two roles. |
 | The same | Per child, one at a time: a delegation key equal to a channel key that the recipient's name yields at admission; to the current attestation key of the notary of the child's attestation; to the child's seal key; to the child's own recipient key, for a child by key; to the owner key of the child's recipient name, for a child by name: that admission refuses, and the journal holds no closure. A verifier that drops any one comparison fails the variant that names it. |
-| Another notary named by the parent publishes an attestation key equal to the delegation key | A child certified by a different named notary is still admitted. |
-| The delegator's channel key is rotated under the same owner, with no alias; children signed before keep verifying | A child signed by the new channel key refuses as `CHILD_SIGNER`. Refusing the earlier children is wrong; today the rotation refuses them. |
-| A parent by name whose name stays with its owner; a parent by key whose holder's unrelated name changes owner: still live | A parent by name whose name changes owner: the parent refuses, and every child refuses as `PARENT_NOT_LIVE`. No revocation rule is invented for the key mode. |
-| At the signing service: an authenticated caller that the operator listed for delegation under a live parent asks for a complete child, and it is signed | Through the service's public entry point: a supplied digest; a child outside the parent; a parent that is closed in the service's journal; a caller that shows only a signature of the messaging key; a generic or batch route: no signature exists. |
+| Another notary named by the parent publishes an attestation key equal to the delegation key | A child certified by a different named notary is still admitted. Run together with the matching case of section 7.1. |
+| The delegator's channel key is rotated under the same owner, with no alias; children signed before keep verifying | A child signed by the new channel key refuses as `CHILD_SIGNER`. Refusing the earlier children is wrong; today the rotation refuses them. Run together with the next row and with the row of the closed parent, so that a verifier that ignores the parent does not pass. |
+| A parent by name whose name stays with its owner; a parent by key whose holder's unrelated name changes owner: still live | A parent by name whose name changes owner: the parent refuses, and every child refuses as `PARENT_NOT_LIVE`, as the name mode requires today. No revocation rule is invented for the key mode. |
+| At the signing service: an authenticated caller that the operator listed for delegation under a live parent asks for a complete child, and it is signed | Through the service's public entry point: a supplied digest; a child outside the parent; a parent that is closed in the service's journal; a caller that shows only a signature of the messaging key; a generic or batch route: no signature exists. A test that hands the service a trusted caller identity shows nothing. |
 | A new live parent with a new delegation key, after the old parent's seal was spent | A fresh child signed with the old key under the closed parent: `PARENT_NOT_LIVE`, at a verifier whose node shows the spend. |
 | v3: a child issued by the landlord's grant key on a valid kind-8186 request, with a complete bundle | v3: a child signed by any other key refuses; a v4 delegation key gives nothing on v3. |
 | A recipient by key with no name: the operator of its key holder runs the delegation signer, and its children verify | Treating that parent as portable through a name, and refusing it for lack of a name, are both wrong. |
@@ -903,13 +989,16 @@ that the owners decide. This LIP chooses none of them.
   attestation now.
 - The v4 bytes of the right of re-delegation, the delegation key of section
   11.1 among them.
-- Under J4, two further choices of the owner. Whether the delegation signer
-  needs a person for each signature; the proposal is that it does not,
-  because the right of re-delegation and the notary bound what it can sign.
-  And whether the parent also names the key that every child's seal pays,
-  held by the delegating operator apart from the signer, so that the
-  operator can spend the seal of a child that a thief of the delegation key
-  signed; the proposal is to decide it with the v4 bytes.
+- Under J4, two further choices of the owners. Whether the delegation signer
+  needs a person for each signature, as the key map requires of a grant key,
+  or signs unattended inside the parent's right of re-delegation; the
+  proposal is unattended signing, with presence staying at the principal's
+  grant key (K5 of the key map). And whether the parent also names the key
+  that every child's seal pays, held by the delegating operator apart from
+  the signer, so that the operator can spend the seal of a child that a
+  thief of the delegation key signed. That costs one more key and a change
+  of the endorsement rule of LIP-0008 section 11.1 for children; the
+  proposal is to decide it with the v4 bytes.
 - D4 places the pieces of this LIP after the first proof, as tools around v3
   that change no v3 byte. Question T1 of LIP-0013, whether such tools count
   as "v3 as is", has no explicit answer yet.

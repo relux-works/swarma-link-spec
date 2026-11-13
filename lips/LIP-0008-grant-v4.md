@@ -1259,8 +1259,9 @@ This is a conformance plan, not a published runner or interoperability result.
   The `swarma/` reservation and exact-match rule add no deployed action strings.
 - Explicit issuance-capability profile; the v4 bytes of the breadth check
   that LIP-0014 drafts for v3 (section 12.6); structured scope and on-chain
-  budget enforcement, which stay proposed; whether a re-delegating agent on
-  v4 needs a grant key of its own, separate from its channel key;
+  budget enforcement, which stay proposed; the delegation key that LIP-0014
+  section 11.1 drafts for a re-delegating agent on v4, under a pending owner
+  decision (J4), and its bytes;
   parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
   budget accounting, recovery and executor partitions. Depth is at most two
   signed authority links; exact wire/consent and accounting fixtures remain open.
