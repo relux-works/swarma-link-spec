@@ -192,7 +192,12 @@ its operator ceilings instead (LIP-0006).
    grant key. The same holds for any key that a grant names as grantee,
    before the executors that admit it enter enforcing mode (LIP-0013 section
    3.4): a key that signs without its holder can be used by any process of
-   the same OS user.
+   the same OS user. An agent's key cannot have a person for each
+   signature. LIP-0013 section 3.6 holds Draft text, under a pending owner
+   decision (J7), under which the key holder's gate for each run takes the
+   place of presence for a grantee key that belongs to an agent, and
+   presence stays for a person's key. Until that decision this requirement
+   stands as written.
 3. **Typed display.** The service parses the object it is asked to sign,
    shows its fields, and computes the hash itself. It signs no digest that a
    caller supplies. LIP-0008 section 8 requires this of a v4 signer; for v3

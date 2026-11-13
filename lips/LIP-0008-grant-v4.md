@@ -333,6 +333,12 @@ that a reorganisation replaced is no longer the chain's history. An effect
 performed while the grant was admissible is not undone by a later refusal,
 and a refusal is not undone for the time it lasted.
 
+Section 5.2 holds Draft text, under a pending owner decision (J6), that
+adds a durable closure for an owner-signed change of the name that a
+verifier saw. It would replace the statement of rule 5 that the verifier
+writes no closure, and the suspension of admission by a pending name spend
+that this section mentions below.
+
 A verifier MAY cache the result of a walk. A cached result is valid only for
 the predicate it was computed for: the same active chain up to the cached
 output, the same bound registration, owner key and `swarma`, and the same
@@ -467,6 +473,9 @@ section 12 before any new reservation or effect. The grant's signed executor,
 the invocation's executor and the authenticated service's pinned name/key MUST
 agree; an invoker-selected executor never supplies missing grant authority.
 
+Section 5.2 holds Draft text, under a pending owner decision (J6), that
+adds to step 1 a read of every pending operation of the issuer's name.
+
 An executor is a particular service's Namecoin name plus pinned public key,
 not just `wallet.nmc` or another type. The executor profile binds that key to
 the service identity and receipt verification role; the name declaration alone
@@ -529,6 +538,163 @@ Persist the evidence and its validated branch conclusion under a recovery and
 anti-rollback profile. Exact proof/journal encoding and cross-replica propagation
 remain open. Transient RPC failures, tip movement and inconsistent reads
 retry or refuse without creating this permanent closure.
+
+### 5.2. Observed owner break of the issuer name and durable closure
+
+Owner decision pending: J6. Every rule of this section is Draft text, for
+v4 only. Until the decision the name rule stops an issuer's grants more
+slowly and less finally than a seal spend stops one grant. The grant key
+leaks, and the name owner broadcasts an update that replaces it. The walk
+of section 3 runs on the active chain, so while the update is unconfirmed
+it finds no change, and every grant under the leaked key stays admissible.
+Section 3 lets a pending name spend suspend admission under the selected
+observation profile; no such profile is defined, and a suspension is no
+closure: it ends when the pending transaction is evicted or replaced. Once
+the update is confirmed, those grants refuse. If a reorganisation removes
+it, they are admissible again, because the verifier journals nothing for
+the name rule (section 3, rule 5). A validated issuer spend of one grant's
+seal closes that grant durably as soon as a verifier sees it in its
+mempool, and that closure survives eviction, replacement and a
+reorganisation (section 5.1). For a grant that the thief signs, the owner
+has no seal to spend, because the thief endorses a seal key of its own
+(section 11); the name rule is then the stop the owner relies on. The
+decision of 2026-11-11 fixes the name rule and names neither case; the
+answer after a reorganisation is this draft's choice, like the start point
+of rule 3.
+
+Under this section a change of the owner or of `swarma` that the name owner
+signed, called a break below, closes the issuer's grants in the journal of
+every verifier that validated it, in its mempool or in a block, as a seal
+spend does. The argument is the one for seals: only the holder of the key
+can make the spend (`protocol/revocation.md`, section 2). The walk of
+section 3 stays; it is the verdict of a verifier that holds no closure. Two
+words are used below. A witness is a verifier that itself validated a break
+and journalled it. A newcomer is a verifier that starts later and holds no
+journal.
+
+The rule is new, and it is an owner policy; it does not follow from v3. A
+v3 verifier journals a confirmed change against a generation it had seen,
+and it refuses pending changes without closure (LIP-0004 section 5). Its
+sentence that a return to the old key or pointer never reopens a closure
+supports durability. Closing from the mempool, and closing grants that the
+verifier has not seen yet, are both added here.
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| J6.1 | A verifier that observes, in its own mempool or in a block of its validated chain, a validated name operation that spends an output of a bound issuer name controlled by the bound owner key, and whose new output has another owner, another `swarma` member or none, MUST persist a closure before any further admission. The closure refuses every grant bound to that registration and owner whose bound `swarma` bytes are the bytes of the spent output; and, when the operation changed or removed the grant key or the owner, every grant bound to that registration and owner whose issuer key is the grant key that the spent output carried. The verifier looks in two places, the walk of section 3 and the read of J6.4; whenever either meets such an operation, the closure is written before the refusal is returned. | `ISSUER_NAME_CLOSED`, distinct from the refusal of the walk |
+| J6.2 | That closure survives restart, eviction, replacement, non-confirmation and reorganisation. A return of the earlier owner or value never reopens it. If the write fails, the verifier MUST NOT admit such a grant until the closure is written. | No admission |
+| J6.3 | The verifier validates the transaction itself, the spent output and its control by the bound owner key, and that the signature which authorizes that name input commits to the new name output from which the break is read. The supported owner-proof profile accepts `SIGHASH_ALL` without `ANYONECANPAY` only, like the profile that LIP-0014 section 7.1 drafts for a notary's name. An operation whose name-input signature does not commit to that output is not an owner-authenticated break, whoever controls the input: somebody else may have chosen the value. A reported transaction id, an unsupported owner script or signature-hash type and a failed or ambiguous read refuse admission where the read was needed, and record no closure for the transition they concern. They never remove or hold back the closure of a transition that was validated (J6.4). A new value without a `swarma` member, in an operation the owner signed, is a break; a value that could not be read or parsed is a failed read. | Admission refuses where the read was needed; no closure |
+| J6.4 | At every admission the verifier takes one coherent reading of its node: the tip, the issuer name's current confirmed output, and every pending name operation that descends from it, each spending the name output of the one before. It validates every transition of that lineage and applies J6.1 to each. A renewal that changes nothing does not end the examination, and a later transition that returns to the earlier value does not undo an earlier break. If the tip or the lineage changed during the reading, the verifier reads again for the admission; a new reading never retracts what an earlier one validated. The verifier takes the transitions in order and persists the closure of each validated break when it meets it, not at the end of the reading. A lineage that it cannot read completely or cannot validate refuses admission. The failure adds no closure for a transition that was not validated, and it removes none: every break validated before the failure is in the journal before the refusal is returned. A verifier that receives and durably processes every operation of the bound name as it arrives MAY rely on that stream, if it shows the same coverage after a restart. | Admission refuses on an incomplete or invalid lineage |
+| J6.5 | The walk of section 3 is unchanged. It is the verdict of a verifier that holds no closure, and it remains relative to the active chain. | As in section 3 |
+| J6.6 | No input of an operation that changes the owner or `swarma`, and no input of any unconfirmed transaction it depends on, may be spendable by a key of the issuer's signer service or of any other hot service. To make that possible at any moment, an issuer MUST NOT fund any operation of its issuer name, a renewal included, from such an input. The issuer's tool MUST build the break on a confirmed name output unless every unconfirmed ancestor meets this rule, and refuses otherwise. The issuer SHOULD keep the signed break and broadcast it again while its inputs are unspent; any party that holds it MAY. Once a transaction it depends on can no longer confirm, a rebroadcast repairs nothing: the issuer signs a new break on the name output that is then confirmed. The issuer's tool signs every operation of its issuer name with `SIGHASH_ALL` without `ANYONECANPAY`, so that no operation of the owner exists whose value somebody else can change. | none at a verifier; the issuer's tool refuses to build |
+| J6.7 | An issuer MUST NOT publish again, in any `swarma` value, a grant key that it replaced or removed, and MUST NOT write again a `swarma` value that it replaced. After a break it continues under a new grant key. Its tool keeps the retired keys and values and refuses to write one. | none at a verifier; the issuer's tool refuses to write |
+| J6.8 | For a notary name bound under LIP-0014 section 7.1 a change of `attest` closes nothing. No durable closure is defined for a notary name; the walk of that section gives the verdict. The closure records of this section live in their own namespace, `issuer-name`, and are never matched against a notary. | none |
+| J6.9 | A verifier whose closure journal is lost, or cannot show its continuity, is a newcomer. It MUST NOT admit before the journal is recovered or its owner has started it anew, an act that is recorded, and it MUST NOT report witness state that it no longer holds. Deleting a closure is not recovery, as section 5.1 says of seals. | No admission |
+| J6.10 | v3 is not changed. A pending change of the landlord's grant key or of an agent's pointer refuses without closure there (LIP-0004 section 5), and this section MUST NOT be applied to v3. | As on v3 |
+
+J6.1 and J6.4 replace two statements of section 3: that the verifier writes
+no closure for the verdict of the walk (rule 5), and that a pending name
+spend can suspend admission under the selected observation profile.
+
+The journal holds one record for each closing operation, in the namespace
+`issuer-name`: the name, the registration, the owner pin, the SHA-256 of
+the `swarma` member of the spent output, the retired grant key where J6.1
+retires one, the owner and the `swarma` hash of the new output, the
+validated transaction, and where it was first seen. A grant gains no field:
+a v4 grant already binds the registration, the owner key and the issuer
+key. In the admission order of section 4, step 4 already checks the durable
+closure journal, and step 1 gains the read of J6.4.
+
+Three rules answer cases that a simpler text admits. The record retires the
+grant key and not only the value, because a different `swarma` value that
+carries the same leaked grant key is another value (J6.1, J6.7). The read
+follows the whole pending lineage, because name operations chain in a
+mempool: a renewal `T0` spends the confirmed output, and the break `T1`
+spends the output of `T0`. A read of the pending spend of the current
+output finds `T0`, sees no change and admits; a read of the last pending
+output finds no spend at all (J6.4). And the fee rule covers every
+unconfirmed ancestor, because a break that pays its own fee from a cold
+coin can stand on a pending renewal whose fee coin a hot service can spend.
+A thief that spends that coin elsewhere removes the renewal and the break
+on top of it (J6.6). That a name update can spend a pending name output was
+read in the source of Namecoin Core; no node was run for it.
+
+What the rules give, and to whom:
+
+- **Finality at a witness.** An owner-signed break, once seen, closes the
+  old value for good, across eviction, replacement, non-confirmation,
+  restart and reorganisation. The closure covers grants that the witness
+  has not seen yet, a thief's later grants included.
+- **A pending break is found at admission**, also behind a pending renewal,
+  by any verifier whose own mempool holds the lineage at that moment.
+- **A thief cannot displace the break through a coin it controls**, if the
+  issuer follows J6.6. That is a rule for the issuer's tool, like J6.7; a
+  verifier cannot see who can spend a coin.
+
+What they do not give:
+
+- **A verifier that never saw the break.** It admits until the break is in
+  its chain, and again after a reorganisation that removes it. Two
+  histories that leave the same chain, mempool and bundle give a newcomer
+  the same inputs. No rule changes that.
+- **One answer on one chain.** Rule 5 of section 3 promises that verifiers
+  on the same validated chain answer alike. That is given up for witnesses,
+  on purpose: a witness and a newcomer differ while a closed value is in
+  force again. The cause can be the issuer's error. It can also be a
+  reorganisation or an eviction that puts the earlier value back in force
+  though the issuer never wrote it again; then nobody broke a rule, and
+  J6.7 removes one cause of the difference and not the difference. The
+  witness is on the safe side.
+- **A change sent by mistake** has closed the issuer's grants at every
+  verifier that saw it, as with a seal spent by mistake. After any break
+  the grant key only moves forward.
+- **A thief of the name-owner key** can close everything, as it can on
+  chain today.
+- **An owner operation whose signature does not commit to its name
+  output** never closes durably (J6.3). While it is in the chain the walk
+  refuses the old value, as today; if it leaves the chain the old value is
+  admissible again. While it is pending, admission refuses and nothing is
+  journalled. J6.6 keeps a conforming issuer from making one.
+- **The reading of J6.4** depends on what the node offers. A node that
+  cannot give a consistent view of tip and mempool makes the verifier read
+  again or refuse; the profile of that read is a qualification item.
+
+The rules add no object type and no kind of transaction. They do cost
+something: every operation of an issuer name, a renewal included, is funded
+from coins that no hot service can spend.
+
+The owners choose among three courses. The proposal is the text above:
+durable closure at first sight, keyed by registration, owner and `swarma`
+bytes, with the retired key, and with J6.6 and J6.7. The second course keys
+the closure by an epoch, so that a deliberate return to an old value works
+everywhere; a value that returns by mistake is then admitted again by the
+verifier that watched it being retired. The third keeps the current text,
+and the case of the first paragraph stays. Three further designs were set
+aside. A mandatory suspension without a closure ends when a thief evicts
+the update, and it leaves the reorganisation case. A separate stop seal
+named in every grant adds nothing, because the name output already is that
+seal, and a thief that signs grants would name a seal of its own. A
+confirmation depth before the change counts makes the stop slower.
+
+Cases (owner decision pending: J6). They run on regtest, through the verifier's real name read. Witness
+and newcomer are two verifiers with separate stores on the same chain; one
+process relabelled as new is not a newcomer.
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| A renewal, and a `nostr`-only update, seen in the mempool: no closure, and the grant is admitted. A chain of two pending renewals: the same | A grant-key change seen in the mempool and then evicted by a conflicting spend: the witness refuses as `ISSUER_NAME_CLOSED` from first sight, after the eviction and after a restart. Today the grant is admitted once the update is gone. |
+| The same | A pending renewal followed by a pending grant-key change that spends the renewal's output: closure and refusal at admission. A pending change followed by a pending return to the old value: closure all the same. Today nothing closes; a reader of one spender passes the first row and fails this one. |
+| The change confirmed; a verifier that starts afterwards refuses through the walk | The change confirmed and then dropped by a reorganisation: the witness keeps refusing. A newcomer admits until the change confirms again; that is no error, and it must not be reported as having observed the change. Today both admit. |
+| A new grant under a new grant key after the break: admitted | A grant under the old key with a thief's seal, first presented after the witness saw the break and after the break was evicted, so that the active chain alone would admit it: refused. A journal keyed by known grant ids fails this. |
+| After a break the next value carries a new grant key | The old value written again, and a new value that carries the old grant key beside other bytes, each with a grant whose committed block lies after the write: the witness refuses both. The issuer's tool refuses both writes. The same old value back in force through a reorganisation is not counted against the issuer. |
+| A supported operation that spends the bound owner's name output, signed `SIGHASH_ALL`, validated on the verifier's node: it closes | With no validated break before them: a reported id, a transaction that spends another output, an unsupported owner script, a failed read: the journal holds no closure afterwards; where the read was needed, admission refuses; a valid grant of another issuer is still admitted. An owner-controlled name input signed `SIGHASH_SINGLE`, so that its signature does not commit to the name output; the value of that output altered by a third party; the operation seen pending and then gone: no closure, and the old value is admitted afterwards. |
+| A reading that validates a pending break `T1` and completes: closure and refusal | The reading validates `T1`, and the read of what descends from `T1` fails. Admission refuses, and the journal is inspected at once: it holds the closure of `T1`. `T1` is then evicted and a later reading succeeds: the old authority refuses as `ISSUER_NAME_CLOSED`. A reader that buffers the lineage and writes at the end passes the first refusal and fails both later checks. Beside it: the same failed read with no validated break before it leaves the journal empty, and the grant is admitted on a later complete reading. |
+| An owner-signed operation whose new value has no `swarma` member closes | A read that returns no parseable value because the node failed records nothing. A parser that returns the same null for both fails one of the two. |
+| A closure is written, the verifier restarts and refuses under the recorded value | A storage failure injected at the write itself: no admission and no effect for that issuer's grants. |
+| At the issuer's tool: a break built on a confirmed name output with cold fee inputs; and a break on a pending renewal whose every input is cold | A pending renewal with a fee input that a hot key can spend, and a break with a cold fee on top of it: the tool refuses to build it and builds on the confirmed output. On regtest the conflicting spend of the hot coin is mined and shows that the refused construction could not have confirmed. A tool that checks only the break's own inputs fails. |
+| A notary rotates `attest` under the same owner and certifies again: admitted, and admitted again later | The journal holds no record for that rotation, in any namespace. |
+| v3: a confirmed change of the landlord's grant key closes for a verifier that had seen the earlier generation | v3: a pending change refuses without closure. |
+| A verifier with an intact journal | A verifier whose journal was deleted does not admit until its owner starts it anew, and reports no witness state. |
 
 ### 6. Freshness and operation risk (decided design)
 
@@ -889,6 +1055,14 @@ authority merely because a bundle contains them. Wallet-v1 `proof.use_txid`
 remains outside its unsigned-request hash; neither that commitment nor
 LIP-0002's different signed-envelope commitment is redefined here.
 
+Two Draft texts under pending owner decisions concern the invocation. Under
+[LIP-0013](LIP-0013-trust-contract.md) section 3.6 the service that holds
+an agent's key signs an invocation for a run only when every grant on its
+proof path is listed for the origin of that run (J7). Under
+[LIP-0011](LIP-0011-termination-for-violation.md) section 7 the signed
+invocation is the request of a verdict, and an invocation that travels
+inside an encrypted message binds a salted hash of the content (J8).
+
 #### 12.2. Proof path, attenuation and budget accounting
 
 Depth counts signed grant/issue-capability links, not the invocation or evidence
@@ -1135,7 +1309,8 @@ its verdict on the active chain: a pending update at most suspends admission,
 under an observation profile that is not defined, and a reorganisation that
 removes a confirmed update makes the grants admissible again. A validated
 issuer spend of a seal closes its grant durably from the mempool (section
-5.1). The gap is stated under Open questions.
+5.1). Section 5.2 states the case and holds Draft text for it, under a
+pending owner decision (J6).
 
 ## Conformance impact and v3 compatibility
 
@@ -1221,33 +1396,21 @@ fixtures independently; agreement between two implementations alone is not the
 oracle. Freeze historical v0.1 fixtures and report successor results separately.
 This is a conformance plan, not a published runner or interoperability result.
 
+Section 5.2 carries the cases of its Draft text, which is under a pending
+owner decision (J6). Under it the row above on a change that a
+reorganisation orphans reads differently for a verifier that saw the
+change: that verifier keeps refusing.
+
 ## Open questions
 
-- **The name rule as an emergency stop** (a gap found in review). The grant
-  key leaks, and the name owner broadcasts an update that replaces it. The
-  walk of section 3 runs on the active chain, so while the update is
-  unconfirmed it finds no change, and every grant under the leaked key stays
-  admissible. Section 3 lets a pending name spend suspend admission under
-  the selected observation profile; no such profile is defined, and a
-  suspension is no closure: it ends when the pending transaction is evicted
-  or replaced. Once the update is confirmed, those grants refuse. If a
-  reorganisation removes it, they are admissible again, because the verifier
-  journals nothing for the name rule (rule 5). A validated issuer spend of
-  one grant's seal closes that grant durably as soon as a verifier sees it
-  in its mempool, and that closure survives eviction, replacement and a
-  reorganisation (section 5.1). Stopping every grant of an issuer is
-  therefore slower and less final than stopping one. For a grant that the
-  thief signs, the owner has no seal to spend, because the thief endorses a
-  seal key of its own (section 11); the name rule is then the stop the owner
-  relies on. The decision of 2026-11-11 fixes the name rule and names
-  neither case; the answer after a reorganisation is this draft's choice,
-  like the start point of rule 3. Candidate fix, a proposal that the owners
-  decide: a change of the owner or of `swarma` that the name owner signed
-  and a verifier saw in its mempool closes the issuer's grants in that
-  verifier's journal, as a seal spend does. With it goes a deployment rule:
-  the fee of such an update is not paid with coins that a hot service can
-  spend, so that a conflicting spend of the fee input cannot displace the
-  update.
+- **The name rule as an emergency stop** (a gap found in review). Section
+  5.2 states the case and holds Draft text for it, under a pending owner
+  decision (J6).
+- Whether the issuer rule of section 3 should also require that the bound
+  owner wrote the `swarma` value in force, as LIP-0014 section 7.1 drafts
+  for a notary's name. No attack on an issuer is claimed: its registration
+  and owner are pinned by independently provisioned verifier pins, and the
+  root must be independently trusted (sections 3 and 12.2).
 - Exact versioned bytes, signature domain, commitment/consent encoding, name
   registration reference, executor/single-use bindings, recent block field and
   cross-language vectors; the start point of the issuer-history constraint

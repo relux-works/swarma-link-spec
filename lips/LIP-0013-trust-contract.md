@@ -379,6 +379,13 @@ executor's ledger, as LIP-0006 already does for the wallet.
 A refusal is reported as its code only. The executor does not reveal grant
 contents, ledger state or the reason a key was refused beyond the code.
 
+For a contract of profile `/2`, LIP-0014 holds Draft text under pending
+owner decisions that adds to these steps. Its section 3.4 adds two refusals
+after 6d for a grant with a scope text, a field `scope_text` to the record
+of step 7 and, by the owners' choice, a hold at step 9 (J5). Its section
+9.1 adds a ledger for each row to the reservation of step 9 (J1). Profile
+`/1`, its steps and its vectors do not change.
+
 ### 3.5. Nonce journal and the time window
 
 - The journal maps each nonce to the event id that first used it, and it is
@@ -402,6 +409,159 @@ contents, ledger state or the reason a key was refused beyond the code.
   such envelopes leave the window by `T0 + 1020`.
 - The window [now − 15 min, now + 2 min] is the owner-command window a2a
   already uses for verified owner commands.
+
+### 3.6. Signing under a grant
+
+Owner decision pending: J7. Every rule of this subsection is Draft text.
+Until the decision nothing limits which run of an agent signs under which
+grant. A grant is issued to a key, and every run of the agent that holds
+the key can act under it. Worker `W` is the grantee of a grant from
+principal A for an action at A's executor. `W` also admits instructions
+from an orchestrator of another party, B, under a second grant. B's
+orchestrator instructs `W`, and in the course of that work `W` sends A's
+executor an envelope under its own grant. A's executor runs section 3.4,
+every check passes, and in enforcing mode it admits the envelope as an
+instruction on A's authority. B's orchestrator has obtained an action that
+A gave `W` for other work, and A's executor has no input that tells the two
+apart. LIP-0014 gives a relaying agent a child grant that fits the relayed
+work. It does not stop the agent from sending under a wider grant of its
+own, and it does not apply when the agent acts itself.
+
+Under this subsection the service that holds an identity's request key, the
+key holder, signs a run's objects only under what its operator listed for
+the origin of that run. For an agent the key holder is the gateway of its
+host (key map). The origin is the exact admission that started the run, a
+grant and an event, and not the principal: on v3 every admission of one
+executor has the same principal (LIP-0004 section 5). The rule adds no key
+and no object, nothing on the wire and nothing on chain, and it changes no
+v3 byte. It does change behaviour: which signatures a run of an existing
+grantee can obtain, and what an owner confirms before enforcing mode. For v4
+the same rule stands beside the invocation of LIP-0008 section 12.1.
+
+The key holder keeps three things, all local and all outside the agent's
+write authority: the record of each run and its origin, which extends the
+record of step 7, `{event_id, grant_id, tip_hash, mode}`; the table of
+permissions that its operator sets, with its version; and its journal of
+the consents it signed and of the denials of J7.3 (e).
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| J7.1 | The key holder MUST bind every run of the identity, when the run is created, to its origin: the `event_id` and `grant_id` of the record of step 7 that admitted its instruction, or the owner's own command. The origin never changes. A run that a run creates, and a run that is resumed, has the origin of the run it comes from. The record of a run and its origin is kept outside the agent's write authority. | none of its own |
+| J7.2 | The key holder MUST keep, outside the agent's write authority, a table that its operator sets. For each origin, and for the owner's commands, the table lists three kinds of permission: grants the run may sign under (`use`); parents under which the run may ask for a child (`delegate`); and contracts the run may consent to (`consent`), each given by its contract hash with the booking and privacy hashes. A missing row is an empty row, and an unreadable table is an empty table. The table has a version that only moves forward; the key holder records the version it last used, and a table older than that is unreadable. A permission that the operator removed is checked again immediately before a signature is released, so that a request in flight is not signed under it. | The refusals of J7.3 |
+| J7.3 (a) | The key holder MUST refuse to sign an envelope for a run unless the grant that the envelope cites is in the `use` list of the run's origin. For a v4 invocation every grant on its proof path MUST be in that list. | `GRANT_NOT_FOR_RUN` |
+| J7.3 (b) | It MUST refuse to sign a kind-8186 delegation request, and a request to a delegation signer (LIP-0014 section 11.1), unless the parent it names is in the origin's `delegate` list. | `GRANT_NOT_FOR_RUN` |
+| J7.3 (c) | It MUST refuse to sign a kind-8181 consent unless it was given the complete contract, computed its hash itself, and found the triple of contract, booking and privacy hashes in the origin's `consent` list. The event keeps its four tags. | `CONSENT_NOT_FOR_RUN` |
+| J7.3 (d) | A grant that results from a consent of (c) enters the origin's `use` list in one of two ways only. The operator lists it. Or it is enrolled: the operator's consent entry says "and use", and the signed grant shown to the key holder contains exactly the consent event that the key holder released under that entry. For a consent the key holder builds the event and its signature, makes its record of the exact signed event durable, and only then releases it. A run cannot add a grant to its own row in any other way. | A grant outside the list: `GRANT_NOT_FOR_RUN` |
+| J7.3 (e) | Withdrawal takes precedence over enrollment. When the operator removes a grant from an origin's `use` list, the key holder records a denial for that origin and grant id. A denial is durable and survives a restart. Enrollment never lifts it: showing the same grant and consent again adds nothing. Only a later act of the operator that lists the grant again, in a newer table version, lifts it. A denial concerns one grant. The "and use" entry itself is a standing permission: while it is in the table, a new consent to that contract can be signed, and the grant that results from it enrolls. To stop that as well the operator removes the consent entry; removing the entry does not by itself remove grants that are already enrolled. A retried enrollment of a grant that was not withdrawn changes nothing. A withdrawal that is recorded before a signature is released wins: the check of J7.2 before release reads the denial. A key holder that cannot show the continuity of its denials and of its consent journal enrolls nothing; only grants that the operator lists are then usable. | A grant under a denial: `GRANT_NOT_FOR_RUN` |
+| J7.4 | The key holder derives the run from its own record of the caller: a channel that the key holder, or the launcher it trusts, created for that run when the run was created, and that ends with the run. A run identifier, a principal, a label or a handle that the caller supplies is not that record; nor is a process id that the system may reuse, a socket that another run inherited, or a connection made again after the key holder restarted. After a restart the launcher binds a run again from the stored origin record. If the key holder cannot tell two runs apart, it MUST refuse both, and it MUST NOT fall back to the owner's row. | Nothing is signed |
+| J7.5 | The key holder offers a run these typed operations and no other use of the key: an envelope under J7.3 (a); a v4 invocation under J7.3 (a); a consent under J7.3 (c); a delegation request and a request to a delegation signer under J7.3 (b); and the transport operations of the messaging profile, which the key holder builds itself from the message and which authorize nothing. It signs no arbitrary event, no event kind that a caller chooses, no batch that skips the checks and no digest that a caller supplies. | Nothing is signed |
+| J7.6 | An instruction admitted under another grant MUST NOT enter an existing run as an instruction. It creates its own run, with its own channel, or stays data. | none of its own |
+| J7.7 | A service cannot verify J7.1 to J7.6 and MUST NOT treat a request, a flag or a label as evidence of them. It validates the request, the path and the effect bounds itself. | none of its own |
+| J7.8 | Deployment rule. A credential that acts without a signature of the key, such as a repository token or a wallet RPC, is outside this gate. It MUST be out of the run's reach or behind the same binding. | A deployment that leaves one within reach has not closed the case |
+
+With every refusal nothing is signed.
+
+The check itself is a lookup before each signature, at the key holder. The
+work around it is larger than the lookup: the caller binding, the isolation
+of the signing channel, the version of the table and recovery after a
+restart all have to be qualified on the real key holder.
+
+In the case of the first paragraph the origin of `W`'s run is the second
+grant. The operator's table lists the first grant only for the origins of
+the operator's own work, so the signature under the first grant is refused.
+In the relaying case of LIP-0014's motivation the origin of the
+orchestrator's instruction lists the child and not the standing grant; that
+is what makes that motivation hold.
+
+What the gate gives, it gives at an honest key holder on the agent's host:
+a run cannot obtain the identity's signature under a grant that the
+operator did not give to the run's origin; a first consent can be signed,
+and only for a contract that the operator listed; and the key has no other
+signing path. Six things stay open:
+
+- **The host.** The gate is enforced on the agent's host by a service of
+  that host's operator, which already holds the key. It protects against a
+  confused or manipulated agent and not against that host. No receiver can
+  see whether the gate ran.
+- **The task.** A run whose origin lists a grant can use everything that
+  grant allows. The gate does not intersect the grant with the task that
+  started the run, and runs of one identity that share files can pass text
+  to each other.
+- **Credentials.** A credential that needs no signature bypasses the gate
+  (J7.8).
+- **The table.** A wrong row gives a wrong bound. The default is empty.
+- **The standing entry.** "And use" is a standing permission. Removing one
+  enrolled grant denies that grant for good; it does not stop a new grant
+  under the same contract while the consent entry stands. An operator who
+  wants both removes both.
+- **The stores.** The denials, the table version and the consent journal
+  must tell "empty" from "lost". The profile for that is open; until it
+  exists, a key holder that lost them is one whose operator sets it up
+  anew.
+
+The owners decide five things with this text:
+
+1. Whether to adopt the gate, with the six open points recorded. The
+   proposal is to adopt it.
+2. Whether the gate is a condition of enforcing mode. The case of the first
+   paragraph arises with one-hop grants and does not wait for
+   re-delegation. The proposal is that each owner confirms, with its
+   approval of enforcing mode (section 3.4), that the key holders of its
+   grantee identities run the gate; an executor cannot check that. Left to
+   deployment, the first enforcing executor admits the case.
+3. The threat boundary. The proposal is an honest key holder and an
+   untrusted run, as here. A gate that also holds against a hostile host
+   needs a signed origin that the receiver checks, with an authorizer and a
+   custody boundary that the host does not control; one more label signed
+   by the same host adds nothing. That stays an open option for v4.
+4. Where the operator's table lives while sections of an agent host's
+   configuration are unsigned (K4 of the key map). The proposal is a file
+   of the key holder's OS user, outside the agent's write authority, set by
+   the operator, with the version of J7.2, and without a signature until
+   the trust anchor of LIP-0015 exists.
+5. The presence rule of the key map. It asks for presence per signature for
+   every key that a grant names as grantee, before the executors that admit
+   it enter enforcing mode. An agent's key cannot have a person for each
+   signature. The proposal is that for a grantee key that belongs to an
+   agent the gate takes the place of presence, that presence stays for a
+   person's key, and that the key map says so. If the rule is kept as it
+   reads, no agent can be a grantee at an enforcing executor. Without this
+   decision the gate and the key map contradict each other.
+
+Four other designs were set aside. A grant per run puts one issuance on
+chain for every run. The Link book estimates, at 355 bytes for an issuance
+record, that 100 000 agents with ten runs a day need about 355 million
+bytes of block space a day, about 2.4 times the 146 million bytes that a
+day of blocks holds; the figure counts issuance records only and is an
+estimate, not a measurement. A context keyed by the principal tells
+nothing apart, because the principal is the same for every admission of
+one executor. A list of grants that the creator of a run writes trusts the
+party under suspicion. A table of actions, targets and expiry for each
+origin would narrow what a run can do under a listed grant; it is a policy
+language at the key holder, and the first version lists grants, parents and
+contracts and says what that leaves open.
+
+Cases (owner decision pending: J7). Every case runs against the real signing endpoint with real callers;
+a helper that is handed a trusted run identifier tests nothing. On a
+refusal the test checks that no signature exists. Today no gate exists, and
+the signatures that the first three rows refuse are given:
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| A run whose origin lists `Gy` signs an envelope under `Gy` | Same identity and key: a run whose origin is `G2`, without `Gy` in its row, asks for a signature under `Gy`: `GRANT_NOT_FOR_RUN`. This is the case of the first paragraph. |
+| A typed envelope under a listed grant, and a kind-8186 request under a parent listed for delegation, are both signed | An otherwise valid kind-8186 request for a parent that is not listed; an arbitrary event; a supplied digest; a batch or alternate route: refused. A blanket ban on kind 8186 fails the control. |
+| A run created by the owner's command signs under the owner's row | A caller that supplies the owner's label or another run's identifier; a copied handle; a reused process id; a reconnect after the key holder restarted: refused, and never the owner's row. |
+| From no grant, a run whose origin lists the contract obtains the consent; the issuer signs the grant; with "and use" the new grant becomes usable by that run, and a later envelope under it is signed | A consent for a contract that is not listed: `CONSENT_NOT_FOR_RUN`. A grant that does not contain the consent the key holder signed is not added to the row. Placeholder grant ids and a grant consented in advance hide the case and are not this test. |
+| A second instruction under the same origin continues the run | An instruction admitted under another grant gets a run and a channel of its own, or stays data. Changing a label on the same channel is not that. |
+| A run started or resumed from a run keeps the origin and the current row | After the process and the session were re-created, and after an older table was put back: no signature under a grant missing from the current row; the old table is unreadable. |
+| A known caller and a readable row: signed | Three separate negatives: an unknown caller; no row; an unreadable or corrupt table: nothing is signed, and no fallback to every grant of the identity. |
+| At a receiver: a valid request is admitted on its own checks, whatever untrusted run label accompanies it | A request with an invalid grant, path or bound is refused although a label says the gate passed. The signed bytes are not altered in this test. |
+| A permission is in force and a signature is released. A removal recorded after a release leaves that signature as it is and refuses the next request; a retried enrollment without a removal changes nothing; a grant that the operator lists again in a newer table version is usable again | The operator removes the permission while a request is in flight, and the removal is recorded before the release: no signature is released. The origin's consent entry says "and use", grant `G` is enrolled, the operator removes `G` from `use` and keeps the consent entry; the run shows the same `G` with the same journalled consent again: `G` is not added, and a signature under `G` refuses as `GRANT_NOT_FOR_RUN`, also after a restart of the key holder. A removal that races the enrollment itself ends with `G` denied. With the consent entry still present, a new consent to the same contract is signed and its new grant enrolls: that is what the standing entry means, and removing the entry stops it. |
+
+A deployment check goes with these cases and is no protocol vector: a
+repository token or a wallet RPC within the run's reach produces the
+forbidden effect without a signature. Finding one is a failed qualification
+(J7.8).
 
 ## 4. Vectors and reference checker
 
@@ -483,7 +643,8 @@ committed file, and that planted defects fail with their named codes.
   that holds the key can act under every grant issued to it, whichever
   party's work that run is doing. An agent that works for two parties can
   thereby carry one party's instruction into an action under the other
-  party's grant. The case is open question T10.
+  party's grant. Section 3.6 states the case and holds Draft text for it,
+  under a pending owner decision (J7); it is open question T10.
 - **Replay and delay.** The nonce journal and the time window bound replay.
   Holding a pending envelope does not reopen the window (section 3.5).
 - **Public graph.** On mainnet, names, keys and the bundle make "who trusts
@@ -511,4 +672,4 @@ protocol text and a conformance change that names the vector set.
 | T7 | Whether an issuer MUST, rather than SHOULD, omit a zero v3 budget | SHOULD; the verifier compares the value, so both forms bind. |
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
-| T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Worker `W` is the grantee of a grant from principal A for an action at A's executor. `W` also admits instructions from an orchestrator of another party, B, under a second grant. B's orchestrator instructs `W`, and in the course of that work `W` sends A's executor an envelope under its own grant. A's executor runs section 3.4, every check passes, and in enforcing mode it admits the envelope as an instruction on A's authority. B's orchestrator has obtained an action that A gave `W` for other work, and A's executor has no input that tells the two apart. LIP-0014 gives a relaying agent a child grant that fits the relayed work. It does not stop the agent from sending under a wider grant of its own, and it does not apply when the agent acts itself. | Candidate fix, a proposal that the owners decide: the gateway that holds the agent's key signs a run's envelopes only under the grants listed for that run. This adds no record to the chain. Undecided. |
+| T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Section 3.6 states the case. | Draft text in section 3.6, under a pending owner decision (J7): the service that holds the agent's key signs a run's objects only under what its operator listed for the origin of that run. This adds no record to the chain. Undecided. |

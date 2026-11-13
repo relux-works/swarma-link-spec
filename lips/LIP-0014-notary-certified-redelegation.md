@@ -63,14 +63,38 @@ anchor, and the action `0x05`.
 
 ### Decisions pending
 
-Two additions to the decisions above wait for the owners' decision. Their
-rules stand in this LIP as Draft text, each marked "owner decision pending"
-with a label of this table. None of them is adopted before the decision.
+Five additions to the decisions above wait for the owners' decision. Their
+rules stand in this LIP as Draft text, each in one subsection that is
+marked "owner decision pending" with a label of this table. None of them is
+adopted before the decision, and until then the text in force stays as it
+is.
 
-| Label | Adds to | Direction of the Draft text | Until the decision |
+| Label | Touches | Direction of the Draft text | Until the decision |
 | --- | --- | --- | --- |
+| J1. Rows | D6 | The parent signs one row for each child it permits, with the executor, the grantee, the cap and the certifier of that child. The limit is a number of compartments. Section 9.1. | A pool that the children share, and lists of the agents and grantees a child may name (sections 2 and 9). |
+| J2. Withdrawal for cause | D5 and D9; N6 and N8 of LIP-0012 | Each row names one notary, and only that notary certifies the row. It keeps one succession of seals for the row, and a cause counts only when the notary's signature covers its frame. Section 10.1. | Any named notary certifies, and a withdrawal for cause reaches only the parties that observed its frame (section 10). |
 | J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Section 7.1. | A parent binds a notary by name only (section 7). |
 | J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
+| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | A child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. An executor that cannot read refuses a grant with a text, and the owners choose what a text does to an effect. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
+
+Three further decisions are pending in other LIPs: J6, a durable closure for
+an owner-signed change of an issuer's name (LIP-0008 section 5.2); J7,
+signing under a grant for each run (LIP-0013 section 3.6); and J8, the
+signed invocation as the request of a verdict (LIP-0011 section 7).
+
+The decisions are separate, with one dependency: section 10.1 needs the
+rows of section 9.1. Where the Draft text of one decision uses another, it
+says so. Sections 7.1 and 11.1 read the notary of the child's row where
+rows exist. The delegation signer of section 11.1 identifies its caller
+through LIP-0013 section 3.6 and reads the closure journals of section 10.1
+and of LIP-0008 section 5.2, where those are adopted.
+
+If J1 and J5 are adopted, a notary adds up no budget across siblings and
+judges no text. It still keeps a record: one child for each row and, under
+J2, one succession of seals for each row and its causes. An attestation
+then gives a second signature by a party that the issuer chose (D8), a seal
+that this party can spend, and a cause that its witnesses remember. D1 is
+not reopened.
 
 ## Motivation
 
@@ -169,8 +193,10 @@ In Goal 1 a right of re-delegation MUST NOT list `spend`, and its `budget` is
 0 (D12). The budget members and the arithmetic of sections 6 and 9 stay in the
 format for a later decision.
 
-Section 7.1 holds Draft text, under a pending owner decision (J3), that
-changes the member `notaries` and adds a member `checkpoint`.
+Two subsections hold Draft text, under pending owner decisions, that
+changes members of this table. Section 7.1 changes `notaries` and adds
+`checkpoint` (J3). Section 9.1 replaces `agents`, `grantees` and
+`max_children` by rows (J1).
 
 ## 3. The contract profile `swarma-trust-contract/2`
 
@@ -236,7 +262,197 @@ time. It is meant to restrict what the structured members already allow. A
 wrong judgement about text therefore cannot widen a mechanical limit. No
 step of section 8 and no step of LIP-0013 section 3.4 compares an
 instruction with the text. Whether an executor honours the text is left to
-that executor, which is a gap listed under Open questions.
+that executor. Section 3.4 holds Draft text for this, under a pending owner
+decision (J5).
+
+### 3.4. One text along the path, and what a text does to an effect
+
+Owner decision pending: J5. Every rule of this subsection is Draft text.
+Until the decision section 3.3 stands alone: a text narrows a grant, the
+notary judges a child's text against the parent's once, at certification,
+and no step compares an instruction with the text. Take a child whose text
+limits the work to one component of a repository. An instruction that
+concerns another component, within the child's actions and repositories,
+passes every step of section 8 and steps 6e to 6g of LIP-0013. The notary's
+`within` is a judgement as well: no verifier can recompute it.
+
+The subsection does two things, and they answer different halves of that
+case. A child carries the exact octets of its parent's text, by hash, and
+narrows only members that a machine compares (J5.1 to J5.3, J5.6). A second
+text then does not occur, and the value `within` is deleted. And the
+subsection says what a text does at an executor (J5.4, J5.5, J5.7 to J5.9).
+It does not make words enforceable: equal bytes are not an applied
+restriction.
+
+| Property | Closed? | For whom |
+| --- | --- | --- |
+| The child's text is not wider than the parent's | Yes, completely: no second text exists | Every verifier, one that starts later included |
+| A grant with a text is never executed by an executor that cannot read | Yes, by J5.4 | Every executor that accepts profile `/2` |
+| No record says that a text was checked | Yes, by J5.5 | Every reader of a record |
+| An effect that lies outside the words is refused | No. This is the half of the case that the instruction for another component shows | Nobody; the owners choose what a text does to an effect |
+
+The rules apply to contracts whose member set carries `scope_text_sha256`:
+profile `/2` and its v4 counterpart. A reader MUST NOT synthesize the member
+for a contract of profile `/1`, require it there, or treat `note` as a scope
+text. Nothing is added to a grant or to an attestation. The executor's
+configuration gains the setting `text`, which its owner sets to `none` or
+`conduct`; absent means `none`. With `conduct` the executor is an agent, it
+holds the exact octets, and it is told to treat them as a restriction. The
+setting promises that a model considers the text. It does not promise a
+qualified evaluator, and none is defined; a setting for one is reserved, as
+LIP-0008 section 12.4 reserves its policy form. For a contract that carries
+the member, the record of LIP-0013 step 7 gains `scope_text` with the values
+`none` and `present`. For a contract of profile `/1` the record is
+unchanged.
+
+What a text does to an effect is the owners' choice among three rules, and
+J5.5 has one branch for each:
+
+| Option | May an automatic effect rest on a model's reading of words? | Cost |
+| --- | --- | --- |
+| (a) | Yes, for every action. An executor that is an agent applies the text. | The effect rests on the agent's reading, which can be wrong and is checked after the fact. The half of the case that concerns enforcement stays open and is reported as open. |
+| (b) | No, for every action. | No predicate over a text exists, so every instruction, review, landing and payment under a grant with a text waits for the owner's confirmation. Grants meant for unattended work carry no text. |
+| (c) | No for `land` and `spend`; yes for `instruct` and `review`. | The owner confirms each landing under a grant that has a text, bound to the exact revision (J5.9). Grants meant for automatic landing carry no text. A review under a text can still feed the gate of a landing under another grant. |
+
+The proposal is (c). It follows exact inheritance to its end: authority that
+a machine acts on sits in members that a machine compares. `land` and
+`spend` are the actions that derive a v3 scope entry and act on a resource
+(LIP-0013 section 2.2). `instruct` and `review` stay conduct, because their
+object is itself words: no predicate over "assign this work" exists to fail
+closed on. Under (c) a principal who wants automatic landings writes the
+limit into `repos` and leaves the text empty, or puts explanation into
+`note`, which carries no authority. A principal who wants words to limit a
+landing gets a person's confirmation and not a model's reading. That matches
+what v4 says of constraints: unknown semantics refuse, and no unimplemented
+policy evaluator may stand in for the checks (LIP-0008 section 12.2).
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| J5.1 | A child MUST carry its parent's `scope_text_sha256` unchanged: both empty, or both the same value. A child MUST NOT add a text where the parent has none and MUST NOT drop the parent's text. Equality is of octets; a different line ending or Unicode form is a different text. | `CHILD_TEXT_DIFFERS`, at V9, before the attestation is read |
+| J5.2 | Every member of a child's contract is handled by exactly one row of the member table below. A member to which a profile assigns no row, and a member whose semantics the verifier does not know, refuses, also when child and parent carry equal bytes (LIP-0008 section 12.2). For each narrowing relation the profile states what the executor compares the member with at the effect. | The code of the member's row |
+| J5.3 | The attestation's `textual` has the values `none` and `identical` only. D1 is unchanged: a child with equal text still needs its attestation. | An attestation that carries `within`: `ATTESTATION_SHAPE` |
+| J5.4 | An executor whose `text` setting is `none` MUST refuse a grant whose `scope_text_sha256` is not empty, root or child, after step 6d of LIP-0013. An executor whose setting is `conduct` MUST hold the exact octets that hash to that value. | `TEXT_UNSUPPORTED`; without the octets `TEXT_UNAVAILABLE` |
+| J5.5 | Common to every option: at an executor with `conduct` the agent applies the text, at step 9 of LIP-0013, as a restriction on what the structured members allow, and a text never adds. No admission step establishes that an effect lies within a text, and no record, receipt or attestation may report that it did. A confirmation is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then exactly one branch applies, by the owners' choice. | By the branch |
+| J5.5 (a) | Nothing more. Every action under a grant with a text is conduct. | none |
+| J5.5 (c) | For `land` and `spend`, and on v4 for every command that the action profile marks as an effect at a resource, the executor MUST NOT perform the effect automatically under a grant whose text is not empty. It holds the effect until its owner confirms it under J5.9, or it refuses. `instruct` and `review` are conduct. | `TEXT_NEEDS_APPROVAL` |
+| J5.5 (b) | For every action, `instruct` and `review` included, a request under a grant whose text is not empty MUST NOT take effect automatically. An instruction is not given to a run as an instruction, a review verdict is not counted by a landing gate, and an effect at a resource is not performed, until one of two things has happened: the executor evaluated a predicate that a profile defines for that text, and it holds; or the executor's owner confirmed that request under J5.9. Otherwise the request is held or refuses. No predicate is defined in the first version, so under (b) every such request waits for the owner. Parsing, storing and certifying the grant are not blocked. | `TEXT_NEEDS_APPROVAL` |
+| J5.6 | An inherited text is the root's. Its words refer to the parties and resources of the root grant, which the bundle carries (V2). A reader MUST NOT resolve them against the child's grantee, executor or run. | none; a rule of reading |
+| J5.7 | A restriction that must hold at admission MUST be a structured member. The executor compares that member with the arguments actually passed to the privileged call, resolved immediately before the effect, when step 6 of LIP-0013 runs again. A plan, a title or a description of the arguments is not the arguments. | The code of the member, before the effect |
+| J5.8 | Words of the delegator travel only as the body of an instruction (LIP-0013 section 3.3), which is data until admitted. Explanation that should bind nobody belongs in `note`. An operative text MUST NOT be treated as explanation without a new, signed and consented contract. | none of its own |
+| J5.9 | A confirmation binds one operation and is used once. The owner's command MUST name the `event_id` of the request and the `grant_id` it was admitted under; the action; the resolved target, which is the repository and the ref for `land` and the payee for `spend`; and the content of the effect, which is the exact revision to be landed for `land` and the amount for `spend`. For `instruct` and `review` under (b) the event id fixes the body. Immediately before the effect the executor resolves the actual arguments again (J5.7) and compares them with the confirmation. If the revision, the target, the amount or the payee differs, the confirmation does not apply, and the effect is held again or refuses. A candidate that was rebased, regenerated or amended is another revision and needs its own confirmation. The executor records the use of a confirmation durably before the effect, and a second effect under it refuses. A retry of the same event is not a second use; it falls under the existing rule of one effect per event. A confirmation widens nothing: every structured check of the grant runs as it does without one. The wire form of the command is the deployment's; what it binds is not. | `TEXT_NEEDS_APPROVAL` |
+
+The owner's command of J5.9 is the verified owner command that a2a already
+uses (LIP-0013 section 3.5); the bytes of the confirmation record are open.
+
+The member table of J5.2, for a child of profile `/2`:
+
+| Member of the child | Relation to the parent | Refusal |
+| --- | --- | --- |
+| `profile` | fixed: `/2` in both | `CONTRACT_PROFILE`, `NOT_DELEGABLE` |
+| `network`, `landlord_name`, and the grant's genesis | equal to the parent's | `SUBJECT_MISMATCH` |
+| `agent_name`, `grantee_key` | allowed by the parent's right of re-delegation: listed (section 4), or under section 9.1 equal to those of the child's row | `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED` |
+| `actions` | subset of `P.delegate.actions` | `CHILD_ACTIONS_WIDER` |
+| `repos` | subset of `P.repos`, by exact bytes | `CHILD_REPOS_WIDER` |
+| `spend_budget` | at most the parent's allowance: `P.delegate.budget` (section 4), or under section 9.1 the `cap` of the child's row | `CHILD_BUDGET_OVER` |
+| `not_before`, `not_after` | nested in the parent's window | `CHILD_WINDOW_NOT_NESTED` |
+| `scope_text_sha256` | equal to the parent's | `CHILD_TEXT_DIFFERS` |
+| `parent_grant_id` | the dedicated check V3 | `PARENT_ID_MISMATCH` |
+| `ordinal` | the dedicated check of its range; under section 9.1 it selects the row | `CHILD_ORDINAL` |
+| `delegate` | fixed: `depth` 0 and every member empty | `CONTRACT_PARENT` |
+| `note` | none; it carries no authority | none |
+
+The parent's `delegate` members are read by their own steps (V4, V8, V9,
+V12) and are not inherited. A child narrows through three relations,
+subset, at most and nested, and through nothing else.
+
+The fields that a principal may want to narrow map to members as follows:
+
+| Field | v3 profile `/2` | Relation | v4 |
+| --- | --- | --- | --- |
+| Repository | `repos` | subset | the typed target of the action profile |
+| Branch | none; `land` is the default branch | fixed by the action | a typed argument when a profile defines one |
+| Action | `actions` within `P.delegate.actions` | subset | exact leaf commands (LIP-0008 section 12.3) |
+| Recipients | the grantee and the agent that the parent allows | listed, or under section 9.1 equal to the row | the permitted targets of a typed limit |
+| Amounts | `spend_budget` | at most | typed limits |
+| Window | `not_before`, `not_after` | nested | height windows (LIP-0008 section 12.5) |
+
+The steps change as follows. V9 gains one equality, of the two text hashes.
+V14 checks `none` and `identical` against the two hashes. The bundle of V2
+carries one text. Step 6 of LIP-0013 gains the refusals of J5.4 after 6d,
+for contracts that carry the member; step 7 gains `scope_text`; step 9
+gains the branch of J5.5 that the owners choose and the confirmation of
+J5.9. Profile `/1`, its vectors and kind 8185 do not change.
+
+J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3 and to the
+verbal terms of a child's contract on v4. For roots, J5.4, J5.5, J5.7 and
+J5.9 are a precondition of enforcing mode for every executor that accepts
+profile `/2`. An executor that accepted `/2` contracts and entered
+enforcing mode for one-hop grants would otherwise admit a `/2` root with a
+text and act on it with no text rule in force. An executor that accepts
+profile `/1` alone cannot meet a scope text: profile `/1` has no text
+member, and that reader refuses every fifteen-member object (section 3.1).
+
+What stays open:
+
+- **Whether an effect lies within the words.** Under (a) and (c) a text is
+  applied to `instruct` and `review` by the agent that reads it, and by
+  nobody else; under (a) that holds for every action. That is behavioural
+  trust in the principal's own executor, checked after the fact by an
+  owner, a moderator or an arbiter. Under (b) nothing takes effect on a
+  model's reading alone; whether a confirmed request lies within the words
+  is then the judgement of the person who confirmed, which is not a check
+  either. No summary of this subsection may say that scope text is
+  enforced.
+- **A confirmation is a person's judgement.** It can be wrong. It is
+  independent of the model that proposed the effect.
+- **Reviews feed landing gates.** Under (c) a review stays conduct, also a
+  review given under a grant with a text that lets a landing under another
+  grant, one without a text, pass its gate. Under (c) it is therefore not
+  true that no automatic effect anywhere rests on a model's reading. It is
+  true of the landing and of the payment made under the grant that carries
+  the text. An owner who wants more adds `review` to the confirmed actions.
+- **Few narrowing members.** Profile `/2` narrows actions, repositories,
+  the budget and the window, and the recipients through the parent's right
+  of re-delegation. A limit on a branch, a path or a payee can be stated
+  only in the root's text until v4 has a typed member for it.
+- **J5.6 is a rule of reading** and cannot be tested mechanically.
+- **The delegator cannot bind a narrower task in the grant.** It states the
+  task in the instruction.
+
+The owners decide four things with this text. The first is exact
+inheritance itself (J5.1 to J5.3). It reverses no decision: R3 of LIP-0008
+section 12.6, N2 of LIP-0012 and the decision that the notary performs the
+textual check stand, and a different text no longer occurs. The second is
+the choice among (a), (b) and (c) above. The third is whether profile `/2`
+gains members for a branch, a path or a payee before it is fixed; the
+proposal is to leave them to the typed arguments of v4, because each needs
+an envelope tag and an effect check that LIP-0013 does not have. The fourth
+is the staging of the root rule before enforcing mode, as the paragraph
+above states it.
+
+Four other designs were set aside. Keeping `within` keeps a value that no
+verifier can recompute, under which a stolen attestation key certifies
+children that exceed their parents in words. A narrowing clause that the
+child appends needs a judgement of whether the clause narrows, and it puts
+the delegator's text into the executor's scope. A policy language is
+reserved and not adopted (LIP-0008 section 12.4). A qualified evaluator for
+texts does not exist, and "qualified" has no definition yet.
+
+Cases (owner decision pending: J5):
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| Child and parent with the same non-empty text hash, the exact octets present, `textual` `identical` | A child with another text hash and an attestation that says `within` under the rules in force: `CHILD_TEXT_DIFFERS`, never `CHILD_NOT_CERTIFIED`. Variants that differ only in line endings, in Unicode form or in a final newline, each with its hash recomputed and the grant signed again, refuse the same way. In force this child is admitted with `within`. |
+| Both without text, `textual` `none`; and both with the same text, `identical`; each with a valid attestation | Three separate negatives: a text added under a parent without one, and the parent's text dropped: `CHILD_TEXT_DIFFERS`; an attestation that carries `within`: `ATTESTATION_SHAPE`. A child with equal text and no attestation still refuses as `CHILD_NOT_CERTIFIED`. In force, adding and dropping are admitted with `within`. |
+| An executor with `text` `none` admits a `/2` grant without a text | The same executor refuses a `/2` grant with a text, root or child: `TEXT_UNSUPPORTED`. In force it is admitted. The case covers the executor that cannot read and always runs beside the next one. |
+| An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, under (b) after the owner's confirmation, and the record says `present` | The text says "only changes under docs/"; the instruction asks for a permitted `land` whose actual diff changes `src/auth.c`. Under (c), and under (b), no landing happens without the owner's confirmation: it is held, or refuses as `TEXT_NEEDS_APPROVAL`. Under (a) admission passes, and the vector records that verdict as the open half of the case. Under every option a record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
+| Under (c) and (b): under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation. A record that says the text was checked is wrong in every variant. |
+| Under (b) only: a text-bearing `instruct` that the owner confirmed under J5.9 is given to a run as an instruction; a review that the owner confirmed is counted by the gate | The same `instruct` with no predicate and no confirmation: held, or `TEXT_NEEDS_APPROVAL`, and no run receives it as an instruction. The same for a review verdict: the landing gate does not count it. Under (a) and (c) both are admitted as conduct, and the vector records that verdict. |
+| The actual resolved arguments of the privileged call lie inside every structured member | Signed arguments that are narrow and a real call with wider arguments, including a target that changes between check and call: refused before the effect. v4 already requires it (LIP-0008 section 12.2); a test of the signed description alone is not this case. |
+| A narrower action set, repository list and window, one at a time, with the identical text and a valid attestation | Each made wider, one at a time, refuses with its mechanical code and not with a certification code. Budget variants run in the spend profile only. |
+| Members of the member table | Parent and child carry the same member of unknown semantics, not merely an extra JSON key: refused. |
+| Before enforcing mode, the root rule. `text` `none`: a `/2` root without a text is admitted, and a `/1` grant with a `note` is admitted with its record unchanged | `text` `none` and a `/2` root with a text: `TEXT_UNSUPPORTED`. `conduct` with the octets missing or with octets of another hash: `TEXT_UNAVAILABLE`. |
+| A child with the parent's text at another grantee and executor; the bundle carries the root's contract and text | A reader that resolves "you" or "my repository" against the child's parties breaks J5.6. The vector checks that the root's parties are present; the reading itself is reviewed, not computed. |
 
 ## 4. What a child binds
 
@@ -256,6 +472,10 @@ mechanical comparison against the presented parent `P`:
 | Window | `P.not_before <= C.not_before < C.not_after <= P.not_after` | `CHILD_WINDOW_NOT_NESTED` |
 | `ordinal` | `1 <= C.ordinal <= P.delegate.max_children` | `CHILD_ORDINAL` |
 | `scope_text_sha256` | No mechanical rule beyond identity: equal values mean identical text. Different values need the notary's judgement | none |
+
+Two subsections hold Draft text, under pending owner decisions, that
+changes rows of this table. Under section 3.4 the two text hashes must be
+equal (J5). Under section 9.1 a child must fit the row of its ordinal (J1).
 
 ## 5. The delegation request on v3
 
@@ -340,6 +560,10 @@ The typed-hash plan of LIP-0008 section 8 may replace it before adoption.
 `attestation_id` is the SHA-256 of the compact object
 `{"attestation":…,"signature":…}`.
 
+Two subsections hold Draft text, under pending owner decisions, that
+changes this object. Section 3.4 removes the value `within` of `textual`
+(J5). Section 9.1 removes the members 15 and 16 (J1).
+
 ### 6.2. When the notary signs
 
 The notary signs after the child is issued and its issuance is confirmed:
@@ -395,6 +619,9 @@ attestation is signed, because the attestation names it; the anchor follows,
 as for a grant (LIP-0008 section 9). One seal may be named by one attestation
 or by every attestation of one parent. Spending a seal withdraws every
 attestation that names it.
+
+Section 10.1 holds Draft text, under a pending owner decision (J2), that
+puts the seals of one row into one succession.
 
 ## 7. Who the notary is
 
@@ -481,12 +708,12 @@ part of the history the stretch.
 | # | Rule | Refusal |
 | --- | --- | --- |
 | J3.1 | A right of re-delegation MUST bind, for each notary, the exact name, the registration of that name and its owner key. | A bare name: `CONTRACT_DELEGATE` |
-| J3.2 | At every admission of a child the verifier MUST walk the history of the name of the notary whose attestation is presented, under rules 1 and 2 of LIP-0008 section 3. The walk MUST reach the bound registration. The bound registration MUST be confirmed at or below the checkpoint block, and an unexpired output of that registration MUST be current at the checkpoint. Every output from the one that was current at the checkpoint to the current one MUST be controlled by the bound owner key. | A checkpoint that precedes the registration, one at which the name has no output, and one that is not in the active chain: `NOTARY_CHECKPOINT`. An expired name, a walk that ends at another registration, and an owner change on the stretch: `NOTARY_NAME_CHANGED` |
+| J3.2 | At every admission of a child the verifier MUST walk the history of the name of the notary whose attestation is presented, which under section 10.1 is the notary of the child's row, under rules 1 and 2 of LIP-0008 section 3. The walk MUST reach the bound registration. The bound registration MUST be confirmed at or below the checkpoint block, and an unexpired output of that registration MUST be current at the checkpoint. Every output from the one that was current at the checkpoint to the current one MUST be controlled by the bound owner key. | A checkpoint that precedes the registration, one at which the name has no output, and one that is not in the active chain: `NOTARY_CHECKPOINT`. An expired name, a walk that ends at another registration, and an owner change on the stretch: `NOTARY_NAME_CHANGED` |
 | J3.3 | The value of `swarma.notary.attest` MAY change on the stretch. The attestation key is the one the current value yields. The comparison MUST NOT be an equality of the whole `swarma` member. | none |
 | J3.4 | The value in force is the value of the operation that created the name's current output. That operation MUST have been authorized by the bound owner: the name input it spends MUST be controlled by the bound owner key, and the signature on that input MUST commit to the output that carries the value. The first owner-proof profile accepts `SIGHASH_ALL` without `ANYONECANPAY` only. For a `name_update` the name input is the previous name output. For a `name_firstupdate` it is the `name_new` output; a fee input is no substitute. The bound registration is no exception. A value that fails this is not eligible until the bound owner makes a name update of its own, which may repeat the value unchanged. The rule looks at one operation; it does not trace a value back through history. | `NOTARY_VALUE_UNAUTHORIZED`. A signature-hash type outside the profile refuses under J3.5 |
 | J3.5 | Where nothing is proved, the verifier refuses, and the refusal is not evidence of a transfer: an incomplete walk, a node without the transaction index, an owner proof or a signature-hash type that the profile does not support, a history supplied by the presenter. | `NOTARY_HISTORY_UNAVAILABLE` |
 | J3.6 | A presentation MUST NOT move the start of the stretch. A later issuance locator, a new anchor of the same parent and a newer attestation leave the signed checkpoint where it is. | none of its own |
-| J3.7 | Only the notary of the presented attestation is walked. The state of another notary of the same parent does not affect this child. | none of its own |
+| J3.7 | Only the notary of the presented attestation is walked; under section 10.1 that is the notary of the child's row. The state of another notary of the same parent does not affect this child. | none of its own |
 | J3.8 | A cached walk is valid only for its predicate: this name, registration, owner pin and checkpoint, the active chain up to the cached output, and the notary rule "owner unbroken, value written by the owner". A result cached for an issuer's rule, which also requires an unchanged `swarma`, MUST NOT be used for a notary, nor the reverse (LIP-0008 section 3). | none of its own |
 | J3.9 | Before it signs a parent, the issuer's signer MUST run J3.2 and J3.4 for every notary it names, so that it does not sign a parent under which every child refuses. | none at a verifier |
 
@@ -529,7 +756,9 @@ for them.
 One case stays open under these rules. A thief of the notary's name-owner
 key writes a new attestation key under the same owner, and the rules pass,
 because the bound owner key signed that update. The defence is cold custody
-of the key, as for an issuer.
+of the key, as for an issuer. Under sections 3.4 and 9.1 a notary whose key
+is taken can widen no mechanical limit and judges no text. It can still
+certify, withdraw and close a row; the pins settle none of that.
 
 The rules have these costs. Each notary entry carries two pins, and the
 parent carries one block hash. A notary that replaces its owner key needs
@@ -610,10 +839,15 @@ An unconfirmed anchor and an unavailable node are pending. The executor holds
 and retries under step 8 of LIP-0013; it does not refuse the child as not
 certified.
 
-Draft text under pending owner decisions changes two of these steps. Section
-7.1 adds the pins, the checkpoint, the walk and the writer to V12 (J3).
-Section 11.1 gives V7 its v4 counterpart, the child's signature under the
-parent's delegation key (J4).
+Draft text under pending owner decisions changes these steps, and each
+subsection says how. Section 3.4 adds the equality of the two text hashes
+to V9 and limits `textual` in V14 (J5). Section 7.1 adds the pins, the
+checkpoint, the walk and the writer to V12 (J3). Section 9.1 puts the range
+of the ordinal first in V8, compares the budget with the row's cap in V9
+and removes V15 with the predecessors of V2 (J1). Section 10.1 compares
+`notary_name` with the row in V12 and adds the row's closure for cause to
+V18 (J2). Section 11.1 gives V7 its v4 counterpart, the child's signature
+under the parent's delegation key (J4).
 
 ### 8.1. Why both are required
 
@@ -630,9 +864,10 @@ path can spend. No single verifier sees the siblings of a child; a notary
 sees the children it certified itself and the chain it is shown, and its
 attestations make the pool arithmetic checkable along that chain (section
 9). With more than one named notary, a notary does not see a sibling that
-another notary certified under the same ordinal, which is a gap listed under
-Open questions. A named party has recorded both contract hashes, the
-arithmetic and the tip it saw.
+another notary certified under the same ordinal; section 9.1 states the
+case and holds Draft text for it, under a pending owner decision (J1). A
+named party has recorded both contract hashes, the arithmetic and the tip
+it saw.
 
 ### 8.2. Where "not certified" is visible
 
@@ -679,13 +914,277 @@ for different children. Such a pair, both signed by the notary, is complete
 evidence of the notary's equivocation for anyone who holds both. A pair
 signed by two different named notaries shows no fault of either notary. It
 shows that the child signer used one ordinal twice, and no rule of this
-draft brings the two attestations before one party (Open questions). A pair
+draft brings the two attestations before one party (section 9.1). A pair
 for the same child after a withdrawal is a new certification of that child
 (section 10) and no fork.
 
 A consumed ordinal and its budget stay consumed when the child is revoked or
 its attestation withdrawn. LIP-0008 section 12.2 requires that reissuance
 does not reset an ancestor's consumed allowance.
+
+### 9.1. Rows: one compartment for each child
+
+Owner decision pending: J1. Every rule of this subsection is Draft text
+that changes how D6 and the member `max_children` are read. Until the
+decision the pool is free, and no party sees every child of a parent. A
+parent names up to four notaries, and any one of them is enough (D3, D9).
+Each certifies against its own record of the parent's children (section
+6.2). A parent has a pool of 100 and names notaries N1 and N2. Child A
+takes 60 and is certified by N1; child B takes 60 and is certified by N2.
+Both children carry ordinal 1, and both attestations carry `before` 0 and
+`after` 60. Each child passes V9 and V15 on its own bundle, and the two
+hold 120 together. Neither notary signed two attestations for one ordinal,
+so the pair shows no equivocation of a notary. The case needs a child
+signer that uses one ordinal twice. On v3 that is the landlord's signer,
+which admits an ordinal once for a parent and reserves the amount before it
+signs (section 5), so the case needs an error or a compromise of that
+signer. On v4 the delegator signs the children and reaches the case alone.
+In Goal 1 the pool is 0 (D12) and no amount is at stake; the same pair
+still gives a parent with `max_children` 1 two children.
+
+Under this subsection the parent signs one row for each child it permits.
+A row fixes the executor, the grantee, the cap and the certifier, and a
+child must fit the row of its ordinal. A total needs a party that sees
+every sibling; a row needs none.
+
+| Property | Closed? | For whom |
+| --- | --- | --- |
+| The number of compartments of authority under a parent, and the executor, grantee, cap and certifier of each | Yes | Every verifier, one that starts later included; it is a function of signed bytes |
+| Consumption under one row never exceeds its cap, whatever documents exist | Yes, when `spend` is delegable | The row's executor, while the continuity of its ledger store is proved under J1.4; no deployment profile qualifies a store for that yet. A third party cannot read it from a bundle |
+| At most one child object, one `grant_id`, is ever admitted for a row | No | It rests on the row's certifier (J1.6) and, on v3, on the landlord's signer (section 5) |
+
+A second document for a row names the same grantee at the same executor,
+is certified by the same notary and draws on the same row ledger, and every
+member of it must fit the parent's delegable set. It cannot add a party, an
+executor, an action, a repository, time or budget beyond what the principal
+signed for that row. It can carry terms that the delegator did not choose
+for that grantee, up to the envelope of the row. A row has exactly one
+executor, and a grant is admitted only at the agent it names (LIP-0013 step
+6b), so the verifier that matters for an effect under a row is that
+executor.
+
+The right of re-delegation (section 2) loses `agents`, `grantees` and
+`max_children` and gains `slots`. Its members, in order, are `depth`,
+`actions`, `budget`, `slots` and `notaries`, followed by `checkpoint` under
+section 7.1.
+
+| Member | Type | Rule |
+| --- | --- | --- |
+| `slots` | array of objects | One row for each child the grant permits: 1 to 16 rows when `depth` is 1, empty when it is 0. The ordinal of a row is its 1-based position. On v3 each row has exactly four members in this order: `agent`, an `id/` name different from `landlord_name`; `grantee`, an x-only key in 64 lowercase hex; `cap`, an integer of atoms from 0 to 2100000000000000; `notary`, the name of one entry of `notaries`. Two rows MAY name the same agent and grantee. |
+| `budget` | integer | The pool. The caps MUST NOT sum to more than `budget`; the sum is an exact integer sum. Greater than 0 exactly when `actions` includes `spend`. |
+
+```json
+"delegate":{"depth":1,"actions":["instruct","review"],"budget":0,
+"slots":[{"agent":"id/alexey-worker","grantee":"<64 hex>","cap":0,"notary":"id/ivanopcode-notary"}],
+"notaries":[{"name":"id/ivanopcode-notary","registration":{"txid":"<64 hex>","vout":0},"owner":"<owner pin>"}],
+"checkpoint":"<64 hex>"}
+```
+
+Line breaks are for display. A child carries
+`{"depth":0,"actions":[],"budget":0,"slots":[],"notaries":[],"checkpoint":""}`.
+Both values show `notaries` and `checkpoint` as section 7.1 defines them;
+without that section the entries of `notaries` are names, and `checkpoint`
+is absent.
+
+A v4 row is not the v3 row. On v4 a row is one of the explicit signed
+partitions that name each service or key and its allowance (LIP-0008
+sections 4 and 12.2). It MUST carry the executor as a service name with its
+pinned public key; the child's recipient in exactly one of the two modes of
+LIP-0008 section 3.1, a request key, or a name with its owner key; the cap;
+and the certifier. An `id/` name alone is not a v4 executor, and the v3
+`grantee` key is a recipient by key only. The bytes come with v4.
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| J1.1 | A right of re-delegation MUST fix, for every ordinal a child may carry, the executor, the grantee, the cap and the certifier. The caps MUST NOT sum to more than `delegate.budget`. | `CONTRACT_DELEGATE` |
+| J1.2 | A verifier MUST first check that the child's ordinal lies between 1 and the number of rows, before it reads any row. It then requires the child to name the agent and the grantee of that row and a `spend_budget` of at most that row's `cap`. | `CHILD_ORDINAL`; then `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`, `CHILD_BUDGET_OVER` |
+| J1.3 | Before an effect that consumes a countable resource under a child, the executor MUST reserve the amount atomically in two cumulative ledgers: the child's, bounded by the child's limit, and the row's, keyed by `parent_grant_id` and ordinal and bounded by `cap`. If either reservation fails, the executor MUST refuse and MUST reserve nothing. These reservations are added to every other check and reservation that applies, and replace none: the check of one request in step 6g of LIP-0013, the child's v3 budget, and on v4 every ancestor link (LIP-0008 section 12.2). One request identity, the event id or the invocation's nonce, is charged once, also when it is retried. The row ledger draws on `delegate.budget` only; `P.spend_budget` stays the separate account of `P`'s own executor (section 9). | A failure of the row's reservation: `ROW_CAP_OVER` |
+| J1.4 | The row ledger lives in a ledger store whose continuity is proved against a record outside the store. The contract of that store follows this table. | A lost store refuses every consuming effect under every row |
+| J1.5 | A verifier MUST NOT rely on a statement of a notary or of a signer about a sum over siblings. The attestation carries no such statement. | none of its own |
+| J1.6 | A notary MUST NOT certify two different children, two `child_grant_id` values, under one parent and ordinal, ever, also after a revocation or a withdrawal. It MAY sign again for the same child. Two attestations by one notary for different children of one parent and ordinal are complete evidence against it, as section 9 says today. The notary keeps a durable record for this. On v3 the landlord's signer still admits an ordinal once (section 5). | none at a verifier that holds one bundle |
+| J1.7 | "Used" names three different facts, and under option (a) below none of them is public state about how many child objects exist: the reservation of the ordinal at the v3 landlord's signer; the notary's record of the child it certified for the row; and consumption in the row ledger, which is state of the row's executor, the verifier that consumes. Each is permanent: a revoked child, a withdrawn attestation and a reissue free none of them. A new child takes another row. | none of its own |
+| J1.8 | A verifier, a receipt and a report MUST NOT state that a child is the only child of its row. | none of its own |
+
+The ledger store of J1.4 has an identity, given once by the executor's
+operator, and a position that only moves forward. Where a restore of the
+store cannot move it back, the executor keeps the outside record. The
+outside record MUST bind three things: the identity of the store, its
+position, and the exact committed history of the ledger, which includes
+consumption and the state that charges a request identity once. A row's
+record is created with consumption 0 by the first reservation under that
+row, in the same atomic write, and only in a store whose continuity check
+passes. That is the first use.
+
+- **Order of one reservation.** First the reservation and the store's next
+  position are written in one atomic write. Then the commitment to the
+  resulting history is made durable in the outside record. The outside
+  record takes it only as the successor of the exact history it holds, and
+  only from the current fenced writer. Only then is the effect performed or
+  success acknowledged: no consuming effect and no acknowledgement of
+  success occurs before the exact resulting commitment is durable outside
+  the domain that a restore reaches. The other order, outside record first
+  with a reservation that is never used again, is safe and turns every
+  crash in that window into a lost store. It is another profile and MUST
+  NOT be mixed with this one.
+- **The continuity check** runs at start, when a replica joins, and before
+  every reservation. Equal positions alone establish nothing. A store is
+  intact only if the identity of its committed history matches the outside
+  record. A store that is one transition ahead of the outside record may
+  complete that transition only if the transition extends the exact history
+  that the outside record holds and the condition of the fenced writer
+  still holds; no effect was performed for it, the reservation stays
+  charged, and the executor completes the outside write before it does
+  anything else. Every other state is a lost store: a history that is
+  inconsistent with the outside record, also at an equal position; a
+  history that cannot be proved; a store behind the outside record, which
+  is what a restore to an earlier position looks like; a store ahead by
+  more than one transition; an outside record that is absent or unreadable;
+  another identity; a store that is absent or was created anew.
+- **Replicas.** All replicas reserve in the one store; a replica holds no
+  ledger of its own that it may write. Writes are fenced: the store accepts
+  a reservation only from the writer that holds its current write token, a
+  number that only increases, so a replica that was cut off and returns
+  with an older token reserves nothing and publishes nothing to the outside
+  record. A replica that cannot reach the store or the outside record
+  refuses. A replica joins by receiving the store; it never starts empty.
+- **A lost store.** An executor, or a replica of it, with a lost store MUST
+  refuse every consuming effect under every row and MUST NOT treat a
+  missing record as a first use. Recovery is one of two acts of the
+  operator: restoring the complete store with its continuity proven against
+  the outside record; or charging as fully consumed every row that could
+  have had a record in the lost store, whether or not any list of those
+  rows survived the loss. After a recovery by charging, a row has a first
+  use only where the executor can show that its parent did not exist when
+  the store was lost. One way that needs no list: the new store records a
+  boundary block that is known to have been mined after the loss, and only
+  a parent whose signed checkpoint (section 7.1) lies above that block on
+  the active chain can have a first use; such a parent was signed after the
+  loss. How the profile knows that the boundary is later than the loss,
+  with a node that may lag, is part of the open profile. A recovery that
+  cannot show this charges every row. Recovery MUST NOT turn an old row
+  whose record is unknown into a new row.
+- **What the record survives.** The record survives revocation, withdrawal,
+  a new attestation, reissue, restart and reorganisation. A changed owner
+  of the executor's name does not start a new ledger: the key is the parent
+  and the ordinal, and a new holder without the store has a lost store.
+
+A position alone cannot serve as the test, because two different histories
+can stand at one position. Rows A and B each have a cap of 60. A
+reservation of 40 for A is written at position 1, and the process stops
+before the outside write; that image of the store is kept. The store is
+restored to position 0. A reservation of 40 for B takes position 1, the
+outside record follows, and the effect is performed. Then the first image
+is restored. Its position equals the outside position, yet it holds no
+record of B, and under a test of positions a further 40 under B would pass
+as a first use: 80 against a cap of 60. No outside record went backwards in this history, no old
+writer was used, and every effect followed its outside write. The history
+is a trace against the rule; no store was run for it. An outside record
+that binds the committed history tells the two images apart.
+
+This is the contract that a deployment profile must meet, not a qualified
+mechanism. How the outside record commits to the history, and how
+continuity is proved, is an open deployment profile; a log whose entries
+are bound by hashes is one possible form. Nothing of it was built or run,
+and no executor qualifies for `spend` without that profile and before the
+store cases below pass on its real store. The closure journals of section
+10.1 and of LIP-0008 section 5.2 and the denials of LIP-0013 section 3.6
+also have to tell an empty store from a lost one; a profile that compares
+positions only does not serve them either.
+
+The subsection replaces these parts of the text in force: the members
+`agents`, `grantees` and `max_children` of section 2; the attestation
+members 15, `budget`, and 16, `prev_attestation_id`, of section 6.1, so
+that the attestation has eighteen members; step V15 and the code
+`ATTESTATION_ARITHMETIC`; the predecessor attestations in V2; the sentence
+of section 8.1 that the chain of attestations makes the pool arithmetic
+checkable; and the notary's ledger of the sum in section 9. The notary's
+own record stays and is relied on: one child for each row (J1.6).
+
+The steps change as follows. V8 checks the range of the ordinal first and
+then `agent_name` and `grantee_key` against the row. V9 compares
+`spend_budget` with the row's `cap`. Step 9 of LIP-0013 makes the
+reservations of J1.3. The signer's display of section 5 adds the row's cap
+and certifier. On v3 these are members of the draft profile `/2`. No v3
+grant byte, consent rule or `rental.Check` rule changes; a `/2` contract
+has other bytes and another hash than a `/1` contract, as every new
+contract does. Under D12 every cap is 0 and `spend` is not listed, so J1.3
+and J1.4 are dormant in Goal 1.
+
+What stays open:
+
+- **One child object for each row.** A second document for a row exists if
+  the row's certifier breaks J1.6 or, on v3, the landlord's signer fails;
+  on v4 a thief of the delegation key (section 11.1) needs only the
+  certifier's failure. A verifier that starts later admits it. It stays
+  inside the envelope of the row.
+- **The split is fixed when the parent is issued.** Moving budget between
+  rows, or adding a row, needs a new parent, which is an ordinary issuance
+  with its chain cost. The delegator cannot choose later which worker gets
+  which row.
+- **J1.4 names a contract, not a format.** The form of the outside record,
+  the way it commits to the ledger's history and the place where it lives
+  are a deployment profile, the same open item as the recovery and
+  anti-rollback profile of LIP-0008 section 5.1. Without something outside
+  the store, no store can notice that it was replaced as a whole. An
+  outside record that is written after the effect cannot notice a rollback
+  across a crash, and one that is restored together with the store notices
+  nothing either: where it lives decides what the check is worth, and that
+  is open. No spend qualification is claimed.
+- **An executor that ignores the contract profile** enforces only the v3
+  `budget` of each child (LIP-0013, security consequences). D12 keeps
+  `spend` undelegable while such executors exist.
+- **Size.** Sixteen rows with the longest names that the syntax allows do
+  not fit 8192 bytes; the contract then refuses under rule 1 of LIP-0013
+  section 2.3. Real serialized fixtures decide the sizes.
+
+The owners choose what the limit is:
+
+| Option | What it gives | Cost |
+| --- | --- | --- |
+| (a) The limit is a number of compartments | The first two properties of the table above. Two attestation members and one verifier step go away, and the notary adds up no budget. | A new parent to move budget or to add a child. One child means one compartment; one grant for each row rests on the notary and, on v3, on the signer. |
+| (b) (a) with an occupancy record at the row's executor: the executor binds a row to the first child id it admits, also when every amount is 0 | One child grant for each row at the only place where the row has an effect, for what that executor itself admitted and while its store was continuous. It is no statement that no other document exists. | The store of J1.4 is needed already in Goal 1. A lost record ends the row. The first document presented wins, so a wrong first document costs a row. |
+| (c) (a) with a pinned coin for each row that the child's issuance must spend | One child grant for each row on the current chain, for every reader, auditors included. It is exclusivity on the current chain, not across forks. | One reserved, confirmed output for each row before the parent is signed; a check of issuance inputs that no v3 verifier makes today (LIP-0004 section 4); and the holder of the funding key gains the power to void unissued rows, where the key map bounds that key to draining funds. |
+| (d) The free pool of the text in force | The delegator chooses freely. | The case of the first paragraph stays. |
+
+The proposal is (a) now, with the limit named a compartment limit, and to
+decide (b) when `spend` becomes delegable, because the store exists then,
+and for v4, where the delegator signs children alone. Under (b) the row's
+executor may state one thing beyond J1.8: that this is the only child it
+admitted for the row while its occupancy store was continuous. It states
+nothing about documents it was not shown, and nothing for a time in which
+its store was lost. D7, D10 and D12 are unchanged, and the landlord's
+reservation on v3 is kept.
+
+Three further designs were set aside. Shares for each executor, in which
+each executor sums what the children presented to it spend, bound
+consumption and leave the number of compartments open. A chain of spends
+through the attestation anchors, in which the anchor of each attestation
+spends an output of the anchor of the previous one, gives an order of
+allocations at the price of an input and an output for each anchor, and
+the executor must still account consumption. One ledger notary, or all
+notaries together, would give one child for each row by trust in one
+party; it changes D9 and adds a party that must always be reachable.
+
+Cases (owner decision pending: J1). A suite that feeds a contract with rows to a parser of the text in
+force and counts the rejection proves nothing; each case names the fixture
+of the old shape that is its equivalent. Cases of the spend profile are no
+part of the Goal 1 suite (D12).
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| Rows 1 (`id/x`, `G1`) and 2 (`id/y`, `G2`), caps 0; a child of each row, certified by its row's notary, is admitted | One binding changed at a time: a child with ordinal 1 that names `id/y`, and one that names `G2`: `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`, each with a valid attestation and never `CHILD_NOT_CERTIFIED`. In force both are admitted: with `agents` [`id/x`,`id/y`] and `grantees` [`G1`,`G2`] every combination is listed. |
+| Spend profile: caps 60 and 40, pool 100; children of 60 and 40 | A child of 60 under row 2: `CHILD_BUDGET_OVER`. In force it is admitted: 60 is at most the pool, and the arithmetic of one bundle closes. The case is not 60 and 60 against 100 in one chain of attestations, which V15 refuses in force. |
+| One row, pool 0; one child with ordinal 1 | A second child with ordinal 1 for another grantee or executor refuses at V8. For the same grantee and executor with another named notary it refuses as `NOTARY_NOT_DESIGNATED` under section 10.1. In force both are admitted. |
+| A child with ordinal 1 | Ordinal 0 and an ordinal above the number of rows refuse as `CHILD_ORDINAL`, before any row is read, without a crash and without a code that names the agent. In force `max_children` refuses them. |
+| One row with cap 0; child `C1` certified by the row's notary | A known limit of option (a): a second child `C2` of the same row, with another id, also certified by that notary in breach of J1.6, shown to a verifier that never saw `C1`, is admitted, and the vector records this verdict. Under (b) the row's executor refuses `C2` after `C1`; under (c) the second issuance cannot spend the pinned input. |
+| Spend profile: two documents of row 1, cap 60; 30 spent under the first; exactly 30 more under the second succeeds | One atom more refuses as `ROW_CAP_OVER`; both ledgers are read afterwards, and the child's ledger holds no partial reservation. The second document carries a valid attestation, so the refusal is the ledger's. A ledger for each child admits 60 under each. |
+| Caps that sum to exactly `budget`, and caps below it; each row with its four members and a listed notary. Two rows that name the same agent and the same grantee, each with its own ordinal and cap, are a valid parent, and a child of each row is admitted under its own ordinal; a reader that refuses the repeat fails this control | Four separate negatives: a larger sum; a row with a missing member; a row with an extra member; a row whose `notary` is not in `notaries`: each `CONTRACT_DELEGATE`. The sum is checked at the largest allowed values without overflow. |
+| Spend profile, at the store: first use of a row in a store whose continuity check passes; after 40 is spent and the child revoked, a restart with the store intact leaves 20. A crash after the store write and before the outside write: no effect was performed, and after the restart the reservation is charged once and the same request identity completes | The same row after the store was lost, created anew or rolled back: no `spend`, no first use. An unreadable store refuses and reserves nothing. Each a separate negative: a reservation of 40, the effect, a crash, and a restore of the backup taken before the reservation: lost store, no further `spend`; a rollback of the ledger alone; a rollback of the ledger together with every file beside it on the store's host; a missing or unreadable outside record; a replica with an older write token; a recovery by charging in which the list of rows was lost with the store: a row of a parent that existed before the loss gets no first use. |
+| Spend profile, at the store: a restart with the image that was actually committed at position 1 spends only the true remainder of 20; and a transition that is pending on the history that the outside record still holds completes once, without a second charge and without an effect before the outside write | Two histories at one position. An image is kept from the window between the store write and the outside write; the store is restored to the image before it; a different reservation commits at the same position; the first image is restored: the executor refuses before any further consuming reservation or effect, although the positions are equal. A checker that keeps the presence of the outside record, its identity, the order of writes and the fencing, and drops the comparison with the exact committed history, must fail this negative. An implementation that always refuses must fail the two controls. |
+| Spend profile, at the store: 40 and then 20 against a cap of 60, from two real callers | Two replicas race 40 and 40 through their public entry points: the committed total is at most 60, and the refused caller holds no reservation. With the shared store unavailable neither succeeds. |
+| The same child with a new valid attestation after a plain withdrawal spends the true remainder | The consumption before the new attestation is still charged; a new attestation id, signature or run does not reset it. Section 9 already forbids the reset. |
+| Goal 1: every cap 0 and no `spend` | A positive cap or a listed `spend` refuses as `CONTRACT_DELEGATE`. D12 already forbids it; the case shows no new closure. |
+| An attestation of exactly eighteen members, with a valid signature and bindings, admitted | An attestation that carries `budget` or `prev_attestation_id` refuses as `ATTESTATION_SHAPE`. The form of twenty members is valid in force and invalid after; the case proves the change of shape, not a protection. |
 
 ## 10. Revocation and closure
 
@@ -722,7 +1221,211 @@ the landlord's signer revokes the child when it observes the frame, and an
 executor that observed it journals the child as closed. The delegator requests
 a new child with a new ordinal. These duties reach only a party that
 observed the frame. Another named notary and a verifier that starts later
-have no step that looks for it, which is a gap listed under Open questions.
+have no step that looks for it. Section 10.1 states the case and holds
+Draft text for it, under a pending owner decision (J2).
+
+### 10.1. One certifier for each row, and the withdrawal for cause
+
+Owner decision pending: J2. Every rule of this subsection is Draft text
+that narrows D5 and D9; it uses the rows of section 9.1. Until the decision
+a withdrawal for cause reaches only the parties that observed its frame.
+The frame of section 10 is addressed by the attestation id: its commitment
+covers that id and the child's grant id, and its locator points at the
+attestation. No step of section 8 looks for it. Notary N1 withdraws its
+attestation of child C for cause. N2, which the parent also names, did not
+observe the frame and certifies C again when it is asked. A verifier that
+starts afterwards receives C with N2's attestation, and every step from V10
+to V18 passes: V18 reads N2's seal and the verifier's own journal. The case
+holds while C's own seal is unspent: until the landlord's signer has
+revoked C, or for as long as that signer has not observed the frame. To
+find the frame from the child's id, a verifier would have to test every
+`0x05` frame on the chain against that id. No rule asks for that, and none
+says when such a search is complete.
+
+Under this subsection each row names exactly one notary, and only that
+notary certifies the row. The notary keeps one succession of seals for the
+row, so that one spend for cause withdraws every attestation of the row,
+and a cause counts only when the notary's own signature covers its frame.
+Two words are used below. A witness is a verifier that itself validated an
+event, in its mempool or in a block, and journalled it. A view is the
+active chain of a node together with its mempool.
+
+| Property | Closed? | For whom |
+| --- | --- | --- |
+| After a cause, another named notary cannot certify the row | Yes | Every verifier, one that starts later included: the row names its one certifier |
+| A verifier that saw the cause refuses every later attestation of the row, also for a child signed again under the same ordinal | Yes | Witnesses of an authenticated cause (J2.4) |
+| An attestation of the row that was signed before the cause does not survive it | In a bounded form, for a notary that follows J2.3 (a) and (b): in every view that holds the cause transaction, every seal of the row's succession is spent or absent | A verifier whose chain or mempool holds the cause. Not a view from which the cause is gone, and not an attestation whose seal lies outside the succession |
+| The row's own notary cannot certify the row again after its cause | No | A verifier that starts later admits a new attestation by that notary. This is D5 as the owners wrote it, and option (a) below does not give it |
+
+D5 says that a child may not be certified again after a withdrawal for
+cause. With one certifier for each row and nothing more, D5 becomes
+narrower: the notary is forbidden to certify the row again, its witnesses
+enforce that, on v3 the landlord's signer revokes the child, and a verifier
+that starts later relies on the notary's conduct. The owners choose that
+form knowingly, or the stronger one of J2.7.
+
+The row gains nothing beyond its member `notary` (section 9.1). The child
+and the attestation gain nothing. Under option (b) below the row gains one
+member (J2.7). Three states are kept apart; they have different triggers,
+a different reach and different codes:
+
+| State | Trigger | Effect | Code |
+| --- | --- | --- | --- |
+| Attestation withdrawn | The seal it names is spent, in the mempool or in a block, or does not exist on the verifier's node (V18, as in force), or the verifier journalled that spend | That attestation refuses. A new attestation by the row's notary that names another seal is admissible; a verifier does not check the succession of J2.3 (a) from one bundle | `NOTARY_WITHDRAWN` |
+| Row closed for cause | The verifier authenticated a cause for the row (J2.4); under option (b) also: the row's pinned output is spent | Every child of that parent and ordinal refuses, whatever attestation is presented | `ROW_CLOSED_FOR_CAUSE` |
+| Child revoked | The child's own seal is spent | That child refuses for every verifier under the existing v3 or v4 rule | the existing seal code |
+
+A seal spend without an authenticated cause produces the first state only.
+A missing or unreadable frame never forbids a later plain certification.
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| J2.1 | Each row MUST name exactly one notary, listed in `notaries`. Rows of one parent MAY name different notaries, also for the same agent and grantee. | `CONTRACT_DELEGATE` |
+| J2.2 | A verifier MUST refuse an attestation whose `notary_name` is not the notary of the child's row, also when the parent names that notary for another row. | `NOTARY_NOT_DESIGNATED` |
+| J2.3 | The duties of the row's notary, (a) to (d). A verifier cannot check them from one bundle. | none at a verifier |
+| J2.3 (a) | One succession of seals for each row. The first attestation that the notary signs for a parent and ordinal names the row's first seal. Every later attestation for that parent and ordinal names a seal of the same succession: a seal already named for the row, or a successor, which is an output of the transaction that spends a seal of the succession. One spending transaction creates at most one successor for a row. The notary names for the row no output that is not reached from the first seal in this way, also not after a withdrawal, an eviction, a reorganisation or a restart. A transaction that creates a successor is a seal creation: its inputs are signed with `SIGHASH_ALL` without `ANYONECANPAY`, and it takes its funding from confirmed outputs (after LIP-0008 section 1.1). The notary signs with the seal of the succession that exists unspent on its own node, and SHOULD wait until the transaction that creates a seal, the first seal included, is confirmed before it names that seal: a transaction that is replaced leaves an attestation naming an output that never exists, and for a first seal it leaves a row that the notary can no longer certify. The notary keeps a durable record of the succession: every seal it named for the row, the transaction that spent it and the successor that transaction created. A notary that cannot produce that record for a row MUST NOT sign for that row again. | none at a verifier |
+| J2.3 (b) | To withdraw for cause the notary spends the seal of the succession that exists unspent on its node, in a transaction that meets J2.4 and creates no successor for that row. It keeps that transaction and every unconfirmed transaction it depends on, and broadcasts them again for as long as they can still confirm. If its node later shows the cause gone and unable to confirm, it withdraws for cause again, with the seal of the succession that is then unspent on its node. | none at a verifier |
+| J2.3 (c) | After a withdrawal for cause the notary MUST NOT sign another attestation for any child of that parent and ordinal. | none at a verifier that starts later; `ROW_CLOSED_FOR_CAUSE` at a witness |
+| J2.3 (d) | After a plain withdrawal the notary MAY attest the same child again (D5), naming the successor that the withdrawing transaction created. A plain withdrawal that creates no successor leaves the row without a seal that the notary may name, for as long as that transaction stands. | none |
+| J2.4 | A cause is authenticated for a verifier only when all of this holds on its own node. (1) The verifier holds an attestation `A` that is authentic and bound. Its bytes are canonical and its signature verifies (V11). Its kind, network, genesis, principal, both grant ids, both contract hashes and its ordinal equal those of the `P` and `C` that the verifier holds (V14). Its `notary_name` is the notary of that row (J2.2) and passes the walk of section 7.1. The signing key is one that this name yielded under the bound owner, either at this verifier's own earlier admission of `A`, whose record names the `attestation_id` (section 8.2), or in the block that confirms `A`'s anchor (V17). The key in force today is not required. (2) The transaction spends exactly the outpoint `A.notary_seal` under the script that member names, and the signature that authorizes that input is `SIGHASH_ALL` without `ANYONECANPAY`, so that it commits to every output. (3) The transaction has exactly one `OP_RETURN` output, the action `0x05` frame, and its commitment recomputes from the pointer of its locator and the `child_grant_id` of `A` (section 10). The pointer need not be the id of `A` itself: under J2.3 (a) several attestations of one child name one seal, and the notary's signature over a frame for that child is what is authenticated. | Purported attestation bytes, a reported transaction id, a frame in another transaction and a frame that the seal signature does not cover authenticate nothing |
+| J2.4a | A verifier that authenticated a cause, in its mempool, in a block, or in a transaction that was shown to it and that it found on its own node, MUST journal the pair of `parent_grant_id` and ordinal as closed for cause before any further admission. The record survives restart, eviction, non-confirmation, reorganisation and a later rotation of the notary's key. A shared seal is no exception to locality: the spend withdraws every attestation that names the seal, and it closes for cause only the row of the attestation that the frame commits to. | `ROW_CLOSED_FOR_CAUSE` for every child of that parent and ordinal |
+| J2.5 | An unauthenticated frame is neither a closure nor proof of misconduct. A misconduct claim MUST include evidence that establishes the alleged violation of J2.3; a matching commitment alone is insufficient. A claim that the notary's key certified a row again after its cause, a breach of J2.3 (c), MUST include an authenticated cause under J2.4 and evidence of the order: the later attestation's `tip_hash` is the block that confirms the cause or a descendant of it, so that it cannot have been signed before. An attestation with an older attested tip shows no order, and the height of an anchor does not date a signature. A claim of a breach of J2.3 (a) needs the transactions named below and no cause. Where the order or the transactions cannot be shown, the report says "not established". | none; a rule for a reader of evidence |
+| J2.6 | On v3 the landlord's signer MUST spend the child's seal once it authenticated a cause for the child's row, observed or shown, and it admits no further request for that ordinal (sections 5 and 10). | none at a verifier; the signer refuses the request |
+| J2.7 | Option (b), the row-ending output. The row gains a fifth member `stop`, an outpoint. The output exists and is confirmed before the parent is signed, so the row's notary takes part in the parent's issuance. It is an output that the notary alone can spend, given like a notary seal by transaction, index and script (section 6.1, member 17); it needs no new spending condition, and it pays a key of the notary that is not its attestation key (section 6.3). A verifier requires `stop` to exist with the named script and to be unspent, the mempool included, and journals a validated spend as it journals a seal spend. The notary ends a row for cause by spending `stop`; the `0x05` frame in that transaction is evidence and no longer the trigger. A plain withdrawal leaves `stop` alone. Under this option the third property of the table above does not depend on the succession of J2.3 (a). The output is bound by outpoint, so a rotation of `attest` does not touch it, and the notary must keep its spending key for the life of the parent. If the notary loses that key, the row can no longer be ended for cause, and the stops of option (a) are what remains. After a reorganisation that removes the output the row refuses until the output is confirmed again. The fee of that spend is the notary's own and must not hang on a coin that somebody else can spend first, for the reason LIP-0008 section 5.2 gives for an issuer's break. A profile in which more than one notary may certify a row, or in which a verifier that starts later must refuse after a cause, MUST have such a state; without it a profile MUST NOT offer either. | A spent `stop`: `ROW_CLOSED_FOR_CAUSE` for every child of the row, whatever seal an attestation names, in every view that holds that spend |
+
+What follows from J2.3 (a), and what does not. In one view a transaction is
+present only together with the transactions it spends from, and two
+transactions that spend one output are never both present. So a successor
+is present only where its predecessor is spent, and two successors of one
+seal are never both present. At most one seal of a row's succession exists
+unspent in a view; and in a view that holds the cause transaction every
+seal of the succession is spent or absent, so every attestation that names
+one refuses at V18. This says nothing about a view that does not hold the
+cause, and nothing about a seal outside the succession. Nothing that the
+notary observed enters the argument: "unspent" belongs to a view and can be
+undone, and an order written into the transactions cannot.
+
+Evidence of a breach of J2.3 (a) is a fact about transactions and never
+about a moment. Two authentic attestations of one parent and ordinal show a
+breach only if all of this holds: their seals are different outputs; the
+two creating transactions can stand in one chain, which means that no
+output is spent by two different transactions among them and their
+ancestors; and neither creating transaction is, or descends from, a
+transaction that spends the other seal. Whoever asserts a breach produces
+those transactions and the ancestry between them; where they are not
+available, the breach is not established. That two seals are unspent at
+one block, or that an earlier seal is unspent again after an eviction or a
+reorganisation, shows nothing about what the notary did and MUST NOT be
+reported as a breach.
+
+The steps change as follows. V12 compares `notary_name` with the row before
+it reads the name. V18 keeps the seal check and adds that the journal holds
+no closure for cause of this parent and ordinal. Under option (a) no new
+read is added. One seal may still serve every attestation of a parent
+(section 6.4): a successor may serve the rows that its predecessor served,
+and a spend for cause of a shared seal creates no successor for the row it
+closes and may create one for the others.
+
+With these rules D9 reads: one attestation is enough, by the notary that
+the parent names for the child's row. D5 reads under option (a): a
+withdrawal is durable at its witnesses and on a chain that holds it; after
+a plain withdrawal the row's notary may certify the same child again; after
+a withdrawal for cause the notary must not, its witnesses refuse the row,
+and the landlord's signer revokes the child. Under option (b) the last
+clause reads: and every verifier whose node shows the spend of the row's
+output refuses the row. A spend that never reached a verifier's chain or
+mempool is unknown to it under every option.
+
+What stays open:
+
+- **The row's own notary after its cause**, under option (a). If the row's
+  notary signs again after its own cause, through a restored state, a
+  stolen attestation key or a deliberate breach, a verifier that did not
+  witness the cause admits the new attestation until one of three things
+  happens: the child's seal is spent, on v3 by the landlord's signer under
+  J2.6; the notary replaces its attestation key in its name; or the parent
+  is closed. On v4 the child's seal is the delegator's, so the first stop
+  is absent there. The pins of section 7.1, the caps of section 9.1 and
+  the issuer closure of LIP-0008 section 5.2 do not help here.
+- **A thief of the attestation key can also close.** It signs an
+  attestation for a real child, with its own seal, and spends it with a
+  signed frame. Every witness closes the row. That is the notary's own
+  power in a thief's hands; the row is lost, and nothing is widened.
+- **Availability.** Only the row's notary can sign again after it rotated
+  its key, after a reorganisation dropped the attested tip (V16) or after
+  its own plain withdrawal. If that notary is gone, the row is unusable. A
+  second row with another notary is a new delegation under another ordinal
+  and not a second way to certify the old child.
+- **A cause that left the view.** A cause seen only in a mempool and then
+  evicted is refused by its witnesses and not by a verifier that starts
+  later, under every option, as for every seal (LIP-0008 section 5.1). If
+  the cause is evicted before it confirms, or a reorganisation removes it,
+  the seal it spent is unspent again in that view, and a verifier without
+  a journal admits the attestation that names it until the cause is
+  confirmed again. J2.3 (b) makes the notary broadcast it again; if the
+  notary is gone, nothing does. Under option (b) the same holds for the
+  spend of the row's output.
+- **A seal outside the succession.** A notary that names one, by a fault or
+  after losing its record, leaves an attestation that the cause does not
+  touch.
+- **The succession itself.** Its argument rests on two properties of a
+  view: a transaction is present only with what it spends from, and one
+  output has one spender. Its costs: the successor is created in the
+  withdrawing transaction, sometimes without ever being used; and a row
+  whose succession the notary cannot continue, because its record is lost
+  or a creating transaction can never confirm again, is unusable, and a
+  new parent or another row is the way out. Without this duty, option (a)
+  does not give the third property of the table at all, and option (b) is
+  what gives it.
+
+The owners choose a requirement first: must a verifier that starts later,
+and saw nothing of the cause, refuse a row after it?
+
+| Option | What it gives | Cost |
+| --- | --- | --- |
+| (a) No. One certifier for each row and one succession of seals | The first three properties of the table above. Nothing on chain at issuance; the successor seal of a plain withdrawal is created in the withdrawing transaction | D5 in the narrower form, and D9 becomes "the notary named for that row". After a plain withdrawal only the same notary can certify again, and an absent notary blocks its rows. The notary's tool keeps the record of each succession |
+| (b) Yes. (a) with the row-ending output of J2.7 | D5 as the owners wrote it: every verifier that reads its node refuses the row after a cause, whatever attestation or seal is shown | One confirmed coin of the notary for each row before the parent is signed, paid under D11. The notary takes part in issuance and keeps one more key for the life of the parent. A spend by mistake is final |
+| (c) Yes, and any named notary may certify any row: each row pins an output that any named notary can spend | D9 as written, certification by another notary after a plain withdrawal, and D5 for every verifier | One coin for each row, a spending condition for one of several keys that has no profile, a second member in every notary's name where LIP-0010 section 9 allows exactly one, a key that can never be retired, and a final word for every named notary over every row |
+
+The proposal is (a) for profile `/2` on v3, recorded as a narrowed D5 and
+with the three known limits in the vector set. On v3 the principal has a
+stop for one child: its signer spends the child's seal. The proposal for v4
+is (b), decided with the v4 bytes: there the delegator owns the child's
+seal, and without the output the principal can stop one child only by
+closing the whole parent. If D5 must hold as written from the first
+version, (b) is the answer on v3 as well. D1 is unchanged.
+
+Two further designs were set aside. A complete, authenticated index of
+cause frames would give the stronger form without an output in principle.
+A frame can be found from a child id, but authenticating it needs the
+withdrawn attestation, which the presenter withholds; treating an
+unauthenticated match as a hold lets anyone who knows a child id stop that
+child; and it misses a child signed again under the same ordinal. It is
+not designed, and it would need rules for completeness, availability and
+reorganisations. A child that names its own notary gives a choice at
+issuance; on v4 the delegator then signs the child again and names the
+other notary.
+
+Cases (owner decision pending: J2). The last three are known limits, and the vector set records their
+verdicts as limits:
+
+| Valid control | Refusal or invariant |
+| --- | --- |
+| A child of row 1, notary `N1`, with `N1`'s attestation and an unspent seal | The same child with a valid, anchored attestation by `N2`, which the parent names for row 2: `NOTARY_NOT_DESIGNATED`. `N2` stays listed, and every other check passes. In force the child is admitted. |
+| After a plain withdrawal by `N1`, a new attestation by `N1` is admitted by a verifier that starts later and by a witness | After a cause by `N1`, an attestation by `N2` shown to a verifier that starts later while the child's seal is unspent: refused. The case tests designation only; it is never reported as closing the fourth property of the table and always runs beside the first known limit. |
+| A new child under another row, certified by that row's notary | v4: a child signed again with the terms and the ordinal of the withdrawn one and certified by `N2`: `NOTARY_NOT_DESIGNATED`. The child signed again passes every step before V12. In force it is admitted. |
+| A witness of a plain withdrawal admits `N1`'s new attestation of the same child | A witness of an authenticated cause refuses `N1`'s new attestation of the same child, as section 10 requires in force. The same witness also refuses a child signed again under the same ordinal with another id: `ROW_CLOSED_FOR_CAUSE`, after restart, eviction and reorganisation. A journal keyed by child id admits that child in force. |
+| An authentic attestation of the row's notary and its seal spent with `SIGHASH_ALL` and the one frame: the row closes at that verifier | No row closure and no misconduct verdict for: the frame bytes in an unrelated transaction; a frame for another child; a commitment that does not recompute; a fabricated attestation that names the victim row and an attacker's seal, with that seal genuinely spent; an authentic attestation of another parent, ordinal or contract hash; a frame output appended to a plain withdrawal whose seal signature is `SIGHASH_SINGLE`, where the attestation is withdrawn and `N1`'s next attestation is admitted. After each negative a valid neighbour is still admitted. The text in force closes on an observed frame with no rule of authentication. |
+| A cause authenticated before the notary rotated `attest`. A verifier that holds only the newer attestation of the child, where the frame points at the older one that names the same seal: the row closes as well | The closure stays after the rotation; a reader of evidence authenticates the old attestation by the key that the name yielded in the block of its anchor. The same frame does not close another row whose attestation named that seal. |
+| Another row of the live parent, with its own unspent seal and a valid attestation, stays admissible after row 1 closed for cause | Closing the parent or another row is wrong. With a shared seal: the other row's attestation named the spent seal, so it refuses as `NOTARY_WITHDRAWN`; a fresh attestation that names the successor created in that spending transaction is admitted, and that row is not closed for cause. |
+| A seal spent without a readable frame: the old attestation refuses as `NOTARY_WITHDRAWN`, and a new attestation by the row's notary that names the successor seal is admitted, by a verifier that starts later and by the witness | Admitting the withdrawn attestation because no frame was found is wrong. Closing the row or the child for cause without an authenticated frame is wrong as well; an implementation that closes on every spend breaks the control. |
+| v3: the signer, shown an authenticated cause, spends the child's seal, and the spend is observed on chain; a request for another unused ordinal succeeds | A request for the same ordinal after the cause is refused by the signer, from its durable reservation. Both duties exist in force. |
+| At the notary's tool: a second attestation for the same child while the row's seal is unspent names that same seal; the spend for cause then refuses both at a verifier that starts later as `NOTARY_WITHDRAWN`. After a confirmed plain withdrawal whose transaction created the successor, a new attestation of the same child that names the successor is admitted | The tool refuses to name for a row any output outside the row's succession, whatever its node shows of the earlier seal: spent in the mempool, spent in a block, or absent. |
+| At the notary's tool, on regtest: a plain withdrawal `W` of `A1` creates the successor; the tool signs `A2` naming it; `W` confirms; the cause spends the successor and confirms; a verifier that starts later refuses `A1` and `A2` | `W` is broadcast and evicted before it confirms. At a verifier that starts later `A2` refuses at V18, because its seal does not exist, and `A1` is admitted again: that is the limit of a spend that left the view, not a breach, and a plain withdrawal that vanished closed nothing. The tool then withdraws for cause by spending the first seal, the one unspent on its node; once that confirms, `A1` and `A2` both refuse. Beside it, the forbidden shape, built by hand: a second seal unrelated to `W`, named after the pending `W`; `W` evicted; the cause spends the second seal and confirms; `A1` is admitted after the confirmed cause. The tool must refuse to build this; a verifier cannot refuse it under option (a). |
+| At a reader of evidence: `A1` names the first seal and `A2` its successor; the reader, given both creating transactions, reports no breach | The withdrawal that created the successor is removed by a reorganisation, and the first seal is unspent again while `A2` exists: still no breach, at any block. Two attestations whose seals have unrelated creating transactions that both stand in one chain: a breach of J2.3 (a), also when one of the seals has been spent since. A reader that decides from the seals unspent at a block fails both; so does one that reports a breach without the transactions. |
+| Known limit of option (a). `N1` certifies again after a plain withdrawal: admitted | `N1` signs `A2` with a fresh seal after its own cause; a verifier that starts later and receives `P`, `C` and `A2` admits. Under option (b) it refuses as `ROW_CLOSED_FOR_CAUSE`. |
+| Known limit of option (a). The same control | `A2`, signed before the cause and naming a seal outside the row's succession, in breach of J2.3 (a), and left unspent: a verifier that starts later admits. Under option (b) it refuses. |
+| Known limit of every option. A cause that is confirmed in the verifier's chain: every attestation that names a seal of the succession refuses | The cause is evicted before it confirms, or removed by a reorganisation and not confirmed again; the seal it spent is unspent in the verifier's view. A verifier without a journal admits the attestation that names it; a witness of the cause refuses. Under option (b) it is the spend of `stop` that left the view. |
 
 ## 11. Staging and the mapping to v3 and v4
 
@@ -783,12 +1486,12 @@ Its bytes are fixed with the v4 bytes.
 | # | Rule | Refusal |
 | --- | --- | --- |
 | J4.1 | An issue capability MUST name one delegation key. A v4 child MUST be signed by the delegation key of the capability it commits to. | A child signed by any other key, the parent's request key and a key that the grantee's name lists for a channel included: `CHILD_SIGNER` |
-| J4.2 | For LIP-0008 section 12.2 the authenticated issuer of the link after an issue capability is that capability's delegation key. The delegation key signs child grants and nothing else: no invocation, no envelope, no consent, no name operation, no transaction. The request key of the same grant MUST NOT sign a child grant. | A child signed by the request key: `CHILD_SIGNER` (J4.1) |
+| J4.2 | For LIP-0008 section 12.2 the authenticated issuer of the link after an issue capability is that capability's delegation key. The delegation key signs child grants and nothing else: no invocation, no envelope, no consent, no name operation, no transaction. The request key of the same grant MUST NOT sign a child grant; under LIP-0013 section 3.6 what it may sign is the closed list of J7.5. | A child signed by the request key: `CHILD_SIGNER` (J4.1) |
 | J4.3 | Keys are compared as secret authorities, by their 32-byte x coordinate: an x-only key equals a compressed key with that coordinate under either parity byte. | none of its own |
 | J4.3 (a) | Parent checks, on the bytes and pins of `P`, when `P` is validated. The delegation key MUST differ from the issuer's grant key; from `P`'s request key, when `P` names its recipient by key, or from the owner key of the recipient's name, when `P` names its recipient by name; from the owner key bound for the issuer's name; from the owner key pinned for each notary (section 7.1, under J3); and from the key of `P`'s own seal, taken from its endorsement (LIP-0008 section 11.1). | `P` is unusable as a parent, and every child refuses as `DELEGATE_KEY_REUSE` |
-| J4.3 (b) | Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the name of `P`'s recipient yields at that admission, when `P` names its recipient by name; from the attestation key that the notary of `C`'s attestation yields at that admission; from the key of `C`'s seal; and from `C`'s own recipient key, or from the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). | That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
+| J4.3 (b) | Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the name of `P`'s recipient yields at that admission, when `P` names its recipient by name; from the attestation key that the notary of `C`'s attestation yields at that admission, which under section 10.1 is the notary of `C`'s row; from the key of `C`'s seal; and from `C`'s own recipient key, or from the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). | That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
 | J4.3 (c) | Where an owner pin is not one key, and for keys that no verifier sees, such as funding and fee keys, the separation is a custody duty of J4.4. It is not checked on the wire. | none at a verifier |
-| J4.4 | The delegation key is held by a signing service of the party that consented to the parent as its recipient: for a recipient by name, the operator who holds that name's owner key; for a recipient by key, the operator of that key's key holder. In both modes the service runs outside the delegating agent's OS user and outside the service that holds the request or channel key, and it holds no name-owner key, seal key or funding key. Before it signs, the service MUST take the complete child and, on its own node, check that `P` is live under every admission rule, its closure journal included, and the comparisons of section 4. It computes the digest itself (LIP-0008 section 8) and MUST NOT sign a digest that a caller supplies. It MUST authenticate the caller and sign only for a caller that its operator listed for delegation under `P`; possession of the messaging key is not the authority to ask. | No signature exists |
+| J4.4 | The delegation key is held by a signing service of the party that consented to the parent as its recipient: for a recipient by name, the operator who holds that name's owner key; for a recipient by key, the operator of that key's key holder. In both modes the service runs outside the delegating agent's OS user and outside the service that holds the request or channel key, and it holds no name-owner key, seal key or funding key. Before it signs, the service MUST take the complete child and, on its own node, check that `P` is live under every admission rule, its closure journals included, which under LIP-0008 section 5.2 and section 10.1 hold the closures of an issuer's name and of a row; that under section 9.1 the child's row exists, that the child fits it and that the row is not closed for cause; and the comparisons of section 4. It computes the digest itself (LIP-0008 section 8) and MUST NOT sign a digest that a caller supplies. It MUST identify the caller and sign only for a caller that its operator listed for delegation under `P`; under LIP-0013 section 3.6 the caller is a run, and the list is the `delegate` list of that run's origin. Possession of the messaging key is not the authority to ask. | No signature exists |
 | J4.5 | What a name update does to children. A rotation of the delegating agent's channel key under the same owner, a renewal and a change of host stop no child. An update that makes a channel key equal to the delegation key refuses children for as long as it holds (J4.3 (b)). A change of the name's owner refuses a parent by name and with it every child (LIP-0008 section 3). A parent by key is not portable through any name. | `DELEGATE_KEY_REUSE` while a channel key equals the delegation key; `PARENT_NOT_LIVE` for every child after a change of the name's owner |
 | J4.6 | Replacing the delegation key requires a new parent. A move of custody that cannot keep exclusive control of the key MUST NOT begin before the old parent is closed. | none at a verifier |
 | J4.7 | v3 is unchanged: the landlord's grant key signs the child on a kind-8186 request signed by `P.grantee_key` (section 5). A delegation key gives nothing on v3. | none new |
@@ -803,13 +1506,14 @@ J4.3 (a) with `P`, and the child checks of J4.3 (b) with `C`.
 
 A thief of the delegation key endorses a seal of its own, so the delegating
 operator has no seal of such a child to spend, as the owner of a leaked
-grant key has none (LIP-0008, open questions). Three things stop such a
-child: the principal spends the parent's seal; a named notary refuses to
-certify it, or withdraws its attestation; and, for a parent by name, the
-delegating operator changes the owner of the agent's name. The right of
-re-delegation bounds what the thief can sign to the grantees and executors
-that the principal signed (section 2). A closure that a verifier never
-observed is not known to it.
+grant key has none (LIP-0008 section 5.2). Three things stop such a child:
+the principal spends the parent's seal; a named notary refuses to certify
+it, or withdraws its attestation; and, for a parent by name, the delegating
+operator changes the owner of the agent's name. Under sections 9.1 and 10.1
+the notary is the row's, and it certifies one child for the row. The right
+of re-delegation bounds what the thief can sign to the grantees and
+executors that the principal signed (section 2), under section 9.1 to the
+rows. A closure that a verifier never observed is not known to it.
 
 The rules leave four limits. Different keys do not prove different
 custodians: whether the delegation key and the messaging key are in
@@ -824,28 +1528,29 @@ a rotation of the channel key; it keeps the change of the name's owner.
 The owners choose between this text and four alternatives. Keeping the rule
 in force keeps what the second paragraph lists: one key for messages and
 grants, a host operator who can re-delegate, and children that stop with
-every change of the key. Signing by the landlord only, on v4 as on v3,
-needs no new key and stays the baseline (R5 of LIP-0008 section 12.6), but
-it is not re-delegation by an agent, which the owners decided as R1.
-Checking a child
-against the key that the name listed at the child's issuance needs the
-name's value at a past height for every child and a rule against
-backdating, and a key that was replaced because it leaked keeps every child
-it signed before. A delegation key published in the agent's name is a new
-shape of the name value that every reader must learn (LIP-0010), and every
-rotation of it is a name update.
+every change of the key. Signing by the landlord only, on v4 as on v3, needs
+no new key and stays the baseline (R5 of LIP-0008 section 12.6), but it is
+not re-delegation by an agent, which the owners decided as R1. Checking a
+child against the key that the name listed at the child's issuance needs the
+name's value at a past height for every child and a rule against backdating,
+and a key that was replaced because it leaked keeps every child it signed
+before. A delegation key published in the agent's name is a new shape of the
+name value that every reader must learn (LIP-0010), and every rotation of it
+is a name update.
 
 Two further choices of the owners come with this decision. The first is
 whether the delegation signer needs a person for each signature, as the key
 map requires of a grant key, or signs unattended inside the parent's right
 of re-delegation. The proposal is unattended signing, because the right of
 re-delegation and the notary bound what the signer can sign; presence stays
-at the principal's grant key (K5 of the key map). The second is whether the
-parent also names the key that every child's seal pays, held by the
-delegating operator apart from the signer, so that the operator can spend
-the seal of a child that a thief of the delegation key signed. That costs
-one more key and a change of the endorsement rule of LIP-0008 section 11.1
-for children; the proposal is to decide it with the v4 bytes.
+at the principal's grant key (K5 of the key map). It is the same question as
+the presence rule under LIP-0013 section 3.6 and should get the same answer.
+The second is whether the parent also names the key that every child's seal
+pays, held by the delegating operator apart from the signer, so that the
+operator can spend the seal of a child that a thief of the delegation key
+signed. That costs one more key and a change of the endorsement rule of
+LIP-0008 section 11.1 for children; the proposal is to decide it with the v4
+bytes.
 
 Cases (owner decision pending: J4). All are v4 cases; no v4 implementation
 exists, and no result is claimed. "Today" is the rule in force, under which
@@ -859,7 +1564,7 @@ the channel key signs children:
 | Another notary named by the parent publishes an attestation key equal to the delegation key | A child certified by a different named notary is still admitted. Run together with the ninth case of section 7.1. |
 | The delegator's channel key is rotated under the same owner, with no alias; children signed before keep verifying | A child signed by the new channel key refuses as `CHILD_SIGNER`. Refusing the earlier children is wrong; today the rotation refuses them. Run together with the next row and with the row of the closed parent, so that a verifier that ignores the parent does not pass. |
 | A parent by name whose name stays with its owner; a parent by key whose holder's unrelated name changes owner: still live | A parent by name whose name changes owner: the parent refuses, and every child refuses as `PARENT_NOT_LIVE`, as the name mode requires today. No revocation rule is invented for the key mode. |
-| At the signing service: an authenticated caller that the operator listed for delegation under a live parent asks for a complete child, and it is signed | Through the service's public entry point: a supplied digest; a child outside the parent; a parent that is closed in the service's journal; a caller that shows only a signature of the messaging key; a generic or batch route: no signature exists. A test that hands the service a trusted caller identity shows nothing. |
+| At the signing service: an authenticated caller that the operator listed for delegation under a live parent, under LIP-0013 section 3.6 a run whose origin lists that parent, asks for a complete child, and it is signed | Through the service's public entry point: a supplied digest; a child outside the parent; a parent that is closed in the service's journal; a caller that shows only a signature of the messaging key; a generic or batch route: no signature exists. A test that hands the service a trusted caller identity shows nothing. |
 | A new live parent with a new delegation key, after the old parent's seal was spent | A fresh child signed with the old key under the closed parent: `PARENT_NOT_LIVE`, at a verifier whose node shows the spend. |
 | v3: a child issued by the landlord's grant key on a valid kind-8186 request, with a complete bundle | v3: a child signed by any other key refuses; a v4 delegation key gives nothing on v3. |
 | A recipient by key with no name: the operator of its key holder runs the delegation signer, and its children verify | Treating that parent as portable through a name, and refusing it for lack of a name, are both wrong. |
@@ -900,17 +1605,20 @@ the owner approves each spend, the payment is approved per spend.
   not the notary's service. Naming up to four notaries bounds the outage. It
   also gives the pool more than one ledger: each notary certifies against its
   own record (section 6.2), and two notaries can each certify a child under
-  one ordinal (Open questions).
+  one ordinal. Section 9.1 holds Draft text for this case, under a pending
+  owner decision (J1).
 - **A withdrawal for cause does not reach everyone.** It binds the parties
   that observed its frame. Another named notary can certify the child again,
-  and a verifier that starts later admits it (Open questions).
+  and a verifier that starts later admits it. Section 10.1 holds Draft text
+  for this case, under a pending owner decision (J2).
 - **The notary's name can change hands.** After a transfer, or after an
   expiry and a new registration, the holder of a notary's name publishes its
   own attestation key and can certify under every parent that names it.
   Section 7.1 holds Draft text for this case, under a pending owner decision
   (J3).
 - **Scope text binds nobody at admission.** The notary judges the text once.
-  No admission step compares an instruction with it (Open questions).
+  No admission step compares an instruction with it. Section 3.4 holds
+  Draft text for this case, under a pending owner decision (J5).
 - **On v4 an agent's messaging key signs its children**, by the rule in
   force. Section 11.1 states what follows from that and holds Draft text,
   under a pending owner decision (J4), that replaces the rule.
@@ -961,34 +1669,31 @@ valid neighbour:
 | A verifier that journalled the notary's spend, after the spend is reorganised out of the chain | The withdrawn attestation still refuses as `NOTARY_WITHDRAWN`; admitting it again because the seal looks unspent is wrong. A fresh attestation of the same child by a named notary after that plain withdrawal is admitted. |
 | An agent and a person as notary with the same attestation shape | Refusing because the notary is an agent, or because it is a person, is wrong. |
 
-Sections 7.1 and 11.1 carry the cases of their Draft text, which is under
-pending owner decisions.
+Sections 3.4, 7.1, 9.1, 10.1 and 11.1 carry the cases of their Draft text,
+which is under pending owner decisions.
 
 Two further cases are planned as negative cases of a v4 vector set. Under the
-rules of this draft both are admitted, and the verdict a vector must require
-depends on an open question below:
+rules in force both are admitted, and the verdict a vector must require
+depends on a pending owner decision:
 
 | Case | Today | Depends on |
 | --- | --- | --- |
-| Two children of one parent, both with ordinal 1, each certified by a different named notary | Each is admitted on its own bundle, also when their budgets together exceed the pool or `max_children` is 1 | The pool across several notaries |
-| A child whose attestation was withdrawn for cause, presented with a fresh attestation by another named notary while the child's own seal is unspent, to a verifier that observed neither the frame nor a revocation | Admitted | A withdrawal for cause does not reach a new verifier |
+| Two children of one parent, both with ordinal 1, each certified by a different named notary | Each is admitted on its own bundle, also when their budgets together exceed the pool or `max_children` is 1 | J1 and J2. Under sections 9.1 and 10.1 the case has three verdicts. The child whose notary is not the row's refuses as `NOTARY_NOT_DESIGNATED`. A second child for another grantee or executor refuses at V8. For the same row, the same notary and two different ids, each child is admitted on its own bundle, which is the known limit of section 9.1 |
+| A child whose attestation was withdrawn for cause, presented with a fresh attestation by another named notary while the child's own seal is unspent, to a verifier that observed neither the frame nor a revocation | Admitted | J2. Under section 10.1 the child refuses as `NOTARY_NOT_DESIGNATED`. The case tests designation only and runs beside the known limits of that section |
 
 ## Open questions
 
 ### Gaps found in review
 
-Two independent reviews of the design found five gaps in this LIP. For two
-of them Draft text now stands under a pending owner decision: section 7.1
-for the notary bound by name only (J3), and section 11.1 for the key an
-agent signs a child with on v4 (J4). The other three are given with the
-case that shows each. The fixes named for them are candidates: proposals
-that the owners decide. This LIP chooses none of them.
-
-| Gap | The case that shows it | Candidate fixes (proposals; the owners decide) |
-| --- | --- | --- |
-| **The pool across several notaries.** A parent names up to four notaries, and any one of them is enough (D3, D9). Each certifies against its own record of the parent's children (section 6.2). | A parent has a pool of 100 and names notaries N1 and N2. Child A takes 60 and is certified by N1; child B takes 60 and is certified by N2. Both children carry ordinal 1, and both attestations carry `before` 0 and `after` 60. Each child passes V9 and V15 on its own bundle, and the two hold 120 together. Neither notary signed two attestations for one ordinal, so the pair shows no equivocation of a notary. The case needs a child signer that uses one ordinal twice. On v3 that is the landlord's signer, which admits an ordinal once for a parent and reserves the amount before it signs (section 5), so the case needs an error or a compromise of that signer. On v4 the delegator signs the children and reaches the case alone. In Goal 1 the pool is 0 (D12) and no amount is at stake; the same pair still gives a parent with `max_children` 1 two children. | (a) The anchor of each attestation spends an output of the anchor of the previous attestation for the same parent, so that consensus orders the attestations of one parent. (b) The parent fixes a share for each executor, and each executor sums what the children presented to it spend, by the parent's id; moving budget between shares then needs an agreed state of its own. |
-| **A withdrawal for cause does not reach a new verifier.** The frame of section 10 is addressed by the attestation id: its commitment covers that id and the child's grant id, and its locator points at the attestation. No step of section 8 looks for it. | Notary N1 withdraws its attestation of child C for cause. N2, which the parent also names, did not observe the frame and certifies C again when it is asked. A verifier that starts afterwards receives C with N2's attestation, and every step from V10 to V18 passes: V18 reads N2's seal and the verifier's own journal. The case holds while C's own seal is unspent: until the landlord's signer has revoked C, or for as long as that signer has not observed the frame. To find the frame from the child's id, a verifier would have to test every `0x05` frame on the chain against that id. No rule asks for that, and none says when such a search is complete. | A state per `child_grant_id` that a verifier finds on its own node, such as a marker it can index, with rules for completeness and for competing attestations of one child. |
-| **Scope text is not enforced.** Section 3.3 lets a text narrow a grant. The notary judges the child's text against the parent's once, at certification. | A child's text limits the work to one component of a repository. An instruction that concerns another component, within the child's actions and repositories, passes every step of section 8 and steps 6e to 6g of LIP-0013, because no step compares an instruction with the text. The notary's `within` is a judgement as well: no verifier can recompute it. | A child carries the parent's text unchanged, by hash, and narrows only machine fields, such as repository, branch, action, recipients and amounts. |
+Two independent reviews of the design found five gaps in this LIP: the pool
+across several notaries, a withdrawal for cause that does not reach a new
+verifier, the notary bound by name only, the key an agent signs a child
+with on v4, and scope text that is not enforced. Each now has Draft text
+under a pending owner decision, in the subsection that the table of pending
+decisions names. The first paragraph of each subsection states the gap with
+the case that shows it, and each subsection says what its text closes and
+what stays open. No gap is closed before the owners decide, and none is
+called closed for a property that its subsection lists as open.
 
 ### Other open questions
 
@@ -999,7 +1704,7 @@ that the owners decide. This LIP chooses none of them.
   the open carriage question of LIP-0013.
 - The record that states the cause of a withdrawal. How a verifier that
   observed neither the withdrawal nor the revocation of the child learns of a
-  withdrawal for cause is the second gap above.
+  withdrawal for cause is the subject of section 10.1.
 - A quorum of notaries for sensitive resources; D9 fixes one of the set.
 - A batched anchor and one seal per parent; D10 fixes one frame per
   attestation now.
