@@ -2,14 +2,13 @@
 
 ## 0.1.25 — 2026-11-13
 
-Holds Draft text for the eight gaps that version 0.1.24 recorded, each
-under a pending owner decision, J1 to J8. Nothing of it is adopted until the
-owners decide. The text in force is not changed: each decision stands in
-one subsection that first says what holds until the decision, and the
-places it would change carry a pointer. No gap is called closed for a
-property that its subsection lists as open. No v3 byte changes, and neither
-does any rule or vector of profile `swarma-trust-contract/1` or the
-reference checker.
+Holds Draft text for the eight gaps that version 0.1.24 recorded, each under
+a pending owner decision, J1 to J8. Nothing of it is adopted until the
+owners decide. The rules in force are not rewritten: each decision stands in
+one subsection that first says what holds until the decision, and the places
+it would change carry a pointer. No gap is called closed for a property that
+its subsection lists as open. No v3 byte changes, and neither does any rule
+or vector of profile `swarma-trust-contract/1` or the reference checker.
 
 LIP-0014. Section 9.1 (J1): the parent signs one row for each child, with
 the executor, the grantee, the cap and the certifier; the limit is a number
