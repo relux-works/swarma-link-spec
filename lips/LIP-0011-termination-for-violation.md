@@ -131,7 +131,7 @@ zero-value `OP_RETURN` output in the LIP-0005 frame, with a new action:
 
 | Action | Name | Payload |
 | --- | --- | --- |
-| `0x03` | termination for violation | `version(1) || termination_commitment(32) || locator` |
+| `0x03` | termination for violation | `version(1)` \|\| `termination_commitment(32)` \|\| `locator` |
 
 The commitment binds the grant, the contract and the verdict:
 

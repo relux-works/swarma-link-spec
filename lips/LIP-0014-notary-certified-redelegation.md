@@ -360,7 +360,7 @@ LIP-0005 frame with a new action (D10):
 
 | Action | Name | Payload |
 | --- | --- | --- |
-| `0x04` | notary attestation | `version(1) || attestation_commitment(32) || locator` |
+| `0x04` | notary attestation | `version(1)` \|\| `attestation_commitment(32)` \|\| `locator` |
 
 ```text
 attestation_commitment = SHA-256( "swarma-attest-v1" || attestation_id
@@ -564,7 +564,7 @@ spends the seal, with one LIP-0005 frame:
 
 | Action | Name | Payload |
 | --- | --- | --- |
-| `0x05` | notary withdrawal for cause | `version(1) || withdrawal_commitment(32) || locator` |
+| `0x05` | notary withdrawal for cause | `version(1)` \|\| `withdrawal_commitment(32)` \|\| `locator` |
 
 ```text
 withdrawal_commitment = SHA-256( "swarma-attest-cause-v1" || attestation_id
