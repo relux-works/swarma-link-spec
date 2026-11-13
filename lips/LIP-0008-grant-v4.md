@@ -1056,7 +1056,7 @@ signs a grant (LIP-0004 section 2), so an agent signs no child there: the
 landlord's signer issues the child on the delegator's signed request
 ([LIP-0014](LIP-0014-notary-certified-redelegation.md) section 5). Whether
 an agent that re-delegates on v4 needs a grant key of its own, separate from
-its channel key, is open.
+its channel key, is open; LIP-0014 states the gap with its counterexample.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and
@@ -1127,6 +1127,12 @@ turning a transient read failure into proved name-output closure. Reorgs
 and revocation can race a completed external effect and cannot undo it. Raw
 issuer, money-key or upstream-secret compromise remains outside service limits.
 
+Replacing a leaked grant key is a slower and less final stop than spending
+one seal. The name rule of section 3 counts a change only once it is in the
+active chain, and a reorganisation undoes it; a seal spend closes its grant
+durably when a verifier sees it in the mempool. The gap is stated under Open
+questions.
+
 ## Conformance impact and v3 compatibility
 
 V3 and normative v0.1 retain their formats, domains, name semantics, checks and
@@ -1155,6 +1161,7 @@ post-refusal state. The semantic outline pairs these controls:
 | Healthy independent node observations and action-specific age policy | Lagging/conflicting nodes or exceeded risk cutoff refuse; a healthy gap under the decided cutoff alone is not node failure. |
 | Recent block committed in signed grant and verified on the selected chain | Seal confirmation alone proves no signing-time lower bound; unknown, stale or wrong-branch block reference refuses under the selected profile. |
 | W with native P2WPKH/SIGHASH_ALL inputs, confirmed ordinary funding and validated linkage/payment dependencies | One legacy or wrapped input, another sighash mode, witness marker alone, unproved parent or arbitrary unconfirmed funding refuses; no effect before required confirmations. |
+| W with a permitted unconfirmed parent, the linkage output or a same-chain payment, whose own inputs are all fully signed native P2WPKH and whose funding ancestry ends at confirmed outputs (section 1.1) | The same parent with one legacy or wrapped input, or with an unconfirmed ancestor outside the two permitted dependencies, refuses: a third party could change that ancestor's txid and with it every dependent reference. Planned as a negative case of a v4 vector set. |
 | L with confirmed referenced outpoints and an anchor built after seal confirmation | An unconfirmed reference, dependent chain or same-block seal/anchor construction refuses. A changed parent requires reissuance; no silent txid substitution or unsafe admission. |
 | Matching authenticated chain/profile pin and identical grant checks under W and L | Unknown profile, profile substitution or automatic fallback refuses. Account-based chains have no seal profile here. |
 | Administrator-owned sealed config, service-group read-only access and matching manifest hash | Writable service config or a hash mismatch forbids startup; operator ceilings cannot change through a runtime override. New reviewed packages remain the authorized change path. |
@@ -1212,6 +1219,22 @@ This is a conformance plan, not a published runner or interoperability result.
 
 ## Open questions
 
+- **The name rule as an emergency stop** (a gap found in review). The grant
+  key leaks, and the name owner broadcasts an update that replaces it. Until
+  that update is in a block of the active chain, the walk of section 3 still
+  finds the old key, so grants signed with the leaked key are admitted,
+  including new ones the thief signs; an update seen only in the mempool
+  changes nothing. If a reorganisation removes the update, the old key is
+  current again. A spend of one grant's seal closes that grant durably as
+  soon as a verifier sees it in the mempool (section 5.1). Stopping every
+  grant of an issuer is therefore slower and less final than stopping one.
+  The owner's decision of 2026-11-11 set the name rule; its behaviour in the
+  mempool and after a reorganisation was chosen by this amendment. Candidate
+  fix, a proposal that the owners decide: a change of the owner or of
+  `swarma` that the name owner signed and a verifier saw in the mempool
+  closes the issuer's grants in that verifier's journal, as a seal spend
+  does; as a deployment rule, the fee of such an update is not paid with
+  coins of a hot service.
 - Exact versioned bytes, signature domain, commitment/consent encoding, name
   registration reference, executor/single-use bindings, recent block field and
   cross-language vectors; the start point of the issuer-history constraint

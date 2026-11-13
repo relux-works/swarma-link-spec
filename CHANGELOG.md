@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.1.24 — 2026-11-13
+
+Records eight gaps that two independent reviews of the drafts found. Each is
+an open question with a counterexample that the current rules admit. The
+fixes named are candidates, proposals that the owners decide; no mechanism
+is chosen, and no rule changes.
+
+LIP-0014, five gaps under "Gaps found in review": with several named
+notaries the pool is counted per notary, so two children with one ordinal
+certified by different notaries can exceed it; a withdrawal for cause is
+invisible to a verifier that starts later and receives a fresh attestation
+by another named notary; the notary is bound by name only, so a transfer or
+a new registration of that name passes on the right to certify; the key that
+signs a child on v4 is not defined, nor what happens to children when it
+changes; and no executor compares an instruction with a scope text. The
+sentences of sections 3.3, 7, 8.1, 9 and 10 and three security bullets that
+implied these cases were covered now state the limit.
+
+LIP-0008: replacing a leaked grant key counts only once the update is in the
+active chain and is undone by a reorganisation, while a seal spend closes a
+grant durably from the mempool; the security section says so. LIP-0013, open
+question T10: a grant binds an identity and not a run, so an agent that
+works for two parties can carry one party's instruction into an action under
+the other's grant. LIP-0011: under NIP-17 and NIP-59 the sender signs the
+encrypted seal and not the message, so a disclosed message does not by
+itself show its sender; the sentence that said it does is corrected.
+
+Conformance plans: LIP-0014 lists two cases that are admitted today and are
+planned as negative cases of a v4 vector set, and LIP-0008 adds the
+unconfirmed parent with a legacy input, which section 1.1 already refuses.
+
+Key map, K5: the interim grant key is an item of the data protection
+keychain. Version 0.1.23 also named the login keychain; that keychain is
+file-based, controls access with access control lists and cannot require
+Touch ID for one item, so it does not give presence per signature. The
+owner's decision is unchanged.
+
 ## 0.1.23 — 2026-11-12
 
 The key map records Ivan Oparin's decision of 2026-11-12 on the interim

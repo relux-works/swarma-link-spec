@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.23
+**Version:** 0.1.24
 
-**Date:** 2026-11-12
+**Date:** 2026-11-13
 
 **Status:** Draft
 
@@ -64,7 +64,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.23
+## Draft profiles and design decisions in v0.1.24
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -221,6 +221,19 @@ flow for registering an agent's identity in which no private key leaves its
 host. LIP-0010 section 8 adds a proposed plan for the 520 bytes of a value.
 An organization identity and release statements for binaries are sketches
 in LIP-0015 and are not proposed.
+
+Two independent reviews of the drafts found eight gaps. Version 0.1.24
+records each as an open question with a counterexample that the current
+rules admit, and names candidate fixes as proposals that the owners decide;
+no mechanism is chosen. Five concern notary-certified re-delegation
+(LIP-0014): the pool when a parent names several notaries, a withdrawal for
+cause that a new verifier cannot see, the notary bound by name only, the key
+that signs a child on v4, and scope text that no executor enforces. The
+others: replacing a leaked grant key stops grants more slowly and less
+finally than a seal spend (LIP-0008); a grant binds an identity and not a
+run (LIP-0013); and under NIP-59 the judged message bytes carry no sender
+signature (LIP-0011). Sentences that implied these cases were covered are
+corrected.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

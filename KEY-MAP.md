@@ -94,7 +94,7 @@ keys he holds:
 
 | Decision | Direction |
 | --- | --- |
-| K5. Interim custody of the grant key | Until the keyvault's grant-signing purpose is qualified, the landlord grant key on a Mac is a software secp256k1 key stored as a generic-password item of the macOS Keychain, in the login or data-protection keychain. Every signature needs Touch ID, and the signer shows every field of what it signs before the prompt. The key is not exported. It is replaced by creating a new item and publishing the new public key in `swarma.landlord.grant`. |
+| K5. Interim custody of the grant key | Until the keyvault's grant-signing purpose is qualified, the landlord grant key on a Mac is a software secp256k1 key stored as a generic-password item of the macOS Keychain, in the data protection keychain. Every signature needs Touch ID, and the signer shows every field of what it signs before the prompt. The key is not exported. It is replaced by creating a new item and publishing the new public key in `swarma.landlord.grant`. |
 
 No date is set for the qualification that ends the interim. The section
 "Requirements on a key service" below places K5 beside the keyvault path.
@@ -220,7 +220,7 @@ grant key on a Mac lives in the macOS Keychain, not in the keyvault:
 | Requirement | How K5 meets it |
 | --- | --- |
 | A grant-key purpose of its own on secp256k1 | One Keychain item holds one software secp256k1 key that is used for nothing else. It signs grants under BIP-340 and spends v3 seals under ECDSA. The Secure Enclave holds no secp256k1 keys (its elliptic-curve keys are P-256), so on a Mac a secp256k1 key is a software key in either custody. |
-| Presence per signature | The item is read under Touch ID, once for every signature. |
+| Presence per signature | The item is read under Touch ID, once for every signature. It lives in the data protection keychain, where an item carries its own access control object and that object can require biometry. The file-based login keychain controls access with access control lists and has no such rule per item, so it does not meet this requirement. |
 | Typed display | Before the prompt the signer shows every field of what is signed: the grant, the contract behind `landlord_sig`, the seal spend. |
 
 The key is generated on the Mac that holds it and is not exported; only its

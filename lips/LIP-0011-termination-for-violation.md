@@ -109,8 +109,10 @@ It has these logical fields; the table is not a byte fixture:
 
 The record holds hashes, never the request or the response. Their bytes stay
 with the parties. In a dispute a party discloses them, and anyone recomputes
-the two hashes. The request is itself signed by the recipient's request key,
-so a disclosed request also shows who sent it.
+the two hashes. Where the service profile has the recipient sign the request
+bytes themselves, a disclosed request also shows who sent it. That does not
+hold for every profile: the open question on request bytes names a case in
+which the bytes that were judged carry no signature.
 
 Verdicts for one grant form a chain through the previous-verdict field. The
 last one commits to the bytes of the earlier ones: a termination after the
@@ -313,7 +315,15 @@ controls; each refused case leaves the closure rules untouched:
 - Canonical bytes, type tag and signing domain of the verdict record; the
   contract's field names for the rules hash and the moderator.
 - The definition of the request bytes for each service profile, and a salt
-  against guessing short requests.
+  against guessing short requests. One profile is known to break the
+  assumption that a disclosed request shows its sender (a gap found in
+  review): a rental message carried under NIP-17 and NIP-59. The sender signs
+  the seal event, whose content is the encrypted message; the message itself
+  is an unsigned event inside it. A hash of the readable message is then a
+  hash of bytes nobody signed, and the message proves its sender only
+  together with the signed seal and the means to decrypt it. What the
+  request bytes of that profile are, and what a disclosure must contain, is
+  open.
 - How the rules text expresses which verdict ends the contract, and whether
   that threshold is also a machine-readable contract term.
 - Replacement of the moderator key during a contract.

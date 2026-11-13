@@ -479,6 +479,11 @@ committed file, and that planted defects fail with their named codes.
   no authority: the executor reports it, the message stays data and only the
   owner directs (section 3.4). An executor that cannot read its mode runs in
   shadow mode.
+- **One identity, every run.** A grant is issued to an identity and is not
+  used up by a run. Every run of that identity holds all of its grants. An
+  agent that works for two parties can thereby pass one party's instruction
+  into an action under the other party's grant. The case is open question
+  T10.
 - **Replay and delay.** The nonce journal and the time window bound replay.
   Holding a pending envelope does not reopen the window (section 3.5).
 - **Public graph.** On mainnet, names, keys and the bundle make "who trusts
@@ -506,3 +511,4 @@ protocol text and a conformance change that names the vector set.
 | T7 | Whether an issuer MUST, rather than SHOULD, omit a zero v3 budget | SHOULD; the verifier compares the value, so both forms bind. |
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
+| T10 | A gap found in review: a grant binds an identity, not a run. Worker `W` holds a grant from owner A for an action in A's service, and is the executor of a grant that lets an orchestrator of owner B instruct it. B's orchestrator instructs `W`; working on that instruction, `W` calls A's service under its own grant. Every check of section 3.4 passes, and B's orchestrator obtains an action in A's service that A gave `W` for other work. LIP-0014 closes the case where the relayed work goes to another agent under a child grant; it does not cover an agent that acts itself. | Candidate fix, a proposal that the owners decide: the delivery daemon that holds the agent's keys signs a session's requests only under the grants listed for that run. This adds no record to the chain. Undecided. |
