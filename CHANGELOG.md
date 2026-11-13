@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.1.25 — 2026-11-13
+
+Holds Draft text for the eight gaps that version 0.1.24 recorded, each
+under a pending owner decision, J1 to J8. Nothing of it is adopted until the
+owners decide. The text in force is not changed: each decision stands in
+one subsection that first says what holds until the decision, and the
+places it would change carry a pointer. No gap is called closed for a
+property that its subsection lists as open. No v3 byte changes, and neither
+does any rule or vector of profile `swarma-trust-contract/1` or the
+reference checker.
+
+LIP-0014. Section 9.1 (J1): the parent signs one row for each child, with
+the executor, the grantee, the cap and the certifier; the limit is a number
+of compartments, and one child object for each row stays open. The row
+ledger has a store contract in which continuity is proved against an
+outside record that binds the committed history; the proof protocol is an
+open deployment profile, and no executor qualifies for `spend` without it.
+Section 10.1 (J2): one notary for each row, one succession of seals for the
+row, an authenticated cause and three states with their codes; D5 holds in
+a narrower form unless the owners take the row-ending output. Section 7.1
+(J3): pins, a signed checkpoint and a writer rule for a notary's name.
+Section 11.1 (J4): a delegation key named in the parent signs children on
+v4, and signs nothing else. Section 3.4 (J5): a child carries its parent's
+scope text unchanged, the value `within` goes, an executor that cannot read
+refuses a grant with a text, and the owners choose among three rules for
+what a text does to an effect. The table of gaps under Open questions gives
+way to these subsections; every fact of its rows stands in their first
+paragraphs.
+
+LIP-0008 section 5.2 (J6): an owner-signed change of an issuer's name that
+a verifier validated, in its mempool or in a block, closes the issuer's
+grants in that verifier's journal; the read follows every pending name
+operation; an issuer funds every operation of its name from coins that no
+hot service can spend. A verifier that saw the change and one that starts
+later can differ, and the text says so. A new open question asks whether
+the issuer rule should carry the writer rule that LIP-0014 drafts for a
+notary. The conformance row for an unconfirmed parent gives the txid reason
+for a legacy input only.
+
+LIP-0013 section 3.6 (J7): the service that holds an agent's key binds each
+run to its origin and signs only what its operator listed for that origin,
+with a separate permission for consents; a grant that the operator removes
+stays removed. T10 points to it.
+
+LIP-0011 section 7 (J8): the signed v4 invocation is the request of a
+verdict, and an invocation inside an encrypted message binds a salted hash
+of the content. A reader reports reference, attribution, eligibility,
+admission, and time and delivery apart.
+
+The key map carries a pending sentence for K2 and a row for the delegation
+key (J4), and a note on the presence rule (J7). LIP-0012 and LIP-0010 point
+to the texts that concern the notary.
+
 ## 0.1.24 — 2026-11-13
 
 Records eight gaps that two independent reviews of the design found. Each is
