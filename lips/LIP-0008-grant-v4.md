@@ -1054,10 +1054,11 @@ section 3.1. An agent's name value carries no `swarma.grant` member
 applies to the root of the path only. On v3 only the landlord's grant key
 signs a grant (LIP-0004 section 2), so an agent signs no child there: the
 landlord's signer issues the child on the delegator's signed request
-([LIP-0014](LIP-0014-notary-certified-redelegation.md) section 5). Whether
-an agent that re-delegates on v4 needs a grant key of its own, separate from
-its channel key, is open; LIP-0014 gives the case that shows why, under its
-open questions.
+([LIP-0014](LIP-0014-notary-certified-redelegation.md) section 5). The rule
+above is the rule in force. LIP-0014 section 11.1 holds Draft text that
+replaces it for the link below an issue capability: the capability names
+one delegation key, only that key signs children, and it signs nothing
+else. Owner decision pending: J4.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and
@@ -1164,7 +1165,7 @@ post-refusal state. The semantic outline pairs these controls:
 | Healthy independent node observations and action-specific age policy | Lagging/conflicting nodes or exceeded risk cutoff refuse; a healthy gap under the decided cutoff alone is not node failure. |
 | Recent block committed in signed grant and verified on the selected chain | Seal confirmation alone proves no signing-time lower bound; unknown, stale or wrong-branch block reference refuses under the selected profile. |
 | W with native P2WPKH/SIGHASH_ALL inputs, confirmed ordinary funding and validated linkage/payment dependencies | One legacy or wrapped input, another sighash mode, witness marker alone, unproved parent or arbitrary unconfirmed funding refuses; no effect before required confirmations. |
-| W with a permitted unconfirmed parent (the transaction that creates the linkage output, or a same-chain payment) whose inputs are all fully signed native P2WPKH with SIGHASH_ALL and whose funding ancestry ends at confirmed outputs (section 1.1) | The same parent with one legacy or wrapped input of its own refuses: section 1.1 allows it only fully signed native P2WPKH inputs. The same parent funded through a further unconfirmed transaction that has a legacy or wrapped input refuses as well, also when that transaction spends confirmed outputs: a third party could change its txid and with it every dependent reference. |
+| W with a permitted unconfirmed parent (the transaction that creates the linkage output, or a same-chain payment) whose inputs are all fully signed native P2WPKH with SIGHASH_ALL and whose funding ancestry ends at confirmed outputs (section 1.1) | The same parent with one legacy or wrapped input of its own refuses: section 1.1 allows it only fully signed native P2WPKH inputs. The same parent funded through a further unconfirmed transaction that has a legacy or wrapped input refuses as well, also when that transaction spends confirmed outputs. For a legacy input the reason is that a third party could change the transaction's txid and with it every dependent reference; a wrapped input refuses because W admits native inputs only. |
 | L with confirmed referenced outpoints and an anchor built after seal confirmation | An unconfirmed reference, dependent chain or same-block seal/anchor construction refuses. A changed parent requires reissuance; no silent txid substitution or unsafe admission. |
 | Matching authenticated chain/profile pin and identical grant checks under W and L | Unknown profile, profile substitution or automatic fallback refuses. Account-based chains have no seal profile here. |
 | Administrator-owned sealed config, service-group read-only access and matching manifest hash | Writable service config or a hash mismatch forbids startup; operator ceilings cannot change through a runtime override. New reviewed packages remain the authorized change path. |
