@@ -266,7 +266,8 @@ records as open gaps with the case that shows each: a notary does not see a
 sibling that another notary certified under the same ordinal; a withdrawal
 for cause by one notary reaches neither another named notary nor a verifier
 that starts later; and a notary's name that changes hands passes on the
-right to certify.
+right to certify. For the third, LIP-0014 section 7.1 holds Draft text under
+a pending owner decision.
 
 The notary learns the contents of both contracts. A deployment that cannot
 disclose them to a third party uses issuance by the operator's signer
@@ -307,7 +308,8 @@ Still open:
 - Adoption of the bytes, the signing domain and the statement kinds that
   LIP-0014 proposes for a child grant; statement kinds for other facts.
 - The field that carries a requirement in a grant that is not a child.
-- Whether a v4 parent pins a notary name by its registration and owner key,
-  as it pins an issuer.
+- Whether a parent pins a notary name by its registration and owner key, as
+  a v4 grant pins an issuer: LIP-0014 section 7.1 holds Draft text for it,
+  for the v3 profile as well. Owner decision pending: J3.
 - Whether the notary of a child and the moderator of the same contract can
   be one party.

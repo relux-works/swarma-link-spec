@@ -429,9 +429,10 @@ controls; each rejected case leaves no binding and no closure:
   owner members.
 - Whether a transfer of `id/<label>` requires the transfer of `d/<label>` in
   the same deployment procedure.
-- Whether a v4 parent pins a notary name by its registration and owner key
-  (LIP-0012 open questions), and whether the notary shape needs a member for
-  a second, pending key during a rotation.
+- Whether a parent pins a notary name by its registration and owner key:
+  LIP-0014 section 7.1 holds Draft text for it; owner decision pending: J3.
+- Whether the notary shape needs a member for a second, pending key during a
+  rotation.
 - Decision record, normative adoption and public vectors.
 
 ## Sources
