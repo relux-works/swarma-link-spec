@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.25 — 2026-11-13
+
+Ten rows of the action tables render whole again. Each row gave its payload
+as one code span with two bars inside, such as
+`version(1) || commitment(32) || locator`. A Markdown table splits a row at
+every unescaped bar, also inside a code span, so the rendered row ended
+after `version(1)` and lost the commitment and the locator. The operands are
+now separate code spans with escaped bars between them. The rows are the six
+actions of LIP-0005, action `0x03` in LIP-0011, actions `0x04` and `0x05` in
+LIP-0014 and action `0x06` in LIP-0016. No byte, name or rule changes.
+
 ## 0.1.24 — 2026-11-13
 
 Records eight gaps that two independent reviews of the design found. Each is
