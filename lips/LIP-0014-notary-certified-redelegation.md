@@ -937,9 +937,11 @@ does not reset an ancestor's consumed allowance.
 
 ### 9.1. Rows: one compartment for each child
 
-Owner decision pending: J1. Every rule of this subsection is Draft text
-that changes how D6 and the member `max_children` are read. Until the
-decision the pool is free, and no party sees every child of a parent. A
+Decided by Ivan Oparin on 2026-11-14 (J1); the co-author's agreement is
+pending. The decision changes how D6 and the member `max_children` are
+read: the parent signs rows, and on v4 each row also pins a coin. Until the
+co-author agrees the text in force stands, under which the pool is free and
+no party sees every child of a parent. A
 parent names up to four notaries, and any one of them is enough (D3, D9).
 Each certifies against its own record of the parent's children (section
 6.2). A parent has a pool of 100 and names notaries N1 and N2. Child A
@@ -964,7 +966,7 @@ every sibling; a row needs none.
 | --- | --- | --- |
 | The number of compartments of authority under a parent, and the executor, grantee, cap and certifier of each | Yes | Every verifier, one that starts later included; it is a function of signed bytes |
 | Consumption under one row never exceeds its cap, whatever documents exist | Yes, when `spend` is delegable | The row's executor, while the continuity of its ledger store is proved under J1.4; no deployment profile qualifies a store for that yet. A third party cannot read it from a bundle |
-| At most one child object, one `grant_id`, is ever admitted for a row | No | It rests on the row's certifier (J1.6) and, on v3, on the landlord's signer (section 5) |
+| At most one child object, one `grant_id`, is ever admitted for a row | On v3: no. On v4: yes on the active chain, by the coin of the row (J1.9) | On v3 it rests on the row's certifier (J1.6) and on the landlord's signer (section 5). On v4 every verifier reads the spend of the coin on its own node; the property does not hold across forks |
 
 A second document for a row names the same grantee at the same executor,
 is certified by the same notary and draws on the same row ledger, and every
@@ -983,12 +985,12 @@ section 7.1.
 
 | Member | Type | Rule |
 | --- | --- | --- |
-| `slots` | array of objects | One row for each child the grant permits: 1 to 16 rows when `depth` is 1, empty when it is 0. The ordinal of a row is its 1-based position. On v3 each row has exactly four members in this order: `agent`, an `id/` name different from `landlord_name`; `grantee`, an x-only key in 64 lowercase hex; `cap`, an integer of atoms from 0 to 2100000000000000; `notary`, the name of one entry of `notaries`. Two rows MAY name the same agent and grantee. |
+| `slots` | array of objects | One row for each child the grant permits: 1 to 16 rows when `depth` is 1, empty when it is 0. The ordinal of a row is its 1-based position. On v3 each row has exactly four members in this order: `executor`, an `id/` name different from `landlord_name`, which the child carries as its `agent_name`; `grantee`, an x-only key in 64 lowercase hex; `cap`, an integer of atoms from 0 to 2100000000000000; `notary`, the name of one entry of `notaries`. Two rows MAY name the same executor and grantee. |
 | `budget` | integer | The pool. The caps MUST NOT sum to more than `budget`; the sum is an exact integer sum. Greater than 0 exactly when `actions` includes `spend`. |
 
 ```json
 "delegate":{"depth":1,"actions":["instruct","review"],"budget":0,
-"slots":[{"agent":"id/alexey-worker","grantee":"<64 hex>","cap":0,"notary":"id/ivanopcode-notary"}],
+"slots":[{"executor":"id/alexey-worker","grantee":"<64 hex>","cap":0,"notary":"id/ivanopcode-notary"}],
 "notaries":[{"name":"id/ivanopcode-notary","registration":{"txid":"<64 hex>","vout":0},"owner":"<owner pin>"}],
 "checkpoint":"<64 hex>"}
 ```
@@ -999,24 +1001,33 @@ Both values show `notaries` and `checkpoint` as section 7.1 defines them;
 without that section the entries of `notaries` are names, and `checkpoint`
 is absent.
 
+The member of a row is named `executor` because the party that performs the
+action can be a service as well as an agent. In the v3 grant and in the
+contract the same name stays in the member `agent_name`, whose bytes do not
+change.
+
 A v4 row is not the v3 row. On v4 a row is one of the explicit signed
 partitions that name each service or key and its allowance (LIP-0008
 sections 4 and 12.2). It MUST carry the executor as a service name with its
 pinned public key; the child's recipient in exactly one of the two modes of
-LIP-0008 section 3.1, a request key, or a name with its owner key; the cap;
-and the certifier. An `id/` name alone is not a v4 executor, and the v3
-`grantee` key is a recipient by key only. The bytes come with v4.
+LIP-0008 section 3.1, a request key, or a name with its owner key; the
+limits of the row; the certifier; and the coin of the row (J1.9). The `cap`
+of a row of profile `/2` is one number of coin atoms. A v4 row carries
+typed limits in its place (LIP-0008 section 2). An `id/` name alone is not
+a v4 executor, and the v3 `grantee` key is a recipient by key only. The
+bytes come with v4.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
 | J1.1 | A right of re-delegation MUST fix, for every ordinal a child may carry, the executor, the grantee, the cap and the certifier. The caps MUST NOT sum to more than `delegate.budget`. | `CONTRACT_DELEGATE` |
-| J1.2 | A verifier MUST first check that the child's ordinal lies between 1 and the number of rows, before it reads any row. It then requires the child to name the agent and the grantee of that row and a `spend_budget` of at most that row's `cap`. | `CHILD_ORDINAL`; then `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`, `CHILD_BUDGET_OVER` |
+| J1.2 | A verifier MUST first check that the child's ordinal lies between 1 and the number of rows, before it reads any row. It then requires the child to name the executor of that row as its `agent_name`, the grantee of that row, and a `spend_budget` of at most that row's `cap`. | `CHILD_ORDINAL`; then `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`, `CHILD_BUDGET_OVER` |
 | J1.3 | Before an effect that consumes a countable resource under a child, the executor MUST reserve the amount atomically in two cumulative ledgers: the child's, bounded by the child's limit, and the row's, keyed by `parent_grant_id` and ordinal and bounded by `cap`. If either reservation fails, the executor MUST refuse and MUST reserve nothing. These reservations are added to every other check and reservation that applies, and replace none: the check of one request in step 6g of LIP-0013, the child's v3 budget, and on v4 every ancestor link (LIP-0008 section 12.2). One request identity, the event id or the invocation's nonce, is charged once, also when it is retried. The row ledger draws on `delegate.budget` only; `P.spend_budget` stays the separate account of `P`'s own executor (section 9). | A failure of the row's reservation: `ROW_CAP_OVER` |
 | J1.4 | The row ledger lives in a ledger store whose continuity is proved against a record outside the store. The contract of that store follows this table. | A lost store refuses every consuming effect under every row |
 | J1.5 | A verifier MUST NOT rely on a statement of a notary or of a signer about a sum over siblings. The attestation carries no such statement. | none of its own |
 | J1.6 | A notary MUST NOT certify two different children, two `child_grant_id` values, under one parent and ordinal, ever, also after a revocation or a withdrawal. It MAY sign again for the same child. Two attestations by one notary for different children of one parent and ordinal are complete evidence against it, as section 9 says today. The notary keeps a durable record for this. On v3 the landlord's signer still admits an ordinal once (section 5). | none at a verifier that holds one bundle |
 | J1.7 | "Used" names three different facts, and under option (a) below none of them is public state about how many child objects exist: the reservation of the ordinal at the v3 landlord's signer; the notary's record of the child it certified for the row; and consumption in the row ledger, which is state of the row's executor, the verifier that consumes. Each is permanent: a revoked child, a withdrawn attestation and a reissue free none of them. A new child takes another row. | none of its own |
-| J1.8 | A verifier, a receipt and a report MUST NOT state that a child is the only child of its row. | none of its own |
+| J1.8 | A verifier, a receipt and a report MUST NOT state that a child is the only child of its row. On v4 they may state it for the active chain and for nothing wider (J1.9). | none of its own |
+| J1.9 | v4 only. Each row pins one coin: an output that is confirmed before the parent is signed and that pays a key of the re-delegating side. The issuance of a child MUST spend the coin of the child's row in the transaction that carries the child's commitment, and a verifier checks that input on its own node. A row whose coin another transaction spent admits no child. The exclusivity holds on the active chain and not across forks: after a reorganisation that removes an issuance, another child can spend the coin on the new chain. | A v4 child whose issuance does not spend the coin of its row refuses. The code is fixed with the v4 bytes |
 
 The ledger store of J1.4 has an identity, given once by the executor's
 operator, and a position that only moves forward. Where a restore of the
@@ -1125,11 +1136,20 @@ and J1.4 are dormant in Goal 1.
 
 What stays open:
 
-- **One child object for each row.** A second document for a row exists if
-  the row's certifier breaks J1.6 or, on v3, the landlord's signer fails;
-  on v4 a thief of the delegation key (section 11.1) needs only the
-  certifier's failure. A verifier that starts later admits it. It stays
-  inside the envelope of the row.
+- **One child object for each row, on v3.** A second document for a row
+  exists if the row's certifier breaks J1.6 or the landlord's signer fails.
+  A verifier that starts later admits it. It stays inside the envelope of
+  the row.
+- **One child object for each row, on v4, across forks.** The coin of J1.9
+  admits one issuance for a row on the active chain. After a reorganisation
+  that removes that issuance, a thief of the delegation key (section 11.1)
+  can issue another child that spends the coin on the new chain. The
+  decision accepts this boundary.
+- **The key of a row's coin.** The decision has the coin pay a key of the
+  re-delegating side. The delegation key of section 11.1 signs child grants
+  and no transaction, so the coin needs another key of that side, or that
+  rule changes. Which key it is, and who funds the coin, is open and is
+  fixed with the v4 bytes.
 - **The split is fixed when the parent is issued.** Moving budget between
   rows, or adding a row, needs a new parent, which is an ordinary issuance
   with its chain cost. The delegator cannot choose later which worker gets
@@ -1150,23 +1170,22 @@ What stays open:
   not fit 8192 bytes; the contract then refuses under rule 1 of LIP-0013
   section 2.3. Real serialized fixtures decide the sizes.
 
-The owners choose what the limit is:
+What the limit is was a choice among four options:
 
 | Option | What it gives | Cost |
 | --- | --- | --- |
 | (a) The limit is a number of compartments | The first two properties of the table above. Two attestation members and one verifier step go away, and the notary adds up no budget. | A new parent to move budget or to add a child. One child means one compartment; one grant for each row rests on the notary and, on v3, on the signer. |
 | (b) (a) with an occupancy record at the row's executor: the executor binds a row to the first child id it admits, also when every amount is 0 | One child grant for each row at the only place where the row has an effect, for what that executor itself admitted and while its store was continuous. It is no statement that no other document exists. | The store of J1.4 is needed already in Goal 1. A lost record ends the row. The first document presented wins, so a wrong first document costs a row. |
-| (c) (a) with a pinned coin for each row that the child's issuance must spend | One child grant for each row on the current chain, for every reader, auditors included. It is exclusivity on the current chain, not across forks. | One reserved, confirmed output for each row before the parent is signed; a check of issuance inputs that no v3 verifier makes today (LIP-0004 section 4); and the holder of the funding key gains the power to void unissued rows, where the key map bounds that key to draining funds. |
+| (c) (a) with a pinned coin for each row that the child's issuance must spend | One child grant for each row on the current chain, for every reader, auditors included. It is exclusivity on the current chain, not across forks. | One reserved, confirmed output for each row before the parent is signed; a check of issuance inputs that no v3 verifier makes today (LIP-0004 section 4); and the holder of the coin's key can void an unissued row by spending its coin. |
 | (d) The free pool of the text in force | The delegator chooses freely. | The case of the first paragraph stays. |
 
-The proposal is (a) now, with the limit named a compartment limit, and to
-decide (b) when `spend` becomes delegable, because the store exists then,
-and for v4, where the delegator signs children alone. Under (b) the row's
-executor may state one thing beyond J1.8: that this is the only child it
-admitted for the row while its occupancy store was continuous. It states
-nothing about documents it was not shown, and nothing for a time in which
-its store was lost. D7, D10 and D12 are unchanged, and the landlord's
-reservation on v3 is kept.
+Ivan Oparin decided on 2026-11-14: option (a) for profile `/2` on v3, with
+the limit named a compartment limit, and option (c) for v4, where the
+delegator signs children alone. On v4 the coin of a row pays a key of the
+re-delegating side (J1.9). The decision accepts the boundary of (c): one
+child for each row holds on the active chain only. Options (b) and (d) are
+not taken. D7, D10 and D12 are unchanged, and the landlord's reservation on
+v3 is kept.
 
 Three further designs were set aside. Shares for each executor, in which
 each executor sums what the children presented to it spend, by the parent's
@@ -1179,7 +1198,7 @@ and the executor must still account consumption. One ledger notary, or all
 notaries together, would give one child for each row by trust in one party;
 it changes D9 and adds a party that must always be reachable.
 
-Cases (owner decision pending: J1). A suite that feeds a contract with rows
+Cases (J1). A suite that feeds a contract with rows
 to a parser of the text in force and counts the rejection proves nothing;
 each case names the fixture of the old shape that is its equivalent. Cases
 of the spend profile are no part of the Goal 1 suite (D12).
@@ -1190,15 +1209,17 @@ of the spend profile are no part of the Goal 1 suite (D12).
 | S1-1m | Spend profile: caps 60 and 40, pool 100; children of 60 and 40 | A child of 60 under row 2: `CHILD_BUDGET_OVER`. In force it is admitted: 60 is at most the pool, and the arithmetic of one bundle closes. The case is not 60 and 60 against 100 in one chain of attestations, which V15 refuses in force. |
 | S1-2a | One row, pool 0; one child with ordinal 1 | A second child with ordinal 1 for another grantee or executor refuses at V8. For the same grantee and executor with another named notary it refuses as `NOTARY_NOT_DESIGNATED` under section 10.1. In force both are admitted. |
 | S1-2b | A child with ordinal 1 | Ordinal 0 and an ordinal above the number of rows refuse as `CHILD_ORDINAL`, before any row is read, without a crash and without a code that names the agent. In force `max_children` refuses them. |
-| S1-K1 | One row with cap 0; child `C1` certified by the row's notary | A known limit of option (a): a second child `C2` of the same row, with another id, also certified by that notary in breach of J1.6, shown to a verifier that never saw `C1`, is admitted, and the vector records this verdict. Under (b) the row's executor refuses `C2` after `C1`; under (c) the second issuance cannot spend the pinned input. |
+| S1-K1 | One row with cap 0; child `C1` certified by the row's notary | A known limit on v3: a second child `C2` of the same row, with another id, also certified by that notary in breach of J1.6, shown to a verifier that never saw `C1`, is admitted, and the vector records this verdict. On v4 the issuance of `C2` cannot spend the coin of the row (S1-10). |
 | S1-3 | Spend profile: two documents of row 1, cap 60; 30 spent under the first; exactly 30 more under the second succeeds | One atom more refuses as `ROW_CAP_OVER`; both ledgers are read afterwards, and the child's ledger holds no partial reservation. The second document carries a valid attestation, so the refusal is the ledger's. A ledger for each child admits 60 under each. |
-| S1-4 | Caps that sum to exactly `budget`, and caps below it; each row with its four members and a listed notary. Two rows that name the same agent and the same grantee, each with its own ordinal and cap, are a valid parent, and a child of each row is admitted under its own ordinal; a reader that refuses the repeat fails this control | Four separate negatives: a larger sum; a row with a missing member; a row with an extra member; a row whose `notary` is not in `notaries`: each `CONTRACT_DELEGATE`. The sum is checked at the largest allowed values without overflow. |
+| S1-4 | Caps that sum to exactly `budget`, and caps below it; each row with its four members and a listed notary. Two rows that name the same executor and the same grantee, each with its own ordinal and cap, are a valid parent, and a child of each row is admitted under its own ordinal; a reader that refuses the repeat fails this control | Four separate negatives: a larger sum; a row with a missing member; a row with an extra member; a row whose `notary` is not in `notaries`: each `CONTRACT_DELEGATE`. The sum is checked at the largest allowed values without overflow. |
 | S1-5 | Spend profile, at the store: first use of a row in a store whose continuity check passes; after 40 is spent and the child revoked, a restart with the store intact leaves 20. A crash after the store write and before the outside write: no effect was performed, and after the restart the reservation is charged once and the same request identity completes | The same row after the store was lost, created anew or rolled back: no `spend`, no first use. An unreadable store refuses and reserves nothing. Each a separate negative: a reservation of 40, the effect, a crash, and a restore of the backup taken before the reservation: lost store, no further `spend`; a rollback of the ledger alone; a rollback of the ledger together with every file beside it on the store's host; a missing or unreadable outside record; a replica with an older write token; a recovery by charging in which the list of rows was lost with the store: a row of a parent that existed before the loss gets no first use. |
 | S1-5-ABA | Spend profile, at the store: a restart with the image that was actually committed at position 1 spends only the true remainder of 20; and a transition that is pending on the history that the outside record still holds completes once, without a second charge and without an effect before the outside write | Two histories at one position. An image is kept from the window between the store write and the outside write; the store is restored to the image before it; a different reservation commits at the same position; the first image is restored: the executor refuses before any further consuming reservation or effect, although the positions are equal. The planted defect `continuity-counter-only` keeps the presence of the outside record, its identity, the order of writes and the fencing, and drops the comparison with the exact committed history; a suite must catch it with this negative. An implementation that always refuses must fail the two controls. |
 | S1-6 | Spend profile, at the store: 40 and then 20 against a cap of 60, from two real callers | Two replicas race 40 and 40 through their public entry points: the committed total is at most 60, and the refused caller holds no reservation. With the shared store unavailable neither succeeds. |
 | S1-7 | The same child with a new valid attestation after a plain withdrawal spends the true remainder | The consumption before the new attestation is still charged; a new attestation id, signature or run does not reset it. Section 9 already forbids the reset. |
 | S1-8 | Goal 1: every cap 0 and no `spend` | A positive cap or a listed `spend` refuses as `CONTRACT_DELEGATE`. D12 already forbids it; the case shows no new closure. |
 | S1-9 | An attestation of exactly eighteen members, with a valid signature and bindings, admitted | An attestation that carries `budget` or `prev_attestation_id` refuses as `ATTESTATION_SHAPE`. The form of twenty members is valid in force and invalid after; the case proves the change of shape, not a protection. |
+| S1-10 | v4: a child whose issuance spends the coin of its row and is confirmed | Each a separate negative: a child whose issuance spends another output and leaves the coin of its row unspent; a second child of the row after the first issuance spent the coin; a child of a row whose coin another transaction spent before any issuance. Each refuses. |
+| S1-K2 | v4: the same control | A known boundary of the coin: a reorganisation removes the first issuance, and a second child whose issuance spends the coin on the new chain is admitted there. The vector records this verdict as the accepted boundary. |
 
 ## 10. Revocation and closure
 
