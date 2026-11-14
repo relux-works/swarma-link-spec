@@ -361,15 +361,24 @@ the owner's decision. Three courses were considered:
 
 | Course | The request | State and cost |
 | --- | --- | --- |
-| Refusal | The executor refuses it. | The default. A text and a landing never meet in one grant. |
-| (c) Confirmation of effects | The executor holds a `land` or a `spend` until its owner confirms that one operation, bound to the exact revision or amount (J5.9). `instruct` and `review` stay the agent's work. | The exception. The draft proposes that it applies only at an executor whose owner chose it. The owner confirms each landing under a grant that has a text. A review under a text can still feed the gate of a landing under another grant. |
+| Refusal | The executor refuses it. | The default. Under the default a text and a landing never meet in one grant. |
+| (c) Confirmation of effects | The executor holds a `land` or a `spend` until its owner confirms that one operation, bound to the exact revision or amount (J5.9). `instruct` and `review` stay the agent's work. | The exception. The owner confirms each landing under a grant that has a text. A review under a text can still feed the gate of a landing under another grant. |
 | (b) Confirmation of every action | No predicate over a text exists, so every instruction, review, landing and payment under a grant with a text would wait for the owner's confirmation. | Not taken. Grants meant for unattended work would carry no text. |
 
-The decision is the default, the exception as course (c) with the
-binding of J5.9, and that course (b) is not taken. One thing is the draft's
-proposal and no part of the decision: that the executor's owner, who also
-confirms, chooses the exception for an executor. How an owner makes that
-choice is the deployment's.
+Ivan Oparin's decision of 2026-11-14 covers three things: the refusal as
+the default, the exception as course (c) with the binding of J5.9, and that
+course (b) is not taken. This revision therefore removes what served
+course (b) alone and what 0.1.35 carried as pending: rule J5.5 (b), case
+S5-4b and the clause of J5.9 that bound a confirmation to the body of an
+instruction or a review.
+
+The decision does not say what selects the exception: for which executor,
+or for which request, the confirmation takes the place of the refusal. This
+draft proposes an answer and marks it as a proposal: the executor's owner,
+who also confirms, chooses the exception for an executor. The proposal is
+no part of the decision and has no normative effect. No rule, no step and
+no case of this subsection requires an outcome that depends on that
+choice.
 
 One rule is excluded by the decision of 2026-11-14: that the agent applies
 the text to every action, landings and payments included. An effect would
@@ -382,7 +391,7 @@ after the fact.
 | J5.2 | Every member of a child's contract is handled by exactly one row of the member table below. A member to which a profile assigns no row, and a member whose semantics the verifier does not know, refuses, also when child and parent carry equal bytes (LIP-0008 section 12.2). For each narrowing relation the profile states what the executor compares the member with at the effect. | The code of the member's row |
 | J5.3 | For a child of profile `/2` the attestation's `textual` is `none` or `identical`, which is what V14 computes from two equal hashes. D1 is unchanged: a child with equal text still needs its attestation. Whether the value `within` stays in the attestation object is for the later revision that narrows by text. | An attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`, at V14 |
 | J5.4 | An executor whose `text` setting is `none` MUST refuse a grant whose `scope_text_sha256` is not empty, root or child, after step 6d of LIP-0013. An executor whose setting is `conduct` MUST hold the exact octets that hash to that value; its admission gate makes that check before it builds an authority frame (LIP-0013 section 3.4). | `TEXT_UNSUPPORTED`; without the octets `TEXT_UNAVAILABLE` |
-| J5.5 | At an executor with `conduct` the agent applies the text to its work, which is `instruct` and `review`, as a restriction on what the structured members allow; a text never adds. The executor MUST NOT perform a `land` or a `spend` automatically under a grant whose text is not empty. On v4 the same holds for every command that the action profile marks as an effect at a resource. An issuer that wants a text and an effect issues two grants, and SHOULD NOT list `land` or `spend` in a contract that carries a text. No admission step establishes that an agent's work lies within a text, and no record, receipt or attestation may report that it did. A confirmation is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then one of two branches applies (J5b). The refusal is the default. The confirmation is an exception; the draft proposes that it applies only at an executor whose owner chose it. | By the branch |
+| J5.5 | At an executor with `conduct` the agent applies the text to its work, which is `instruct` and `review`, as a restriction on what the structured members allow; a text never adds. The executor MUST NOT perform a `land` or a `spend` automatically under a grant whose text is not empty. On v4 the same holds for every command that the action profile marks as an effect at a resource. An issuer that wants a text and an effect issues two grants, and SHOULD NOT list `land` or `spend` in a contract that carries a text. No admission step establishes that an agent's work lies within a text, and no record, receipt or attestation may report that it did. A confirmation is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then one of two branches applies (J5b). The refusal is the default. The confirmation is an exception. What selects the exception is open, and neither branch fixes it. | By the branch |
 | J5.5, refusal | The executor refuses the request, after step 6e of LIP-0013. | `TEXT_UNSUPPORTED` |
 | J5.5 (c) | The exception (J5b). For `land` and `spend`, and on v4 for every command that the action profile marks as an effect at a resource, the executor MUST NOT perform the effect automatically under a grant whose text is not empty. It holds the effect until its owner confirms it under J5.9, or it refuses. `instruct` and `review` are conduct. | `TEXT_NEEDS_APPROVAL` |
 | J5.6 | An inherited text is the root's. Its words refer to the parties and resources of the root grant, which the bundle carries (V2). A reader MUST NOT resolve them against the child's grantee, executor or run. | none; a rule of reading |
@@ -432,13 +441,12 @@ The steps change as follows. V9 gains one equality, of the two text hashes.
 V14 checks `none` and `identical` against the two hashes. The bundle of V2
 carries one text. Step 6 of LIP-0013 gains the refusals of J5.4 after 6d
 and the refusal of J5.5 after 6e, for contracts that carry the member;
-step 7 gains `scope_text`. At an executor that takes the exception of
-J5.5 (c) the refusal after 6e gives way to a hold at step 9 and the
-confirmation of J5.9.
+step 7 gains `scope_text`. Under the exception of J5.5 (c) the refusal
+after 6e gives way to a hold at step 9 and the confirmation of J5.9.
 Profile `/1`, its vectors and kind 8185 do not change.
 
 J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3. For roots,
-J5.4, J5.5 and J5.7, and J5.9 at an executor that takes the exception,
+J5.4, J5.5 and J5.7, and J5.9 where the exception is used,
 are a precondition of enforcing mode for every executor that accepts
 profile `/2`, and the setting `text` is `none` unless the
 executor's owner set `conduct`. An executor that accepted `/2` contracts and
@@ -458,15 +466,22 @@ What stays open:
 - **A confirmed effect rests on a person's judgement.** Under the
   exception of J5.5 (c) an effect that was requested under a text is
   performed on the word of the executor's owner. That judgement can be
-  wrong, and it is independent of the model that proposed the effect. How
-  an owner chooses the exception for an executor, and the bytes of the
-  confirmation record, are not fixed.
+  wrong, and it is independent of the model that proposed the effect. The
+  bytes of the confirmation record are not fixed.
+- **What selects the exception.** The decision names the refusal as the
+  default and the owner's confirmation as an exception. It does not say
+  for which executor, or for which request, the confirmation takes the
+  place of the refusal. The draft's proposal, that the executor's owner
+  chooses the exception for an executor, is not decided and binds nothing.
+  Until the owners decide, this subsection says what an executor does
+  under each branch and not which branch applies.
 - **Reviews feed landing gates.** A review is an agent's work, also a
   review given under a grant with a text, and such a review can let a
   landing under another grant, one without a text, pass its gate. It is
   therefore not true that no effect anywhere follows from a model's
-  reading. It is true that no landing and no payment is performed under a
-  grant that carries a text.
+  reading. It is true that under a grant that carries a text no landing
+  and no payment is performed, except the one operation that the
+  executor's owner confirmed under J5.9.
 - **Few narrowing members.** Profile `/2` narrows actions, repositories,
   the budget and the window, and the recipients through the parent's right
   of re-delegation. It has no member for a ref, a revision, a payee or a
@@ -530,9 +545,9 @@ Cases (J5):
 | S5-1 | Child and parent with the same non-empty text hash, the exact octets present, `textual` `identical` | A child with another text hash and an attestation that says `within` under the rules in force: `CHILD_TEXT_DIFFERS`, never `CHILD_NOT_CERTIFIED`. Variants that differ only in line endings, in Unicode form or in a final newline, each with its hash recomputed and the grant signed again, refuse the same way. In force this child is admitted with `within`. |
 | S5-2 | Both without text, `textual` `none`; and both with the same text, `identical`; each with a valid attestation | Three separate negatives: a text added under a parent without one, and the parent's text dropped: `CHILD_TEXT_DIFFERS`; an attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`. A child with equal text and no attestation still refuses as `CHILD_NOT_CERTIFIED`. In force, adding and dropping are admitted with `within`. |
 | S5-3 | An executor with `text` `none` admits a `/2` grant without a text | The same executor refuses a `/2` grant with a text, root or child: `TEXT_UNSUPPORTED`. In force it is admitted. The case covers the executor that cannot read and always runs beside S5-4. |
-| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, and the record says `present` | The text says "only changes under docs/", and an envelope asks for a `land` under the grant with the text. Under both branches no landing happens automatically, whatever the diff touches. By default the request refuses as `TEXT_UNSUPPORTED`, and a `spend` refuses the same way; at an executor that takes the exception it is held, or refuses as `TEXT_NEEDS_APPROVAL`, until the owner confirms. A record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
-| S5-4a | Two grants of one principal to one grantee at one executor: one with the text and the actions `instruct` and `review`, one without a text and with `land` for the repository. An instruction under the first is admitted with `scope_text` `present`, and a landing under the second is performed | An executor that refuses the grant without a text because another grant of the same principal carries one fails the control. An executor that performs the landing under the grant with the text fails S5-4. |
-| S5-4c | The exception (J5b), at an executor whose owner chose it: under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation; the same request and the same confirmation at an executor whose owner did not choose the exception: refused as `TEXT_UNSUPPORTED`, and nothing is performed. A record that says the text was checked is wrong in every variant. |
+| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, and the record says `present` | The text says "only changes under docs/", and an envelope asks for a `land` under the grant with the text. Under both branches no landing happens automatically, whatever the diff touches. Under the default the request refuses as `TEXT_UNSUPPORTED`, and a `spend` refuses the same way; under the exception it is held, or refuses as `TEXT_NEEDS_APPROVAL`, until the owner confirms. A record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
+| S5-4a | Two grants of one principal to one grantee at one executor: one with the text and the actions `instruct` and `review`, one without a text and with `land` for the repository. An instruction under the first is admitted with `scope_text` `present`, and a landing under the second is performed | An executor that refuses the grant without a text because another grant of the same principal carries one fails the control. An executor that performs the landing under the grant with the text, without its owner's confirmation, fails S5-4. |
+| S5-4c | The exception (J5b): under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation. A record that says the text was checked is wrong in every variant. |
 | S5-5 | The actual resolved arguments of the privileged call lie inside every structured member | Signed arguments that are narrow and a real call with wider arguments, including a target that changes between check and call: refused before the effect. v4 already requires it (LIP-0008 section 12.2); a test of the signed description alone is not this case. |
 | S5-6 | A narrower action set, repository list and window, one at a time, with the identical text and a valid attestation | Each made wider, one at a time, refuses with its mechanical code and not with a certification code. Budget variants run in the spend profile only. |
 | S5-7 | Members of the member table | Parent and child carry the same member of unknown semantics, not merely an extra JSON key: refused. |
@@ -1227,8 +1242,10 @@ What stays open:
 - **One child object for each row, on v4, across forks.** The coin of J1.9
   admits one issuance for a row on the active chain. After a reorganisation
   that removes that issuance, a thief of the delegation key (section 11.1)
-  can issue another child that spends the coin on the new chain. The
-  decision accepts this boundary.
+  who can also have the coin spent can issue another child that spends the
+  coin on the new chain. Spending the coin takes the key of the coin, or
+  the operator's signer, which holds that key; the delegation key alone
+  spends nothing. The decision accepts this boundary.
 - **Who funds the coin of a row.** The key that the coin pays is decided:
   a separate key, derived from the seed of the operator's signer in an
   account of its own. The delegation key of section 11.1 signs child grants

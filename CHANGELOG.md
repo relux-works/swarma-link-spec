@@ -22,17 +22,23 @@ landing or a payment that is requested under a grant with a text. That is
 the default. The owner's confirmation of one operation stays as an
 exception, with its exact arguments (J5.9) and recorded as the owner's
 decision. The exception is course (c), the confirmation of effects, and
-course (b), the confirmation of every action, is not taken; its rule and
-its case S5-4b are removed, and the table of courses keeps its row. The
-draft proposes that the executor's owner chooses the exception for an
-executor, which is no part of the decision. LIP-0013 section 3.4 says the
-same of its steps.
+course (b), the confirmation of every action, is not taken; its rule, its
+case S5-4b and its clause in J5.9 are removed, and the table of courses
+keeps its row. All of that is the owner's decision. What selects the
+exception is open. The draft proposes that the executor's owner chooses
+the exception for an executor; the proposal is no part of the decision,
+and no rule, step or case depends on it. The open point on reviews now
+says that the one operation an owner confirmed is the only landing or
+payment under a grant with a text. LIP-0013 section 3.4 says the same of
+its steps.
 
 The key of a row's coin (J1, section 9.1). On v4 the coin of a row pays a
 separate key, derived from the seed of the operator's signer in an account
 of its own, as seal keys are derived (LIP-0008 section 11.1). Who funds
 the coin, and the account and the path of the key, stay open. The key
-registry and the key map carry the key.
+registry and the key map carry the key. The open point on forks now says
+what a second child after a reorganisation takes: the delegation key and
+a spend of the coin, which the delegation key alone cannot make.
 
 ## 0.1.35 — 2026-11-14
 
