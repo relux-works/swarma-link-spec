@@ -401,7 +401,7 @@ instruction stands and within which terms:
 | Grant | The `grant_id` under which step 7 admitted the instruction. |
 | Contract terms | The terms of the contract that passed step 6d: its actions, repositories, budget and window. |
 | Scope text | For a contract of profile `/2` (LIP-0014) whose `scope_text_sha256` is not empty: the exact octets of that text. Absent otherwise. |
-| Framework agreement | The hash of a framework agreement, where the contract names one. No profile defines such an agreement yet, so the member is absent today. |
+| Framework agreement | The identifier of the framework contract that the contract stands under, where it names one (LIP-0017 section 5). Neither profile of the trust contract has that member, so it is absent today. |
 
 The agent's standing instructions, its root profile, carry one standing
 rule and no contract. The terms of a specific contract MUST NOT be written

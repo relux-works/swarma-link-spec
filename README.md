@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.33
+**Version:** 0.1.31
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.33
+## Draft profiles and design decisions in v0.1.31
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -275,6 +275,22 @@ an additional convention with a single level of registration is under
 consideration; it changes no rule. The LIP records Ivan Oparin's
 four decisions of 2026-11-10 and awaits the co-author's agreement. No reader
 implements these rules yet; LIP-0004 values keep their own rules.
+
+Two further drafts of 2026-11-14 record decisions of Ivan Oparin and await
+the co-author's agreement. [LIP-0017](lips/LIP-0017-contracts.md) makes the
+contract an object of its own: one document that two or more parties sign,
+with free text and machine members, whose identifier commits to a salt and
+to a salted hash of each clause, so that single clauses can be disclosed.
+A contract is anchored as LIP-0005 action `0x07` and may exist without any
+grant, and every grant binds a contract. A grant's window lies inside its
+contract's window, a framework contract covers several grants over time,
+and a contract can name a seal whose script is its termination clause and
+whose spend, with action `0x08`, ends every grant under it. Grant v3 does
+not change. [LIP-0018](lips/LIP-0018-extension-guide.md) lists what a
+proposal for a contract profile, a limit kind or an action name has to
+state, and LIP-0008 section 2 names the further limit kinds of the same
+decision, each with a meaning that is the draft's proposal. These are semantics without bytes, and nothing of them is
+implemented.
 
 Version 0.1.33 records five further directions of Ivan Oparin of
 2026-11-14, with the co-author's agreement pending. LIP-0013 section 3.7

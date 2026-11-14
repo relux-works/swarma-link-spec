@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.33 — 2026-11-14
+## 0.1.32 — 2026-11-14
 
 Five further directions of Ivan Oparin of 2026-11-14 are recorded. The
 co-author's agreement on each is pending.
@@ -33,7 +33,7 @@ qualified, new grants are issued on v4 only, and v3 remains for
 verification alone. What becomes of a v3 grant that is still live then is
 not decided.
 
-## 0.1.29 — 2026-11-14
+## 0.1.31 — 2026-11-14
 
 Holds Draft text for the eight gaps that version 0.1.24 recorded, labelled
 J1 to J8, and records the decisions that Ivan Oparin made on them: J3, J6
@@ -45,6 +45,9 @@ first says what holds until then, and the places it would change carry a
 pointer. No gap is called closed for a property that its subsection lists as
 open. No v3 byte changes, and neither does any rule or vector of profile
 `swarma-trust-contract/1` or the reference checker.
+
+The number 0.1.29 is not used. This revision was prepared under it and
+landed after 0.1.30, so it takes the next number.
 
 LIP-0014, section 9.1 (J1). The parent signs one row for each child, with
 the executor, the grantee, the cap and the certifier. On v3 the limit is a
@@ -119,6 +122,54 @@ for the delegation key (J4), the changed presence rule (J7) and a note for
 a notary's name beside its registration flow (J3). The key registry points
 to the sections that hold the rules of the v4 keys. LIP-0012, LIP-0010 and
 LIP-0008 point to the texts that concern them.
+
+## 0.1.30 — 2026-11-14
+
+Two new drafts and one extension record decisions that Ivan Oparin made on
+2026-11-14. The co-author's agreement on each is pending. They state
+semantics without canonical bytes, and nothing of them is implemented.
+
+LIP-0017, contracts. Until now a contract existed only as the hash that a
+grant signs. The LIP makes it an object: one document that two or more
+parties sign, with free text for people and members for machines. Its
+identifier commits to a salt and to a salted hash of each clause, so that a
+party can disclose single clauses. A contract is anchored as LIP-0005
+action `0x07`, and two parties can show their assent on chain by spending
+an output that needs both signatures. Every grant binds a contract, which
+may be minimal, and a contract may exist without any grant. A grant's
+window lies inside its contract's window; profile `swarma-trust-contract/1`
+keeps equality, and no rule of LIP-0013 changes. A framework contract
+covers several grants over time. A contract ends early only through a
+machine rule that names who may declare the end. For v4 and for framework
+contracts a contract can name a seal of its own: its script is the
+termination clause (the issuer alone, either party, both together, or an
+arbiter), every grant under the contract requires it unspent, and its
+spend, with action `0x08` and the hash of the signed termination
+statement, ends them all. Grant v3 does not change. A table of scenarios
+shows rental, trust, services between companies, employment and an
+agreement without a grant.
+
+LIP-0018, an extension guide. It lists what a proposal has to state for a
+contract profile, for a limit kind and for an action leaf name. For a
+limit kind these are the identifier and resource, the unit and integer
+scale, bounds and rounding, period and aggregation, reservation,
+concurrency, uncertain outcomes, replay, denials, the contract mirror,
+defaults, refusal codes, vectors with a checker, and the path of the LIP.
+The guide assigns no identifier and no byte.
+
+LIP-0008 section 2 records the decision that further limit kinds join
+its list: external service cost, runtime and concurrency, rate, outbound
+messages, repository writes, storage and egress, name operations, secret
+releases and an owner-confirmation threshold; that coins carry a maximum
+for one spend and for a period and name their asset and payment system;
+and that an allowance of zero of any kind authorizes nothing. The kinds
+are the decision. The one-line meaning beside each kind is the draft's
+proposal, and a type profile binds it only if it adopts it.
+
+LIP-0005 lists the actions `0x07` and `0x08` as proposals; the reference
+parser accepts neither. The authority frame of LIP-0013 section 3.4 names
+the framework contract of LIP-0017 as its fifth member. The key registry
+gains entries for the keys of a contract seal and of an assent output.
 
 ## 0.1.28 — 2026-11-14
 
