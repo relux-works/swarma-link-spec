@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.1.43 — 2026-11-14
+
+Adds Draft LIP-0025, the journal continuity profile for Grant v4, with
+vectors. Every rule of it is the draft's proposal, and neither owner has
+decided one. No rule of another text changes, and no v3 byte does. The
+draft selects no store, and nothing of it was built or run.
+
+What it answers. LIP-0014 section 9.1 (J1.4) states the contract of a store
+whose continuity is proved against a record outside it, and says that the
+form of that record and the proof of continuity are an open deployment
+profile. LIP-0008 section 5.1 keeps evidence under a recovery and
+anti-rollback profile whose encoding is open. LIP-0020 W7.9 has an issuer
+record a consumed consent durably and before it signs the grant.
+
+The form. A journal has an identity and a position, and its entries are
+JSON objects in the canonical form of LIP-0020. Its history commitment is
+`c(0) = D(identity)` and `c(n) = D(c(n-1) || e(n))`, with the typed digest
+of LIP-0020 under the tag `swarma-journal/1`. The outside record holds the
+identity, a position, the commitment at that position and a write token,
+and it has one operation that changes the history: it takes a new
+commitment only as the successor of the exact one that it holds, from the
+writer with the current token. An entry goes to the store first and to the
+outside record second, and the act that it records happens after both.
+
+The check. Four outcomes: intact; pending, where the store is exactly one
+entry ahead on the same history and the writer completes the outside write;
+fenced, where the writer does not hold the current token; and lost, which
+is every other state. Equal positions with different commitments are lost.
+The token is compared before the histories, so that a replica that was cut
+off is fenced and does not call the journal lost.
+
+Recovery. A lost journal refuses every act that needs it. Its operator
+restores a store that passes the check, or starts a new journal in one
+attended act. The new journal begins with an entry that states the lost
+identity and the time of the fencing, and it charges everything that the
+lost journal could have held. A journal that counts from blocks gains a
+boundary: a block of the active chain in a healthy observation whose header
+time is more than 7200 seconds later than the fencing. The two hours are
+the bound that consensus puts on a header time, so such a block was mined
+after the fencing.
+
+The consent journal. One journal for one grant key. The issuer writes an
+entry `consent-consumed/1` after the checks of LIP-0020 W7.4 to W7.8 and
+before it signs the grant. Its clock does not read less than the largest
+time in the journal. After a recovery by starting anew it treats as
+consumed every consent whose `created_at` is not later than the fencing.
+
+Three codes: `JOURNAL_LOST`, `JOURNAL_FENCED` and `JOURNAL_CLOCK`.
+
+Vectors. `vectors/LIP-0025/journal-vectors.json` holds 59 vectors over 31
+rules: 6 histories, 8 octet strings that are or are not entries, 14 states
+of a store against its outside record, 10 operations of the outside record,
+9 on the boundary, and 12 traces of the consent journal, among them a crash
+between the two writes, a restore, two histories at one position, a fenced
+writer and a recovery. No store was run.
+
+LIP-0014 section 9.1, LIP-0008 section 5.1 and LIP-0020 section 7.4 gain
+one pointer each.
+
 ## 0.1.42 — 2026-11-14
 
 Adds Draft LIP-0024, the seal and endorsement profile for Grant v4 on

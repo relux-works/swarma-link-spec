@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.42
+**Version:** 0.1.43
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.42
+## Draft profiles and design decisions in v0.1.43
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -441,6 +441,25 @@ each account has a provisioning sitting and a wrapping of its own. Every
 rule is the draft's proposal, and neither owner has decided one. The 47
 vectors in [`vectors/LIP-0024/`](vectors/LIP-0024/) hold signed
 endorsements under published test keys and read no node.
+
+Version 0.1.43 adds [LIP-0025](lips/LIP-0025-journal-continuity.md), a
+profile for a journal that must not go back unnoticed. LIP-0014 states the
+contract of such a store for the ledger of a row and calls its form an open
+deployment profile; LIP-0008 needs the same for its closure journals and
+LIP-0020 for the record of a consumed consent. The draft proposes one form:
+entries in the canonical form of LIP-0020 whose history is bound by hashes;
+an outside record that takes a new state only as the successor of the exact
+state that it holds, from the writer with the current token; a continuity
+check with four outcomes, intact, pending, fenced and lost, in which equal
+positions never suffice; and a recovery by starting anew, with a block
+boundary whose header time lies more than two hours after the fencing. On
+that form it defines the first journal, the issuer's journal of consumed
+consents: one entry before the grant is signed, and after a loss every
+consent that existed before the recovery counts as consumed. Every rule is
+the draft's proposal, and neither owner has decided one. The draft selects
+no store and no service for the outside record, and nothing of it was built
+or run. The 59 vectors in [`vectors/LIP-0025/`](vectors/LIP-0025/) hold
+histories, decision tables and twelve traces of the consent journal.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

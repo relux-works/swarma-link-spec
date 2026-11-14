@@ -1,0 +1,2048 @@
+{
+  "schema": "swarma-link-spec/lip-0025-vectors/1",
+  "lip": "LIP-0025",
+  "note": "Draft vectors for LIP-0025. No vector runs a store, an outside record or a clock: states, times and the place where a write stopped are stated. Identities, identifiers of consents and of contracts, commitments in the groups continuity and outside, and block hashes are placeholders. A vector of the groups commitments.entries, continuity, outside and boundaries whose outcome is not the passing one holds one defect and names a neighbour with the passing outcome. A trace states the expected outcome of each step and the state at its end, and names no neighbour.",
+  "parameters": {
+    "tag": "swarma-journal/1",
+    "largest_entry_octets": 2048,
+    "largest_age_seconds": 259200,
+    "boundary_seconds": 7200
+  },
+  "fields": {
+    "commitments": "chains: an identity and the octets of entries; expect.commitments lists c(0) to c(n). entries: octets and the kind that M1.2 gives them, `no entry`, or `unknown kind`.",
+    "continuity": "store.commitments maps a position to the commitment that the reader computed for it; store.readable false is a store that cannot be read; outside null is an absent outside record.",
+    "outside": "record is the outside record before the operation and record_after the record after it.",
+    "boundaries": "blocks: the time of fencing and a block. first_use: the height of the boundary block, or null where the journal has none, and the height of the block that a parent signs.",
+    "consents": "journal states the identity and the token of the journal at the start, and whether it has an outside record. Each step has an `op` and its expected outcome. consume: the issuer's steps of M6.3 after the checks of LIP-0020 W7.4 to W7.7, with `now` as the issuer's clock; `crash` says where the write stopped. restart: the continuity check of a starting process. keep and restore: an image of the store is kept and put back. lose: the store is gone. fence: the operator raises the token. start anew: the recovery of M5.3. expect at the end states the identity, the position and the commitment of the store and of the outside record."
+  },
+  "rules": [
+    {
+      "rule": "M1.1",
+      "section": "1",
+      "title": "identity and position",
+      "state": "proposed",
+      "vectors": [
+        "commit-01"
+      ]
+    },
+    {
+      "rule": "M1.2",
+      "section": "1",
+      "title": "the form of an entry",
+      "state": "proposed",
+      "vectors": [
+        "entry-01",
+        "entry-02",
+        "entry-03",
+        "entry-04",
+        "entry-05",
+        "entry-07",
+        "entry-08"
+      ]
+    },
+    {
+      "rule": "M1.3",
+      "section": "1",
+      "title": "the history commitment",
+      "state": "proposed",
+      "vectors": [
+        "commit-01",
+        "commit-02",
+        "commit-03",
+        "commit-04",
+        "commit-05",
+        "commit-06"
+      ]
+    },
+    {
+      "rule": "M1.4",
+      "section": "1",
+      "title": "one atomic write",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector runs a store. The traces state where a write stopped."
+    },
+    {
+      "rule": "M1.5",
+      "section": "1",
+      "title": "an entry that the reader cannot read",
+      "state": "proposed",
+      "vectors": [
+        "entry-06"
+      ]
+    },
+    {
+      "rule": "M2.1",
+      "section": "2",
+      "title": "the four values of the outside record",
+      "state": "proposed",
+      "vectors": [
+        "outside-01"
+      ]
+    },
+    {
+      "rule": "M2.2",
+      "section": "2",
+      "title": "outside the domain of a restore",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A property of a deployment. No vector can show where an outside record lives."
+    },
+    {
+      "rule": "M2.3",
+      "section": "2",
+      "title": "the operation advance",
+      "state": "proposed",
+      "vectors": [
+        "outside-01",
+        "outside-02",
+        "outside-03",
+        "outside-04",
+        "outside-05",
+        "outside-06",
+        "outside-07"
+      ]
+    },
+    {
+      "rule": "M2.4",
+      "section": "2",
+      "title": "the write token and fencing",
+      "state": "proposed",
+      "vectors": [
+        "outside-05",
+        "outside-06",
+        "outside-08",
+        "outside-09",
+        "outside-10",
+        "trace-07"
+      ]
+    },
+    {
+      "rule": "M2.5",
+      "section": "2",
+      "title": "the outside record never goes back",
+      "state": "proposed",
+      "vectors": [
+        "outside-03",
+        "outside-07"
+      ]
+    },
+    {
+      "rule": "M3.1",
+      "section": "3",
+      "title": "the order of one write",
+      "state": "proposed",
+      "vectors": [
+        "trace-03",
+        "trace-04"
+      ]
+    },
+    {
+      "rule": "M3.2",
+      "section": "3",
+      "title": "the act after the outside write",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "The traces state the outcome `consumed` only after the outside write; no vector holds a signature."
+    },
+    {
+      "rule": "M3.3",
+      "section": "3",
+      "title": "the other order is another profile",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector holds the other order."
+    },
+    {
+      "rule": "M4.1",
+      "section": "4",
+      "title": "when the check runs",
+      "state": "proposed",
+      "vectors": [
+        "cont-01"
+      ]
+    },
+    {
+      "rule": "M4.2",
+      "section": "4",
+      "title": "intact",
+      "state": "proposed",
+      "vectors": [
+        "cont-01",
+        "cont-02"
+      ]
+    },
+    {
+      "rule": "M4.3",
+      "section": "4",
+      "title": "pending",
+      "state": "proposed",
+      "vectors": [
+        "cont-03",
+        "trace-03"
+      ]
+    },
+    {
+      "rule": "M4.4",
+      "section": "4",
+      "title": "fenced",
+      "state": "proposed",
+      "vectors": [
+        "cont-12",
+        "cont-13",
+        "trace-07"
+      ]
+    },
+    {
+      "rule": "M4.5",
+      "section": "4",
+      "title": "lost",
+      "state": "proposed",
+      "vectors": [
+        "cont-04",
+        "cont-05",
+        "cont-06",
+        "cont-07",
+        "cont-08",
+        "cont-09",
+        "cont-10",
+        "cont-11",
+        "trace-05",
+        "trace-06",
+        "trace-11"
+      ]
+    },
+    {
+      "rule": "M4.6",
+      "section": "4",
+      "title": "the order of the check",
+      "state": "proposed",
+      "vectors": [
+        "cont-09",
+        "cont-10",
+        "cont-11",
+        "cont-12",
+        "cont-13",
+        "cont-14"
+      ]
+    },
+    {
+      "rule": "M5.1",
+      "section": "5",
+      "title": "a lost journal refuses",
+      "state": "proposed",
+      "vectors": [
+        "cont-08",
+        "trace-05"
+      ]
+    },
+    {
+      "rule": "M5.2",
+      "section": "5",
+      "title": "restoring",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "trace-05 restores an image that does not pass the check. No vector restores a store that passes it after a loss."
+    },
+    {
+      "rule": "M5.3",
+      "section": "5",
+      "title": "starting anew",
+      "state": "proposed",
+      "vectors": [
+        "trace-08"
+      ]
+    },
+    {
+      "rule": "M5.4",
+      "section": "5",
+      "title": "the block boundary",
+      "state": "proposed",
+      "vectors": [
+        "boundary-01",
+        "boundary-02",
+        "boundary-03",
+        "boundary-04",
+        "boundary-05"
+      ]
+    },
+    {
+      "rule": "M5.5",
+      "section": "5",
+      "title": "what a new journal charges",
+      "state": "proposed",
+      "vectors": [
+        "first-use-01",
+        "first-use-02",
+        "first-use-03",
+        "first-use-04"
+      ]
+    },
+    {
+      "rule": "M6.1",
+      "section": "6",
+      "title": "one journal for one grant key",
+      "state": "proposed",
+      "vectors": [
+        "trace-07"
+      ]
+    },
+    {
+      "rule": "M6.2",
+      "section": "6",
+      "title": "the entry of a consumed consent",
+      "state": "proposed",
+      "vectors": [
+        "entry-01",
+        "entry-04",
+        "entry-05",
+        "trace-01"
+      ]
+    },
+    {
+      "rule": "M6.3",
+      "section": "6",
+      "title": "the steps of consuming",
+      "state": "proposed",
+      "vectors": [
+        "trace-01",
+        "trace-02",
+        "trace-03",
+        "trace-04",
+        "trace-05",
+        "trace-06",
+        "trace-10",
+        "trace-11"
+      ]
+    },
+    {
+      "rule": "M6.4",
+      "section": "6",
+      "title": "search and write are one step",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A trace runs its steps one after another. No vector holds two writers at one moment."
+    },
+    {
+      "rule": "M6.5",
+      "section": "6",
+      "title": "the issuer's clock",
+      "state": "proposed",
+      "vectors": [
+        "trace-09"
+      ]
+    },
+    {
+      "rule": "M6.6",
+      "section": "6",
+      "title": "the boundary of a recovery",
+      "state": "proposed",
+      "vectors": [
+        "trace-08"
+      ]
+    },
+    {
+      "rule": "M6.7",
+      "section": "6",
+      "title": "nothing releases a consumed consent",
+      "state": "proposed",
+      "vectors": [
+        "trace-01",
+        "trace-03",
+        "trace-12"
+      ]
+    }
+  ],
+  "commitments": {
+    "chains": [
+      {
+        "id": "commit-01",
+        "rules": [
+          "M1.1",
+          "M1.3"
+        ],
+        "claim": "A journal without entries: the commitment at position 0 is the typed digest of the identity.",
+        "tag": "swarma-journal/1",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "entries": [],
+        "expect": {
+          "commitments": [
+            "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb"
+          ]
+        }
+      },
+      {
+        "id": "commit-02",
+        "rules": [
+          "M1.3"
+        ],
+        "claim": "One entry.",
+        "tag": "swarma-journal/1",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "entries": [
+          {
+            "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb",
+            "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143"
+          ]
+        }
+      },
+      {
+        "id": "commit-03",
+        "rules": [
+          "M1.3"
+        ],
+        "claim": "Two entries. The commitment at position 1 is that of commit-02.",
+        "tag": "swarma-journal/1",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "entries": [
+          {
+            "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          },
+          {
+            "text": "{\"consent\":\"aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24\",\"consumed_at\":1794600060,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794596400,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2261656536373732303465366562346537303438633630393339346363396263313165663566636632336439356535653435376631383836643233353638663234222c22636f6e73756d65645f6174223a313739343630303036302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343539363430302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb",
+            "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143",
+            "7c0d918347202f6b57f6fb28c9666b49378a7ceab8475c548d875d48dabfa2b3"
+          ]
+        }
+      },
+      {
+        "id": "commit-04",
+        "rules": [
+          "M1.3"
+        ],
+        "claim": "The two entries of commit-03 in the other order: the commitment at position 2 is another one.",
+        "tag": "swarma-journal/1",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "entries": [
+          {
+            "text": "{\"consent\":\"aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24\",\"consumed_at\":1794600060,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794596400,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2261656536373732303465366562346537303438633630393339346363396263313165663566636632336439356535653435376631383836643233353638663234222c22636f6e73756d65645f6174223a313739343630303036302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343539363430302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          },
+          {
+            "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb",
+            "f0846370eb1ea6a838ddba58acf3b278e128bc42c39586a73e7f3b9e5be61d55",
+            "4296762f54a03424cb3e95aa59396c074c443a1215dec80662445739a7f6759b"
+          ]
+        }
+      },
+      {
+        "id": "commit-05",
+        "rules": [
+          "M1.3"
+        ],
+        "claim": "The entry of commit-02 in a journal with another identity: every commitment is another one.",
+        "tag": "swarma-journal/1",
+        "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+        "entries": [
+          {
+            "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "fd2d2958f7548453e2e2ff82f60bb815b982faf7e3edd38b58c531a27549629b",
+            "40cfb963aa7bf0658beaab4baec91359f7c786bffbe8c8d6a114b88514ded08d"
+          ]
+        }
+      },
+      {
+        "id": "commit-06",
+        "rules": [
+          "M1.3"
+        ],
+        "claim": "The entry of commit-02 with a `consumed_at` that is one second later: the commitment at position 1 is another one.",
+        "tag": "swarma-journal/1",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "entries": [
+          {
+            "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600001,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+            "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030312c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb",
+            "ce3ad9a4f278d661f594bc5c20e044376f565e62d2bfba6b8c5a0e7ca3558b67"
+          ]
+        }
+      }
+    ],
+    "entries": [
+      {
+        "id": "entry-01",
+        "rules": [
+          "M1.2",
+          "M6.2"
+        ],
+        "claim": "An entry of a consumed consent, in canonical form.",
+        "octets": {
+          "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000,\"entry\":\"consent-consumed/1\"}",
+          "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+        },
+        "expect": "consent-consumed/1"
+      },
+      {
+        "id": "entry-02",
+        "rules": [
+          "M1.2"
+        ],
+        "claim": "The members of entry-01 in another order than the canonical one.",
+        "octets": {
+          "text": "{\"entry\":\"consent-consumed/1\",\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794528000}",
+          "hex": "7b22656e747279223a22636f6e73656e742d636f6e73756d65642f31222c22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343532383030307d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-03",
+        "rules": [
+          "M1.2"
+        ],
+        "claim": "An object without the member `entry`.",
+        "octets": {
+          "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794600000}",
+          "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343630303030307d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-04",
+        "rules": [
+          "M1.2",
+          "M6.2"
+        ],
+        "claim": "An entry of a consumed consent without its `contract`.",
+        "octets": {
+          "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"created_at\":1794600000,\"entry\":\"consent-consumed/1\"}",
+          "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22637265617465645f6174223a313739343630303030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-05",
+        "rules": [
+          "M1.2",
+          "M6.2"
+        ],
+        "claim": "An entry of a consumed consent whose `created_at` is a string.",
+        "octets": {
+          "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":\"1794600000\",\"entry\":\"consent-consumed/1\"}",
+          "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a2231373934363030303030222c22656e747279223a22636f6e73656e742d636f6e73756d65642f31227d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-06",
+        "rules": [
+          "M1.5"
+        ],
+        "claim": "An entry of a kind that this profile does not define. For a reader that does not know the kind, the journal is lost.",
+        "octets": {
+          "text": "{\"amount\":40,\"entry\":\"row-reserved/1\"}",
+          "hex": "7b22616d6f756e74223a34302c22656e747279223a22726f772d72657365727665642f31227d"
+        },
+        "expect": "unknown kind",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-07",
+        "rules": [
+          "M1.2"
+        ],
+        "claim": "Octets that are no JSON object.",
+        "octets": {
+          "text": "[\"consent-consumed/1\"]",
+          "hex": "5b22636f6e73656e742d636f6e73756d65642f31225d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-08",
+        "rules": [
+          "M1.2"
+        ],
+        "claim": "An object of more than 2048 octets.",
+        "octets": {
+          "text": "{\"consent\":\"cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c\",\"consumed_at\":1794600000,\"contract\":\"f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0\",\"created_at\":1794600000,\"entry\":\"consent-consumed/1\",\"note\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}",
+          "hex": "7b22636f6e73656e74223a2263623231316565363932653436623839656235623238316363633631373961393638373233363834613966373062636139613034646436623162616537383863222c22636f6e73756d65645f6174223a313739343630303030302c22636f6e7472616374223a2266313466633635313130636539373830363762666130663039353062643630343336666535633530643533383538663338626639646334373435303933636130222c22637265617465645f6174223a313739343630303030302c22656e747279223a22636f6e73656e742d636f6e73756d65642f31222c226e6f7465223a227878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878227d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-01"
+      }
+    ]
+  },
+  "continuity": [
+    {
+      "id": "cont-01",
+      "rules": [
+        "M4.1",
+        "M4.2"
+      ],
+      "claim": "The identities, the positions and the commitments are equal.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "intact"
+    },
+    {
+      "id": "cont-02",
+      "rules": [
+        "M4.2"
+      ],
+      "claim": "A new journal at position 0 whose outside record holds its first commitment.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 0,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 0,
+        "commitment": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "intact"
+    },
+    {
+      "id": "cont-03",
+      "rules": [
+        "M4.3"
+      ],
+      "claim": "The store is one position ahead, and its commitment at the position of the outside record is the commitment of the outside record: a crash between the two writes.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitments": {
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+          "2": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "pending"
+    },
+    {
+      "id": "cont-04",
+      "rules": [
+        "M4.5"
+      ],
+      "claim": "Equal positions and different commitments: two histories at one position. A check of positions alone passes this store.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "01fa90259d5d163bb67cc7caa79d80e3e46fdd995465fc5e39367db2546f0669"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-05",
+      "rules": [
+        "M4.5"
+      ],
+      "claim": "The store is one position ahead, and its earlier history is not the history of the outside record.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitments": {
+          "1": "01fa90259d5d163bb67cc7caa79d80e3e46fdd995465fc5e39367db2546f0669",
+          "2": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-03"
+    },
+    {
+      "id": "cont-06",
+      "rules": [
+        "M4.5"
+      ],
+      "claim": "The store is two positions ahead of the outside record.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 3,
+        "commitments": {
+          "2": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba",
+          "3": "e963b8efc8b2bb1f3c6bacb14b2cd9c7e23ec3c27a119196fdb035ab6db2b031"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-03"
+    },
+    {
+      "id": "cont-07",
+      "rules": [
+        "M4.5"
+      ],
+      "claim": "The store is behind the outside record: what a restore to an earlier position looks like.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitment": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-08",
+      "rules": [
+        "M4.5",
+        "M5.1"
+      ],
+      "claim": "The store is empty and the outside record of the same identity stands at position 3: an empty store is no new journal.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 0,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 3,
+        "commitment": "e963b8efc8b2bb1f3c6bacb14b2cd9c7e23ec3c27a119196fdb035ab6db2b031",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-02"
+    },
+    {
+      "id": "cont-09",
+      "rules": [
+        "M4.5",
+        "M4.6"
+      ],
+      "claim": "The outside record is absent.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": null,
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-10",
+      "rules": [
+        "M4.5",
+        "M4.6"
+      ],
+      "claim": "The store has another identity than the outside record: it was created anew.",
+      "store": {
+        "readable": true,
+        "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-11",
+      "rules": [
+        "M4.5",
+        "M4.6"
+      ],
+      "claim": "The store cannot be read.",
+      "store": {
+        "readable": false
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "writer_token": 5,
+      "expect": "lost",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-12",
+      "rules": [
+        "M4.4",
+        "M4.6"
+      ],
+      "claim": "The store is intact, and the writer holds an older token than the outside record: another writer is current.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "writer_token": 5,
+      "expect": "fenced",
+      "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-13",
+      "rules": [
+        "M4.4",
+        "M4.6"
+      ],
+      "claim": "The store is one position ahead, and the writer holds an older token: it does not complete the write.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitments": {
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+          "2": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "writer_token": 5,
+      "expect": "fenced",
+      "valid_neighbour": "cont-03"
+    },
+    {
+      "id": "cont-14",
+      "rules": [
+        "M4.6"
+      ],
+      "claim": "A writer with an older token sees an old copy of the store beside a newer outside record. That is fenced and not lost: the token is compared before the histories.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitment": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba",
+        "token": 6
+      },
+      "writer_token": 5,
+      "expect": "fenced",
+      "valid_neighbour": "cont-01"
+    }
+  ],
+  "outside": [
+    {
+      "id": "outside-01",
+      "rules": [
+        "M2.1",
+        "M2.3"
+      ],
+      "claim": "An advance from the exact state that the record holds.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "position": 1,
+        "from": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "to": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitment": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba",
+        "token": 5
+      },
+      "expect": "accepted"
+    },
+    {
+      "id": "outside-02",
+      "rules": [
+        "M2.3"
+      ],
+      "claim": "The commitment `from` is another one than the record holds.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "position": 1,
+        "from": "01fa90259d5d163bb67cc7caa79d80e3e46fdd995465fc5e39367db2546f0669",
+        "to": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-03",
+      "rules": [
+        "M2.3",
+        "M2.5"
+      ],
+      "claim": "The position is one behind the record's: a transition that the record took already.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "position": 0,
+        "from": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+        "to": "01fa90259d5d163bb67cc7caa79d80e3e46fdd995465fc5e39367db2546f0669"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-04",
+      "rules": [
+        "M2.3"
+      ],
+      "claim": "The position is one ahead of the record's: a transition is skipped.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "position": 2,
+        "from": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba",
+        "to": "e963b8efc8b2bb1f3c6bacb14b2cd9c7e23ec3c27a119196fdb035ab6db2b031"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-05",
+      "rules": [
+        "M2.3",
+        "M2.4"
+      ],
+      "claim": "The token is older than the record's.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "position": 1,
+        "from": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "to": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-06",
+      "rules": [
+        "M2.3",
+        "M2.4"
+      ],
+      "claim": "The token is larger than the record's: only fencing raises the token.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 6,
+        "position": 1,
+        "from": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "to": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-07",
+      "rules": [
+        "M2.3",
+        "M2.5"
+      ],
+      "claim": "The identity is another one.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "advance",
+        "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+        "token": 5,
+        "position": 1,
+        "from": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "to": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-01"
+    },
+    {
+      "id": "outside-08",
+      "rules": [
+        "M2.4"
+      ],
+      "claim": "Fencing with a larger token.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "fence",
+        "token": 6
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "expect": "accepted"
+    },
+    {
+      "id": "outside-09",
+      "rules": [
+        "M2.4"
+      ],
+      "claim": "Fencing with the token that the record holds.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "operation": {
+        "op": "fence",
+        "token": 5
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 5
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-08"
+    },
+    {
+      "id": "outside-10",
+      "rules": [
+        "M2.4"
+      ],
+      "claim": "Fencing with a smaller token.",
+      "record": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "operation": {
+        "op": "fence",
+        "token": 5
+      },
+      "record_after": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "expect": "refused",
+      "valid_neighbour": "outside-08"
+    }
+  ],
+  "boundaries": {
+    "blocks": [
+      {
+        "id": "boundary-01",
+        "rules": [
+          "M5.4"
+        ],
+        "claim": "A block of the active chain in a healthy observation whose header time is 7201 seconds later than the fencing.",
+        "fenced_at": 1794600000,
+        "block": {
+          "header_time": 1794607201,
+          "on_active_chain": true,
+          "observation_healthy": true
+        },
+        "expect": "boundary"
+      },
+      {
+        "id": "boundary-02",
+        "rules": [
+          "M5.4"
+        ],
+        "claim": "The header time is exactly 7200 seconds later than the fencing: a block that existed before the fencing can carry it.",
+        "fenced_at": 1794600000,
+        "block": {
+          "header_time": 1794607200,
+          "on_active_chain": true,
+          "observation_healthy": true
+        },
+        "expect": "no boundary",
+        "valid_neighbour": "boundary-01"
+      },
+      {
+        "id": "boundary-03",
+        "rules": [
+          "M5.4"
+        ],
+        "claim": "The header time is ten minutes later than the fencing.",
+        "fenced_at": 1794600000,
+        "block": {
+          "header_time": 1794600600,
+          "on_active_chain": true,
+          "observation_healthy": true
+        },
+        "expect": "no boundary",
+        "valid_neighbour": "boundary-01"
+      },
+      {
+        "id": "boundary-04",
+        "rules": [
+          "M5.4"
+        ],
+        "claim": "The block is not on the active chain of the observation.",
+        "fenced_at": 1794600000,
+        "block": {
+          "header_time": 1794607201,
+          "on_active_chain": false,
+          "observation_healthy": true
+        },
+        "expect": "no boundary",
+        "valid_neighbour": "boundary-01"
+      },
+      {
+        "id": "boundary-05",
+        "rules": [
+          "M5.4"
+        ],
+        "claim": "The observation is not healthy under LIP-0022 section 2.",
+        "fenced_at": 1794600000,
+        "block": {
+          "header_time": 1794607201,
+          "on_active_chain": true,
+          "observation_healthy": false
+        },
+        "expect": "no boundary",
+        "valid_neighbour": "boundary-01"
+      }
+    ],
+    "first_use": [
+      {
+        "id": "first-use-01",
+        "rules": [
+          "M5.5"
+        ],
+        "claim": "The block that the parent signs lies above the boundary: the parent was signed after the loss.",
+        "boundary_height": 800,
+        "checkpoint_height": 801,
+        "expect": "new"
+      },
+      {
+        "id": "first-use-02",
+        "rules": [
+          "M5.5"
+        ],
+        "claim": "The block that the parent signs is the boundary block.",
+        "boundary_height": 800,
+        "checkpoint_height": 800,
+        "expect": "charged",
+        "valid_neighbour": "first-use-01"
+      },
+      {
+        "id": "first-use-03",
+        "rules": [
+          "M5.5"
+        ],
+        "claim": "The block that the parent signs lies below the boundary.",
+        "boundary_height": 800,
+        "checkpoint_height": 700,
+        "expect": "charged",
+        "valid_neighbour": "first-use-01"
+      },
+      {
+        "id": "first-use-04",
+        "rules": [
+          "M5.5"
+        ],
+        "claim": "The journal has no boundary entry yet.",
+        "boundary_height": null,
+        "checkpoint_height": 801,
+        "expect": "charged",
+        "valid_neighbour": "first-use-01"
+      }
+    ]
+  },
+  "consents": [
+    {
+      "id": "trace-01",
+      "rules": [
+        "M6.2",
+        "M6.3",
+        "M6.7"
+      ],
+      "claim": "A consent is consumed once. A second attempt with the same consent finds the entry.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600010,
+          "expect": "CONSENT_CONSUMED"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-02",
+      "rules": [
+        "M6.3"
+      ],
+      "claim": "A fresh consent of the same recipient for the same contract is another consent.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600010,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "d1bcea562c21bedf549a836b9992660fbb3005fc63277e4ca22b855c7c8b363d"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "d1bcea562c21bedf549a836b9992660fbb3005fc63277e4ca22b855c7c8b363d",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-03",
+      "rules": [
+        "M3.1",
+        "M4.3",
+        "M6.3",
+        "M6.7"
+      ],
+      "claim": "A crash after the store write and before the outside write. At the restart the write is completed. The consent is consumed and unused, and a fresh one is needed.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "crash": "after the store write",
+          "expect": "crashed"
+        },
+        {
+          "op": "restart",
+          "writer_token": 5,
+          "expect": "pending completed"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600010,
+          "expect": "CONSENT_CONSUMED"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794600005,
+          "now": 1794600020,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "b8815ff97e29c1066249ffdea17c3a1747bb60dea4ab2ca3caae08981c4d4e40"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "b8815ff97e29c1066249ffdea17c3a1747bb60dea4ab2ca3caae08981c4d4e40",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-04",
+      "rules": [
+        "M3.1",
+        "M6.3"
+      ],
+      "claim": "A crash before the store write. Nothing was recorded, and the consent is consumed at the next attempt.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "crash": "before the store write",
+          "expect": "crashed"
+        },
+        {
+          "op": "restart",
+          "writer_token": 5,
+          "expect": "intact"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600010,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "18d6729d317fce4beb1d76c915445ed72827bd6659da13a8aae24d34fda0d43a"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "18d6729d317fce4beb1d76c915445ed72827bd6659da13a8aae24d34fda0d43a",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-05",
+      "rules": [
+        "M4.5",
+        "M5.1",
+        "M6.3"
+      ],
+      "claim": "The store is restored to an image from before the consent was consumed. The journal is lost, and no consent is consumed until the operator acts.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "keep",
+          "image": "before",
+          "expect": "kept"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "restore",
+          "image": "before",
+          "expect": "restored"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600010,
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600020,
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "restart",
+          "writer_token": 5,
+          "expect": "lost"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 0,
+          "commitment": "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-06",
+      "rules": [
+        "M4.5",
+        "M6.3"
+      ],
+      "claim": "Two histories at one position. An image is kept between the store write and the outside write; the store goes back to the image before it; another consent is consumed at the same position; the first image comes back. The positions are equal and the journal is lost.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "keep",
+          "image": "empty",
+          "expect": "kept"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "crash": "after the store write",
+          "expect": "crashed"
+        },
+        {
+          "op": "keep",
+          "image": "with consent 1",
+          "expect": "kept"
+        },
+        {
+          "op": "restore",
+          "image": "empty",
+          "expect": "restored"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600010,
+          "expect": "consumed"
+        },
+        {
+          "op": "restore",
+          "image": "with consent 1",
+          "expect": "restored"
+        },
+        {
+          "op": "restart",
+          "writer_token": 5,
+          "expect": "lost"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "896dcfcea52e45ce6a2ef34f1b792188efebacf133097e6273825358fd902e97",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599950,
+          "now": 1794600020,
+          "expect": "JOURNAL_LOST"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "a92176341120bffcd87906a8425c984025478d6c6fcd9fc30b6a20372bd97b40",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-07",
+      "rules": [
+        "M2.4",
+        "M4.4",
+        "M6.1"
+      ],
+      "claim": "The operator fences the writer. The writer with the old token consumes nothing, and the writer with the new token does.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "fence",
+          "token": 6,
+          "expect": "accepted"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600010,
+          "expect": "JOURNAL_FENCED"
+        },
+        {
+          "op": "consume",
+          "writer_token": 6,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600020,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "5ae675e124bb307a8e7211796b13645c8173ee4c32252c15550f141564cc097f"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "5ae675e124bb307a8e7211796b13645c8173ee4c32252c15550f141564cc097f",
+          "token": 6
+        }
+      }
+    },
+    {
+      "id": "trace-08",
+      "rules": [
+        "M5.3",
+        "M6.6"
+      ],
+      "claim": "The store is gone, and the operator starts anew. A consent that was created before the recovery counts as consumed, also one that the lost journal never held; a consent that was created at the second of the recovery counts as consumed; a later one is consumed.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "lose",
+          "expect": "store gone"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600010,
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "start anew",
+          "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+          "now": 1794600100,
+          "token": 7,
+          "expect": "started anew"
+        },
+        {
+          "op": "consume",
+          "writer_token": 7,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600200,
+          "expect": "CONSENT_CONSUMED"
+        },
+        {
+          "op": "consume",
+          "writer_token": 7,
+          "consent": "896dcfcea52e45ce6a2ef34f1b792188efebacf133097e6273825358fd902e97",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794600050,
+          "now": 1794600200,
+          "expect": "CONSENT_CONSUMED"
+        },
+        {
+          "op": "consume",
+          "writer_token": 7,
+          "consent": "7e05e0159a9a9057b7e16fcad60d7aa51741bc68380c5392514a7cbafca6a7ad",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794600100,
+          "now": 1794600200,
+          "expect": "CONSENT_CONSUMED"
+        },
+        {
+          "op": "consume",
+          "writer_token": 7,
+          "consent": "5d2435329c7536e183fc0969685307a5d0833c08092c1230be99197f7c12e6d2",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794600101,
+          "now": 1794600200,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+          "position": 2,
+          "commitment": "19e71e5c1b99d9b9ae41cdf5ae507c674152213c4e01bf58f96e106faf44d678"
+        },
+        "outside": {
+          "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+          "position": 2,
+          "commitment": "19e71e5c1b99d9b9ae41cdf5ae507c674152213c4e01bf58f96e106faf44d678",
+          "token": 7
+        }
+      }
+    },
+    {
+      "id": "trace-09",
+      "rules": [
+        "M6.5"
+      ],
+      "claim": "The clock reads less than the `consumed_at` of the last entry.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794599990,
+          "expect": "JOURNAL_CLOCK"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794599900,
+          "now": 1794600000,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "84732096fd3709dd5e7666d8c46a5693249062d0b8c65ab75e8c2da25c480c17"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 2,
+          "commitment": "84732096fd3709dd5e7666d8c46a5693249062d0b8c65ab75e8c2da25c480c17",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-10",
+      "rules": [
+        "M6.3"
+      ],
+      "claim": "The time and the age of LIP-0020 W7.8 come before the journal: a consent of 72 hours and one second and a consent from the future write nothing, and a consent of exactly 72 hours is consumed.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794340799,
+          "now": 1794600000,
+          "expect": "CONSENT_AGE"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "aee677204e6eb4e7048c609394cc9bc11ef5fcf23d95e5e457f1886d23568f24",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794600001,
+          "now": 1794600000,
+          "expect": "CONSENT_TIME"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "896dcfcea52e45ce6a2ef34f1b792188efebacf133097e6273825358fd902e97",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794340800,
+          "now": 1794600000,
+          "expect": "consumed"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "a0ba87be7772d5ee984e0cde1147296c5358b1b5e70652a8ea98615a76ff09a0"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "a0ba87be7772d5ee984e0cde1147296c5358b1b5e70652a8ea98615a76ff09a0",
+          "token": 5
+        }
+      }
+    },
+    {
+      "id": "trace-11",
+      "rules": [
+        "M4.5",
+        "M6.3"
+      ],
+      "claim": "A journal without an outside record consumes nothing.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": false
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "JOURNAL_LOST"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 0,
+          "commitment": "1471e18555cbbbf0a903dc420dcd28c34c06a6166311d3e8776a74a0d80fe7eb"
+        },
+        "outside": null
+      }
+    },
+    {
+      "id": "trace-12",
+      "rules": [
+        "M6.7"
+      ],
+      "claim": "An entry stays after its consent is too old to pass: the age rule refuses the consent before the journal is asked, and the history keeps the entry.",
+      "journal": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "token": 5,
+        "outside_record": true
+      },
+      "steps": [
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794600000,
+          "expect": "consumed"
+        },
+        {
+          "op": "consume",
+          "writer_token": 5,
+          "consent": "cb211ee692e46b89eb5b281ccc6179a968723684a9f70bca9a04dd6b1bae788c",
+          "contract": "f14fc65110ce978067bfa0f0950bd60436fe5c50d53858f38bf9dc4745093ca0",
+          "created_at": 1794528000,
+          "now": 1794859200,
+          "expect": "CONSENT_AGE"
+        }
+      ],
+      "expect": {
+        "store": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143"
+        },
+        "outside": {
+          "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+          "position": 1,
+          "commitment": "53bd0b11392ee8c44a21d62ddda327b26bd604cd315725092124f7ea2e025143",
+          "token": 5
+        }
+      }
+    }
+  ]
+}

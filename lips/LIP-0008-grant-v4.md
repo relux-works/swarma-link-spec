@@ -594,6 +594,10 @@ anti-rollback profile. Exact proof/journal encoding and cross-replica propagatio
 remain open. Transient RPC failures, tip movement and inconsistent reads
 retry or refuse without creating this permanent closure.
 
+[LIP-0025](LIP-0025-journal-continuity.md) proposes a profile for the
+continuity of such a journal. The entries of a closure journal are no part
+of it, and each point stays open until both owners accept it.
+
 ### 5.2. Observed owner break of the issuer name and durable closure
 
 Accepted by Ivan Oparin on 2026-11-13 (J6); the co-author's agreement is

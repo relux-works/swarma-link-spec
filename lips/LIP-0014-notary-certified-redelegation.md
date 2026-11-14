@@ -1219,6 +1219,12 @@ cases S1-5, S1-5-ABA and S1-6 pass on its real store. The closure journals of se
 also have to tell an empty store from a lost one; a profile that compares
 positions only does not serve them either.
 
+[LIP-0025](LIP-0025-journal-continuity.md) proposes one form of that
+profile: a history bound by hashes, an outside record that takes only the
+successor of the state it holds, and a block boundary for a recovery, with
+vectors. They are that draft's proposals; it selects no store, and each
+point stays open until both owners accept it.
+
 The subsection replaces these parts of the text in force: the members
 `agents`, `grantees` and `max_children` of section 2; the attestation
 members 15, `budget`, and 16, `prev_attestation_id`, of section 6.1, so

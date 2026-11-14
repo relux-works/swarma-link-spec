@@ -579,6 +579,9 @@ grant each need a fresh consent, which differs from the consumed one at
 least in its `created_at`. A crash between the record and the signature
 leaves a consent that is consumed and unused, and the recipient consents
 again.
+[LIP-0025](LIP-0025-journal-continuity.md) proposes the journal that holds
+this record and what the issuer does after a loss of it; they are that
+draft's proposals.
 
 The tags of W7.3 bind the consent to one contract, one issuer and one
 recipient, and a verifier checks that binding. It cannot check the single
