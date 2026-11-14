@@ -16,9 +16,7 @@ its public half is published, who holds the secret, what it signs, how
 dangerous a leak is, what a thief can do with it, and how its owner
 recovers.
 
-A key that a participant uses for its own data and that signs nothing under
-this specification is outside the registry, for example the decryption keys
-of a holder's blobs in LIP-0009.
+
 
 ## Rules
 
@@ -26,9 +24,12 @@ of a holder's blobs in LIP-0009.
    names has exactly one entry here. A revision that introduces a key MUST
    add its entry in the same revision. A key without an entry has no role in
    the protocol.
-2. **A closed list of uses.** The line "Signs" of an entry is complete. The
-   holder MUST NOT use the key for anything else, and a signature of the key
-   over any other object proves nothing under this specification.
+2. **A closed list of uses.** The line "Signs" of an entry lists every
+   object that a part of this specification defines for the key, and it
+   marks an object that a Draft only proposes. The holder MUST NOT use the
+   key for an object that no part of this specification defines for it.
+   Where a part defines a use that an entry omits, the part holds, and the
+   entry is a defect to be corrected.
 3. **The messaging key never grants authority.** A key that carries messages
    signs no grant, on Grant v3 and on v4. Ivan Oparin decided this on
    2026-11-14, together with a separate delegation key for child grants on
@@ -58,16 +59,21 @@ The words of an entry:
 
 ## Danger levels
 
-A level says how far a leak reaches and what stops it. The levels are
-assigned by these criteria. Like the rest of the registry they are the
-draft's proposal and wait for the owners' confirmation.
+A level says what a leak lets another party do and what stops it. It
+belongs to a key with all its uses: a key that several grants name is
+exposed in all of them, and nothing in Grant v3 gives a recipient a key of
+its own for each grant. Where two descriptions fit a key, the higher level
+holds, and where a level depends on a condition the entry and the index
+name it. The coin of a seal or of a row is a marker, and its amount raises
+no level. Like the rest of the registry the levels are the draft's proposal
+and wait for the owners' confirmation.
 
 | Level | A leak lets another party | Stop |
 | --- | --- | --- |
 | critical | Take over an identity, or sign in its name without a bound: move a name, issue any grant of an issuer. | None that reaches everything the thief signed or moved. The owner rebuilds the identity or reissues every grant. |
-| high | Use or pass on authority inside a signed bound, or spend the funds that the key controls. | A stop exists that every verifier sees on its own node, such as a seal spend or a name update. For funds the balance bounds the loss. |
-| medium | End authority early, or act inside one grant, one row, one seal or one service. It creates no authority beyond that object. | The object bounds the damage, and the key is replaced with it. |
-| low | Impersonate an endpoint or a device, or read traffic. The key carries no authority and controls no funds. | New keys and new pins. |
+| high | Use authority, or pass it on, inside signed bounds, under every grant or parent that names the key; or spend a balance that the key holds as money. | A stop exists that every verifier sees on its own node, such as a seal spend or a name update. For money the balance bounds the loss. |
+| medium | End authority early, or forge a record that gives no authority by itself: a withdrawal, a receipt, a verdict, an offer. It uses no authority and creates none. | What can be ended or disputed bounds the damage, and the key is replaced. |
+| low | Impersonate an endpoint or a device, or read traffic or stored data. The key carries no authority and controls no money. | New keys and new pins. |
 
 ## Index
 
@@ -77,12 +83,14 @@ draft's proposal and wait for the owners' confirmation.
 | Grant key | critical | LIP-0004, in use on v3; v4 draft (LIP-0008) |
 | Funding key | high | LIP-0004, in use on v3 |
 | Seal keys, v4 | medium | LIP-0008 sections 11 and 11.1, Draft |
-| Single-use seal keys | medium | LIP-0002 and LIP-0006; the v4 profile is open |
+| Single-use seal key, issuer branch | medium | LIP-0002 and LIP-0006; the v4 profile is open |
+| Single-use seal key, grantee branch | high | LIP-0002 and LIP-0006; the v4 profile is open |
 | Provider key | medium | Key map, in use in the rental profile |
-| Principal's Nostr key | low | LIP-0004 and LIP-0010, in use on v3 |
+| Principal's Nostr key | low; high where a grant names it as grantee | LIP-0004 and LIP-0010, in use on v3 |
 | Authority key of a person | high | Decision of 2026-11-14, agreement pending |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
-| Renter key | medium | LIP-0004, in use in the rental profile |
+| Renter key | high | LIP-0004, in use in the rental profile |
+| Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
 | Delegation key, v4 | high | Decision of 2026-11-14, agreement pending |
 | Row coin key, v4 | medium | Decision of 2026-11-14, agreement pending |
 | Child-seal key, v4, optional | medium | Decision of 2026-11-14: a profile option, not in the first version |
@@ -91,10 +99,13 @@ draft's proposal and wait for the owners' confirmation.
 | Row stop key, v4 | medium | Decision of 2026-11-14, agreement pending |
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
 | Wallet money keys | high | LIP-0006 and the key map, in use |
+| Agent-controlled wallet key | high | LIP-0006, security consequences; its provisioning is open |
 | Moderator key | medium | LIP-0011, Draft |
 | Transport keys and slot secrets | low | Key map, in use in the rental profile |
 | Keys bound by a certificate statement | low | LIP-0015 section 6, a proposal |
-| Owner key and requester key, v0.1 | medium | Normative v0.1 profile, frozen as historical |
+| Holder's blob decryption keys | low | LIP-0009, a proposal; custody is open |
+| Owner key, v0.1 | medium | Normative v0.1 profile, frozen as historical |
+| Requester key, v0.1 | high | Normative v0.1 profile, frozen as historical |
 
 ## Names and issuance
 
@@ -193,23 +204,38 @@ draft's proposal and wait for the owners' confirmation.
   Oparin's decision of 2026-11-11. On v3 no separate seal key exists: the
   seal pays the grant key.
 
-**Single-use seal keys**
+**Single-use seal key, issuer branch**
 
-- Owner: the issuer for the revocation branch, the grantee for the use
-  branch.
-- Published: in no name. The operator pins both chain keys (LIP-0002).
-- Holder: the issuer's signer and the grantee's client.
-- Signs: the issuer's key signs the revocation spend of the seal. The
-  grantee's key signs the use spend, which commits to the hash of one
-  request.
+- Owner: the issuer of the single-use grant.
+- Published: in no name. The operator pins the chain keys of the seal
+  (LIP-0002).
+- Holder: the issuer's signer.
+- Signs: the revocation spend of the single-use seal.
 - Danger: medium.
-- Leak: a thief of the grantee's key takes the seal value and can use that
-  one grant once, inside its limits, its window and the service's peer
-  admission. A thief of the issuer's key revokes that one grant.
-- Recovery: the issuer revokes and issues a new grant with a new seal.
+- Leak: the thief revokes the single-use grants whose seals name the key.
+  It cannot use them.
+- Recovery: new grants with seals under a new key.
 - Source: LIP-0002, a working design on regtest; LIP-0006 for the wallet
-  service. The v4 output profile of this seal is open (LIP-0008 section
-  11.1).
+  service. The v4 output profile of this seal, and the source of this key
+  on v4, are open (LIP-0008 section 11.1).
+
+**Single-use seal key, grantee branch**
+
+- Owner: the grantee of the single-use grant.
+- Published: in no name. The operator pins the chain keys of the seal
+  (LIP-0002).
+- Holder: the grantee's client.
+- Signs: the use spend of the seal, which commits to the hash of one
+  request.
+- Danger: high.
+- Leak: the thief takes the seal value and uses, once each, every
+  single-use grant whose seal names the key, inside each grant's limits,
+  its window and the service's peer admission.
+- Recovery: the issuer revokes those grants by the issuer branch and
+  issues new ones with seals under a new key.
+- Source: LIP-0002, a working design on regtest; LIP-0006 for the wallet
+  service. LIP-0006 does not say whether this is the secret of the wallet
+  client's action key. The v4 output profile of this seal is open.
 
 **Provider key**
 
@@ -227,8 +253,17 @@ draft's proposal and wait for the owners' confirmation.
 
 A grantee key is whichever key a grant names as its recipient: `grantee_key`
 on v3, and on v4 the request key of a recipient by key or the channel key
-that a recipient's name yields (LIP-0008 section 3.1). The four entries
+that a recipient's name yields (LIP-0008 section 3.1). The five entries
 below are the keys that play that part.
+
+On v4 a recipient also signs its assent to the contract of a grant
+(LIP-0008 sections 1 and 8); the bytes of that object are open.
+
+LIP-0009 proposes two further signed objects for a key that holds an
+account at a replaceable service: the consent to a migration, and a BUD-11
+endpoint token of kind 24242 for a blob store. Both are proposals whose
+signing domains are open, and a key signs them only where that profile
+names it as the holder or as the channel key.
 
 **Principal's Nostr key**
 
@@ -240,12 +275,14 @@ below are the keys that play that part.
   map's proposed layout also uses it as the grantee key of Goal 1; where a
   grant names it so, it signs what the authority key below signs, and its
   level is that key's.
-- Danger: low, while no grant names it as grantee.
+- Danger: low; high where a grant names it as grantee.
 - Leak: the thief reads the principal's messages and writes in the
   principal's name. No authority follows: a peer message is data until a
   signed envelope under a grant is admitted (LIP-0013 section 3.4).
 - Recovery: a name update with a new key, and new pins at the contacts. No
-  grant closes.
+  grant closes by that update. Where a grant names the old key as grantee,
+  the recovery of the authority key applies as well: the issuer revokes
+  that grant before it issues a new one.
 - Source: LIP-0004 section 1 and LIP-0010, in use on v3.
 
 **Authority key of a person**
@@ -265,8 +302,10 @@ below are the keys that play that part.
 - Danger: high.
 - Leak: the thief acts under every grant issued to the key, inside each
   grant's limits, at every executor that admits it.
-- Recovery: the issuers revoke those grants and issue them again to a new
-  key.
+- Recovery: the issuer of each such grant revokes it by spending its seal
+  and checks that the spend is seen. Only then is the leak stopped, and a
+  new grant goes to a new key. A new grant alone closes nothing: the old
+  one admits the old key until its seal is spent or its window ends.
 - Source: Ivan Oparin's decision of 2026-11-14 for grants issued to him;
   the co-author's agreement is pending. The decision rejects the other
   reading, an authority key written into the name in place of the Nostr
@@ -293,10 +332,14 @@ below are the keys that play that part.
 - Leak: the thief reads and writes the agent's messages and acts under
   every grant issued to the key or to the agent's name, inside each
   grant's limits.
-- Recovery: the operator updates the name with a new key. On v3 a grant
-  that names the old key as grantee is issued again, and grants whose
-  executor is the agent do not close. On v4 a recipient by name keeps its
-  grants.
+- Recovery: the operator updates the name with a new key. For a grant that
+  names the old key directly, on v3 and for a v4 recipient by key, that
+  update closes nothing: the issuer of each such grant revokes it by
+  spending its seal, checks that the spend is seen, and then issues a new
+  grant to the new key. For a v4 recipient by name the update is enough,
+  because the request key is read from the name at every admission. Grants
+  whose executor is the agent are not affected by a change of its
+  messaging key.
 - Source: LIP-0004 section 1 and LIP-0010, in use on v3.
 
 **Renter key**
@@ -306,12 +349,36 @@ below are the keys that play that part.
 - Holder: the renter's device, for example a browser signer.
 - Signs: the kind-8181 consent to the rental and the renter's messages to
   the rented agent.
-- Danger: medium.
-- Leak: the thief acts as the renter under that rental, inside its limits
-  and its window.
-- Recovery: the renter tells its contacts, and the issuer revokes the grant
-  and issues it again to a new key.
+- Danger: high.
+- Leak: the thief acts as the renter under every grant that names the key,
+  inside each grant's limits and window. Grant v3 does not give a renter a
+  key of its own for each rental.
+- Recovery: the renter tells its contacts. The issuer of each grant that
+  names the key revokes it by spending its seal, and then issues it again
+  to a new key.
 - Source: LIP-0004 section 3 and the key map, in use in the rental profile.
+
+**Wallet client action key**
+
+- Owner: the party that the wallet grants are issued to, which is an agent
+  or its operator.
+- Published: in no name. One instance of the wallet service pins it as its
+  one grantee key, and each request names it (LIP-0006 sections 1 and 2).
+- Holder: the client of the wallet service, which is the agent's own
+  process.
+- Signs: the action requests of the wallet service v1 profile, under the
+  domain `swarma-action-v1`: `spend` and `budget` under a grant, and the
+  actions `balance`, `history` and `receive`, which need no grant.
+- Danger: high.
+- Leak: the thief asks for spends inside the budgets of the wallet grants
+  that name the key. The service also checks the kernel peer of the
+  connection, so the key alone, used by another OS user, is refused.
+- Recovery: the issuer revokes the wallet grants that name the key. The
+  service instance gets a new grantee key in its configuration, and new
+  grants name that key.
+- Source: LIP-0006 sections 1 to 4, implemented in the wallet service v1
+  profile.
+
 
 ## Re-delegation and the notary
 
@@ -413,9 +480,12 @@ grantee, the cap and the notary of that child.
   names it; with an action `0x05` frame the withdrawal is for cause.
 - Danger: medium.
 - Leak: the thief withdraws attestations, and the children they certify
-  refuse until they are certified again. It certifies nothing.
-- Recovery: after a plain withdrawal the notary certifies again with a new
-  seal.
+  refuse. It certifies nothing. A withdrawal that carries the frame for
+  cause is worse than a plain one: after it the same child may not be
+  certified again (LIP-0014 section 10).
+- Recovery: after a plain withdrawal the notary certifies the same child
+  again with a new seal. After a withdrawal for cause the delegator asks
+  for a new child.
 - Source: LIP-0012 and LIP-0014 sections 6.4 and 10, Draft.
 
 **Row stop key, v4**
@@ -447,7 +517,9 @@ grantee, the cap and the notary of that child.
 - Holder: the service, under its dedicated OS user. The service refuses a
   receipt key equal to the grantee key.
 - Signs: the service's receipts, under the domain
-  `swarma-action-receipt-v1`.
+  `swarma-action-receipt-v1`. Proposed by LIP-0009, with open domains:
+  the closing statement of a provider when an account moves to another
+  provider, and the acceptance of the provider that takes it over.
 - Danger: medium.
 - Leak: the thief forges receipts. It cannot spend coins with this key.
 - Recovery: a new key, new pins at the clients and a migration of the
@@ -467,6 +539,22 @@ grantee, the cap and the notary of that child.
   bypasses the service's limits.
 - Recovery: new addresses, the remaining funds moved, and new RPC access.
 - Source: LIP-0006 and the key map, in use in the wallet profile.
+
+**Agent-controlled wallet key**
+
+- Owner: not fixed. LIP-0006 leaves the provisioning of this tier open.
+- Published: nowhere by the protocol.
+- Holder: the agent itself. This is the tier that the wallet service does
+  not guard.
+- Signs: the coin transactions of a small wallet that the agent controls.
+- Danger: high.
+- Leak: the thief spends the balance directly, and so can the agent. A
+  grant at the wallet service can gate a refill and cannot restrict what
+  the key spends afterwards.
+- Recovery: no refill, the remaining balance moved, and a new key. The
+  refill limits and the revocation of this tier are open.
+- Source: LIP-0006, security consequences and open questions.
+
 
 **Moderator key**
 
@@ -495,8 +583,8 @@ grantee, the cap and the notary of that child.
 - Danger: low.
 - Leak: the thief impersonates a peer; the grant checks stay separate. A
   stolen bearer is bounded by the slot's window, its limits and its
-  revocation. The proxy's upstream API secret is a credential outside this
-  registry, and its theft bypasses slot limits.
+  revocation. The proxy alone holds one more secret, its upstream API
+  secret, and a thief of that secret bypasses the slot limits.
 - Recovery: new certificates and pins. A channel secret ends with its slot,
   and a new slot gets a new bearer.
 - Source: key map, in use in the rental profile.
@@ -521,24 +609,54 @@ grantee, the cap and the notary of that child.
 - Recovery: a later statement for the same subject that ends the binding.
 - Source: LIP-0015 section 6 and LIP-0016, proposals.
 
+## Keys that sign nothing
+
+**Holder's blob decryption keys**
+
+- Owner: the holder of the blobs.
+- Published: nowhere.
+- Holder: the holder. LIP-0009 says that these keys need not be given to
+  either provider when an account moves; where and how the holder keeps
+  them is open.
+- Signs: nothing. The keys decrypt the holder's private blobs.
+- Danger: low.
+- Leak: the thief reads the holder's private blobs, once it also has the
+  blobs. No authority follows.
+- Recovery: the blobs encrypted again under new keys. LIP-0009 leaves the
+  encryption of private data and the rotation of its keys open.
+- Source: LIP-0009, a proposal.
+
 ## The historical v0.1 profile
 
-**Owner key and requester key, v0.1**
+**Owner key, v0.1**
 
-- Owner: the issuer for the owner key, the grantee for the requester key.
-- Published: `swarma.keyvault_owner_spki` in the owner name and
-  `swarma.keyvault_requester_spki` in the requester name, each a P-256 key
+- Owner: the issuer.
+- Published: `swarma.keyvault_owner_spki` in the owner name, a P-256 key
   ([names](protocol/names.md) section 2).
-- Holder: each party's own custodian. The grant envelope and its signing
+- Holder: the issuer's own custodian. The grant envelope and its signing
   belong to keyvault and are outside this specification.
-- Signs: the owner key signs the grant envelope, and the requester key
-  signs the request under it.
+- Signs: the grant envelope.
 - Danger: medium.
-- Leak: a thief of the owner key signs envelopes, and none of them counts
-  until the owner name's value carries its hash, which needs the
-  name-owner key. A thief of the requester key acts under that one grant
-  until it is revoked.
-- Recovery: a name update with a new key, and a new grant.
+- Leak: the thief signs envelopes, and none of them counts until the owner
+  name's value carries its hash, which needs the name-owner key.
+- Recovery: a name update with a new key, and new grants.
+- Source: [names](protocol/names.md) and
+  [observation](protocol/observation.md), the normative v0.1 profile,
+  frozen as historical.
+
+**Requester key, v0.1**
+
+- Owner: the grantee.
+- Published: `swarma.keyvault_requester_spki` in the requester name, a
+  P-256 key ([names](protocol/names.md) section 2).
+- Holder: the grantee's own custodian.
+- Signs: the requests under a grant.
+- Danger: high.
+- Leak: the thief acts under every grant that an owner name has issued to
+  that requester key, until each is revoked. The profile does not limit a
+  requester key to one grant.
+- Recovery: the issuers revoke those grants by spending their seals. The
+  grantee updates its name with a new key and receives new grants.
 - Source: [names](protocol/names.md) and
   [observation](protocol/observation.md), the normative v0.1 profile,
   frozen as historical.
@@ -554,4 +672,11 @@ grantee, the cap and the notary of that child.
 - The source of the issuer's key of a v4 single-use seal (LIP-0008 section
   11.1).
 - The replacement of a moderator key during a contract (LIP-0011).
+- Whether the key that signs the use spend of a single-use seal is the
+  secret of the wallet client's action key. LIP-0006 does not say.
+- The custody of a holder's blob decryption keys (LIP-0009), and the
+  provisioning, the refill limits and the revocation of a wallet that an
+  agent controls (LIP-0006).
+- The signing domains of the two objects that LIP-0009 proposes for a
+  holder's key, and of a provider's closing statement.
 - The danger levels, which wait for the owners' confirmation.
