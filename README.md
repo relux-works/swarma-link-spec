@@ -224,24 +224,34 @@ An organization identity and release statements for binaries are sketches
 in LIP-0015 and are not proposed.
 
 Two independent reviews of the design found eight gaps, and version 0.1.24
-recorded each as an open question. Version 0.1.25 holds Draft text for each
-of them under a pending owner decision, labelled J1 to J8. Nothing of it is
-adopted before the owners decide. The rules in force stay beside it as they
-are, and no gap is called closed for a property that its text lists as open.
-Five decisions stand in LIP-0014: rows that fix the executor, the grantee,
-the cap and the certifier of each child (J1, section 9.1); one notary for
-each row, with one succession of seals and a cause that counts only when the
-notary's signature covers its frame (J2, section 10.1); a notary pinned by
-name, registration and owner key (J3, section 7.1); a delegation key that
-the parent names for signing children on v4 (J4, section 11.1); and a child
-that carries its parent's scope text unchanged, with the owners' choice of
-what a text does to an effect (J5, section 3.4). In LIP-0008 section 5.2 an
+recorded each as an open question. Each now has Draft text, labelled J1 to
+J8. Ivan Oparin decided six of them, J3 on 2026-11-13 and J1, J2, J4, J5
+and J7 on 2026-11-14; the co-author's agreement on each is pending, and J6
+and J8 are pending owner decisions. Nothing of it is adopted before both
+owners agree. The rules in force stay beside it as they are, and no gap is
+called closed for a property that its text lists as open. Five decisions
+stand in LIP-0014. The parent signs rows that fix the executor, the
+grantee, the cap and the certifier of each child; on v4 each row also pins
+a coin that the issuance of its child must spend, so that one child for
+each row holds on the active chain (J1, section 9.1). Each row has one
+notary, with one succession of seals and a cause that counts only when the
+notary's signature covers its frame; on v3 that narrows D5, and on v4 each
+row names a stop coin of its notary whose spend ends the row for every
+verifier that sees it (J2, section 10.1). A notary is pinned by name,
+registration and owner key (J3, section 7.1). A delegation key that the
+parent names signs children on v4 and nothing else, because the messaging
+key never grants authority (J4, section 11.1). On v3 a child carries its
+parent's scope text unchanged, and an executor refuses a landing or a
+payment under a grant with a text; what a v4 child does with its parent's
+text is not decided (J5, section 3.4). In LIP-0008 section 5.2 an
 owner-signed change of an issuer's name that a verifier saw closes that
-issuer's grants durably (J6). In LIP-0013 section 3.6 the service that holds
-an agent's key signs a run's objects only under what its operator listed for
-the origin of that run (J7). In LIP-0011 section 7 the signed invocation is
-the request of a verdict (J8). No v3 byte changes, and neither does any rule
-or vector of the profile `swarma-trust-contract/1`.
+issuer's grants durably (J6). In LIP-0013 section 3.6 the service that
+holds an agent's key signs a run's objects only under what its operator
+listed for the origin of that run; that gate is a condition of enforcing
+mode and takes the place of presence for an agent's key (J7). In LIP-0011
+section 7 the signed invocation is the request of a verdict (J8). No v3
+byte changes, and neither does any rule or vector of the profile
+`swarma-trust-contract/1`.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement
@@ -284,8 +294,8 @@ contract. The [key registry](KEY-REGISTRY.md) lists every key the
 specification names, with its owner, the place where it is published, its
 holder, what it signs, a danger level, the effect of a leak and the
 recovery. It includes the v4 keys of the same day's decisions, whose rules
-LIP-0014 takes in its next revision. No implementation is claimed for any
-of the three.
+stand in LIP-0014 sections 9.1, 10.1 and 11.1. No implementation is claimed
+for any of the three.
 
 These drafts do not replace the normative v0.1 profile, adopt new conformance
 requirements or rewrite historical evidence. LIP-0002's signed-envelope
