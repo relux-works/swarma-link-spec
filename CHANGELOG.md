@@ -38,8 +38,11 @@ identity and the time of the fencing, and it charges everything that the
 lost journal could have held. A journal that counts from blocks gains a
 boundary: a block of the active chain in a healthy observation whose header
 time is more than 7200 seconds later than the fencing. The two hours are
-the bound that consensus puts on a header time, so such a block was mined
-after the fencing.
+the bound that consensus puts on a header time: no node with a right clock
+had accepted such a block before the fencing, so the lost journal holds
+nothing that rests on it. That shows when a node accepted the block and not
+when it was mined, and the LIP says where this is less than the words of
+LIP-0014 section 9.1.
 
 The consent journal. One journal for one grant key. The issuer writes an
 entry `consent-consumed/1` after the checks of LIP-0020 W7.4 to W7.8 and

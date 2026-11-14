@@ -1243,7 +1243,7 @@
         "rules": [
           "M5.4"
         ],
-        "claim": "The header time is exactly 7200 seconds later than the fencing: a block that existed before the fencing can carry it.",
+        "claim": "The header time is exactly 7200 seconds later than the fencing: a block that a node accepted before the fencing can carry it.",
         "fenced_at": 1794600000,
         "block": {
           "header_time": 1794607200,
@@ -1305,7 +1305,7 @@
         "rules": [
           "M5.5"
         ],
-        "claim": "The block that the parent signs lies above the boundary: the parent was signed after the loss.",
+        "claim": "The block that the parent signs lies above the boundary: the lost journal can hold no record under that parent.",
         "boundary_height": 800,
         "checkpoint_height": 801,
         "expect": "new"

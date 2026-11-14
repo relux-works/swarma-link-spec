@@ -33,8 +33,8 @@ that form:
   effect (section 3);
 - the continuity check with four outcomes: intact, pending, fenced, lost
   (section 4);
-- a lost journal and its recovery, with a boundary that is provably later
-  than the loss (section 5);
+- a lost journal and its recovery, with a block boundary that the writer's
+  node cannot have accepted before the loss (section 5);
 - the first journal on this form: the issuer's journal of consumed consents
   (section 6);
 - what the other journals of the specification take from the profile
@@ -244,17 +244,32 @@ reports no witness state (LIP-0008 J6.9).
 The two hours of M5.4 are the bound of consensus and no tuning. A node
 accepts a block only when the time in its header is at most two hours ahead
 of the node's clock; LIP-0022 lists the place in the source of Namecoin
-Core where that rule was read. A block that existed before the fencing was therefore
-accepted with a header time of at most `fenced_at` plus 7200 seconds, and a
-block with a later header time was mined after the fencing. On one chain a
-block that was mined earlier lies below a block that was mined later.
-Everything that the lost journal could refer to was signed against blocks
-that existed before the loss, so it lies at or below the boundary, and what
-is signed against a block above the boundary was signed after the loss. The
-argument assumes that the operator's clock is right at the act and that the
-nodes which accepted the block kept the consensus rule. The cost is that a
-boundary appears two hours after the fencing at the earliest, and usually a
-few blocks later.
+Core where that rule was read. A block that a node had accepted before the
+fencing therefore has a header time of at most `fenced_at` plus 7200
+seconds, and a block with a later header time had been accepted by no node
+whose clock was right. A node connects a block only after the block below
+it, so the same holds for every block above the boundary. The writer of the
+lost journal acted only on blocks that its own node had accepted, all of
+them before the fencing. Everything that the lost journal could hold
+therefore rests on blocks below the boundary, and nothing in it rests on
+the boundary block or on a block above it.
+
+That is less than the words of LIP-0014 section 9.1, and enough for what
+they serve. LIP-0014 asks for a boundary block that is known to have been
+mined after the loss and says of a parent above it that it was signed after
+the loss. A header time cannot show when a block was mined: a miner can
+build a block whose header is ahead, keep it, and publish it when nodes
+accept it, and a party that works with that miner can sign a parent against
+the block before the fencing. M5.4 does not exclude such a parent. It shows
+what the charging needs: the lost journal held no record under that parent,
+because the writer's node did not have the block and the writer admits
+nothing on a block that its node does not have. Whether the owners take
+this reading is an open question of this LIP.
+
+The argument assumes that the operator's clock is right at the act, and
+that the writer's node kept the consensus rule with a right clock while the
+lost journal was written. The cost is that a boundary appears two hours
+after the fencing at the earliest, and usually a few blocks later.
 
 ### 6. The issuer's journal of consumed consents
 
@@ -396,6 +411,11 @@ accept the rules that they follow.
   consumed, consents have to be given again, and a verifier forgets what it
   witnessed. That is the price of not trusting a store that cannot show
   its history, and an operator pays it only by an attended act.
+- **A header time does not date a block.** The boundary shows that the
+  writer's node had not accepted a block before the fencing, and not when
+  the block was made. A parent that was signed before the loss against a
+  block which a miner kept back has a first use after a recovery. The lost
+  journal held no record under it.
 - **The clock enters twice.** `fenced_at` decides the boundary of a
   recovery, and `consumed_at` guards against a clock that went back. A
   clock that is behind at the act of recovery sets the boundary too early,
@@ -420,6 +440,11 @@ the consent journal as decisions on stated values.
 - **The owners' acceptance** of the hash-bound history, of the one
   operation of the outside record, of the four outcomes and their order, of
   the block boundary and of the consent journal.
+- **"Mined after the loss".** LIP-0014 section 9.1 asks for a boundary
+  block that is known to have been mined after the loss. M5.4 shows that
+  the writer's node had not accepted the block before the fencing, which a
+  header time can show, and not when the block was mined, which it cannot.
+  Whether that reading satisfies the decided text is the owners' to say.
 - **The store and the outside record of a deployment.** Which products,
   where the outside record lives so that M2.2 holds, and the cases on the
   real store.
