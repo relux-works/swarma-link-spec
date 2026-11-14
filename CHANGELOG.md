@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.1.31 — 2026-11-14
+
+LIP-0015 and LIP-0016 record that Ivan Oparin accepted their direction as a
+whole on 2026-11-14. The co-author's agreement is pending, no rule of
+either is adopted, and both owners still decide them.
+
+LIP-0015. The pin and the configuration statements have a first use that
+needs nothing else of the LIP: signing the profiles and manifests of
+Curator, each as a section with a subject of its own. Section 6 records
+three directions for certificate statements. Of the two Matrix kinds,
+`matrix-cross-signing` is preferred, because one statement then covers
+every device of an account. A key of another transport, such as the OMEMO
+identity keys of an XMPP account or a key that signs email, gets a kind of
+its own through a LIP. And a binding lets a receiver check a sending device
+against a key that the operator of a name certified, where it otherwise
+relies on the transport's server; it gives no authority.
+
+LIP-0018 gains a fourth list, for a certificate subject kind: the kind, the
+members of the subject, what the key does in its own system, what a
+receiver checks against it, and that revocation follows LIP-0015 unchanged.
+
+LIP-0016. The draft answers the open questions of its first version; the
+answers are proposals. The Git provider adds no format: a file holds the
+exact bytes of the head or of one record, the list is the set of record
+files, and a reader computes each id from the bytes and takes no evidence
+from the repository's history. A head covers one issuer, and one anchor
+transaction anchors one head; a head for several issuers and a batch of
+heads are left to later proposals. Between a change of an issuer's grant
+key and the first head under the new key a reader has no verified set:
+every subject is unbound, and the reader does not fall back to the old
+set. The vector set is described and not built. Open stay the key that
+controls the output of a head and the way a reader learns where a store
+is.
+
 ## 0.1.30 — 2026-11-14
 
 Two new drafts and one extension record decisions that Ivan Oparin made on
