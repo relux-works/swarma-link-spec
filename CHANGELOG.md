@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.32 — 2026-11-14
+## 0.1.34 — 2026-11-14
 
 Four additions record decisions that Ivan Oparin made on 2026-11-14. The
 co-author's agreement on each is pending, and nothing of them is
@@ -45,7 +45,7 @@ profile, the human terms of the contract, the machine terms of the grant
 and any scope text. The reference rental path gives a slot no contract
 text today.
 
-## 0.1.31 — 2026-11-14
+## 0.1.33 — 2026-11-14
 
 LIP-0015 and LIP-0016 record that Ivan Oparin accepted their direction as a
 whole on 2026-11-14. The co-author's agreement is pending, no rule of
@@ -80,6 +80,129 @@ every subject is unbound, and the reader does not fall back to the old
 set. The vector set is described and not built. Open stay the key that
 controls the output of a head and the way a reader learns where a store
 is.
+
+## 0.1.32 — 2026-11-14
+
+Five further directions of Ivan Oparin of 2026-11-14 are recorded. The
+co-author's agreement on each is pending.
+
+LIP-0013, new section 3.7, instructions across owners. The grantee of a
+grant from one owner to the other is an agent of the receiving owner. That
+owner directs the agent over the owner channel, the agent signs the
+envelope with its key through its key holder under the gate of section
+3.6, and the executor admits it under section 3.4. A person's keys that
+need presence are for rare acts: issuing a grant, and consenting to a
+grant whose grantee is the person. A session key is named as a later
+option. The section also states that a transport only carries: authority
+comes from the signed envelope inside a message, on every transport.
+
+Key map. The requirements on a key service describe a personal key
+service for each person, on every platform the person uses, with a social
+key under a policy for each application and an authority key that signs
+only with the person present and every field shown. Decision K6: for
+grants issued to Ivan Oparin a separate authority key is named in each
+grant, the name keeps the social Nostr key for messages, and for the
+interim the authority key lives in the macOS Keychain like the grant key;
+the reading that puts an authority key into the name is rejected. The
+scope of K2 is settled: permanent roles have names, a worker agent may
+stay key-only, and an agent that becomes permanent keeps its key. The key
+registry points to K6.
+
+LIP-0008, section 1. Grant v3 is frozen after the first public
+demonstration: no new feature and no new byte. Once Grant v4 is
+qualified, new grants are issued on v4 only, and v3 remains for
+verification alone. What becomes of a v3 grant that is still live then is
+not decided.
+
+## 0.1.31 — 2026-11-14
+
+Holds Draft text for the eight gaps that version 0.1.24 recorded, labelled
+J1 to J8, and records the decisions that Ivan Oparin made on them: J3, J6
+and J8 on 2026-11-13, and J1, J2, J4, J5 and J7 on 2026-11-14. The
+co-author's agreement on each is pending. One part of J5 stays a pending
+owner decision. Nothing of it is adopted until both owners agree. The rules
+in force are not rewritten: each decision stands in one subsection that
+first says what holds until then, and the places it would change carry a
+pointer. No gap is called closed for a property that its subsection lists as
+open. No v3 byte changes, and neither does any rule or vector of profile
+`swarma-trust-contract/1` or the reference checker.
+
+The number 0.1.29 is not used. This revision was prepared under it and
+landed after 0.1.30, so it takes the next number.
+
+LIP-0014, section 9.1 (J1). The parent signs one row for each child, with
+the executor, the grantee, the cap and the certifier. On v3 the limit is a
+number of compartments, and one child object for each row stays open
+there. On v4 each row also pins a coin that the issuance of its child must
+spend, so that one child for each row holds on the active chain and not
+across forks, which the decision accepts. Which key of the re-delegating
+side the coin pays is open. The member of a row that names the performing
+party is `executor`; the v3 grant and the contract keep `agent_name`. The
+row ledger has a store contract in which continuity is proved against an
+outside record that binds the committed history; the proof protocol is an
+open deployment profile, and no executor qualifies for `spend` without it.
+
+LIP-0014, section 10.1 (J2). One notary for each row, one succession of
+seals for the row, an authenticated cause and three states with their
+codes. On v3 D5 holds in a narrower form, and the subsection says so in so
+many words. On v4 each row names a stop coin of its notary from the first
+version, and its spend ends the row for every verifier whose node shows
+it. A coarser form, one coin for each notary and parent, is recorded as a
+future option.
+
+LIP-0014, section 7.1 (J3). Pins, a signed checkpoint and a writer rule
+for a notary's name. A notary's name that the funding wallet registered
+needs one update by its owner before a parent may name it.
+
+LIP-0014, section 11.1 (J4). Each parent names a delegation key of its
+own, which signs children on v4 and nothing else, because the messaging
+key never grants authority. The delegation signer signs without a person,
+bounded by the rows, the notary and the two coins of each row. A key that
+the seals of children pay is a profile option outside the first v4
+version.
+
+LIP-0014, section 3.4 (J5). On v3 a child carries its parent's scope text
+unchanged. What a v4 child does with its parent's text is not decided, and
+nothing of it is written. A text governs an agent's work and never a
+service's effect, and money and landings go into a grant without a text. An
+executor that cannot read refuses a grant with a text, and no executor
+performs a landing or a payment automatically under one. Whether it refuses
+such a request, as the Draft text does until then, or holds it for the
+owner's one-time confirmation is a pending owner decision. Profile `/2`
+gains no member; the ref, the exact revision and the payee are machine
+members of the v4 action profile from its first version, and a path inside a
+repository stays words. The table of gaps under Open questions gives way to
+these subsections; every fact of its rows stands in their first paragraphs.
+
+LIP-0008 section 5.2 (J6, accepted on 2026-11-13): an owner-signed change of
+an issuer's name that a verifier validated, in its mempool or in a block,
+closes the issuer's grants in that verifier's journal; the read follows
+every pending name operation; an issuer funds every operation of its name
+from coins that no hot service can spend. A verifier that saw the change and
+one that starts later can differ, and the text says so. A new open question
+asks whether the issuer rule should carry the writer rule that LIP-0014
+drafts for a notary.
+
+LIP-0013 section 3.6 (J7): the service that holds an agent's key binds each
+run to its origin and signs only what its operator listed for that origin,
+with a separate permission for consents; a grant that the operator removes
+stays removed. By the decision the gate is a condition of enforcing mode,
+it holds against an untrusted run at an honest key holder, the operator's
+table is a file of the key holder's OS user with a version that only moves
+forward, and for an agent's key the gate takes the place of presence. T10
+points to the subsection, and T11 lists what the authority frame of
+section 3.4 leaves open.
+
+LIP-0011 section 7 (J8, accepted on 2026-11-13): the signed v4 invocation is
+the request of a verdict, and an invocation inside an encrypted message
+binds a salted hash of the content. A reader reports reference, attribution,
+eligibility, admission, and time and delivery apart.
+
+The key map carries the sentence that the decision adds to K2 and a row
+for the delegation key (J4), the changed presence rule (J7) and a note for
+a notary's name beside its registration flow (J3). The key registry points
+to the sections that hold the rules of the v4 keys. LIP-0012, LIP-0010 and
+LIP-0008 point to the texts that concern them.
 
 ## 0.1.30 — 2026-11-14
 

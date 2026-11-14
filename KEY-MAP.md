@@ -103,13 +103,37 @@ keys he holds:
 No date is set for the qualification that ends the interim. The section
 "Requirements on a key service" below places K5 beside the keyvault path.
 
-The scope of K2 is open; the owners decide it. A worker agent is an agent
-identity that serves single tasks and that a grant names by key. Whether
-such an identity also has its own `id/` name is not decided. The proposal is
-that names go to the standing roles that the owners register under K3, such
-as keepers, orchestrators and notaries, and that a worker identity stays
-key-only in grants. The alternative gives every worker identity a name, at
-the cost of one registration and its renewals per identity.
+Ivan Oparin decided a sixth point on 2026-11-14, for the grants that are
+issued to him; the co-author's agreement is pending:
+
+| Decision | Direction |
+| --- | --- |
+| K6. Authority key of a person | The name keeps the social Nostr key, which carries messages. A separate authority key is named directly in each grant to the person, as a recipient by key, and it signs only with the person present, under Touch ID for each signature. For the interim that key lives in the macOS Keychain, like the grant key under K5. A signer that shows the fields of a kind-8181 consent and of a kind-8185 envelope before it signs is needed for it. |
+
+K6 rejects one reading of the earlier proposal: an authority key written
+into the name in place of the social key. The name's `nostr` member stays a
+messaging address and gives no authority.
+
+Decided by Ivan Oparin on 2026-11-14 (J4, LIP-0014 section 11.1); the
+co-author's agreement is pending. K2 says that the agent controls only its
+Nostr key. A key that signs at the agent's request is used by the agent,
+also when a service of its operator holds it, so the decision adds one
+sentence to K2: an agent that re-delegates on v4 has
+a delegation key, named in its parent grant and held by a signing service
+of its operator; the agent asks, and the service signs child grants and
+nothing else. The key is in no name, so K1 is untouched. Until the
+co-author agrees K2 stands as written, and on v3 no agent has such a key in
+any case.
+
+The scope of K2 follows Ivan Oparin's decision of 2026-11-14; the
+co-author's agreement is pending. Permanent roles have names: executors,
+notaries, keepers and public agents. A worker agent, an agent identity that
+serves single tasks and that a grant names by key, may stay key-only and
+have no `id/` name. An agent that moves from a worker to a permanent role
+keeps its key: the name is registered with that key in its value, and the
+grants that name the key stay as they are. The alternative that is not
+taken gives every worker identity a name, at the cost of one registration
+and its renewals per identity.
 
 ## Grant v3: clarifications for names and keys
 
@@ -134,6 +158,7 @@ Where each key is published follows from that:
 | Principal's Nostr key | `nostr.names._` | `nostr`, as a key string or a NIP-05 object | None |
 | Agent's Nostr key | `swarma.agent.nostr` and `nostr.names._`, which must be equal | `nostr` only | The agent's address; a grantee key only where a grant names it |
 | Any further key or pointer of the owner | Nowhere: it refuses the whole value | A member outside `swarma`, which a Link reader ignores | None |
+| Authority key of a person (K6) | Not in a name. Each grant to the person names it as `grantee_key` | The same; on v4 it is the request key of a recipient by key | A grantee key: it uses the authority of the grants that name it |
 | Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only |
 
 **What a name change does to existing grants.** Grant v3 binds no owner key.
@@ -187,12 +212,38 @@ its operator ceilings instead (LIP-0006).
    grant key. The same holds for any key that a grant names as grantee,
    before the executors that admit it enter enforcing mode (LIP-0013 section
    3.4): a key that signs without its holder can be used by any process of
-   the same OS user.
+   the same OS user. An agent's key cannot have a person for each
+   signature. Ivan Oparin decided on 2026-11-14 (J7, LIP-0013 section 3.6)
+   that for a grantee key that belongs to an agent the key holder's gate
+   for each run takes the place of presence, and that presence stays for a
+   person's key. The co-author's agreement is pending, and until it is
+   given this requirement stands as written.
 3. **Typed display.** The service parses the object it is asked to sign,
    shows its fields, and computes the hash itself. It signs no digest that a
    caller supplies. LIP-0008 section 8 requires this of a v4 signer; for v3
-   it covers the grant, the contract hash that `landlord_sig` signs, and the
+      it covers the grant, the contract hash that `landlord_sig` signs, and the
    terms of a child grant (LIP-0014 section 5).
+
+**A personal key service.** Ivan Oparin's direction of 2026-11-14, with the
+co-author's agreement pending, is one key service for each person, in the
+manner of an SSH agent or of a Nostr remote signer (NIP-46), on every
+platform that a person uses: macOS, Linux, Windows, iOS and Android. It
+holds two keys under two policies. The social key signs messages without a
+touch for each one, under a policy that the person sets for each
+application. The authority key signs only with the person present and with
+every signed field shown first, as requirements 2 and 3 say. The service
+is specified and built outside this repository; this map states what the
+formats of this specification ask of it.
+
+**Across owners the grantee is an agent.** By the same direction, a grant
+from one owner to the other names an agent of the receiving owner as its
+grantee. That owner instructs the agent over the owner channel, and the
+agent signs the envelopes with its own key, through its key holder and
+under the gate of LIP-0013 section 3.6. The keys that need a person's
+presence, the grant key and the authority key, are for rare acts: issuing
+a grant, and consenting to a grant whose grantee is the person. LIP-0013
+section 3.7 states the pattern. A session key that would let a person sign
+envelopes without a touch for each is a later option.
 
 The keyvault interface was read on 2026-11-12 at two revisions. At
 [`swarma-keyvault` `41e0c71`](https://github.com/relux-works/swarma-keyvault/tree/41e0c71b0ddb2a102ae5dbc0184c60dfc10f3819)
@@ -260,13 +311,15 @@ previous section says.
 
 | Purpose | Derivation | Holder | Replaced by |
 | --- | --- | --- | --- |
-| Principal's Nostr key, also the grantee key in Goal 1 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
+| Principal's Nostr key; also the grantee key in Goal 1 for an owner without an authority key of K6 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
 | Funding | `m/84'/7'/0'` | The owner's key service, with presence | Moving the funds |
 | Name owner | A separate seed; BIP-84 `m/84'/7'/0'`, one fresh address per name | The owner only, never on an agent host | A name update to a new owner address |
 | Grant key, interim (decided, K5) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with every signed field shown first; not exported | A new item, then an update of `swarma.landlord.grant` by the name-owner key, which ends the v3 grants of the old key; the old item is kept until the old seals are spent |
 | Grant key, later target | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display, once its grant-signing purpose is qualified | A new recovery group with new words, then the same update of `swarma.landlord.grant`; the old group keeps the old key until the old seals are spent |
+| Authority key of a person, interim (decided for Ivan Oparin's grants, K6) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with the fields of the consent or the envelope shown first; not exported | The issuers revoke the grants that name the key and issue new ones to a new key |
 | Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
 | Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
+| Delegation key of a re-delegating agent, v4 (decision of 2026-11-14, J4; agreement pending) | Not fixed; a sketch that is not decided derives it for each parent from the seed of the operator's signer. The key is in no name | A signing service of the operator that consented to the parent as its recipient, outside the agent's OS user and outside the service that holds the request or channel key; the service holds no name-owner, seal or funding key (LIP-0014 section 11.1) | A new parent grant |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
 
 Two reasons carry the layout. The grant key stays outside every wallet
@@ -314,6 +367,12 @@ registration:
 6. Later updates, such as a new Nostr key, are signed by the name-owner key.
    For a name whose owner key a key service holds, they wait until that
    service signs name operations.
+
+A notary's name that is registered in this order needs one further step.
+LIP-0014 section 7.1 accepts the value of a notary's name only when the
+name's owner wrote it, and in this flow the funding wallet wrote it. The
+owner therefore signs one update of its own, which may repeat the value,
+before a parent names that notary.
 
 The alternative derives agent keys from the operator's seed and exports them
 to the gateway. It allows a restore of an agent key from the seed and needs

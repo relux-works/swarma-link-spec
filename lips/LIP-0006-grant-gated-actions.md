@@ -313,7 +313,8 @@ Its terms object has exactly five machine members and no member for a text
 there. Passing a text to an agent is not part of any profile of this LIP; it
 belongs to the profile of a transport service. In the trust contract of
 LIP-0013 the actions `land` and `spend` end in an effect at a resource, and
-`instruct` and `review` are an agent's work.
+`instruct` and `review` are an agent's work; LIP-0014 section 3.4 applies
+the rule to the scope text of profile `/2`.
 
 The rule buys one property: no payment, no landing and no release of a
 secret rests on a reading of words, by a model or by a service. It costs
