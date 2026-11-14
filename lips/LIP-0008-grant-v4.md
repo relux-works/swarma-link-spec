@@ -179,11 +179,38 @@ are initial semantic kinds, not final field names or a complete registry:
 | Maximum answer length | Maximum output tokens per request under that model profile. A default output allowance is also signed and cannot exceed the per-request maximum or remaining cumulative allowance. |
 | Required confirmation depth | Minimum active-chain depth for the profile's named evidence, with explicit chain and evidence class. Value-dependent risk increases the required minimum; this is not an upper resource cap. |
 
+Ivan Oparin decided on 2026-11-14 that further kinds join this list; the
+co-author's agreement is pending. The decision names the kinds. For coins
+it adds a maximum for one spend, a maximum for a period, and an explicit
+identifier of the asset and of the payment system: a chain with its asset,
+or a rail outside a chain. It also says for every kind what this section
+says of spending: an allowance of zero authorizes nothing.
+
+The table below lists the kinds of that decision. The meaning beside each
+kind is the draft's proposal and no part of the decision; it waits for the
+owners' agreement. A type profile binds such a meaning only if it adopts
+it, and a profile that reads a kind otherwise states its own meaning. Each
+kind needs a type profile with the items that
+[LIP-0018](LIP-0018-extension-guide.md) section 2 lists.
+
+| Kind named by the decision | Meaning proposed by the draft |
+| --- | --- |
+| External service cost | Cumulative cost ceiling for a service that is billed by cost, with the exact currency and scale and the price or conservative reservation policy. Model cost is its first case. |
+| Runtime and concurrency | The running time in hours, and the number of instances or runs that may be active at once. |
+| Rate | A modifier of another kind: the number of operations in an interval. |
+| Outbound messages | The number of messages, and the recipients they may go to. |
+| Repository writes | The number of writes in a period, and the repositories and refs they may go to. |
+| Storage and egress | Bytes stored and bytes sent out, with the hosts that outgoing traffic may reach. The allowlist can name bare IPv4 and IPv6 addresses. |
+| Name operations | The number of name registrations and updates. |
+| Secret releases | The number of releases, and the secrets that may be released. |
+| Owner-confirmation threshold | A threshold for an effect beyond which the owner's confirmation is needed. Whose owner confirms, and what the threshold measures, is for the type profile. |
+
 Defaults select an allowance only within signed authority; they cannot provide
 missing authority. A request for a larger answer refuses or requires a newly
 agreed grant. Missing required limits, unknown kinds, duplicate/contradictory
 limits and unsupported units refuse the affected admission rather than becoming
-unlimited access. A zero spending allowance authorizes no spending.
+unlimited access. A zero spending allowance authorizes no spending, and a zero allowance of
+any other kind authorizes nothing of that kind.
 
 New limit kinds and their accounting semantics arrive through separate LIPs.
 The corresponding type profile defines exact integers, bounds, rounding,
