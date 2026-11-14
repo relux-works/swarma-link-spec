@@ -67,10 +67,13 @@ checks still need versioned fixtures.
 
 The profile. A verifier takes the construction profile from its own
 authenticated configuration; a missing value, another value and the Legacy
-profile refuse. The anchor spends exactly one output of the seal
-transaction, the linkage output, and never the seal. That holds for every
+profile refuse. The linkage output of a grant is the output that follows
+its seal in the seal transaction. The anchor spends that output, no other
+output of the seal transaction, and never the seal. That holds for every
 grant, also where the seal transaction was confirmed long before, so that
-only the holder of the linkage key can publish an anchor. Every input of
+only the holder of the key of that one output can publish an anchor; an
+issuer signs a grant only where that output pays a key of its own signer.
+Every input of
 both transactions spends a witness key hash, has an empty unlocking script
 and a witness of two items: a signature that ends in `01` and the
 compressed key that hashes to the spent output. A name output is no such
@@ -89,11 +92,16 @@ Thirteen codes with an order. Twelve of the names are stable reasons of the
 reference laboratory, which implements a linkage-only subset of the Witness
 profile for Grant v3; `W_LINKAGE_REQUIRED` is wider here, because the
 laboratory asks for the linkage only while the seal transaction is pending
-or shares the anchor's block, and `W_ANCHOR_PENDING` is new.
+or shares the anchor's block and takes whichever output of the seal
+transaction the anchor spends; `W_LINKAGE_SCRIPT` reports the script of the
+fixed output; and `W_ANCHOR_PENDING` is new.
 
-Vectors. `vectors/LIP-0023/construction-vectors.json` holds 54 vectors over
-17 rules: 22 on the octets of one input and 32 on stated pairs of
-transactions, ten of them with two defects for the order. No node was run.
+Vectors. `vectors/LIP-0023/construction-vectors.json` holds 63 vectors over
+18 rules: 22 on the octets of one input and 41 on stated pairs of
+transactions, twelve of them with two defects for the order. Nine of the
+pairs test the fixed place of the linkage output, among them a seal
+transaction with an output of another party, one with the seals of two
+grants, and one whose seal is its last output. No node was run.
 
 LIP-0008 section 1.1 gains one pointer.
 
@@ -113,14 +121,25 @@ the nodes. Section 7 leaves open the recency policy of the committed recent
 block, and LIP-0021 leaves open how one consistent observation is taken.
 
 The profile. An observation is a set of reads between two reads of the same
-tip; where the tip moved, it is void, and nothing is recorded as closed. A
-comparison node supplies its tip alone. Two nodes count as two when their
-operator labels them as of different sources, and the tips agree when the
-comparison node's tip is the reading node's tip or at most one block below
-it on the same chain. The age of the tip is the verifier's clock minus the
-time in the header of the tip block. A clock that reads less than the
-largest reading that the verifier has used refuses, and so does a header
-that is more than 600 seconds ahead of the clock. An action whose profile
+tip; where the tip moved, it is void, and nothing is recorded as closed.
+The verifier's configuration names the comparison nodes, and an observation
+asks each of them for its tip and for what shows its health. Two nodes
+count as two when their operator labels them as of different sources. A tip
+agrees when it is the reading node's tip or at most one block below it on
+the same chain, and it conflicts when it lies above that tip or on another
+branch. One healthy comparison node whose tip conflicts refuses the
+observation, whatever the others answer, and at least one node of another
+source has to agree. The age of the tip is the larger of two ages: the
+verifier's clock minus the time in the header of the tip block, and the
+clock minus the first sight, the reading at which the verifier first
+observed that block as the tip. The verifier keeps every first sight
+durably. On one tip a money or irreversible action is therefore admitted
+for less than 3600 seconds from the first sight, for every header that
+consensus accepts; the bound counts from the verifier's first observation
+of the tip and not from the moment at which its node received the block. A
+clock that reads less than the largest reading that the verifier has used
+refuses, and so does a header that is more than 600 seconds ahead of the
+clock. An action whose profile
 states no class has the stricter one. A verifier checks that the recent
 block of a grant is on the active chain and that the issuance anchor is
 confirmed above it by at most 432 blocks. The depth of a fact is the height
@@ -135,14 +154,20 @@ Nine codes with an order: `OBSERVATION_CHAIN`, `OBSERVATION_VOID`,
 `RECENT_BLOCK`, `RECENT_BLOCK_WINDOW` and `CONFIRMATIONS`. The first six
 stand before every rule of a grant, and none records a closure.
 
-Vectors. `vectors/LIP-0022/observation-vectors.json` holds 70 vectors over
-26 rules, at both sides of every boundary: the two cutoffs, the bound on a
-header, the kept mark of the clock, the lag, the window of the anchor, the
-half-open window of a grant in heights and the larger of two minimum
-depths. They state tips, times and heights and read no node. No node was
-run and no measurement was taken.
+Vectors. `vectors/LIP-0022/observation-vectors.json` holds 97 vectors over
+28 rules, at both sides of every boundary: the two cutoffs for both ages,
+the bound on a header, the kept mark of the clock, the lag, the window of
+the anchor, the half-open window of a grant in heights and the larger of
+two minimum depths. The node vectors hold a node that is ahead and a node
+on another branch, each beside a node that agrees. Ten vectors are
+sequences of observations over time, among them a tip whose header is two
+hours ahead and a tip with an ordinary header. They state tips, times and
+heights and read no node. No node was run and no measurement was taken.
 
 LIP-0008 sections 6 and 7 and LIP-0021 section 1 gain one pointer each.
+O6.3 of LIP-0021 gains the definition of a step of a walk, the examination
+of one output: a walk that ends with the last output that the bound allows
+is complete. No vector of LIP-0021 changes.
 
 ## 0.1.39 — 2026-11-14
 
