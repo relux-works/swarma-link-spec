@@ -215,7 +215,10 @@ open.
 2. A contract may exist without any grant. It is concluded by its
    signatures and anchored under section 3.
 3. **Containment.** The window of a grant lies inside the window of its
-   contract, both ends included, in the measure of the profile. Profile
+   contract: it begins no earlier and ends no later, in the measure of the
+   profile. This compares two windows and changes nothing in how a window
+   is read. On v4 a window stays half-open, and admission at its end
+   height refuses (LIP-0008 section 7.1). Profile
    `swarma-trust-contract/1` requires the two windows to be equal, which is
    the special case, and that rule of LIP-0013 does not change. A new
    profile says which of the two relations it requires.

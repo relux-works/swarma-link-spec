@@ -236,11 +236,16 @@ The three paragraphs that follow record Ivan Oparin's direction of
 2026-11-14; the co-author's agreement is pending.
 
 **Which Matrix kind.** Of the two Matrix kinds, `matrix-cross-signing` is
-preferred. One statement then binds the cross-signing key of an account to
-the name. Matrix ties each device of the account to that key, so a new
-device needs no new statement. A `matrix-device` statement binds one
-device: every new device needs another statement, and every lost device a
-revocation.
+preferred. One statement then binds the cross-signing master key of an
+account to the name. It covers a device of that account only when the
+device's chain of signatures verifies: the master key signed the account's
+self-signing key, and that key signed the device. A receiver verifies the
+chain itself. A device that is merely logged in to the account, or that
+carries only its own signature, is not covered, whatever the server says
+of it. A new device therefore needs no new statement once it is
+cross-signed, and no statement makes up for a missing signature. A
+`matrix-device` statement binds one device: every new device needs another
+statement, and every lost device a revocation.
 
 **Other transports.** A key of another transport gets a kind of its own:
 the OMEMO identity keys of an XMPP account, a key that signs email, the
@@ -249,9 +254,10 @@ items of [LIP-0018](LIP-0018-extension-guide.md) section 4. This LIP
 defines none of them.
 
 **What a binding gives.** Without one, a receiver knows the sender of a
-transport message only from the transport's server. With one, it checks
-the sending device against a key that the operator of a name certified,
-and it no longer relies on the server for that. The platform book calls
+transport message only from the transport's server. With one, it verifies
+the sending device's chain of signatures up to a key that the operator of
+a name certified, and it no longer relies on the server for that. A device
+whose chain does not verify stays where it was. The platform book calls
 the first level of assurance A0 and the second A1. The binding goes no
 further: it gives no authority, and a typed action still needs a grant.
 

@@ -55,12 +55,14 @@ LIP-0015. The pin and the configuration statements have a first use that
 needs nothing else of the LIP: signing the profiles and manifests of
 Curator, each as a section with a subject of its own. Section 6 records
 three directions for certificate statements. Of the two Matrix kinds,
-`matrix-cross-signing` is preferred, because one statement then covers
-every device of an account. A key of another transport, such as the OMEMO
-identity keys of an XMPP account or a key that signs email, gets a kind of
-its own through a LIP. And a binding lets a receiver check a sending device
-against a key that the operator of a name certified, where it otherwise
-relies on the transport's server; it gives no authority.
+`matrix-cross-signing` is preferred: one statement then covers each device
+whose chain of signatures to the certified cross-signing key verifies. A
+device that carries only its own signature is not covered. A key of another
+transport, such as the OMEMO identity keys of an XMPP account or a key that
+signs email, gets a kind of its own through a LIP. And a binding lets a
+receiver check a sending device against a key that the operator of a name
+certified, where it otherwise relies on the transport's server; it gives no
+authority.
 
 LIP-0018 gains a fourth list, for a certificate subject kind: the kind, the
 members of the subject, what the key does in its own system, what a
@@ -113,12 +115,14 @@ concurrency, uncertain outcomes, replay, denials, the contract mirror,
 defaults, refusal codes, vectors with a checker, and the path of the LIP.
 The guide assigns no identifier and no byte.
 
-LIP-0008 section 2 lists further early limit kinds by meaning: external
-service cost, runtime and concurrency, rate, outbound messages, repository
-writes, storage and egress with host allowlists, name operations, secret
-releases and an owner-confirmation threshold. Coins gain a maximum for one
-spend and for a period and an explicit asset and payment system. An
-allowance of zero of any kind authorizes nothing of that kind.
+LIP-0008 section 2 records the decision that further limit kinds join
+its list: external service cost, runtime and concurrency, rate, outbound
+messages, repository writes, storage and egress, name operations, secret
+releases and an owner-confirmation threshold; that coins carry a maximum
+for one spend and for a period and name their asset and payment system;
+and that an allowance of zero of any kind authorizes nothing. The kinds
+are the decision. The one-line meaning beside each kind is the draft's
+proposal, and a type profile binds it only if it adopts it.
 
 LIP-0005 lists the actions `0x07` and `0x08` as proposals; the reference
 parser accepts neither. The authority frame of LIP-0013 section 3.4 names
@@ -161,8 +165,7 @@ an agent cannot write it are open, and the text marks which rules are the
 decision and which are the draft's own. No other step or code changes, and
 no vector.
 
-A new document, the key registry (`KEY-REGISTRY.md`). It lists every key the
-specification names, in 27 entries. Each entry states the owner, the place
+A new document, the key registry (`KEY-REGISTRY.md`). It lists every key the specification names, in 29 entries. Each entry states the owner, the place
 where the key is published, the holder, the complete list of what it signs,
 a danger level from critical to low, the effect of a leak, the recovery and
 the source. Its rules: one entry for every key; the list of uses is closed,

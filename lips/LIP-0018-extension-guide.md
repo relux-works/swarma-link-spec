@@ -27,7 +27,7 @@ no byte, and it changes no rule of an existing profile.
 
 The existing proposals answer these questions unevenly. LIP-0013 states
 every item of its contract profile, with vectors and a checker. LIP-0008
-names six limit kinds by meaning and leaves their profiles open. A third
+names its limit kinds by meaning and leaves their profiles open. A third
 author who adds a profile today has to infer from those two what is
 expected. A single list lets an author see what is missing and gives a reviewer
 something to count.
@@ -125,5 +125,5 @@ None. The guide concerns proposals and no implementation.
 
 - A registry for limit kinds and for contract profiles, and who assigns an
   identifier.
-- Whether the three lists become conformance requirements on a proposal, or
-  stay guidance for authors and reviewers.
+- Whether the lists become conformance requirements on a proposal, or stay
+  guidance for authors and reviewers.
