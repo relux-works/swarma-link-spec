@@ -8,15 +8,17 @@ implemented.
 
 LIP-0019, retrieval by hash. A locator can name a blob store and a hash,
 and nothing said how a reader gets the bytes. The draft proposes a delivery
-profile and its loader: endpoints from the loader's own configuration and
-from an unsigned hint; a fetch by SHA-256 with bounds on size and time and
-without redirects; and a check that the bytes hash to what was asked,
-after which the object is checked exactly like a presented one. A grant id
-addresses the canonical signed grant alone; a presentation is not fetched
-but completed by the reader, from the fetched signed grant and an issuance
-locator that it checks as LIP-0004 section 4 does. Retrieval
-adds availability and no authority: a store can make a reader refuse and
-cannot make it accept. The uses are audits, disputes, parent grants and
+profile and its loader: endpoints from the loader's own configuration and,
+under a policy of its operator, from an unsigned hint; a fetch by SHA-256
+with bounds on size and time and without a redirect to another host; and a
+check that the bytes hash to what was asked, after which the object is
+checked exactly like a presented one. A grant id addresses the canonical
+signed grant alone; a presentation is not fetched but completed by the
+reader, from the fetched signed grant and an issuance locator that it
+checks as LIP-0004 section 4 does. A contract of LIP-0017 is fetched by
+the hash of its stored bytes, and the reader recomputes its identifier.
+Retrieval adds availability and no authority: a store can make a reader
+refuse and cannot make it accept. The uses are audits, disputes, parent grants and
 certificate sets. LIP-0005 points to the draft.
 
 LIP-0008, section 11.2, the seal-key endorsement. Its members by meaning:
@@ -39,14 +41,18 @@ LIP-0008 also states the names of the parties. Grant v3 keeps its byte
 names `landlord_name`, `landlord_sig` and `agent_name`; the prose and
 Grant v4 name the roles: issuer, recipient and executor.
 
-LIP-0017, section 8 and decision C9. A contract may carry the hash of the
-configuration manifest that the parties agreed on, expressed only through
-Curator profiles, Curator skills and the systems that the agent may use.
-The platform executes exactly that manifest. For a rental the slot
-launcher composes the agent's read-only runtime context from the pinned
-profile, the human terms of the contract, the machine terms of the grant
-and any scope text. The reference rental path gives a slot no contract
-text today.
+LIP-0017, section 8 and decision C9. A contract under which the platform
+starts an agent carries the hash of the configuration manifest that the
+parties agreed on, expressed only through Curator profiles, Curator skills
+and the systems that the agent may use. The platform executes exactly that
+manifest. The draft adds that the profile of such a contract requires the
+hash, that a reader refuses a contract of that profile without it, and that
+a launcher which cannot reproduce the hash starts nothing; a contract that
+starts no agent carries none. LIP-0018 section 1 says the same for a
+contract profile. For a rental the slot launcher composes the agent's
+read-only runtime context from the pinned profile, the human terms of the
+contract, the machine terms of the grant and any scope text. The reference
+rental path gives a slot no contract text today.
 
 ## 0.1.33 — 2026-11-14
 
