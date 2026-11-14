@@ -3,9 +3,11 @@
 ## 0.1.37 — 2026-11-14
 
 Adds Draft LIP-0020, the wire registry for Grant v4, with vectors. It is
-the first proposal of bytes for Grant v4. Every rule of it is the draft's
-proposal, and neither owner has decided a byte. No v3 byte changes, and
-neither does any rule or vector of profile `swarma-trust-contract/1` or
+the first proposal of bytes for Grant v4. Two points of its consent rules
+were decided on 2026-11-14 under Ivan Oparin's delegation; he may override
+them, and the co-author's agreement is pending. Every other rule is the
+draft's proposal, and neither owner has decided a byte. No v3 byte changes,
+and neither does any rule or vector of profile `swarma-trust-contract/1` or
 the reference checker.
 
 The layer that every v4 object shares (sections 1 to 6). The canonical
@@ -21,30 +23,44 @@ hash of BIP-340. A signature is BIP-340 over the typed digest under strict
 verification. The identifier of an object is the SHA-256 of its canonical
 payload and leaves the signature out; the SHA-256 of the signed form is
 its content address. The registry lists seven types. Five have an
-identifier and a digest and no members yet: the grant, the invocation, the
+identifier and a digest and no members: the grant, the invocation, the
 receipt, the seal-key endorsement and a successor of the notary
-attestation.
+attestation. No reader accepts a payload of those five, and the LIP names
+what the members of each wait for.
 
 Consent (section 7). The issuer signs a typed assent to the contract. The
-recipient signs a Nostr event of kind 8181 with three tags, as a browser
-signer can. For a recipient that the grant names by name, the consenting
-key is the key that the name yielded for the Nostr channel when the grant
-was issued; the issuer records the output of the name that it read, a
-verifier reads that output on its own node, and a later change of the
-channel key by the same owner leaves the consent valid. The `created_at`
-of the event is never compared with a block height.
+recipient signs a Nostr event of kind 8181, as a browser signer can. The
+two decided points: the state of a name at the issuance snapshot
+authorises, and a state that held earlier or later is no substitute; and a
+consent names its contract, its issuer and its recipient, is consumed by
+one issuance, and is at most 72 hours old when the issuer starts that
+issuance. The draft carries them so: the event has the tags `t`,
+`genesis`, `contract` and `issuer`, and for a recipient by name a fifth,
+`name`; the snapshot is the state at the grant's recent block; the issuer
+records the output of the recipient's name that it read; and a verifier
+establishes that this output was the name's current one at that block,
+which takes a walk of the name's operations since issuance. A later change
+of the channel key by the same owner leaves the consent valid. The issuer
+records a consumed consent and refuses it for any other grant; a verifier
+cannot see that from one issuance, which the LIP states as a limit. The
+`created_at` of the event is never compared with a block height.
 
 Issuance (section 8). The issuance preparation states the grant, the
-issuer's assent and the recipient's consent, each with its signature. Its
-typed digest is the issuance commitment, carried in a LIP-0005 frame with
-action `0x01` and payload version `0x02`; the pointer is the content
-address of the signed grant. Payload version `0x01` keeps its v3 meaning.
+issuer's assent and the recipient's consent, each with its signature, and
+for a recipient by name the output that was read. Its typed digest is the
+issuance commitment, carried in a LIP-0005 frame with action `0x01` and
+payload version `0x02`; the pointer is the content address of the signed
+grant. Payload version `0x01` keeps its v3 meaning.
 
-Refusal codes and vectors (sections 9 and 10). The layer has 25 new codes
-and one order of checks. `vectors/LIP-0020/wire-vectors.json` holds 137
-vectors over the 41 rules, each refused vector with one defect and a valid
-neighbour. They were computed by two implementations that share no code;
-no checker for them is in this repository.
+Pipelines, codes and vectors (sections 9 and 10). A reader takes a signed
+object, an unsigned payload, a Nostr event and an issuance through four
+pipelines, selected by what the place expects, with one order of refusals
+inside a document and inside the members. The layer has 27 new codes.
+`vectors/LIP-0020/wire-vectors.json` holds 205 vectors over the 46 rules,
+in seven stages. A refused vector holds one defect and names a valid
+neighbour; vectors with several defects are marked and test the order.
+They were computed by two implementations that share no code; no checker
+for them is in this repository.
 
 LIP-0008 section 8.1, LIP-0005 section 2 and LIP-0014 section 6.1 each
 gain one sentence that names LIP-0020, and three rows of the index of open

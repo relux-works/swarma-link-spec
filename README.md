@@ -340,13 +340,20 @@ binary64 number; a registry of seven object types, each with one identifier
 that stands in the signed bytes and names its signing digest; the signed
 form; an identifier that leaves the signature out; the consent of both
 parties to a contract, with the rule for a recipient that a grant names by
-name; and what an issuance anchor commits to, in a LIP-0005 frame with
-payload version `0x02`. Every rule is the draft's proposal, and neither
-owner has decided a byte of it. The members of a grant, an invocation, a
-receipt, a seal-key endorsement and the successor of the notary attestation
-stay open. The 137 vectors in [`vectors/LIP-0020/`](vectors/LIP-0020/) were
-computed by two implementations that share no code, and no checker for them
-is published.
+name; what an issuance anchor commits to, in a LIP-0005 frame with payload
+version `0x02`; and the pipelines of a reader with one order of refusals.
+Two points of its consent rules were decided on 2026-11-14 under Ivan
+Oparin's delegation; he may override them, and the co-author's agreement is
+pending. The state of a name at the issuance snapshot authorises, and no
+earlier or later state does. And a consent is bound to its contract, its
+issuer and its recipient, is used for one issuance, and is at most 72 hours
+old when the issuer starts that issuance. Every other rule is the draft's
+proposal, and neither owner has decided a byte of it. The grant, the
+invocation, the receipt, the seal-key endorsement and the successor of the
+notary attestation have an identifier and no members, and no reader accepts
+one of them yet. The 205 vectors in [`vectors/LIP-0020/`](vectors/LIP-0020/)
+were computed by two implementations that share no code, and no checker for
+them is published.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

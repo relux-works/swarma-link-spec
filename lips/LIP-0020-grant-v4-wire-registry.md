@@ -28,40 +28,73 @@ This LIP proposes the bytes of that layer, which every v4 object shares:
 - the consent of both parties to a contract, with the rule for a recipient
   that the grant names by name, whose key the name can replace (section 7);
 - what an issuance anchor commits to, and its frame (section 8);
-- the refusal codes of this layer and their order (section 9);
+- the pipelines of a reader, their order and their refusal codes (section
+  9);
 - vectors for all of it (section 10).
 
-It does not fix the members of a grant, of an invocation, of a receipt, of
-a seal-key endorsement or of a notary attestation. Each of those comes with
-the proposal that fixes its meaning; the registry gives each its identifier
-and its digest now, so that those proposals share one layer.
+Three objects are complete here: the assent of a party to a contract, the
+consent event of a recipient and the issuance preparation. The registry
+reserves an identifier and a digest for five more types and gives them no
+member: the grant, the invocation, the receipt, the seal-key endorsement and
+a successor of the notary attestation. No reader accepts a payload of those
+five until the proposal that fixes its meaning gives it members.
 
 ## What is decided and what is proposed
 
-Every rule of this LIP is the draft's proposal. Neither owner has decided a
-byte of it, and nothing of it is implemented. The owners accept or change
-these bytes through this LIP, under LIP-0001.
+Two points of section 7 are decided. They were decided on 2026-11-14 under
+Ivan Oparin's delegation; he may override the decision, and the co-author's
+agreement is pending. The first requires authorisation by name at issuance:
+the state of a name at the issuance snapshot decides, and a state that held
+earlier or later is no substitute. The second makes a consent bound and
+single-use, with a largest age of 72 hours at issuance. Section 7 states
+both and says what the draft adds to carry them.
+
+Every other rule of this LIP is the draft's proposal. Neither owner has
+decided a byte of it, and nothing of it is implemented. The owners accept or
+change these bytes through this LIP, under LIP-0001.
 
 The requirements that the proposal meets are Draft text of LIP-0008: a type
 and a version inside the signed bytes, one tagged digest for each type, one
 identifier for each object, strict BIP-340 verification, and RFC 8785 as the
-plan for the canonical form (sections 8 and 8.1). Two amendments of
-LIP-0008 bound section 7 of this LIP. They follow Ivan Oparin's decisions
-of 2026-11-10, and the co-author's agreement on them is pending: a grant
-names its recipient in exactly one way, by key or by name (LIP-0008 section
-3.1), and the window of a grant is a pair of block heights (LIP-0008
-section 7.1). An invocation keeps clock time, by his decision of
-2026-11-11.
+plan for the canonical form (sections 8 and 8.1).
+
+Section 7 also rests on two parts of LIP-0008 that it does not change.
+Section 3.1, a recipient by key or by name, and section 7.1, a window in
+block heights, entered LIP-0008 in version 0.1.13; the changelog of that
+version dates them to Ivan Oparin's decisions of 2026-11-10, with the
+co-author's agreement pending. Section 7.1 itself dates two of its points to
+his decision of 2026-11-11: that a window does not open below the committed
+recent block, and that an invocation keeps clock time.
 
 The table says which open point of LIP-0008 each section answers.
 
 | Open point of LIP-0008 | Proposed here |
 | --- | --- |
-| "Exact versioned bytes, signature domain, commitment/consent encoding" | Sections 1, 3, 4, 7 and 8, for the layer that all objects share. The members of each object stay open |
-| "typed-hash registry" and "per-field JCS integer/string schemas" | Sections 2, 3 and 4 |
+| "Exact versioned bytes, signature domain, commitment/consent encoding" | Sections 1, 3, 4, 7 and 8, for the layer that all objects share. The members of five types stay open |
+| "typed-hash registry" and "per-field JCS integer/string schemas" | Sections 2, 3 and 4. The form of each integer member is fixed with its type, so for the five open types it is open with them |
 | "Signed metadata envelope, canonical object-ID preimages/signature inclusion, strict signature wire representation" | Sections 3 (W3.7), 5 and 6 |
-| "cross-version journal bindings" | Section 6 states what an identifier may not be used for. The journal key of a request comes with the members of the invocation |
+| "cross-version journal bindings" | Section 6 states what an identifier alone may not do. The journal key of a request comes with the members of the invocation |
 | "how the consent event's NIP-01 `created_at`, which stays in seconds, relates to the window" | Section 7.4 |
+
+## What can be built from this LIP
+
+| Part | Can be built now | Waits for |
+| --- | --- | --- |
+| The reader of canonical bytes, the two integer forms, the typed digest, signatures, the signed form and identifiers (sections 1 to 6) | Yes | The owners' acceptance |
+| The assent, the consent event, the issuance preparation and its frame (sections 7 and 8), as octets and as checks on stated inputs | Yes | The contract identifier is taken as 32 given octets: its preimage is open in LIP-0017 section 2. The reads on a node need the ownership profile of LIP-0008 section 3, which is open |
+| A parser of a grant, an invocation, a receipt, an endorsement or the successor attestation | No | The members of each, as the next table says |
+
+| Type | Its members wait for |
+| --- | --- |
+| `swarma-grant/4` | The encoding of the issuer pin and of an owner key (LIP-0008 section 3), of the recipient modes (section 3.1), of the executor (section 4), of the limits and their kinds (section 2 and LIP-0018), of the window and the recent block (sections 7 and 7.1) and of the seal with its construction profile (sections 1.1, 9 and 11); for a parent and a child, the rows, the delegation key and the issue capability (LIP-0014 sections 9.1 and 11.1, LIP-0008 section 12.2), whose rules await the co-author |
+| `swarma-invocation/1` | The action table and the types of its arguments (LIP-0007, LIP-0008 sections 12.1 and 12.3), the encoding of the proof path (section 12.2) and the journal key of a request |
+| `swarma-receipt/1` | What a receipt states about an effect, for each action (LIP-0018 section 3) |
+| `swarma-seal-endorsement/1` | The seal profile and the form of a seal key and of its script (LIP-0008 sections 11.1 and 11.2) |
+| `swarma-notary-attestation/2` | The Draft changes of LIP-0014 sections 3.4, 7.1, 9.1 and 10.1 (J5, J3, J1, J2), which await the co-author |
+
+Until a type has members, no reader supports it, and a payload of that
+type refuses as `WIRE_TYPE` (W3.1). Nothing in this LIP, and no vector,
+makes a payload that holds only `type` a valid object.
 
 ## Motivation
 
@@ -97,9 +130,8 @@ consent by any key. LIP-0008 lists the point as open.
   version `0x01` (LIP-0005).
 - The signed Draft objects of LIP-0014, LIP-0015 and LIP-0016 use the same
   fixed-prefix style and the encoding rules of LIP-0013 section 2.1.
-  LIP-0014 section 6.1 says
-  of its attestation that the typed-hash plan of LIP-0008 may replace the
-  prefix before adoption.
+  LIP-0014 section 6.1 says of its attestation that the typed-hash plan of
+  LIP-0008 may replace the prefix before adoption.
 - LIP-0008 section 8 plans RFC 8785 and tagged hashes for the next format
   and section 8.1 states the requirements on identifiers and signatures.
   Both leave the bytes open.
@@ -112,8 +144,9 @@ consent by any key. LIP-0008 lists the point as open.
 
 The canonical bytes of an object are the RFC 8785 serialization (JSON
 Canonicalization Scheme) of one JSON object, over a set of values that is
-smaller than JSON's. A reader takes the octets through these steps in this
-order and refuses at the first that fails.
+smaller than JSON's. A document meets all six rules or refuses. Which
+refusal a reader reports for a document that breaks more than one of them
+is fixed by W9.2.
 
 | Rule | What the reader requires | Refusal |
 | --- | --- | --- |
@@ -163,13 +196,13 @@ each integer member has.
 
 | Form | Octets | Range | Use |
 | --- | --- | --- | --- |
-| Number form | A JSON number: `0`, or a digit from 1 to 9 followed by digits | 0 to 9007199254740991, which is 2^53 - 1 | Values that what they count keeps far below 2^53: a block height, an output index, a position in a list, Unix seconds |
+| Number form | A JSON number: `0`, or a digit from 1 to 9 followed by digits | 0 to 9007199254740991, which is 2^53 - 1, or to the smaller bound that the member states | Values that what they count keeps far below 2^53: a block height, an output index, a position in a list, Unix seconds |
 | String form | A JSON string that holds the same grammar | 0 to the bound that the member states | An amount in atomic units, a price, a cost, a count of tokens or of octets, and every cumulative counter |
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | W2.1 | Every integer member has exactly one form, stated by the schema of its type. The other form refuses: the number `1` where the string `"1"` is required, and the reverse. No reader converts one into the other. | `WIRE_MEMBER` |
-| W2.2 | The number form. The token has no sign, no fraction and no exponent, and its value is at most 9007199254740991. The reader decides this on the digits of the token. | `WIRE_NUMBER` |
+| W2.2 | The number form. The token has no sign, no fraction and no exponent, and its value is at most 9007199254740991. The reader decides this on the digits of the token. Where the schema states a smaller bound for the member, the value is at most that bound. | `WIRE_NUMBER` for the token; `WIRE_INTEGER` for a value above the bound of its member |
 | W2.3 | The string form. The string is `0`, or a digit from 1 to 9 followed by digits `0` to `9`, and nothing else: no sign, no leading zero, no fraction, no exponent, no space, no separator, no digit outside ASCII. Its value is at most the bound of the member. | `WIRE_INTEGER` |
 | W2.4 | A reader parses an integer from its digits into an exact integer and checks the bound before it computes with the value. No binary64 number takes part, at a reader or at a signer. An addition or a multiplication whose result would pass the bound of its member refuses and does not wrap. | The code of the rule that computes |
 
@@ -180,39 +213,54 @@ unsigned bits. A type that needs more states its own bound.
 Which members take the string form is decided with each type. The rule of
 thumb in the table is the draft's: whatever can be summed without a natural
 ceiling takes the string form, so that no later asset or price forces a
-change of form.
+change of form. The three objects that are complete here hold one integer
+member, an output index, in the number form, and no rule of this LIP
+computes with an integer.
 
 ### 3. Types and the registry
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| W3.1 | Every payload has a member `type`, a string: the name of the object type and its version, joined by a slash, exactly as the registry below writes it. A reader compares the whole string and never parses a version out of it. A payload without `type`, with a `type` that is no string, with a `type` that the reader does not support, or with another type than the one that its place requires refuses. | `WIRE_TYPE` |
-| W3.2 | The members of a payload are those that the schema of its type lists, each in the form that the schema states. A member that the schema does not list, a required member that is missing and a value in another form refuse. | `WIRE_MEMBER` |
+| W3.1 | Every payload has a member `type`, a string: the name of the object type and its version, joined by a slash, exactly as the registry below writes it. A reader compares the whole string and never parses a version out of it. A payload without `type`, with a `type` that is no string, with a `type` that the reader does not support, or with another type than the one that its place requires refuses. A reader supports no type without members. | `WIRE_TYPE` |
+| W3.2 | The members of a payload, and of every object inside it, are exactly those that the schema of its type lists for that object, each in the form that the schema states. A member that the schema does not list, a required member that is missing and a value in another form refuse, at every depth. | `WIRE_MEMBER` |
 | W3.3 | A change of octets or of meaning takes a new version, as LIP-0018 requires of a profile. A reader that supports one version reads no other version as that one, and no reader falls back from a type that it does not support to one that it does. | `WIRE_TYPE` |
 | W3.4 | The registry applies to no object of an earlier format. A v3 grant, the contracts `swarma-trust-contract/1` and `/2`, the attestation `swarma-notary-attestation/1` and the statements of LIP-0015 and LIP-0016 keep their own bytes, prefixes and identifiers. Under this registry such an object has no `type` and refuses. | `WIRE_TYPE` |
 | W3.5 | A member that holds a hash, an identifier, a transaction id or a signature is lowercase hexadecimal of the exact length that the schema states. A transaction id and a block hash are written in the byte order in which a node prints them. The `signature` of a signed form has its own rule and code (W5.2). | `WIRE_MEMBER` |
-| W3.6 | A public key is an x-only key of BIP-340: 64 lowercase hexadecimal characters that are the x coordinate of a point of the curve. | `WIRE_MEMBER` for the form; `WIRE_KEY` for a value that is no such coordinate |
+| W3.6 | A signing key, a key under which a BIP-340 signature of this profile verifies, is an x-only key: 64 lowercase hexadecimal characters that are the x coordinate of a point of the curve. The rule covers signing keys and no other key. | `WIRE_MEMBER` for the form; `WIRE_KEY` for a value that is no such coordinate |
 | W3.7 | Descriptive members, where the schema of a type admits them, are members of the payload like any other. They are inside the canonical bytes, the digest and the identifier, and a change of one is a change of the object. A signed form carries nothing beside the payload and the signature. Such a member gives no authority (LIP-0008 section 12.3). | `WIRE_SIGNATURE` for a member that was changed after signing |
+
+A key that controls an output is another kind of value than a signing key.
+The owner key of a name, a seal key and the key of a coin are known through
+the script that they pay, and for a script that hashes a compressed key the
+parity of that key decides which script it is. The form of such a key comes
+with the ownership and seal profiles of LIP-0008 sections 3 and 11. W3.6
+says nothing about it, and no reader of this LIP turns such a key into an
+x-only key.
 
 The registry:
 
 | Type | Object | Use of its digest | Signed by | Members |
 | --- | --- | --- | --- | --- |
-| `swarma-grant/4` | A v4 grant, root or child (LIP-0008 section 1) | Signature | For a root grant the issuer's grant key. For a child the rule in force names the parent's recipient key, and Draft text of LIP-0014 section 11.1 names the delegation key of the parent (J4, awaiting the co-author's agreement) | Open |
-| `swarma-invocation/1` | A signed invocation (LIP-0008 section 12.1) | Signature | The request key of the final grant, or the key that its recipient's name yields for the channel | Open |
-| `swarma-receipt/1` | The receipt of an executor for an effect | Signature | The executor's key | Open |
-| `swarma-seal-endorsement/1` | The endorsement of a seal key (LIP-0008 section 11.2) | Signature | The issuer's grant key | Named by meaning in LIP-0008 section 11.2; octets open |
+| `swarma-grant/4` | A v4 grant, root or child (LIP-0008 section 1) | Signature | For a root grant the issuer's grant key. For a child the rule in force names the parent's recipient key, and Draft text of LIP-0014 section 11.1 names the delegation key of the parent (J4, awaiting the co-author's agreement) | None yet |
+| `swarma-invocation/1` | A signed invocation (LIP-0008 section 12.1) | Signature | The request key of the final grant, or the key that its recipient's name yields for the channel | None yet |
+| `swarma-receipt/1` | The receipt of an executor for an effect | Signature | The executor's key | None yet |
+| `swarma-seal-endorsement/1` | The endorsement of a seal key (LIP-0008 section 11.2) | Signature | The issuer's grant key | Named by meaning in LIP-0008 section 11.2; none here |
 | `swarma-contract-assent/1` | The assent of one party to a contract | Signature | The key of that party | Section 7.1, complete |
 | `swarma-issuance/1` | The issuance preparation | Commitment | Nobody; the anchor transaction authenticates it | Section 8, complete |
-| `swarma-notary-attestation/2` | The successor of the attestation of LIP-0014 section 6.1 | Signature | The notary's attestation key | Open |
+| `swarma-notary-attestation/2` | The successor of the attestation of LIP-0014 section 6.1 | Signature | The notary's attestation key | None yet |
 
 The largest size is 1024 octets for the signed form of an assent and 2048
-octets for an issuance preparation. A type whose members are open states
-its largest size with them.
+octets for an issuance preparation. A type without members states its
+largest size with them.
+
+The entries of the grant and of the endorsement name the root case. Who
+signs a child's grant, who endorses the seal of a child and who assents to a
+child's contract are questions of LIP-0014 sections 9.1 and 11.1, and the
+registry settles none of them.
 
 One object of this profile is a Nostr event and no entry of the registry:
 the consent event of section 7.2. It keeps the wire form and the identifier
-of NIP-01, and section 1 does not apply to it.
+of NIP-01, and sections 1 to 6 do not apply to it.
 
 The attestation needs a successor for two reasons. Its identifier and its
 signature follow the fixed-prefix style, which sections 4 to 6 replace for
@@ -253,11 +301,11 @@ because the payload that it covers states its type. The tags of BIP-340
 itself, `BIP0340/challenge` among them, are internal to the signature and
 are not these tags.
 
-For the payload `{"type":"swarma-grant/4"}`, which stands in for a grant in
-the vectors, the SHA-256 of the tag is
+For the octets `{"type":"swarma-grant/4"}` the SHA-256 of the tag is
 `eb2b9dc1647237e0e0d7e024a19f4ee95379c20ff01f4ccb7cf1168840fef67a` and the
 typed digest is
-`f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75`.
+`f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75`. The
+example is arithmetic: those octets are no valid grant.
 
 ### 5. Signatures and the signed form
 
@@ -280,15 +328,21 @@ An object that nobody signs, the issuance preparation, has no signed form.
 | W6.3 | A reader recomputes an identifier from the payload. It trusts no identifier that is stated beside an object, and it compares every reference to an object with the identifier that it recomputed. | `WIRE_ID` |
 | W6.4 | Three hashes of one object have three uses and are never exchanged. The identifier names the object in references: a parent in a child, a grant in an endorsement, a link of a proof path. The typed digest is what a signature covers; nothing is signed by signing an identifier. The content address, the SHA-256 of the signed form, is what a store holds the signed object under (LIP-0019); two signed forms of one payload have two addresses and one identifier. | `WIRE_ID` for a reference that states another of the three |
 
-An identifier names octets. It is no key of state. LIP-0008 section 8.1
-requires that re-signing, and another object identifier, restore neither a
-seal nor a nonce claim nor a consumed budget. Under W6.2 re-signing changes
-no identifier. A payload that was changed and signed again has another
-identifier, and it must reach the same state as the first: a closure is
-keyed by the seal's outpoint, and a request by a key that the profile of the
-invocation builds from the members that a new signature or a new `iat`
-does not change, the executor and the nonce among them. That key comes
-with the members of the invocation and is not fixed here.
+An identifier names octets. An identifier or a signature alone must not
+reset state: LIP-0008 section 8.1 requires that neither re-signing nor
+another object identifier restores a seal, a nonce claim, a consumed budget
+or a reservation. Under W6.2 re-signing changes no identifier. A request
+that is signed again with another `iat` has another identifier and is still
+the same request, and the journal knows it by a key that the profile of the
+invocation builds from the members that such a change leaves alone, the
+executor and the nonce among them. That key comes with the members of the
+invocation and is not fixed here.
+
+This restricts no rule that keys state by an identifier together with other
+members. LIP-0014 section 9.1 keys the ledger of a row by the identifier of
+its parent and an ordinal, and that key stays what its rule says. A new
+grant with a new seal is new authority, and nothing here makes it share
+state with another grant.
 
 One consequence of W6.4 concerns retrieval. On v3 the `grant_id` is also
 the hash under which a store holds the signed grant, so a reader fetches a
@@ -316,6 +370,23 @@ contract defines (LIP-0017 section 2). Both also bind the chain, by the
 hash of its genesis block. The pin of the construction profile, which
 LIP-0008 section 1.1 leaves open, is not part of either.
 
+Two points of this section are decided. They were decided on 2026-11-14
+under Ivan Oparin's delegation; he may override the decision, and the
+co-author's agreement is pending.
+
+| Point | Decision |
+| --- | --- |
+| Authorisation by name at issuance | It is required. At the issuance snapshot, the consistent state of its own node that the issuer signs against, the issuer's name is live, is held by the pinned owner under the first ownership profile (for the Witness profile on Namecoin: a closed list of single-key scripts, read on a node with a transaction index), and its value names the grant key that signs. The same holds for a recipient that the grant names by name: the current value of its name at that snapshot names the channel key that signed the consent. A state that held earlier or later is no substitute. |
+| Age and reuse of a consent | A consent is bound and is used once. It names the exact contract, the issuer and the recipient. Exactly one issuance consumes it. It is never presented again for another grant, for a re-issue or for a successor; each of those needs a fresh consent, and the issuer records the identifier of the consent as consumed. At most 72 hours pass between the `created_at` of the consent event and the issuer's first transaction of the issuance, measured on the issuer's clock, and an older consent refuses. `created_at` is never compared with a block height. The 72 hours cover an issuance of two transactions with a person's confirmation between them. They are a policy number, not a measured tolerance, and a later profile may change them. |
+
+The rest of the section is the draft's proposal for carrying the two points
+in octets and in checks. It adds four things that the decision does not
+state: the tags `issuer` and `name` of the consent event (W7.3); the recent
+block of the grant as the block of the snapshot, with the evidence output
+and the verifier's read of it (W7.6); which transaction counts as the
+first of an issuance (W7.8); and what a verifier can and cannot see of the
+single use (W7.9).
+
 #### 7.1. The assent of a party
 
 W7.1. An assent is a payload of type `swarma-contract-assent/1` with
@@ -326,10 +397,10 @@ exactly these members:
 | `type` | string | `swarma-contract-assent/1` |
 | `genesis` | 64 hexadecimal characters | The hash of the genesis block of the chain that holds the names of the parties |
 | `contract` | 64 hexadecimal characters | The identifier of the contract |
-| `party` | public key (W3.6) | The key that assents. The signature of the signed form verifies under it |
+| `party` | signing key (W3.6) | The key that assents. The signature of the signed form verifies under it |
 
-W7.2. A verifier of a grant takes the issuer's assent through the steps of
-section 9 and then checks, in this order:
+W7.2. A verifier of a grant takes the issuer's assent through the pipeline
+of a signed object (section 9) and then checks, in this order:
 
 | Check | Refusal |
 | --- | --- |
@@ -349,114 +420,185 @@ to a contract.
 
 W7.3. The recipient consents with a NIP-01 event of kind **8181** with
 empty `content`, in the wire form of LIP-0013 section 3.1 and at most 2048
-octets, with exactly these three tags in this order:
+octets, with exactly these tags in this order:
 
 | # | Tag | Value |
 | --- | --- | --- |
 | 1 | `t` | `swarma-contract-consent/1` |
 | 2 | `genesis` | the hash of the genesis block, as in the assent |
 | 3 | `contract` | the identifier of the contract |
+| 4 | `issuer` | the issuer's grant key, a signing key (W3.6): the key that signs the grant and the issuer's assent |
+| 5 | `name` | for a recipient by name only: the name, exactly as the grant signs it |
+
+The event names the recipient in one of two ways. For a recipient by key it
+has four tags, and its `pubkey` is the recipient: the request key. For a
+recipient by name it has the fifth tag. The wire form admits printable
+ASCII and nothing else (LIP-0013 section 2.1), so a name that holds another
+octet has no consent in this profile.
 
 Kind 8181 is the kind of the v3 consent. The two cannot be confused: a v3
-verifier requires the v3 value of `t` and four tags, and a v4 verifier
-requires this value and these three. What a v3 consent carried in its tags
-`booking` and `privacy` is part of the contract on v4, which the identifier
-binds.
+verifier requires the v3 value of `t`, and a v4 verifier requires this one.
+What a v3 consent carried in its tags `booking` and `privacy` is part of
+the contract on v4, which the identifier binds.
 
-W7.4. A verifier checks a consent event in this order:
+W7.4. A verifier checks a consent event in five steps and reports the
+first that fails:
 
-| Check | Refusal |
-| --- | --- |
-| The wire form, the kind, the empty content and the three tags are as W7.3 states, and `id` is the NIP-01 id of the event | `CONSENT_SHAPE` |
-| The tags `genesis` and `contract` equal the chain and the contract hash of the grant | `CONSENT_BINDING` |
-| `pubkey` is the consenting key of section 7.3 | `CONSENT_KEY`; `CONSENT_EVIDENCE` where the read of W7.6 establishes nothing |
-| `sig` verifies over `id` under `pubkey`, under W5.2 | `CONSENT_SIGNATURE` |
-| `created_at` is not later than the verifier's clock (section 7.4) | `CONSENT_TIME` |
+| Step | Check | Refusal |
+| --- | --- | --- |
+| 1. Shape | The size, the wire form, the kind and the empty content are as W7.3 states. The tags are the four, or the five, of W7.3 in their order. `pubkey` and the value of `issuer` are signing keys (W3.6). `id` is the NIP-01 id of the event | `CONSENT_SHAPE` |
+| 2. Binding | `genesis` and `contract` are the chain and the contract hash of the grant. `issuer` is the key under which the signature of the grant verifies. For a grant by key the event has four tags; for a grant by name it has five, and `name` is the name that the grant signs | `CONSENT_BINDING` |
+| 3. Key | `pubkey` is the consenting key: W7.5 for a grant by key, W7.6 for a grant by name | `CONSENT_KEY`, `CONSENT_EVIDENCE` |
+| 4. Signature | `sig` verifies over `id` under `pubkey`, as W5.2 verifies | `CONSENT_SIGNATURE` |
+| 5. Time | `created_at` is not later than the verifier's clock (W7.8) | `CONSENT_TIME` |
 
 #### 7.3. Which key consents
 
 | | Recipient by key | Recipient by name |
 | --- | --- | --- |
-| Consenting key | The request key that the grant signs | The key that the recipient's name yielded for the Nostr channel when the grant was issued |
-| What the issuer checks before it signs the grant | `pubkey` equals the request key | The three conditions of W7.6, in one observation |
-| What a verifier compares `pubkey` with | The request key of the grant | The key that the evidence output yields |
+| Consenting key | The request key that the grant signs | The key that the current value of the recipient's name yields for the Nostr channel at the issuance snapshot |
+| What the issuer checks before it signs the grant | `pubkey` equals the request key | The five conditions of W7.6, at the snapshot |
+| What a verifier establishes | `pubkey` equals the request key of the grant | The five conditions of W7.6 for the evidence output |
 | What authenticates a request afterwards | The same request key | The key that the name yields at that admission |
 
 W7.5. For a recipient by key, the `pubkey` of the consent event equals the
-request key that the grant signs.
+request key that the grant signs. Any other key refuses as `CONSENT_KEY`.
 
-W7.6. For a recipient by name, the issuer reads the recipient's name in
-the same consistent observation from which it takes the recent block that
-the grant commits (LIP-0008 section 7). In that observation:
+W7.6. For a recipient by name, the decision asks for the state at the
+issuance snapshot. This draft takes the recent block that the grant
+commits (LIP-0008 section 7) as the block of the snapshot: the snapshot is
+the state of the active chain at that block, without anything that is
+pending and without anything that is confirmed above it. The issuer
+commits, as the recent block, the tip of one consistent observation of its
+own node, and it makes the checks of this rule in that observation.
 
-1. the current output of the name is controlled by the owner key that the
-   grant signs;
-2. the value of that output yields a key for the Nostr channel, by the
+The issuer signs the grant only if, at the snapshot:
+
+1. the newest operation of the recipient's name is confirmed, at a height
+   that is not above the recent block. Where a newer operation is pending,
+   or is confirmed above that block, the issuer takes a later snapshot or
+   signs nothing;
+2. the name is live: it is not expired at the height of the recent block;
+3. the output of that operation is controlled by the owner key that the
+   grant signs, under the ownership profile;
+4. the value of that output yields a key for the Nostr channel, by the
    member that LIP-0008 section 3.1 names;
-3. the `pubkey` of the consent event equals that key.
+5. the `pubkey` of the consent event equals that key.
 
-The issuer signs nothing unless all three hold. It records that output, by
-transaction id and output index, as the evidence output of the issuance
-preparation (section 8), and it keeps the consent event and the
-transaction of the evidence output with its record of the grant.
+Where one of the first three fails the issuer refuses the consent as
+`CONSENT_EVIDENCE`, and where the fourth or the fifth fails as
+`CONSENT_KEY`. The issuer records the output of condition 1, by its
+transaction id and its output index, as the evidence output. It puts the
+two values into the issuance preparation (section 8), hands them on with
+the grant, and keeps the consent event and the transaction of the evidence
+output with its record of the grant.
 
-A verifier reads the evidence output on its own node. The transaction is
-confirmed on the active chain at a height that is not above the height of
-the grant's recent block. The output is an operation of the signed name. It
-is controlled by the signed owner key, under the ownership-proof profile of
-LIP-0008 section 3, which is open. Where the read cannot establish these,
-the consent refuses as `CONSENT_EVIDENCE` and no closure is recorded. Where
-the value of the output yields another key than the event's `pubkey`, or
-no key, the consent refuses as `CONSENT_KEY`.
+A verifier reads the evidence output on its own node and requires all of:
+
+1. the transaction is confirmed on the active chain, at a height that is
+   not above the height of the grant's recent block;
+2. the output is an operation of the name that the grant signs, and the
+   name was live at the height of the recent block;
+3. the output is controlled by the owner key that the grant signs, under
+   the ownership profile of LIP-0008 section 3, which is open;
+4. the output was the name's current output at the recent block: it is
+   unspent, or the transaction that spends it is confirmed above the recent
+   block. The verifier finds that transaction by following the outputs of
+   the name back from the current one, as LIP-0008 section 3 follows an
+   issuer's name; the walk ends at the evidence output;
+5. the value of the output yields the `pubkey` of the consent event for the
+   Nostr channel.
+
+Where one of the first four fails, or the node cannot establish it, the
+consent refuses as `CONSENT_EVIDENCE`, and nothing is recorded as closed.
+Where the fifth fails the consent refuses as `CONSENT_KEY`.
+
+Condition 4 is the last sentence of the decision at a verifier. An output
+that the owner had replaced by the snapshot held earlier, and condition 4
+refuses it. An output that was confirmed after the snapshot held later, and
+condition 1 refuses it.
+
+The read costs a walk that LIP-0008 does not otherwise ask for. A request
+needs no history of the recipient's name, because it is authenticated under
+the name's current value. The consent needs the operations of the name
+since the grant was issued and none before the evidence output. A node
+without a transaction index cannot make the read and refuses.
 
 The evidence output is no pin of the recipient. Admission of a request
 never compares the name's current output with it, and LIP-0008 section 3.1
 stays as it is: a grant by name carries no request key and no pin of a name
 output.
 
+For the issuer's own name the decision states the same at the same
+snapshot. LIP-0008 section 3 already requires it of a verifier: the output
+of the issuer's name that was current at the recent block is controlled by
+the bound owner key and carries the grant key that signs. That section
+notes that its choice of the recent block needs confirmation; the decision
+names the issuance snapshot, and this draft reads the two as one block.
+This LIP adds no rule for the issuer's name.
+
 W7.7. A later update of the name by the same owner, which lists another
-channel key, leaves the consent as it is. The evidence output stays
-confirmed, and it still yields the key that consented. Requests are
-authenticated under the key that the name yields at admission, never under
-the key that consented. A change of the name's owner refuses the grant
-itself (LIP-0008 section 3), and the consent plays no part in that.
+channel key, leaves the consent as it is. The evidence output is then
+spent above the recent block, which condition 4 admits, and it still yields
+the key that consented. Requests are authenticated under the key that the
+name yields at admission, never under the key that consented. A change of
+the name's owner refuses the grant itself (LIP-0008 section 3), and the
+consent plays no part in that.
 
-The verifier's read has a limit. It shows that the consenting key was a
-channel key of the name under the signed owner, in an output that existed
-when the grant was built. It does not show that this output was still the
-name's current output at the recent block: an issuer that names an earlier
-output, whose key the owner had replaced by then, passes. The issuer's own
-check under W7.6 excludes that case, and an auditor can refute it from the
-name's history. What a false statement would gain is small: the key was a
-key of the same owner, and it authenticates no request. Whether a verifier
-must prove the point at admission is an open question.
-
-#### 7.4. Time
+#### 7.4. Time, age and single use
 
 W7.8. The `created_at` of a consent event is a claim in Unix seconds. No
 rule compares it with a block height, and it is no input of the grant's
-window (LIP-0008 section 7.1). One rule of v3 carries over unchanged
-because it needs no height: a consent whose `created_at` is later than the
-checker's clock refuses, at the issuer and at a verifier. The other half
-of the v3 rule compared `created_at` with the end of the grant in seconds,
-and a v4 grant has no end in seconds; it has no successor here.
+window (LIP-0008 section 7.1).
 
-How old a consent may be when the issuer signs, and whether a verifier
-bounds that age, is open.
+| Who checks, and when | Rule | Refusal |
+| --- | --- | --- |
+| The issuer, when it signs the first transaction of the issuance: the seal transaction, or the anchor where the seal exists already | Its clock is not earlier than `created_at` | `CONSENT_TIME` |
+| The issuer, at the same moment | Its clock is at most 259200 seconds, which is 72 hours, later than `created_at` | `CONSENT_AGE` |
+| A verifier, at every check | Its clock is not earlier than `created_at` | `CONSENT_TIME` |
 
-#### 7.5. Cases that need a node
+A verifier applies no largest age. The 72 hours bound the issuance and not
+the life of the grant: a grant that was issued under a fresh consent is
+verified for as long as its window is open, also after the name of its
+recipient lists another channel key. The half of the v3 rule that compared
+`created_at` with the end of the grant in seconds has no successor, because
+a v4 grant has no end in seconds.
 
-The vectors of section 10 cover every check that needs no chain. These
-cases need one, and no implementation exists that could run them.
+W7.9. The issuer records the `id` of the consent event as consumed,
+durably and before it signs the grant. It refuses a consent whose `id` it
+has recorded, as `CONSENT_CONSUMED`. A second grant under the same
+contract, a re-issue after an issuance that failed and a successor of a
+grant each need a fresh consent, which differs from the consumed one at
+least in its `created_at`. A crash between the record and the signature
+leaves a consent that is consumed and unused, and the recipient consents
+again.
+
+The tags of W7.3 bind the consent to one contract, one issuer and one
+recipient, and a verifier checks that binding. It cannot check the single
+use: a verifier sees one issuance, and nothing in that issuance shows
+whether the issuer used the same consent for another. Two issuances whose
+preparations hold one consent `id` are evidence that the issuer broke
+W7.9. The rule is a duty of the issuer, and the open questions name a
+change that would let every verifier check it.
+
+#### 7.5. Cases
+
+The vectors of section 10 hold the decisions of this section as tables: for
+a verifier in the group `consent_events`, for an issuer in the group
+`issuer_checks`. They state the facts that a node would supply and test
+what follows from them. These cases need the node itself, and no
+implementation exists that could run them.
 
 | Valid control | Refusal or invariant |
 | --- | --- |
-| A recipient by name; the evidence output is the name's current output at the recent block, under the signed owner key, and yields the consent key | The same grant where the evidence transaction is unconfirmed, is confirmed above the height of the recent block, or is no operation of the signed name: `CONSENT_EVIDENCE`, and the journal holds no closure |
-| The same | The evidence output is controlled by another key than the signed owner key: `CONSENT_EVIDENCE` |
+| A recipient by name; the evidence output is the name's current output at the recent block, under the signed owner key, and yields the consent key | The same grant where the evidence transaction is unconfirmed, is confirmed above the recent block, or is no operation of the signed name: `CONSENT_EVIDENCE`, and the journal holds no closure |
+| The same | The key was replaced before the snapshot: the name was updated to another channel key below the recent block, and the preparation names the earlier output. The walk finds its spender at or below the recent block: `CONSENT_EVIDENCE`. A verifier that reads the evidence output alone and admits it is wrong |
+| The same | The evidence output is controlled by another key than the signed owner key, or the name was expired at the recent block: `CONSENT_EVIDENCE` |
 | The same | The value of the evidence output yields another key than the event's `pubkey`, or lists the key only in another entry of `nostr.names`: `CONSENT_KEY` |
 | After issuance the owner updates the name to another channel key; the grant is presented again | The consent still passes, and a request signed by the former channel key refuses under LIP-0008 section 3.1. Refusing the consent because the name lists another key today is wrong |
-| At the issuer: the name lists the consent key in the observation that supplies the recent block | The name was updated to another key before that observation and the consent is by the former key: the issuer signs nothing |
-| A node that cannot read the evidence transaction | The admission refuses, and nothing is recorded as closed |
+| At the issuer: tip at height 200, and the newest operation of the name is confirmed at 190. The issuer commits the block at 200 and signs | The issuer would commit the block at 195 as recent while the newest operation of the name is confirmed at 199: it signs nothing, because a verifier would refuse the evidence. The same where that operation is pending |
+| At the issuer: a consent that is 71 hours old when the seal transaction is signed | A consent that is 73 hours old: `CONSENT_AGE`. The same consent offered for a second grant: `CONSENT_CONSUMED`, also after a restart of the issuer |
+| A node that cannot read the evidence transaction, or has no transaction index | The admission refuses, and nothing is recorded as closed |
 
 ### 8. The issuance preparation and its anchor
 
@@ -466,8 +608,9 @@ section fixes what the preparation is and what the anchor carries. How the
 anchor transaction is built, which inputs it spends and when it counts as
 confirmed stays with LIP-0008 sections 1.1 and 9, where it is open.
 
-W8.1. The issuance preparation is a payload of type `swarma-issuance/1`
-with exactly these members:
+W8.1. The issuance preparation is a payload of type `swarma-issuance/1`.
+Each of its objects has exactly the members that this table lists for it
+(W3.2), and the largest size is 2048 octets.
 
 | Member | Form | Meaning |
 | --- | --- | --- |
@@ -476,26 +619,41 @@ with exactly these members:
 | `contract` | 64 hexadecimal characters | The contract hash that the grant binds |
 | `grant_id` | 64 hexadecimal characters | The identifier of the grant |
 | `grant_signature` | 128 hexadecimal characters | The signature of the signed grant |
-| `issuer_assent` | object | `party`, the key of the issuer's assent, and `signature`, its signature. With `genesis` and `contract` they determine the assent |
-| `recipient_consent` | object | `event_id` and `signature`, the `id` and the `sig` of the consent event; for a recipient by name also `name_output` |
-| `name_output` | object, inside `recipient_consent` | `txid`, 64 hexadecimal characters, and `vout`, an integer in the number form: the evidence output of W7.6 |
+| `issuer_assent` | object with exactly `party` and `signature` | The issuer's assent. With `genesis` and `contract` the two members determine it |
+| `issuer_assent.party` | signing key (W3.6) | The `party` of the assent |
+| `issuer_assent.signature` | 128 hexadecimal characters | The signature of its signed form |
+| `recipient_consent` | object with exactly `event_id` and `signature`, and for a recipient by name also `name_output` | The consent event |
+| `recipient_consent.event_id` | 64 hexadecimal characters | The `id` of the event |
+| `recipient_consent.signature` | 128 hexadecimal characters | The `sig` of the event |
+| `recipient_consent.name_output` | object with exactly `txid` and `vout` | The evidence output of W7.6 |
+| `name_output.txid` | 64 hexadecimal characters | Its transaction id |
+| `name_output.vout` | integer in the number form, from 0 to 4294967295 | Its output index. The bound, 2^32 - 1, is that of an output index in a transaction |
 
-Nobody signs the preparation, and nobody needs to transport it. Whoever
-holds the signed grant, the issuer's assent and the consent event builds
-the same octets.
+W8.2. The preparation is rebuilt from four inputs: the signed grant, the
+signed form of the issuer's assent, the consent event and, for a recipient
+by name, the evidence outpoint. The first three are objects that a reader
+checks through their own pipelines. The fourth is two values that nothing
+signs. The issuer records them when it reads the name (W7.6) and hands them
+on with the grant, and a presenter supplies them with the presentation. The
+anchor binds them, because a preparation with another outpoint has another
+commitment. Nobody signs the preparation, and nobody needs to transport it:
+whoever holds the four inputs builds the same octets. From the signed grant
+come its identifier and its signature; its chain, its contract hash and the
+mode of its recipient are members of the grant, which has none yet.
 
-W8.2. The preparation states the signature of each signed part beside what
-identifies the part. The anchor therefore fixes the exact signed
+W8.3. The preparation states the signature of each signed part beside what
+identifies the part, and each of those signatures is the signature of the
+part that the reader checked. The anchor therefore fixes the exact signed
 preparation. A part that is presented under another valid signature is the
 same object (W5.4) and is still not what was published: the recomputed
 commitment differs.
 
-W8.3. A preparation for a recipient by name carries `name_output`. A
+W8.4. A preparation for a recipient by name carries `name_output`. A
 preparation for a recipient by key carries none. The mode is the grant's.
-A presentation that offers an evidence output for a grant by key, or none
+A presentation that offers an evidence outpoint for a grant by key, or none
 for a grant by name, refuses as `ISSUANCE_MODE`.
 
-W8.4. The issuance commitment is the typed digest of the preparation
+W8.5. The issuance commitment is the typed digest of the preparation
 (section 4). The anchor carries it in one zero-value `OP_RETURN` output, in
 the frame of LIP-0005 with action `0x01`, payload version `0x02` and
 location type `0x01`. The pointer is the content address of the signed
@@ -513,41 +671,81 @@ other. Any other frame refuses as `ISSUANCE_FRAME`. The rule of LIP-0005
 section 3 that an issuance transaction has exactly one `OP_RETURN` output
 holds unchanged.
 
-W8.5. A verifier recomputes the preparation from the parts that were
-presented, takes its typed digest and compares it with the commitment of
-the frame. A difference refuses as `ISSUANCE_COMMITMENT`. The frame is
-checked first, so a grant that is presented under another signature than
-the anchored one already refuses at the pointer.
+W8.6. A verifier checks every part through its own pipeline, builds the
+preparation from the parts that passed, takes its typed digest and compares
+it with the commitment of the frame. A difference refuses as
+`ISSUANCE_COMMITMENT`. The frame is checked before the commitment, so a
+grant that is presented under another signature than the anchored one
+already refuses at the pointer.
 
 For the vector `issuance-v-01` the commitment is
-`08a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93`, and the
+`285f5db96180e689bc9745e62c780242032d23aa6322b3049cf35a1cabdb4b63`, and the
 script is:
 
 ```text
-6a03534c01420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93
+6a03534c014202285f5db96180e689bc9745e62c780242032d23aa6322b3049cf35a1cabdb4b63
 01e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0
 ```
 
-The line break is for display; the script has none.
+The line break is for display; the script has none. The grant of that
+vector is a stand-in of three given values, and the example is arithmetic.
 
-### 9. Order of checks and refusal codes
+### 9. Pipelines, order and refusal codes
 
-A reader reports one refusal, the first in this order. The order matters
-where one defect could be reported in two ways: a name that is spelled with
-an escape and repeats another name is a duplicate, and a number with a
-fraction is refused as a number before any schema is consulted.
+W9.1. A place expects one class of object, and the class selects the
+pipeline. The class comes from the place and never from the octets: a
+reader that expects a consent event looks for no `type`, and a reader that
+expects a signed object accepts no event. A reader reports one refusal, the
+first of its pipeline, and it reports no refusal of a later step for a
+document that an earlier step refuses.
 
-| Step | What is checked | Codes |
+| Class | Used for | Steps, in order |
 | --- | --- | --- |
-| 1 | The document: W1.1 to W1.6, in that order | `WIRE_SIZE`, `WIRE_JSON`, `WIRE_DUPLICATE`, `WIRE_VALUE`, `WIRE_NUMBER`, `WIRE_STRING`, `WIRE_NOT_CANONICAL` |
-| 2 | For a signed form: exactly the members `payload` and `signature` (W5.3) | `WIRE_MEMBER` |
-| 3 | The `type` of the payload (W3.1, W3.3, W3.4) | `WIRE_TYPE` |
-| 4 | The members of the payload under the schema of its type (W3.2, W2.1, W2.3, W3.5), and then the keys among them (W3.6) | `WIRE_MEMBER`, `WIRE_INTEGER`, `WIRE_KEY` |
-| 5 | The encoding of the signature (W5.2) | `WIRE_SIGNATURE_FORM` |
-| 6 | The key of the place (W5.5) | `WIRE_KEY` |
-| 7 | The signature (W5.1, W5.2) | `WIRE_SIGNATURE` |
-| 8 | References to the object and from it (W6.3) | `WIRE_ID` |
-| 9 | The rules of the object: for an assent W7.2; for a consent event W7.4; for an issuance W8.3, then W8.4, then W8.5 | `ASSENT_BINDING`, `ASSENT_PARTY`, `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME`, `ISSUANCE_MODE`, `ISSUANCE_FRAME`, `ISSUANCE_COMMITMENT` |
+| Signed object | An assent, and every signed type of the registry once it has members | 1. The document: W1.1 to W1.6 on the signed form, in the order of W9.2. 2. The signed form: exactly `payload` and `signature` (W5.3). 3. The `type` (W3.1, W3.3, W3.4). 4. The members of the payload, in the order of W9.3. 5. The encoding of the signature (W5.2). 6. The key of the place (W5.5). 7. The signature (W5.1, W5.2). 8. References to the object and from it (W6.3). 9. The rules of the object: for an assent, W7.2 |
+| Unsigned payload | An issuance preparation that is read from stored octets | 1. The document, in the order of W9.2. 2. The `type`. 3. The members, in the order of W9.3. No step concerns a signature |
+| Nostr event | A consent event | The five steps of W7.4. Sections 1 to 6 do not apply: the event has its own wire form, no `type` and no signed form, and its size, its spelling and the encoding of its keys and of its signature are all part of step 1 |
+| Issuance | A presentation that is held against its anchor | 1. Each part through its own pipeline: the signed grant and the issuer's assent as signed objects, the assent with W7.2, and the consent event as a Nostr event. 2. The mode (W8.4). 3. The frame (W8.5). 4. The commitment (W8.6) |
+
+W9.2. The document step has this order. A document that is larger than
+its largest size refuses as `WIRE_SIZE` before it is read. Then W1.1 and
+W1.2 are decided on the whole document: of a level of nesting beyond the
+sixteenth and a failure of W1.2, the one that comes first in the octets
+decides, where a document that stops early fails W1.2 at its end. A
+document that passed both is held against W1.3, W1.4 and W1.5 in that
+order, each over the whole document, with a `null` before a number inside
+W1.4. W1.6 comes last. The codes of one document therefore have the order
+`WIRE_DUPLICATE`, `WIRE_VALUE`, `WIRE_NUMBER`, `WIRE_STRING`,
+`WIRE_NOT_CANONICAL`, wherever in the octets each defect stands.
+
+W9.3. The member step has this order. First the names: every object of the
+payload, at every depth, has exactly the names of its list (`WIRE_MEMBER`).
+Then the values, in the order in which the canonical bytes hold them: each
+has the form of its member (`WIRE_MEMBER`), and an integer is within the
+bound of its member (`WIRE_INTEGER`). Then the signing keys among the
+members are points of the curve (`WIRE_KEY`).
+
+The codes:
+
+| Code | What it reports |
+| --- | --- |
+| `WIRE_SIZE` | A document above its largest size, or nested deeper than 16 |
+| `WIRE_JSON` | Octets that are not UTF-8, or not one JSON object |
+| `WIRE_DUPLICATE` | A name twice in one object |
+| `WIRE_VALUE` | A `null` |
+| `WIRE_NUMBER` | A number that is not an integer of the number form |
+| `WIRE_STRING` | A string with a code point below U+0020 or an unpaired surrogate |
+| `WIRE_NOT_CANONICAL` | Octets that differ from the serialization of the parsed value |
+| `WIRE_TYPE` | No `type`, a `type` that the reader does not support, or another type than the place requires |
+| `WIRE_MEMBER` | A member that the schema does not list, a missing member, or a value in another form |
+| `WIRE_INTEGER` | A string-form integer outside its grammar, or an integer above the bound of its member |
+| `WIRE_KEY` | A signing key that is no point of the curve |
+| `WIRE_SIGNATURE_FORM` | A signature that is not 128 lowercase hexadecimal characters |
+| `WIRE_SIGNATURE` | A signature that does not verify |
+| `WIRE_ID` | A reference that differs from the recomputed identifier |
+| `ASSENT_BINDING`, `ASSENT_PARTY` | An assent for another chain or contract; an assent by another key than the issuing party's (W7.2) |
+| `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` | The five steps of W7.4, with two codes for its third step |
+| `CONSENT_AGE`, `CONSENT_CONSUMED` | At the issuer alone: a consent older than 72 hours (W7.8); a consent that was used (W7.9) |
+| `ISSUANCE_MODE`, `ISSUANCE_FRAME`, `ISSUANCE_COMMITMENT` | W8.4, W8.5 and W8.6 |
 
 A refusal of this section records no closure. Every code is new, and none
 replaces a code of an earlier format.
@@ -555,29 +753,47 @@ replaces a code of an earlier format.
 ### 10. Vectors
 
 [`vectors/LIP-0020/wire-vectors.json`](../vectors/LIP-0020/wire-vectors.json)
-holds 137 vectors. Each names the rules that it exercises. The list
-`rules` of the file names, for each of the 41 rules of sections 1 to 8, its
-section, its state and at least one vector; the state of every rule is
-`proposed`. A refused vector holds one defect, states the expected code and
-names a valid neighbour that differs from it in that defect alone.
+holds 205 vectors. Each names the rules that it exercises. The list
+`rules` of the file names, for each of the 46 rules of sections 1 to 9, its
+section, its state and at least one vector. The state of every rule is
+`proposed`, also for the rules that carry the two decided points, because
+no owner has accepted a byte.
 
-| Group | Vectors | What it holds |
+Each group belongs to one stage, and the stage says what a checker does
+with a vector and what it does not.
+
+| Stage | Groups and vectors | What a checker does |
 | --- | --- | --- |
-| `canonical` | 11 valid, 30 refused | Section 1 on octets: order by UTF-16 code units, the two escapes, literal U+007F and U+2028, a URL, the depth; every step of W1.1 to W1.6 with its code |
-| `integers` | 4 valid, 13 refused | The string form of W2.3 for a bound of 2^64 - 1 |
-| `digests` | 7, and 1 across types | For each type of the registry the tag, its SHA-256 and the typed digest of a payload that holds the type alone |
-| `signed` | 3 valid, 17 refused | Sections 4 to 6 on a signed form: a second valid signature of one payload; signatures without the tag, under the prefix style and under another type's tag; the three ways in which strict verification fails; a stated identifier; an unknown version |
-| `identifiers` | 4 | The identifier, the typed digest and the content address of one object, and references that state the wrong one |
-| `assents` | 3 valid, 8 refused, 6 bindings | Section 7.1 |
-| `consent_events` | 1 valid, 15 cases | Sections 7.2 to 7.4, with the mode of the recipient as context |
-| `issuance` | 3 valid, 11 refused | Section 8: preparations for both modes, the commitment, the frame |
+| Document | `canonical`: 15 valid, 30 refused, 8 compound | W1.1 to W1.6 on octets, in the order of W9.2 |
+| Integer | `integers`: 6 valid, 13 refused | W2.3 on the content of a string, for a bound of 2^64 - 1 |
+| Primitive | `primitives`: 11 | Arithmetic on given octets under a given type string: the tag and the typed digest for each of the seven types, a signature over a digest, the two SHA-256 values. No schema is consulted, and the octets are no valid object |
+| Signed object | `assents`: 4 valid, 26 refused, 6 compound, 6 bindings; `identifiers`: 4 | The pipeline of a signed object on the signed form of an assent, and W7.2 with a stated context |
+| Event | `consent_events`: 2 valid, 33 cases | The pipeline of a Nostr event with a stated context. For a recipient by name the context states what the verifier's node would find about the evidence output |
+| Issuer | `issuer_checks`: 12 | What an issuer decides before it signs (W7.6, W7.8, W7.9), from its clock, its record of consumed consents and the facts of its snapshot |
+| Issuance | `issuance`: 3 valid, 10 refused, 13 stored, 3 compound | The preparation, the commitment and the frame from the four inputs, with a stand-in of three values for the grant; and the pipeline of an unsigned payload on stored octets of a preparation |
 
-Three things about the file are limits and not defects of a reader that
+A refused vector outside a `compound` group holds one defect, states the
+expected code and names a valid neighbour of the same stage that differs
+from it in that defect, in its octets or in its context. A vector of a
+`compound` group holds several defects on purpose, lists them and states
+the one that the order of W9.2 or W9.3 reports; it has no neighbour.
+
+A vector for a rule does not show the whole rule. Where a property has no
+vector, the entry of its rule in `rules` says so under `not_covered`: a
+member in the string form with a number in its place (W2.1) and arithmetic
+at a bound (W2.4), because no complete type has such a member or computes;
+a key of the place that comes from a pin (W5.5) and a reference from one
+object to another (W6.3), because the one complete signed type names its
+own key and refers to nothing; the largest size of the event (W7.3), which
+refuses under the code of its spelling; and every read on a node (W7.6).
+
+Two things about the file are limits and not defects of a reader that
 finds them. The keys are the published test keys of BIP-340 and belong to
-nobody. A payload that holds only `type`, or `type` and `note`, stands in
-for a grant, whose members are open: it shows the digest, the signature and
-the identifier and is no valid grant. And the cases of section 7.5 are
-absent, because they need a node.
+nobody. And the stand-in for a grant, octets that hold `type` alone, is
+used as three given values and never as a grant: a reader of grants refuses
+those octets as `WIRE_TYPE` today, and as `WIRE_MEMBER` once a grant has
+members. Vectors of whole grants, invocations and receipts come with their
+members.
 
 No checker for these vectors is in this repository. The values were
 computed by one implementation and recomputed, with the expected refusals,
@@ -594,7 +810,7 @@ rules that they follow.
   would then serve as identifier and as content address. Two valid
   signatures of one payload would be two objects, an endorsement or a child
   could not name a grant before it is signed, and a reference would change
-    when a signer signed again. Section 6 separates the two hashes. The cost
+  when a signer signed again. Section 6 separates the two hashes. The cost
   is that a reader holds two values for one object and cannot fetch a
   signed object from a content-addressed store by its identifier alone.
 - **Two members, `type` and `version`.** LIP-0008 speaks of a type and a
@@ -611,10 +827,17 @@ rules that they follow.
 - **A typed assent for the recipient as well.** It would give both parties
   one form. A browser signer signs Nostr events only, which is why v3 chose
   the event, and a second form for the same act doubles the cases.
-- **Consent by the owner key of the recipient's name.** The owner key never
-  changes while the grant lives, so no evidence output would be needed. The
-  owner key is the key that LIP-0008 section 3.1 keeps offline, and a
-  contract would then need it online.
+- **Consent by the owner key of the recipient's name.** The owner key does
+  not change while the grant lives, so no evidence output and no walk would
+  be needed. The owner key is the key that LIP-0008 section 3.1 keeps
+  offline, and a contract would then need it online.
+- **A consent that names the seal.** The seal transaction is fixed before
+  the grant is signed (LIP-0008 section 9). A consent that named the
+  outpoint of the seal could serve one grant only, and every verifier could
+  check that from one issuance, where W7.9 rests on the issuer's record.
+  The recipient would have to consent after the seal transaction is fixed.
+  The decision does not state this, and the draft does not add it; it is an
+  open question.
 - **A preparation that binds identifiers only.** The commitment would not
   change when a part is signed again. The anchor would then no longer show
   that the signatures existed when it was mined, which the v3 commitment
@@ -622,6 +845,10 @@ rules that they follow.
 - **A new action in place of a payload version.** Action `0x01` already
   means a grant issuance, and its payload begins with a version octet for
   this purpose.
+- **An order of refusals by position in the octets.** A reader that makes
+  one pass could report the defect that it meets first. W9.2 orders by rule
+  instead, so that a reader built on a parser that reports a syntax error
+  and nothing else reaches the same code.
 
 ## Security consequences
 
@@ -629,23 +856,26 @@ rules that they follow.
   octets, an amount is read from its digits, and one payload has one
   identifier. A reader that follows section 9 never repairs an object and
   never reports a later defect in place of an earlier one.
-- **What it does not give.** Canonical bytes say nothing about meaning. A
-  payload that passes sections 1 to 6 can still hold members that no rule
-  admits; the schema of its type decides that, and for five of the seven
-  types it does not exist yet.
+- **What it does not give.** Canonical bytes say nothing about meaning.
+  Five of the seven types have no members, and until they have, no reader
+  can accept one of them.
 - **Identifiers and state.** An identifier that leaves the signature out is
   stable under re-signing, which is what a reference needs. It is no
-  defence against replay. State is keyed as section 6 says, and a journal
-  that keys a request by an object identifier alone admits the same request
-  again under a new `iat`.
+  defence against replay. A journal that keys a request by an object
+  identifier alone admits the same request again under a new `iat`.
 - **The exact signed preparation.** The commitment binds signatures, so a
   presenter must hold the signatures that were anchored. An issuer that
   loses them cannot replace them without a new anchor.
-- **Consent of a recipient by name.** Section 7.3 states the limit of the
-  verifier's read. A stolen former channel key cannot consent to a new
-  contract at an honest issuer, because the issuer reads the name's current
-  value; it can at an issuer that skips that read, and such an issuer can
-  also sign a grant that nobody asked for.
+- **Consent of a recipient by name.** With condition 4 of W7.6 a verifier
+  refuses a consent by a key that the owner had replaced before the
+  snapshot, also where the issuer did not. A former channel key that leaked
+  therefore gives no consent to a new contract. What remains with the
+  issuer is the age and the single use.
+- **Single use is the issuer's.** An issuer that ignores W7.9 can anchor
+  two grants under one consent, and each passes a verifier that sees it
+  alone. The recipient gains authority that it consented to once; the
+  contract, which both grants bind, is the same. The two anchors are public
+  evidence against the issuer.
 - **Size and depth.** W1.1 bounds what a reader parses before it knows
   anything about the sender. The numbers are proposals.
 - **Vectors made by their author.** The vectors and both implementations
@@ -661,27 +891,35 @@ keeps its meaning. No conformance class is added.
 For Grant v4 this LIP supplies the first vectors. They cover the rows of
 the conformance outline of LIP-0008 that concern typed domains, canonical
 bytes, exact integers, identifiers and strict signatures, as far as those
-rows need no object whose members are open.
+rows need no object without members.
 
 ## Open questions
 
+- **The owners on the two decided points of section 7.** Ivan Oparin may
+  override them, and the co-author's agreement is pending.
 - **The owners' acceptance of each proposal**, in particular: the
   identifier without the signature (section 6); one `type` string as the
   tag (sections 3 and 4); the string form for amounts and counters with
   2^64 - 1 as the largest bound of the first profile (section 2); the
   exclusion of `null` and of code points below U+0020 (section 1); the
-  depth of 16 and the largest sizes; the names of the seven types.
+  depth of 16 and the largest sizes; the names of the seven types; the
+  order of W9.2.
 - **The members** of the grant, the invocation, the receipt, the seal-key
   endorsement and the successor attestation, with their vectors, and with
   them the journal key of a request.
+- **The snapshot and the recent block.** The draft reads the issuance
+  snapshot of the decision as the state at the grant's recent block, and it
+  has the issuer commit the tip of its observation as that block (W7.6).
+  LIP-0008 section 7 leaves the recency of that block to a profile.
+- **Single use at a verifier.** Whether the consent names the seal, so that
+  one issuance shows that the consent serves no other grant (see
+  Alternatives).
+- **The name in a consent.** The tag `name` carries printable ASCII. Which
+  names the first name profile admits, and their spelling, are open with
+  it.
 - **The assent to a child's contract.** Which key signs for the delegating
   party, when the delegation key signs child grants and nothing else
   (section 7.1).
-- **Consent by name at admission.** Whether a verifier must prove that the
-  evidence output was the name's current output at the recent block, which
-  takes a walk of the recipient name's history that LIP-0008 does not
-  otherwise require (section 7.3).
-- **The age of a consent**, at the issuer and at a verifier (section 7.4).
 - **Other channels.** The consent event belongs to the Nostr channel. A
   channel with another signature scheme needs its own form of consent.
 - **Contracts with more than two parties.** The preparation binds two
@@ -691,10 +929,10 @@ rows need no object whose members are open.
   alone. The pin of the construction profile (LIP-0008 section 1.1) is
   open, and so is whether a `network` label joins it.
 - **The presentation.** What a presenter hands to a verifier; how a reader
-  that starts from the frame obtains the assent and the consent event
-  beside the grant; and how a reader fetches a parent that a child names
-  by its identifier (section 6). LIP-0019 leaves the presentation of a v4
-  grant open.
+  that starts from the frame obtains the assent, the consent event and the
+  evidence outpoint beside the grant; and how a reader fetches a parent
+  that a child names by its identifier (section 6). LIP-0019 leaves the
+  presentation of a v4 grant open.
 - **A list for object types in LIP-0018**, beside its four lists, and who
   assigns an identifier.
 - **A published checker and a second implementation** for the vectors.
