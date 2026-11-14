@@ -52,8 +52,8 @@ consumed every consent whose `created_at` is not later than the fencing.
 
 Three codes: `JOURNAL_LOST`, `JOURNAL_FENCED` and `JOURNAL_CLOCK`.
 
-Vectors. `vectors/LIP-0025/journal-vectors.json` holds 59 vectors over 31
-rules: 6 histories, 8 octet strings that are or are not entries, 14 states
+Vectors. `vectors/LIP-0025/journal-vectors.json` holds 66 vectors over 33
+rules: 7 histories, 12 octet strings that are or are not entries, 16 states
 of a store against its outside record, 10 operations of the outside record,
 9 on the boundary, and 12 traces of the consent journal, among them a crash
 between the two writes, a restore, two histories at one position, a fenced

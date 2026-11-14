@@ -462,7 +462,7 @@ consents: one entry before the grant is signed, and after a loss every
 consent that existed before the recovery counts as consumed. Every rule is
 the draft's proposal, and neither owner has decided one. The draft selects
 no store and no service for the outside record, and nothing of it was built
-or run. The 59 vectors in [`vectors/LIP-0025/`](vectors/LIP-0025/) hold
+or run. The 66 vectors in [`vectors/LIP-0025/`](vectors/LIP-0025/) hold
 histories, decision tables and twelve traces of the consent journal.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its

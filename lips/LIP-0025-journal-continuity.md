@@ -61,9 +61,10 @@ is used once and that the issuer records its identifier as consumed. This
 LIP changes none of them.
 
 Every rule of this LIP is the draft's proposal: the hash-bound history and
-its tag, the one operation of the outside record, the four outcomes of the
-check and their order, the two entries of a recovery, the block boundary
-with its two hours, the entry and the steps of the consent journal, and the
+its tag, the act that creates a journal, the one operation of the outside
+record, the four outcomes of the check and their order, what a reader that
+does not write does, the two entries of a recovery, the block boundary with
+its two hours, the entry and the steps of the consent journal, and the
 three codes. Neither owner has decided them, and nothing of them is built
 or run. The owners accept or change them through this LIP, under LIP-0001.
 
@@ -142,13 +143,25 @@ entries in the same order.
 | --- | --- |
 | M1.1 | A journal has an identity, 32 octets that its operator generates at random when it creates the journal, and a position, the number of its entries. Entries are added at the end and never changed or removed. |
 | M1.2 | An entry is one JSON object in the canonical form of LIP-0020 section 1, of at most 2048 octets, with a member `entry` that names its kind and the members that the rule of that kind lists. |
-| M1.3 | The history commitment of a journal at position `n` is `c(n)`. `c(0)` is `D` of the 32 octets of the identity, and `c(n)` is `D` of `c(n-1)` followed by `e(n)`, the octets of the entry at position `n`. `D` is the typed digest of LIP-0020 section 4 with the tag `swarma-journal/1`. |
+| M1.3 | The history commitment of a journal at position `n` is `c(n)`, a value of 32 octets. `c(0)` is `D` of the 32 octets of the identity. `c(n)` is `D` of the 32 octets of `c(n-1)` followed by `e(n)`, the octets of the entry at position `n`; the earlier commitment enters as its octets and never as hexadecimal text. For any octets `x`, `D` of `x` is the SHA-256 of three parts in sequence: the SHA-256 of the tag, the SHA-256 of the tag once more, and `x`. The tag is the 16 octets of `swarma-journal/1`. |
 | M1.4 | The store writes an entry and the new position in one atomic write. |
 | M1.5 | A store that holds an entry which is not as M1.2 says, or of a kind that its reader does not know, is a lost journal for that reader (section 5). |
 
-The tag is no entry of the registry of LIP-0020: a history commitment is
-no object and is never signed. It uses the same construction so that no
-commitment can be taken for a signing digest.
+Written out, with `||` for one string of octets after another:
+
+```text
+D(x) = SHA-256( SHA-256(tag) || SHA-256(tag) || x )
+c(0) = D( identity )
+c(n) = D( c(n-1) || e(n) )
+```
+
+`D` is the tagged hash that LIP-0020 W4.1 uses for a typed digest, applied
+here to octets that are no payload. W4.2 takes the tag of a typed digest
+from the `type` of its payload; a history commitment has no payload and no
+`type`, so M1.3 states its tag. The tag is no entry of the registry of
+LIP-0020: a history commitment is no object and is never signed. It uses
+the same construction so that no commitment can be taken for a signing
+digest.
 
 The canonical form matters although an entry never leaves its operator. A
 replica, a recovery tool and a second implementation each compute the
@@ -167,6 +180,7 @@ exact one that it holds.
 | M2.3 | It has one operation that changes the history, `advance`, with five inputs: an identity, a token, a position, a commitment `from` and a commitment `to`. It accepts the operation only when the identity, the token, the position and `from` equal the four values that it holds. It then holds the next position and `to`. In every other case it changes nothing. |
 | M2.4 | The write token changes only by the operator's act of fencing, which sets a larger number. The store accepts a write only from a writer that holds the current token, and so does the outside record (M2.3). |
 | M2.5 | No operation lowers the position of an outside record, replaces its commitment at an unchanged position or changes its identity. |
+| M2.6 | A journal is created in one act of its operator: a store with the identity and no entry, and an outside record that holds that identity, position 0, the commitment `c(0)` and a first write token, a number that the operator chooses. An outside record is created once for an identity. A store without its outside record is a lost journal (M4.5), so an act that stops halfway creates none. |
 
 The outside record does not read entries and computes no hash. It is a
 register with a compare-and-swap, which is what keeps the demand on the
@@ -209,7 +223,8 @@ exactly one of four outcomes; only the first lets it write.
 | M4.3 | **Pending:** the identities are equal, the store is exactly one position ahead, and the commitment of the store at the position of the outside record equals the commitment of the outside record. The writer completes `advance` for that entry before it does anything else, and the journal is then intact. The entry stays. Whether the act that it records may still follow is stated by the rule of that kind of journal. |
 | M4.4 | **Fenced:** the writer does not hold the token of the outside record. It writes nothing to the store and nothing to the outside record. |
 | M4.5 | **Lost:** every other state. Among them: an outside record that is absent or cannot be read; a store that is absent, cannot be read or was created anew; another identity; equal positions with different commitments; a store behind the outside record; a store ahead by more than one position; a store one position ahead whose earlier history is not the history of the outside record. |
-| M4.6 | The reader decides in this order: the outside record can be read; the store can be read (M1.5); the identities are equal; the writer holds the token; then the positions and the commitments. |
+| M4.6 | The reader decides in this order, and the order alone gives the outcome: the outside record can be read; the store can be read (M1.5); the identities are equal; the writer holds the token; then the positions and the commitments. M4.2, M4.3 and M4.5 say what the last step finds for a writer that holds the token. A writer that does not hold it is fenced, whatever the positions and the commitments are. |
+| M4.7 | A reader that does not write holds no token, and its check has no step for one. Where the outcome is intact it reads. Where it is pending it cannot complete the write: it takes no decision from the journal and reads again later or refuses. Where it is lost it refuses as a writer does. |
 
 The token stands before the comparison of histories for a reason. A replica
 that was cut off sees an old copy of the store beside a newer outside
@@ -219,6 +234,11 @@ journal that is in order.
 
 Equal positions never suffice. The trace of the section "Motivation" ends
 with equal positions and different commitments, and M4.5 refuses it.
+
+A pending journal is a moment between two writes. Its last entry is in the
+store, and no act has followed it yet (M3.2). A reader that only reads
+cannot tell whether the writer will complete the write or was fenced, so
+under M4.7 it waits for the outside record and decides nothing meanwhile.
 
 ### 5. A lost journal and its recovery
 
@@ -231,8 +251,8 @@ held.
 | --- | --- |
 | M5.1 | A reader of a lost journal refuses every act that needs the journal. It never takes a missing entry as a sign that nothing happened. |
 | M5.2 | **Restoring.** The operator puts a store in place. It is the journal again only when the check of section 4 gives intact or pending against the outside record that the journal had. |
-| M5.3 | **Starting anew.** In one attended act the operator fences the writers of the lost journal, reads its clock, and creates a journal with a new identity and a new outside record. The first entry of the new journal has the kind `recovery/1` and exactly the members `entry`, `previous`, the identity of the lost journal in 64 hexadecimal characters, and `fenced_at`, the reading of the clock in seconds. The outside record of the lost journal is kept. |
-| M5.4 | **The block boundary.** A journal whose rules count from a block gains, after its recovery entry, one entry of the kind `boundary/1` with exactly the members `entry`, `block`, the hash of a block, `height` and `header_time`. The block is on the active chain of a healthy observation (LIP-0022 section 2), and the time in its header is more than 7200 seconds later than `fenced_at`. |
+| M5.3 | **Starting anew.** In one attended act the operator fences the writers of the lost journal, reads its clock, and creates a journal with a new identity under M2.6. The first entry of the new journal, written under section 3, has the kind `recovery/1` and exactly the members `entry`; `previous`, the identity of the lost journal, 64 lowercase hexadecimal characters; and `fenced_at`, the reading of the clock in seconds, an integer in the number form of LIP-0020 section 2. The outside record of the lost journal is kept. |
+| M5.4 | **The block boundary.** A journal whose rules count from a block gains, after its recovery entry, one entry of the kind `boundary/1` with exactly the members `entry`; `block`, the hash of a block, 64 lowercase hexadecimal characters in the byte order in which a node prints it (LIP-0020 W3.5); `height`, the height of that block; and `header_time`, the time in its header in seconds. The last two are integers in the number form of LIP-0020 section 2. The block is on the active chain of a healthy observation (LIP-0022 section 2), and the time in its header is more than 7200 seconds later than `fenced_at`. |
 | M5.5 | What a new journal charges is stated by the rule of each kind of journal, and it covers everything that the lost journal could have held, whether or not a list of it survived. Until a journal that needs a block boundary has one, nothing under it counts as new. |
 
 Starting anew is a recovery by charging, as LIP-0014 names it for rows: the
@@ -271,6 +291,11 @@ that the writer's node kept the consensus rule with a right clock while the
 lost journal was written. The cost is that a boundary appears two hours
 after the fencing at the earliest, and usually a few blocks later.
 
+A reorganisation that removes the boundary block from the active chain is
+not treated here. The rules of the journals that count from a block
+(section 7) have to say what such a journal does then, and this LIP defers
+the point to them.
+
 ### 6. The issuer's journal of consumed consents
 
 An issuer consumes a consent by one entry in one journal for its grant key,
@@ -280,7 +305,7 @@ consent that existed before the recovery as consumed.
 | Rule | Requirement |
 | --- | --- |
 | M6.1 | One grant key has one journal of consumed consents. Every signer that signs grants with that key consumes in it, and no replica keeps a journal of its own. |
-| M6.2 | A consumed consent is an entry of the kind `consent-consumed/1` with exactly the members `entry`; `consent`, the `id` of the consent event; `contract`, the identifier of the contract; `created_at`, the `created_at` of the event; and `consumed_at`, the issuer's clock at the write, in seconds. The two identifiers are 64 hexadecimal characters, and the two times are numbers. |
+| M6.2 | A consumed consent is an entry of the kind `consent-consumed/1` with exactly the members `entry`; `consent`, the `id` of the consent event; `contract`, the identifier of the contract; `created_at`, the `created_at` of the event; and `consumed_at`, the issuer's clock at the write, in seconds. The two identifiers are 64 lowercase hexadecimal characters each, and the two times are integers in the number form of LIP-0020 section 2. |
 | M6.3 | The issuer consumes a consent after the checks of LIP-0020 W7.4 to W7.8 passed, and before it signs the grant. The steps, in order: the continuity check (section 4); the clock (M6.5); the boundary (M6.6); the search for an entry with this `consent`; the write of the entry under section 3. It signs the grant only after `advance` was accepted. |
 | M6.4 | The search and the write are one atomic step of the store. Of two attempts with one consent, one writes the entry and the other finds it. |
 | M6.5 | The issuer's clock does not read less than the largest `consumed_at` or `fenced_at` of the journal. |
@@ -295,12 +320,23 @@ consent that existed before the recovery as consumed.
 | The consent is not later than the boundary of a recovery | `CONSENT_CONSUMED` |
 | An entry with this consent exists | `CONSENT_CONSUMED` |
 
-M6.6 is sound because a consent cannot have been consumed before it was
-created: W7.8 refuses a `created_at` that is later than the issuer's clock.
-Whatever the lost journal held was consumed before the loss, so its
-`created_at` is not later than the fencing, and the boundary covers it. The
-cost falls on recipients: a consent that was given before the recovery and
-not yet used has to be given again.
+M6.6 rests on the issuer's clock. A consent cannot have been consumed
+before it was created: W7.8 refuses a `created_at` that is later than the
+issuer's clock at the consumption. Whatever the lost journal held was
+consumed before the loss, so its `created_at` is not later than a reading
+that the clock gave before the fencing. That reading is not later than
+`fenced_at` where two things hold: the clock did not run ahead of the true
+time while the lost journal was written, and it is right at the act of
+recovery. The boundary then covers every consent of the lost journal.
+
+Where the first does not hold, the boundary has a gap. A clock that ran ten
+minutes ahead before the loss let the issuer consume consents whose
+`created_at` lay up to ten minutes ahead. Those whose `created_at` is later
+than `fenced_at` are not covered, and such a consent passes once more until
+the age rule of W7.8 refuses it.
+
+The cost of the boundary falls on recipients: a consent that was given
+before the recovery and not yet used has to be given again.
 
 An entry older than 72 hours decides nothing any more, because the age rule
 of W7.8 refuses its consent before the journal is asked. It stays, since
@@ -347,12 +383,12 @@ with one of them is retried after the journal is in order.
 ### 9. Vectors
 
 [`vectors/LIP-0025/journal-vectors.json`](../vectors/LIP-0025/journal-vectors.json)
-holds 59 vectors over the 31 rules of this LIP.
+holds 66 vectors over the 33 rules of this LIP.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
-| `commitments` | 6 histories; 8 octet strings, of which 1 is an entry of a known kind | M1.3 on an identity and the octets of entries; M1.2 and M1.5 on octets |
-| `continuity` | 3 that let a writer go on, 3 fenced, 8 lost | Section 4 on the stated state of a store, of an outside record and of a writer |
+| `commitments` | 7 histories, of which 1 holds a recovery entry and a boundary entry; 12 octet strings, of which 3 are entries of a known kind | M1.3 on an identity and the octets of entries; M1.2 and M1.5 on octets, with the forms of M5.3, M5.4 and M6.2 |
+| `continuity` | 5 intact or pending, of which 2 are for a reader that does not write; 3 fenced; 8 lost | Section 4 on the stated state of a store, of an outside record and of a writer, or of a reader without a token |
 | `outside` | 2 accepted, 8 refused | M2.3 and M2.4 on a record and one operation |
 | `boundaries` | 5 blocks, of which 1 is a boundary; 4 parents, of which 1 is new | M5.4 on a time of fencing and a block; M5.5 on the block that a parent signs |
 | `consents` | 12 traces | Section 6 as a state machine: a trace of steps on a journal and its outside record, with the outcome of every step and the positions and commitments at the end |
@@ -419,8 +455,15 @@ accept the rules that they follow.
 - **The clock enters twice.** `fenced_at` decides the boundary of a
   recovery, and `consumed_at` guards against a clock that went back. A
   clock that is behind at the act of recovery sets the boundary too early,
-  and consents of the difference could pass again. The operator checks the
-  clock as part of the act.
+  and consents of the difference could pass again. A clock that ran ahead
+  while the lost journal was written leaves the consents of that difference
+  outside the boundary as well (section 6). The operator checks the clock
+  as part of the act.
+- **A new kind of entry stops every reader that does not know it.** Under
+  M1.5 such a reader finds the journal lost, and a recovery by starting
+  anew charges everything. A deployment that adds a kind of entry, or a
+  second version of one, updates every reader before the first such entry
+  is written.
 - **The fencing service is trusted.** A writer that holds the current
   token is the writer. Who may raise the token, and how a writer learns it,
   is a choice of the deployment.
@@ -445,6 +488,11 @@ the consent journal as decisions on stated values.
   the writer's node had not accepted the block before the fencing, which a
   header time can show, and not when the block was mined, which it cannot.
   Whether that reading satisfies the decided text is the owners' to say.
+- **A boundary block that a reorganisation removes.** Section 5 defers
+  it to the journals that count from a block. The reading that fails closed
+  is that such a journal has no boundary until a new one is written.
+- **New kinds of entry.** How a kind is added to a journal in use without a
+  reader that finds the journal lost (M1.5).
 - **The store and the outside record of a deployment.** Which products,
   where the outside record lives so that M2.2 holds, and the cases on the
   real store.

@@ -10,7 +10,7 @@
   },
   "fields": {
     "commitments": "chains: an identity and the octets of entries; expect.commitments lists c(0) to c(n). entries: octets and the kind that M1.2 gives them, `no entry`, or `unknown kind`.",
-    "continuity": "store.commitments maps a position to the commitment that the reader computed for it; store.readable false is a store that cannot be read; outside null is an absent outside record.",
+    "continuity": "store.commitments maps a position to the commitment that the reader computed for it; store.readable false is a store that cannot be read; outside null is an absent outside record. writer_token is absent for a reader that does not write (M4.7).",
     "outside": "record is the outside record before the operation and record_after the record after it.",
     "boundaries": "blocks: the time of fencing and a block. first_use: the height of the boundary block, or null where the journal has none, and the height of the block that a parent signs.",
     "consents": "journal states the identity and the token of the journal at the start, and whether it has an outside record. Each step has an `op` and its expected outcome. consume: the issuer's steps of M6.3 after the checks of LIP-0020 W7.4 to W7.7, with `now` as the issuer's clock; `crash` says where the write stopped. restart: the continuity check of a starting process. keep and restore: an image of the store is kept and put back. lose: the store is gone. fence: the operator raises the token. start anew: the recovery of M5.3. expect at the end states the identity, the position and the commitment of the store and of the outside record."
@@ -37,7 +37,11 @@
         "entry-04",
         "entry-05",
         "entry-07",
-        "entry-08"
+        "entry-08",
+        "entry-09",
+        "entry-10",
+        "entry-11",
+        "entry-12"
       ]
     },
     {
@@ -51,7 +55,8 @@
         "commit-03",
         "commit-04",
         "commit-05",
-        "commit-06"
+        "commit-06",
+        "commit-07"
       ]
     },
     {
@@ -126,6 +131,18 @@
         "outside-03",
         "outside-07"
       ]
+    },
+    {
+      "rule": "M2.6",
+      "section": "2",
+      "title": "the creation of a journal",
+      "state": "proposed",
+      "vectors": [
+        "commit-01",
+        "cont-02",
+        "cont-09"
+      ],
+      "not_covered": "commit-01 and cont-02 state a journal as it is created, and cont-09 a store without an outside record. No vector holds the act of creation."
     },
     {
       "rule": "M3.1",
@@ -227,6 +244,17 @@
       ]
     },
     {
+      "rule": "M4.7",
+      "section": "4",
+      "title": "a reader that does not write",
+      "state": "proposed",
+      "vectors": [
+        "cont-15",
+        "cont-16"
+      ],
+      "not_covered": "cont-15 and cont-16 state the outcome for a reader without a token. What it does on pending, to read again or to refuse, is no outcome of the check."
+    },
+    {
       "rule": "M5.1",
       "section": "5",
       "title": "a lost journal refuses",
@@ -250,6 +278,9 @@
       "title": "starting anew",
       "state": "proposed",
       "vectors": [
+        "entry-09",
+        "entry-12",
+        "commit-07",
         "trace-08"
       ]
     },
@@ -259,6 +290,9 @@
       "title": "the block boundary",
       "state": "proposed",
       "vectors": [
+        "entry-10",
+        "entry-11",
+        "commit-07",
         "boundary-01",
         "boundary-02",
         "boundary-03",
@@ -359,9 +393,10 @@
         "id": "commit-01",
         "rules": [
           "M1.1",
-          "M1.3"
+          "M1.3",
+          "M2.6"
         ],
-        "claim": "A journal without entries: the commitment at position 0 is the typed digest of the identity.",
+        "claim": "A journal without entries, as it is created: the commitment at position 0 is D of the 32 octets of the identity.",
         "tag": "swarma-journal/1",
         "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
         "entries": [],
@@ -485,6 +520,34 @@
             "ce3ad9a4f278d661f594bc5c20e044376f565e62d2bfba6b8c5a0e7ca3558b67"
           ]
         }
+      },
+      {
+        "id": "commit-07",
+        "rules": [
+          "M1.3",
+          "M5.3",
+          "M5.4"
+        ],
+        "claim": "A journal that was started anew: its first entry is the recovery entry of entry-09 and its second the boundary entry of entry-10.",
+        "tag": "swarma-journal/1",
+        "identity": "1c1654c560f190b224e3572e31054044bc604465b5507b9d77221dbc4a3cf427",
+        "entries": [
+          {
+            "text": "{\"entry\":\"recovery/1\",\"fenced_at\":1794600000,\"previous\":\"f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31\"}",
+            "hex": "7b22656e747279223a227265636f766572792f31222c2266656e6365645f6174223a313739343630303030302c2270726576696f7573223a2266343239396139343736376631346532373562663864653330643339373266393736343466383230333065346133633039613866373231643537643666623331227d"
+          },
+          {
+            "text": "{\"block\":\"b4e494ef3c7cdbb3294d3a274361e7947e70d3e3d07ced5674397b11c89c1fb7\",\"entry\":\"boundary/1\",\"header_time\":1794607201,\"height\":800}",
+            "hex": "7b22626c6f636b223a2262346534393465663363376364626233323934643361323734333631653739343765373064336533643037636564353637343339376231316338396331666237222c22656e747279223a22626f756e646172792f31222c226865616465725f74696d65223a313739343630373230312c22686569676874223a3830307d"
+          }
+        ],
+        "expect": {
+          "commitments": [
+            "fd2d2958f7548453e2e2ff82f60bb815b982faf7e3edd38b58c531a27549629b",
+            "76322bd9bbd181a418d51b5e5c6d6f23a2954ae4d4d1a19e3cda118bdc653022",
+            "2a892e2143ea32dbde06e938d213e5f202a83b0f2172abd366facfb07e765db3"
+          ]
+        }
       }
     ],
     "entries": [
@@ -593,6 +656,60 @@
         },
         "expect": "no entry",
         "valid_neighbour": "entry-01"
+      },
+      {
+        "id": "entry-09",
+        "rules": [
+          "M1.2",
+          "M5.3"
+        ],
+        "claim": "The first entry of a journal that was started anew: the identity of the lost journal and the time of the fencing.",
+        "octets": {
+          "text": "{\"entry\":\"recovery/1\",\"fenced_at\":1794600000,\"previous\":\"f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31\"}",
+          "hex": "7b22656e747279223a227265636f766572792f31222c2266656e6365645f6174223a313739343630303030302c2270726576696f7573223a2266343239396139343736376631346532373562663864653330643339373266393736343466383230333065346133633039613866373231643537643666623331227d"
+        },
+        "expect": "recovery/1"
+      },
+      {
+        "id": "entry-10",
+        "rules": [
+          "M1.2",
+          "M5.4"
+        ],
+        "claim": "A boundary entry: the hash of a block, its height and the time in its header.",
+        "octets": {
+          "text": "{\"block\":\"b4e494ef3c7cdbb3294d3a274361e7947e70d3e3d07ced5674397b11c89c1fb7\",\"entry\":\"boundary/1\",\"header_time\":1794607201,\"height\":800}",
+          "hex": "7b22626c6f636b223a2262346534393465663363376364626233323934643361323734333631653739343765373064336533643037636564353637343339376231316338396331666237222c22656e747279223a22626f756e646172792f31222c226865616465725f74696d65223a313739343630373230312c22686569676874223a3830307d"
+        },
+        "expect": "boundary/1"
+      },
+      {
+        "id": "entry-11",
+        "rules": [
+          "M1.2",
+          "M5.4"
+        ],
+        "claim": "The boundary entry of entry-10 with one uppercase character in the hash of the block.",
+        "octets": {
+          "text": "{\"block\":\"b4e494ef3c7cdbb3294d3a274361e7947e70d3e3d07ced5674397b11c89c1fbA\",\"entry\":\"boundary/1\",\"header_time\":1794607201,\"height\":800}",
+          "hex": "7b22626c6f636b223a2262346534393465663363376364626233323934643361323734333631653739343765373064336533643037636564353637343339376231316338396331666241222c22656e747279223a22626f756e646172792f31222c226865616465725f74696d65223a313739343630373230312c22686569676874223a3830307d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-10"
+      },
+      {
+        "id": "entry-12",
+        "rules": [
+          "M1.2",
+          "M5.3"
+        ],
+        "claim": "The recovery entry of entry-09 whose `fenced_at` has a fraction: it is no integer in the number form.",
+        "octets": {
+          "text": "{\"entry\":\"recovery/1\",\"fenced_at\":1794600000.5,\"previous\":\"f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31\"}",
+          "hex": "7b22656e747279223a227265636f766572792f31222c2266656e6365645f6174223a313739343630303030302e352c2270726576696f7573223a2266343239396139343736376631346532373562663864653330643339373266393736343466383230333065346133633039613866373231643537643666623331227d"
+        },
+        "expect": "no entry",
+        "valid_neighbour": "entry-09"
       }
     ]
   },
@@ -625,6 +742,7 @@
     {
       "id": "cont-02",
       "rules": [
+        "M2.6",
         "M4.2"
       ],
       "claim": "A new journal at position 0 whose outside record holds its first commitment.",
@@ -797,6 +915,7 @@
     {
       "id": "cont-09",
       "rules": [
+        "M2.6",
         "M4.5",
         "M4.6"
       ],
@@ -937,6 +1056,52 @@
       "writer_token": 5,
       "expect": "fenced",
       "valid_neighbour": "cont-01"
+    },
+    {
+      "id": "cont-15",
+      "rules": [
+        "M4.7"
+      ],
+      "claim": "A reader that does not write: it holds no token, and the identities, the positions and the commitments are equal.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitments": {
+          "0": "f52cdf724ad5c0facca510bccd4285a25300c8a5752d2dd1e369dd8d86102784",
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "expect": "intact"
+    },
+    {
+      "id": "cont-16",
+      "rules": [
+        "M4.7"
+      ],
+      "claim": "A reader that does not write finds the store one position ahead on the history of the outside record. The outcome is pending; it cannot complete the write and decides nothing from the journal.",
+      "store": {
+        "readable": true,
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 2,
+        "commitments": {
+          "1": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+          "2": "389134ced098f2dc2d6122201beea0a58969017b339e90c131cf29df632260ba"
+        }
+      },
+      "outside": {
+        "identity": "f4299a94767f14e275bf8de30d3972f97644f82030e4a3c09a8f721d57d6fb31",
+        "position": 1,
+        "commitment": "1196b0db04cdd9dc946b280b213712feb663f7de3175baf26ffdc4e476f68434",
+        "token": 6
+      },
+      "expect": "pending"
     }
   ],
   "outside": [
