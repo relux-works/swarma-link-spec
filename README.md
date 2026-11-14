@@ -276,6 +276,17 @@ consideration; it changes no rule. The LIP records Ivan Oparin's
 four decisions of 2026-11-10 and awaits the co-author's agreement. No reader
 implements these rules yet; LIP-0004 values keep their own rules.
 
+Version 0.1.33 records five further directions of Ivan Oparin of
+2026-11-14, with the co-author's agreement pending. LIP-0013 section 3.7
+states the pattern for instructions across owners: the grantee is an agent
+of the receiving owner, which signs the envelopes under the gate of
+section 3.6, and a transport only carries. The key map describes a
+personal key service for each person, records decision K6, a separate
+authority key for grants issued to a person, and settles the scope of K2:
+permanent roles have names, and a worker agent may stay key-only. LIP-0008
+section 1 states that Grant v3 is frozen after the first public
+demonstration and remains for verification once v4 is qualified.
+
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
 
