@@ -207,8 +207,29 @@ its operator ceilings instead (LIP-0006).
 3. **Typed display.** The service parses the object it is asked to sign,
    shows its fields, and computes the hash itself. It signs no digest that a
    caller supplies. LIP-0008 section 8 requires this of a v4 signer; for v3
-   it covers the grant, the contract hash that `landlord_sig` signs, and the
+      it covers the grant, the contract hash that `landlord_sig` signs, and the
    terms of a child grant (LIP-0014 section 5).
+
+**A personal key service.** Ivan Oparin's direction of 2026-11-14, with the
+co-author's agreement pending, is one key service for each person, in the
+manner of an SSH agent or of a Nostr remote signer (NIP-46), on every
+platform that a person uses: macOS, Linux, Windows, iOS and Android. It
+holds two keys under two policies. The social key signs messages without a
+touch for each one, under a policy that the person sets for each
+application. The authority key signs only with the person present and with
+every signed field shown first, as requirements 2 and 3 say. The service
+is specified and built outside this repository; this map states what the
+formats of this specification ask of it.
+
+**Across owners the grantee is an agent.** By the same direction, a grant
+from one owner to the other names an agent of the receiving owner as its
+grantee. That owner instructs the agent over the owner channel, and the
+agent signs the envelopes with its own key, through its key holder and
+under the gate of LIP-0013 section 3.6. The keys that need a person's
+presence, the grant key and the authority key, are for rare acts: issuing
+a grant, and consenting to a grant whose grantee is the person. LIP-0013
+section 3.7 states the pattern. A session key that would let a person sign
+envelopes without a touch for each is a later option.
 
 The keyvault interface was read on 2026-11-12 at two revisions. At
 [`swarma-keyvault` `41e0c71`](https://github.com/relux-works/swarma-keyvault/tree/41e0c71b0ddb2a102ae5dbc0184c60dfc10f3819)
