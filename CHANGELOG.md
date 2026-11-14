@@ -21,11 +21,12 @@ An effect requested under a text (J5b, section 3.4). An executor refuses a
 landing or a payment that is requested under a grant with a text. That is
 the default. The owner's confirmation of one operation stays as an
 exception, with its exact arguments (J5.9) and recorded as the owner's
-decision. The draft reads the exception as course (c), the confirmation of
-effects, and gives the choice of it to the executor's owner. Course (b),
-the confirmation of every action, is not taken; its rule and its case
-S5-4b are removed, and the table of courses keeps its row. LIP-0013
-section 3.4 says the same of its steps.
+decision. The exception is course (c), the confirmation of effects, and
+course (b), the confirmation of every action, is not taken; its rule and
+its case S5-4b are removed, and the table of courses keeps its row. The
+draft proposes that the executor's owner chooses the exception for an
+executor, which is no part of the decision. LIP-0013 section 3.4 says the
+same of its steps.
 
 The key of a row's coin (J1, section 9.1). On v4 the coin of a row pays a
 separate key, derived from the seed of the operator's signer in an account
