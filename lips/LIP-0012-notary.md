@@ -190,9 +190,12 @@ issuer's spend in LIP-0008 section 5.1; it does not recompute it from the
 active chain. After a plain withdrawal a notary that the requirement names
 can certify the same grant again. After a withdrawal for cause it cannot,
 and the issuer issues a new grant. LIP-0014 section 10 proposes how a
-withdrawal for cause is marked. The laboratory refuses on a spend seen in
-the mempool and keeps refusing after the withdrawal is reorganised out while
-it stays in the mempool; it implements no journal.
+withdrawal for cause is marked, and its section 10.1 holds Draft text, under
+a decision that awaits the co-author's agreement (J2), on when a cause
+counts and whom it reaches.
+The laboratory refuses on a spend seen in the mempool and keeps refusing
+after the withdrawal is reorganised out while it stays in the mempool; it
+implements no journal.
 
 For a grant that requires no notary, a withdrawal removes the endorsement
 for verifiers that asked for it by policy and changes nothing else.
@@ -262,11 +265,15 @@ which is enough (N6), and after a plain withdrawal another named notary can
 certify the same grant (N8).
 
 Naming several notaries, and naming them by name, has limits that LIP-0014
-records as open gaps with the case that shows each: a notary does not see a
-sibling that another notary certified under the same ordinal; a withdrawal
-for cause by one notary reaches neither another named notary nor a verifier
-that starts later; and a notary's name that changes hands passes on the
-right to certify.
+states with the case that shows each: a notary does not see a sibling that
+another notary certified under the same ordinal; a withdrawal for cause by
+one notary reaches neither another named notary nor a verifier that starts
+later; and a notary's name that changes hands passes on the right to
+certify. LIP-0014 holds Draft text for each, under decisions that await the
+co-author's agreement: its sections 9.1 (J1), 10.1 (J2) and 7.1 (J3). Under
+section 10.1 a parent names one notary for each row, only that notary
+certifies the row, also after a plain withdrawal, and N6 and N8 read
+narrower.
 
 The notary learns the contents of both contracts. A deployment that cannot
 disclose them to a third party uses issuance by the operator's signer
@@ -307,7 +314,9 @@ Still open:
 - Adoption of the bytes, the signing domain and the statement kinds that
   LIP-0014 proposes for a child grant; statement kinds for other facts.
 - The field that carries a requirement in a grant that is not a child.
-- Whether a v4 parent pins a notary name by its registration and owner key,
-  as it pins an issuer.
+- Whether a parent pins a notary name by its registration and owner key, as
+  a v4 grant pins an issuer: LIP-0014 section 7.1 holds Draft text for it,
+  for the v3 profile as well. Ivan Oparin accepted it on 2026-11-13 (J3);
+  the co-author's agreement is pending.
 - Whether the notary of a child and the moderator of the same contract can
   be one party.

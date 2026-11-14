@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.31
+**Version:** 0.1.32
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.31
+## Draft profiles and design decisions in v0.1.32
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -224,19 +224,36 @@ host. LIP-0010 section 8 adds a proposed plan for the 520 bytes of a value.
 An organization identity and release statements for binaries are sketches
 in LIP-0015 and are not proposed.
 
-Two independent reviews of the design found eight gaps. Version 0.1.24
-records each as an open question with the case that shows it, and names
-candidate fixes as proposals that the owners decide; no mechanism is chosen.
-Five concern notary-certified re-delegation (LIP-0014): the pool when a
-parent names several notaries, a withdrawal for cause that a new verifier
-does not see, the notary bound by name only, the key an agent signs a child
-with on v4, and scope text that no admission step enforces. The others:
-replacing a leaked grant key stops an issuer's grants more slowly and less
-finally than a seal spend stops one (LIP-0008); a grant is issued to a key,
-so every run of an agent can act under it, whichever party's work the run
-does (LIP-0013); and under NIP-59 the judged message bytes carry no sender
-signature (LIP-0011). Sentences that implied these cases were covered are
-corrected.
+Two independent reviews of the design found eight gaps, and version 0.1.24
+recorded each as an open question. Each now has Draft text, labelled J1 to
+J8. Ivan Oparin decided them, J3, J6 and J8 on 2026-11-13 and J1, J2, J4,
+J5 and J7 on 2026-11-14, and the co-author's agreement on each is pending.
+One part of J5 is still a pending owner decision, and the text of a v4
+child is undecided. Nothing of it is adopted before both owners agree. The rules in force stay beside it as they are, and no gap is
+called closed for a property that its text lists as open. Five decisions
+stand in LIP-0014. The parent signs rows that fix the executor, the
+grantee, the cap and the certifier of each child; on v4 each row also pins
+a coin that the issuance of its child must spend, so that one child for
+each row holds on the active chain (J1, section 9.1). Each row has one
+notary, with one succession of seals and a cause that counts only when the
+notary's signature covers its frame; on v3 that narrows D5, and on v4 each
+row names a stop coin of its notary whose spend ends the row for every
+verifier that sees it (J2, section 10.1). A notary is pinned by name,
+registration and owner key (J3, section 7.1). A delegation key that the
+parent names signs children on v4 and nothing else, because the messaging
+key never grants authority (J4, section 11.1). On v3 a child carries its
+parent's scope text unchanged, and no executor performs a landing or a
+payment automatically under a grant with a text. Whether it refuses such a
+request or holds it for the owner's confirmation is pending, and what a v4
+child does with its parent's text is not decided (J5, section 3.4). In LIP-0008 section 5.2 an
+owner-signed change of an issuer's name that a verifier saw closes that
+issuer's grants durably (J6). In LIP-0013 section 3.6 the service that
+holds an agent's key signs a run's objects only under what its operator
+listed for the origin of that run; that gate is a condition of enforcing
+mode and takes the place of presence for an agent's key (J7). In LIP-0011
+section 7 the signed invocation is the request of a verdict (J8). No v3
+byte changes, and neither does any rule or vector of the profile
+`swarma-trust-contract/1`.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement
@@ -276,6 +293,17 @@ state, and LIP-0008 section 2 names the further limit kinds of the same
 decision, each with a meaning that is the draft's proposal. These are semantics without bytes, and nothing of them is
 implemented.
 
+Version 0.1.32 records five further directions of Ivan Oparin of
+2026-11-14, with the co-author's agreement pending. LIP-0013 section 3.7
+states the pattern for instructions across owners: the grantee is an agent
+of the receiving owner, which signs the envelopes under the gate of
+section 3.6, and a transport only carries. The key map describes a
+personal key service for each person, records decision K6, a separate
+authority key for grants issued to a person, and settles the scope of K2:
+permanent roles have names, and a worker agent may stay key-only. LIP-0008
+section 1 states that Grant v3 is frozen after the first public
+demonstration and remains for verification once v4 is qualified.
+
 Version 0.1.31 extends those two drafts. In LIP-0015 the pin and the
 configuration statements get a first use, the signing of Curator profiles
 and manifests; of the two Matrix kinds of a certificate statement
@@ -306,8 +334,8 @@ contract. The [key registry](KEY-REGISTRY.md) lists every key the
 specification names, with its owner, the place where it is published, its
 holder, what it signs, a danger level, the effect of a leak and the
 recovery. It includes the v4 keys of the same day's decisions, whose rules
-LIP-0014 takes in its next revision. No implementation is claimed for any
-of the three.
+stand in LIP-0014 sections 9.1, 10.1 and 11.1. No implementation is claimed
+for any of the three.
 
 These drafts do not replace the normative v0.1 profile, adopt new conformance
 requirements or rewrite historical evidence. LIP-0002's signed-envelope
