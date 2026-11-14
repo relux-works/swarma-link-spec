@@ -225,10 +225,10 @@ in LIP-0015 and are not proposed.
 
 Two independent reviews of the design found eight gaps, and version 0.1.24
 recorded each as an open question. Each now has Draft text, labelled J1 to
-J8. Ivan Oparin decided six of them, J3 on 2026-11-13 and J1, J2, J4, J5
-and J7 on 2026-11-14; the co-author's agreement on each is pending, and J6
-and J8 are pending owner decisions. Nothing of it is adopted before both
-owners agree. The rules in force stay beside it as they are, and no gap is
+J8. Ivan Oparin decided them, J3, J6 and J8 on 2026-11-13 and J1, J2, J4,
+J5 and J7 on 2026-11-14, and the co-author's agreement on each is pending.
+One part of J5 is still a pending owner decision, and the text of a v4
+child is undecided. Nothing of it is adopted before both owners agree. The rules in force stay beside it as they are, and no gap is
 called closed for a property that its text lists as open. Five decisions
 stand in LIP-0014. The parent signs rows that fix the executor, the
 grantee, the cap and the certifier of each child; on v4 each row also pins
@@ -241,9 +241,10 @@ verifier that sees it (J2, section 10.1). A notary is pinned by name,
 registration and owner key (J3, section 7.1). A delegation key that the
 parent names signs children on v4 and nothing else, because the messaging
 key never grants authority (J4, section 11.1). On v3 a child carries its
-parent's scope text unchanged, and an executor refuses a landing or a
-payment under a grant with a text; what a v4 child does with its parent's
-text is not decided (J5, section 3.4). In LIP-0008 section 5.2 an
+parent's scope text unchanged, and no executor performs a landing or a
+payment automatically under a grant with a text. Whether it refuses such a
+request or holds it for the owner's confirmation is pending, and what a v4
+child does with its parent's text is not decided (J5, section 3.4). In LIP-0008 section 5.2 an
 owner-signed change of an issuer's name that a verifier saw closes that
 issuer's grants durably (J6). In LIP-0013 section 3.6 the service that
 holds an agent's key signs a run's objects only under what its operator

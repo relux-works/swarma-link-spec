@@ -3,14 +3,14 @@
 ## 0.1.29 — 2026-11-14
 
 Holds Draft text for the eight gaps that version 0.1.24 recorded, labelled
-J1 to J8, and records the decisions that Ivan Oparin made on six of them:
-J3 on 2026-11-13, and J1, J2, J4, J5 and J7 on 2026-11-14. The co-author's
-agreement on each is pending, and J6 and J8 are pending owner decisions.
-Nothing of it is adopted until both owners agree. The rules in force are
-not rewritten: each decision stands in one subsection that first says what
-holds until then, and the places it would change carry a pointer. No gap is
-called closed for a property that its subsection lists as open. No v3 byte
-changes, and neither does any rule or vector of profile
+J1 to J8, and records the decisions that Ivan Oparin made on them: J3, J6
+and J8 on 2026-11-13, and J1, J2, J4, J5 and J7 on 2026-11-14. The
+co-author's agreement on each is pending. One part of J5 stays a pending
+owner decision. Nothing of it is adopted until both owners agree. The rules
+in force are not rewritten: each decision stands in one subsection that
+first says what holds until then, and the places it would change carry a
+pointer. No gap is called closed for a property that its subsection lists as
+open. No v3 byte changes, and neither does any rule or vector of profile
 `swarma-trust-contract/1` or the reference checker.
 
 LIP-0014, section 9.1 (J1). The parent signs one row for each child, with
@@ -47,22 +47,24 @@ version.
 LIP-0014, section 3.4 (J5). On v3 a child carries its parent's scope text
 unchanged. What a v4 child does with its parent's text is not decided, and
 nothing of it is written. A text governs an agent's work and never a
-service's effect: an executor that cannot read refuses a grant with a
-text, and every executor refuses a landing or a payment under one, as
-`TEXT_UNSUPPORTED`. Profile `/2` gains no member; the ref, the exact
-revision and the payee are machine members of the v4 action profile from
-its first version, and a path inside a repository stays words. The table of gaps under Open questions gives way
-to these subsections; every fact of its rows stands in their first
-paragraphs.
+service's effect, and money and landings go into a grant without a text. An
+executor that cannot read refuses a grant with a text, and no executor
+performs a landing or a payment automatically under one. Whether it refuses
+such a request, as the Draft text does until then, or holds it for the
+owner's one-time confirmation is a pending owner decision. Profile `/2`
+gains no member; the ref, the exact revision and the payee are machine
+members of the v4 action profile from its first version, and a path inside a
+repository stays words. The table of gaps under Open questions gives way to
+these subsections; every fact of its rows stands in their first paragraphs.
 
-LIP-0008 section 5.2 (J6): an owner-signed change of an issuer's name that
-a verifier validated, in its mempool or in a block, closes the issuer's
-grants in that verifier's journal; the read follows every pending name
-operation; an issuer funds every operation of its name from coins that no
-hot service can spend. A verifier that saw the change and one that starts
-later can differ, and the text says so. A new open question asks whether
-the issuer rule should carry the writer rule that LIP-0014 drafts for a
-notary.
+LIP-0008 section 5.2 (J6, accepted on 2026-11-13): an owner-signed change of
+an issuer's name that a verifier validated, in its mempool or in a block,
+closes the issuer's grants in that verifier's journal; the read follows
+every pending name operation; an issuer funds every operation of its name
+from coins that no hot service can spend. A verifier that saw the change and
+one that starts later can differ, and the text says so. A new open question
+asks whether the issuer rule should carry the writer rule that LIP-0014
+drafts for a notary.
 
 LIP-0013 section 3.6 (J7): the service that holds an agent's key binds each
 run to its origin and signs only what its operator listed for that origin,
@@ -74,10 +76,10 @@ forward, and for an agent's key the gate takes the place of presence. T10
 points to the subsection, and T11 lists what the authority frame of
 section 3.4 leaves open.
 
-LIP-0011 section 7 (J8): the signed v4 invocation is the request of a
-verdict, and an invocation inside an encrypted message binds a salted hash
-of the content. A reader reports reference, attribution, eligibility,
-admission, and time and delivery apart.
+LIP-0011 section 7 (J8, accepted on 2026-11-13): the signed v4 invocation is
+the request of a verdict, and an invocation inside an encrypted message
+binds a salted hash of the content. A reader reports reference, attribution,
+eligibility, admission, and time and delivery apart.
 
 The key map carries the sentence that the decision adds to K2 and a row
 for the delegation key (J4), the changed presence rule (J7) and a note for
