@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.32
+**Version:** 0.1.33
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.32
+## Draft profiles and design decisions in v0.1.33
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -304,7 +304,7 @@ permanent roles have names, and a worker agent may stay key-only. LIP-0008
 section 1 states that Grant v3 is frozen after the first public
 demonstration and remains for verification once v4 is qualified.
 
-Version 0.1.31 extends those two drafts. In LIP-0015 the pin and the
+Version 0.1.33 extends those two drafts. In LIP-0015 the pin and the
 configuration statements get a first use, the signing of Curator profiles
 and manifests; of the two Matrix kinds of a certificate statement
 `matrix-cross-signing` is preferred; and keys of other transports get
