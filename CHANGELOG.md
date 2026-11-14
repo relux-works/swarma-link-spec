@@ -10,12 +10,14 @@ LIP-0015. The pin and the configuration statements have a first use that
 needs nothing else of the LIP: signing the profiles and manifests of
 Curator, each as a section with a subject of its own. Section 6 records
 three directions for certificate statements. Of the two Matrix kinds,
-`matrix-cross-signing` is preferred, because one statement then covers
-every device of an account. A key of another transport, such as the OMEMO
-identity keys of an XMPP account or a key that signs email, gets a kind of
-its own through a LIP. And a binding lets a receiver check a sending device
-against a key that the operator of a name certified, where it otherwise
-relies on the transport's server; it gives no authority.
+`matrix-cross-signing` is preferred: one statement then covers each device
+whose chain of signatures to the certified cross-signing key verifies. A
+device that carries only its own signature is not covered. A key of another
+transport, such as the OMEMO identity keys of an XMPP account or a key that
+signs email, gets a kind of its own through a LIP. And a binding lets a
+receiver check a sending device against a key that the operator of a name
+certified, where it otherwise relies on the transport's server; it gives no
+authority.
 
 LIP-0018 gains a fourth list, for a certificate subject kind: the kind, the
 members of the subject, what the key does in its own system, what a

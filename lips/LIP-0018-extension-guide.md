@@ -125,5 +125,5 @@ None. The guide concerns proposals and no implementation.
 
 - A registry for limit kinds and for contract profiles, and who assigns an
   identifier.
-- Whether the three lists become conformance requirements on a proposal, or
-  stay guidance for authors and reviewers.
+- Whether the lists become conformance requirements on a proposal, or stay
+  guidance for authors and reviewers.
