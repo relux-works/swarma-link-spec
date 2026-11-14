@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.1.39 — 2026-11-14
+
+Adds Draft LIP-0021, the name ownership and history profile for Grant v4 on
+Namecoin, with vectors. Every rule of it is the draft's proposal, and
+neither owner has decided one. No rule of another text changes, and no v3
+byte does.
+
+What it answers. LIP-0008 section 3 binds a grant to the owner key of its
+issuer's name and says that the exact key encoding and the script coverage
+remain open. LIP-0014 section 7.1 writes a notary's owner pin in "the
+encoding that LIP-0008 section 3 will fix", and LIP-0020 reads the evidence
+output of a consent under an ownership profile that it calls open.
+
+The profile (sections 1 to 6). A verifier reads its own node, which keeps a
+transaction index, and nothing that a presenter supplies. The owner pin is
+a compressed public key, 66 lowercase hexadecimal characters. A verifier
+parses the octets of an output script itself: three exact prefixes, for an
+update, a registration and a reservation, and two address scripts, the key
+hash and the witness key hash, which both pay the hash of one public key.
+A reading has three outcomes, controlled, another key and unsupported, and
+an unsupported script is evidence of nothing. The pinned owner wrote a
+value when the name input of its operation spends an output that the pin
+controls and its signature ends with the hash type `01`. A name is live at height `H` when `H < h + D`. A
+walk follows the name inputs back to a registration; a verifier may bound
+it, and a walk that it cannot finish proves nothing.
+
+The rules that use it (section 7). For the issuer rule and for a recipient
+by name, where LIP-0008 names no code, the draft proposes
+`ISSUER_NAME_CHANGED`, `ISSUER_SNAPSHOT`, `ISSUER_HISTORY_UNAVAILABLE`,
+`RECIPIENT_NAME_NOT_HELD` and `RECIPIENT_NAME_UNAVAILABLE`, and the order in
+which a verifier reports them: what the chain proved before what the
+verifier could not read. For a notary's name, for the consent of a
+recipient by name and for a change that the owner signed it says which
+reading each existing rule takes, and it adds no code.
+
+One proposal is stated and gates nothing: that the issuer rule also require
+that the bound owner wrote the value in force, as J3.4 requires of a
+notary's name. LIP-0008 lists that question as open, and the vectors hold
+the rule in force.
+
+Vectors. `vectors/LIP-0021/name-vectors.json` holds 140 vectors over 27
+rules: pins, output scripts, the inputs of an operation, heights, and 56
+histories for the four rules that walk or read a name. Each refused vector
+names a valid neighbour, and five vectors with two findings test the order.
+The vectors state octets and facts and read no chain. No node was run: the
+statements about Namecoin come from the source of Namecoin Core at the tag
+`nc28.0` and from the reference laboratory, and the LIP lists them.
+
+LIP-0008 section 3, LIP-0014 section 7.1 and LIP-0020 section 7.3 gain one
+pointer each.
+
 ## 0.1.38 — 2026-11-14
 
 Corrects the order of the issuance check in Draft LIP-0020. No byte, no

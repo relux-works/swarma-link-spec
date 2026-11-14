@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.38
+**Version:** 0.1.39
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.38
+## Draft profiles and design decisions in v0.1.39
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -362,6 +362,27 @@ recipient by name that lacks the outpoint therefore refuses as
 `ISSUANCE_MODE`; under the order of 0.1.37 the consent step came first and
 could only report `CONSENT_EVIDENCE` for an output that it was never given.
 Fourteen vectors hold the order, and the file now has 219.
+
+Version 0.1.39 adds
+[LIP-0021](lips/LIP-0021-name-ownership-and-history.md), the first ownership
+and history profile for Grant v4, on Namecoin. LIP-0008 binds a grant to
+the owner key of its issuer's name and left open how that key is written
+and which output scripts it controls. The draft proposes the owner pin as a
+compressed public key; three exact prefixes of a name output and two
+address scripts, which pay the hash of one key with and without a witness,
+with three outcomes of a reading: controlled, another key, unsupported; a
+writer check that reads the hash type of the name input; the comparison for
+a live name; the walk of a name's history with an operator's bound; and,
+for the issuer rule and for a recipient by name, five refusal codes with
+their order. An unsupported script proves nothing: the rule that needed the
+reading refuses, and the script is never taken for a transfer. One point that the profile serves was decided on 2026-11-14
+under Ivan Oparin's delegation, open to his override and awaiting the
+co-author: authorisation by name at issuance is judged under such a
+profile. Every rule of the profile is the draft's proposal, and neither
+owner has decided one. The 140 vectors in
+[`vectors/LIP-0021/`](vectors/LIP-0021/) state octets and facts and read no
+chain; no node was run for the draft, and no checker for the vectors is
+published.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

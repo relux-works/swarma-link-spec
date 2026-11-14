@@ -886,6 +886,9 @@ name it. The update may repeat the value unchanged.
 The owner-pin encoding and the script coverage of the owner proof are open
 in LIP-0008 section 3. Until they exist an unsupported proof refuses under
 J3.5, and byte vectors of profile `/2` wait for them.
+[LIP-0021](LIP-0021-name-ownership-and-history.md) proposes both, with the
+reading of the signature-hash type that J3.4 needs. They are that draft's
+proposals, and each stays open until both owners accept it.
 
 The alternative before the owners is the name alone, as the first paragraph
 describes it: no pin and no walk, and a notary's name that changes hands

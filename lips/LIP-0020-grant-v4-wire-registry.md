@@ -512,6 +512,9 @@ A verifier reads the evidence output on its own node and requires all of:
 Where one of the first four fails, or the node cannot establish it, the
 consent refuses as `CONSENT_EVIDENCE`, and nothing is recorded as closed.
 Where the fifth fails the consent refuses as `CONSENT_KEY`.
+[LIP-0021](LIP-0021-name-ownership-and-history.md) proposes the ownership
+profile and the readings for the first four conditions; they are that
+draft's proposals.
 
 Condition 4 is the last sentence of the decision at a verifier. An output
 that the owner had replaced by the snapshot held earlier, and condition 4

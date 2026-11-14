@@ -428,6 +428,12 @@ output. A supported ownership-proof profile must connect the pinned owner key
 to its spending condition. Exact key encoding and script coverage remain open;
 unsupported or ambiguous proof refuses. Not every script reduces to one key.
 
+[LIP-0021](LIP-0021-name-ownership-and-history.md) proposes that profile for
+Namecoin: the owner pin as a compressed public key, the exact scripts of a
+name output that a verifier reads, the walk with its bound, and refusal codes
+for this section and for section 3.1, with vectors. They are that draft's
+proposals, and each point stays open until both owners accept it.
+
 Missing, stale or malformed reads refuse without recording permanent closure.
 Expired names refuse. A pending name spend can suspend admission under the
 selected observation profile; the issuer-history refusal and the current
