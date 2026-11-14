@@ -23,28 +23,36 @@ program at an executor that runs the checks, and the terms of the LIP now
 name it. It hands each admitted peer instruction to the agent inside a
 read-only frame with the principal, the grant id, the contract terms, the
 scope text of a `/2` contract and the hash of a framework agreement where
-one exists. The frame is built from verified objects only and is outside
-the agent's write authority. An agent's standing instructions carry one
-rule about frames and no contract. On v3 a grant names one agent; on v4 a
-grant can name several executors with signed partitions, and what a frame
-carries there is fixed with the v4 bytes. The encoding of the frame, its
-channel and the proof that an agent cannot write it are open. No step, code
-or vector changes.
+one exists. The frame is built from verified objects only and is outside the
+agent's write authority. An agent's standing instructions carry one rule
+about frames and no contract. On v3 a grant names one agent; on v4 a grant
+can name several executors with signed partitions, and what a frame carries
+there is fixed with the v4 bytes. Before a frame carries a scope text the
+gate checks the octets of that text against the hash in the contract, for a
+root as for a child, and refuses as `TEXT_UNAVAILABLE` otherwise; the steps
+of LIP-0014 make that check for a child only. Whether a frame is signed,
+whether it leaves the executor, its encoding, its channel and the proof that
+an agent cannot write it are open, and the text marks which rules are the
+decision and which are the draft's own. No other step or code changes, and
+no vector.
 
-A new document, the key registry (`KEY-REGISTRY.md`). It lists every key
-the specification names, in 22 entries. Each entry states the owner, the
-place where the key is published, the holder, the complete list of what it
-signs, a danger level from critical to low, the effect of a leak, the
-recovery and the source. Its rules: one entry for every key; the list of
-uses is closed; a messaging key grants no authority; an entry has the
-status of the part that defines its key. Five entries follow decisions of
-the same day: the authority key of a person who receives grants and, on v4,
-the delegation key, the coin key of a row, the optional child-seal key and
-the stop key of a row. The entry of the agent's Nostr key records that a
+A new document, the key registry (`KEY-REGISTRY.md`). It lists every key the
+specification names, in 27 entries. Each entry states the owner, the place
+where the key is published, the holder, the complete list of what it signs,
+a danger level from critical to low, the effect of a leak, the recovery and
+the source. Its rules: one entry for every key; the list of uses is closed,
+and a use that a part defines and an entry omits is a defect of the entry; a
+messaging key grants no authority; an entry has the status of the part that
+defines its key. A level belongs to a key with all its uses: a key that can
+use authority under any grant is high, and a key that can only end authority
+or forge a record without authority is medium. Five entries follow decisions
+of the same day: the authority key of a person who receives grants and, on
+v4, the delegation key, the coin key of a row, the optional child-seal key
+and the stop key of a row. The entry of the agent's Nostr key records that a
 gate at the key holder takes the place of presence. LIP-0014, LIP-0013 and
 the key map take those rules in later revisions and state the earlier text
-until then. The danger levels are the draft's proposal. The release order
-in `RELEASE.md` and the specification set in the README include the new
+until then. The danger levels are the draft's proposal. The release order in
+`RELEASE.md` and the specification set in the README include the new
 document.
 
 ## 0.1.27 — 2026-11-13
