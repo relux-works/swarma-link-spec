@@ -28,13 +28,19 @@ Four uses need bytes that the asking party does not hold:
 
 | Use | Object | Named by |
 | --- | --- | --- |
-| Audit | The signed grant behind an issuance frame | Its `grant_id`, the pointer of the frame's locator |
+| Audit | The canonical signed grant behind an issuance frame | Its `grant_id`, the pointer of the frame's locator |
 | Dispute | A verdict, a termination statement, a disclosed clause of a contract | The pointer of a termination frame, or a hash that a party gives |
-| Parent grants | The parent presentation and its contract, which a verifier of a child needs (LIP-0014 section 8, V2) | The `parent_grant_id` of the child and the contract hash of the parent |
+| Parent grants | The parent's canonical signed grant and its contract, from which a verifier of a child completes the parent's presentation (LIP-0014 section 8, V2) | The `parent_grant_id` of the child, which is the SHA-256 of that signed grant, and the contract hash of the parent |
 | Certificate sets | The head of an issuer and the records of its set (LIP-0016) | The `head_id` and the record ids |
 
 In each of them the hash is already known and already bound by a signature
 or by the chain. What is missing is only availability.
+
+A presentation is not among these objects. LIP-0004 section 2 makes a
+`grant_id` the SHA-256 of the canonical signed grant alone, and it leaves
+the issuance locator of a presentation unsigned and outside the id. No
+presentation can therefore hash to a grant id, and section 5 says how a
+reader completes one.
 
 ## Current state
 
@@ -99,7 +105,32 @@ Retrieval therefore adds availability and no authority. A store that
 returns wrong bytes, old bytes or nothing can make a reader refuse; it
 cannot make a reader accept.
 
-### 5. What is public
+### 5. A presentation is completed, not fetched
+
+A grant id addresses one object: the canonical signed grant
+`{"grant":…,"signature":…}`, whose SHA-256 it is. That is what the loader
+fetches and what rule 1 of section 4 checks. The presentation of LIP-0004
+section 2 holds one thing more, the issuance locator, which is unsigned.
+
+1. The loader MUST NOT ask a store for a presentation by a grant id, and a
+   body that holds anything beside the canonical signed grant fails rule 1
+   of section 4.
+2. The reader takes the issuance locator from the bundle or the request,
+   as an unsigned hint. It checks it as LIP-0004 section 4 checks every
+   issuance: the named transaction is confirmed in the active chain on the
+   reader's own node, and its commitment recomputes with the fetched
+   grant's id. A locator that names another transaction fails that check,
+   because the commitment binds the grant id. This is the rule for a v3
+   grant; the presentation of a v4 grant follows its own profile, which is
+   open.
+3. A fetched signed grant without a locator that passes rule 2 is no
+   presentation. The parent then counts as not presented.
+
+An auditor works in the other direction. It starts from the issuance
+transaction, so it already holds the locator, and it fetches the signed
+grant by the pointer of the frame.
+
+### 6. What is public
 
 An object in a public store is public to whoever knows its hash. A grant
 names its parties, and a head lists the keys an issuer binds. A contract of
@@ -133,13 +164,17 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 | Valid control | Refusal or invariant |
 | --- | --- |
 | Bytes whose SHA-256 equals the requested hash, from a configured store | Bytes of another hash, an object above the size bound, and a redirect to another host: discarded, and the next endpoint is tried. |
-| A fetched parent presentation that passes every check of LIP-0014 section 8 | A fetched parent whose seal is spent refuses as a presented one does; having fetched it changes nothing. |
+| A parent's signed grant fetched by `parent_grant_id`, completed with an issuance locator from the bundle, that passes every check of LIP-0014 section 8 | A body that holds a whole presentation, or anything beside the canonical signed grant, does not hash to the grant id and is discarded. A locator that names a transaction whose commitment does not recompute with this grant id refuses under LIP-0004 section 4. A fetched parent whose seal is spent refuses as a presented one does; having fetched it changes nothing. |
 | A store named by a hint returns the right bytes | A store named by a hint is sent no credential, and wrong bytes from it are discarded. |
 | No endpoint returns the object | The object counts as not presented; the journal holds no closure. |
 
 ## Open questions
 
 - The size bounds for each kind of object, and the time limits.
+- Whether an issuance locator needs an address of its own, so that a reader
+  with nothing but a grant id can find the issuance transaction. Today it
+  needs the locator from the presenter, or a search of the chain for the
+  frame whose pointer is that id, for which no index is defined.
 - Whether a name value may name a store, and in which member.
 - A profile for the BitTorrent location types.
 - Whether an issuer has a duty to keep its objects retrievable, for how
