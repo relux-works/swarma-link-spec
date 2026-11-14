@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.38 — 2026-11-14
+
+Corrects the order of the issuance check in Draft LIP-0020. No byte, no
+code and no earlier vector changes.
+
+Version 0.1.37 had a verifier take each part of a presentation through its
+own pipeline and check the mode afterwards. For a recipient by name the
+consent step needs the evidence outpoint, which the consent event does not
+hold. A presentation without the outpoint therefore refused in that step
+as `CONSENT_EVIDENCE`, while section 8 and a vector promised
+`ISSUANCE_MODE`.
+
+Rule W9.4 now states six steps: the signed grant; the inputs, which are
+the mode of the grant and the presence of the evidence outpoint; the
+issuer's assent; the consent event; the frame; the commitment. The inputs
+stand before the consent event, and the missing outpoint refuses as
+`ISSUANCE_MODE`. Rules W8.4 and W8.6 refer to that order.
+
+The vectors gain a group for the whole check, with the grant given as
+stated facts: 2 valid presentations, 7 refused ones and 5 with two defects
+each, which test the order. The file has 219 vectors over 47 rules.
+
 ## 0.1.37 — 2026-11-14
 
 Adds Draft LIP-0020, the wire registry for Grant v4, with vectors. It is

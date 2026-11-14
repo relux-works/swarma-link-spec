@@ -651,7 +651,8 @@ commitment differs.
 W8.4. A preparation for a recipient by name carries `name_output`. A
 preparation for a recipient by key carries none. The mode is the grant's.
 A presentation that offers an evidence outpoint for a grant by key, or none
-for a grant by name, refuses as `ISSUANCE_MODE`.
+for a grant by name, refuses as `ISSUANCE_MODE`. A verifier makes this
+check on the inputs before it reads the consent event (W9.4).
 
 W8.5. The issuance commitment is the typed digest of the preparation
 (section 4). The anchor carries it in one zero-value `OP_RETURN` output, in
@@ -671,7 +672,7 @@ other. Any other frame refuses as `ISSUANCE_FRAME`. The rule of LIP-0005
 section 3 that an issuance transaction has exactly one `OP_RETURN` output
 holds unchanged.
 
-W8.6. A verifier checks every part through its own pipeline, builds the
+W8.6. A verifier checks the parts in the order of W9.4, builds the
 preparation from the parts that passed, takes its typed digest and compares
 it with the commitment of the frame. A difference refuses as
 `ISSUANCE_COMMITMENT`. The frame is checked before the commitment, so a
@@ -704,7 +705,7 @@ document that an earlier step refuses.
 | Signed object | An assent, and every signed type of the registry once it has members | 1. The document: W1.1 to W1.6 on the signed form, in the order of W9.2. 2. The signed form: exactly `payload` and `signature` (W5.3). 3. The `type` (W3.1, W3.3, W3.4). 4. The members of the payload, in the order of W9.3. 5. The encoding of the signature (W5.2). 6. The key of the place (W5.5). 7. The signature (W5.1, W5.2). 8. References to the object and from it (W6.3). 9. The rules of the object: for an assent, W7.2 |
 | Unsigned payload | An issuance preparation that is read from stored octets | 1. The document, in the order of W9.2. 2. The `type`. 3. The members, in the order of W9.3. No step concerns a signature |
 | Nostr event | A consent event | The five steps of W7.4. Sections 1 to 6 do not apply: the event has its own wire form, no `type` and no signed form, and its size, its spelling and the encoding of its keys and of its signature are all part of step 1 |
-| Issuance | A presentation that is held against its anchor | 1. Each part through its own pipeline: the signed grant and the issuer's assent as signed objects, the assent with W7.2, and the consent event as a Nostr event. 2. The mode (W8.4). 3. The frame (W8.5). 4. The commitment (W8.6) |
+| Issuance | A presentation that is held against its anchor | The six steps of W9.4 |
 
 W9.2. The document step has this order. A document that is larger than
 its largest size refuses as `WIRE_SIZE` before it is read. Then W1.1 and
@@ -723,6 +724,25 @@ Then the values, in the order in which the canonical bytes hold them: each
 has the form of its member (`WIRE_MEMBER`), and an integer is within the
 bound of its member (`WIRE_INTEGER`). Then the signing keys among the
 members are points of the curve (`WIRE_KEY`).
+
+W9.4. An issuance is checked in six steps, and the first that fails gives
+the refusal.
+
+| Step | Check | Refusal |
+| --- | --- | --- |
+| 1 | The signed grant, through the pipeline of a signed object | The codes of that pipeline. The step has no content until the grant has members |
+| 2 | The inputs: the mode of the grant and the presence of the evidence outpoint (W8.4) | `ISSUANCE_MODE` |
+| 3 | The issuer's assent, through the pipeline of a signed object, and then W7.2 | The codes of that pipeline, `ASSENT_BINDING`, `ASSENT_PARTY` |
+| 4 | The consent event, through the five steps of W7.4, with the evidence outpoint for a grant by name | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` |
+| 5 | The frame (W8.5) | `ISSUANCE_FRAME` |
+| 6 | The commitment (W8.6) | `ISSUANCE_COMMITMENT` |
+
+Step 2 stands before step 4 for a reason. The third step of W7.4 reads the
+evidence output of a grant by name, and the consent event does not say
+which output that is: it holds the name and no outpoint. A presentation
+without the outpoint gives that step nothing to read. Its refusal is that
+of the missing input, `ISSUANCE_MODE`, and not `CONSENT_EVIDENCE`, which
+reports an output that was read and did not serve.
 
 The codes:
 
@@ -753,8 +773,8 @@ replaces a code of an earlier format.
 ### 10. Vectors
 
 [`vectors/LIP-0020/wire-vectors.json`](../vectors/LIP-0020/wire-vectors.json)
-holds 205 vectors. Each names the rules that it exercises. The list
-`rules` of the file names, for each of the 46 rules of sections 1 to 9, its
+holds 219 vectors. Each names the rules that it exercises. The list
+`rules` of the file names, for each of the 47 rules of sections 1 to 9, its
 section, its state and at least one vector. The state of every rule is
 `proposed`, also for the rules that carry the two decided points, because
 no owner has accepted a byte.
@@ -770,13 +790,13 @@ with a vector and what it does not.
 | Signed object | `assents`: 4 valid, 26 refused, 6 compound, 6 bindings; `identifiers`: 4 | The pipeline of a signed object on the signed form of an assent, and W7.2 with a stated context |
 | Event | `consent_events`: 2 valid, 33 cases | The pipeline of a Nostr event with a stated context. For a recipient by name the context states what the verifier's node would find about the evidence output |
 | Issuer | `issuer_checks`: 12 | What an issuer decides before it signs (W7.6, W7.8, W7.9), from its clock, its record of consumed consents and the facts of its snapshot |
-| Issuance | `issuance`: 3 valid, 10 refused, 13 stored, 3 compound | The preparation, the commitment and the frame from the four inputs, with a stand-in of three values for the grant; and the pipeline of an unsigned payload on stored octets of a preparation |
+| Issuance | `issuance`: 3 valid, 10 refused, 13 stored, 3 compound; and under `composed` 2 valid, 7 refused, 5 compound | The preparation, the commitment and the frame from the four inputs, with a stand-in of three values for the grant; the pipeline of an unsigned payload on stored octets of a preparation; and, under `composed`, the whole check of W9.4 on a presentation whose grant is given as stated facts |
 
 A refused vector outside a `compound` group holds one defect, states the
 expected code and names a valid neighbour of the same stage that differs
 from it in that defect, in its octets or in its context. A vector of a
 `compound` group holds several defects on purpose, lists them and states
-the one that the order of W9.2 or W9.3 reports; it has no neighbour.
+the one that the order of W9.2, W9.3 or W9.4 reports; it has no neighbour.
 
 A vector for a rule does not show the whole rule. Where a property has no
 vector, the entry of its rule in `rules` says so under `not_covered`: a

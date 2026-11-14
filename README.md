@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.37
+**Version:** 0.1.38
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.37
+## Draft profiles and design decisions in v0.1.38
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -354,6 +354,14 @@ notary attestation have an identifier and no members, and no reader accepts
 one of them yet. The 205 vectors in [`vectors/LIP-0020/`](vectors/LIP-0020/)
 were computed by two implementations that share no code, and no checker for
 them is published.
+
+Version 0.1.38 corrects one order in LIP-0020. An issuance is checked in
+six steps, and the mode of the grant with the presence of the evidence
+outpoint is checked before the consent event. A presentation for a
+recipient by name that lacks the outpoint therefore refuses as
+`ISSUANCE_MODE`; under the order of 0.1.37 the consent step came first and
+could only report `CONSENT_EVIDENCE` for an output that it was never given.
+Fourteen vectors hold the order, and the file now has 219.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
