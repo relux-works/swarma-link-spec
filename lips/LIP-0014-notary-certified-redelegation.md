@@ -685,9 +685,10 @@ requirement of the grant.
 
 ### 7.1. Pins, checkpoint and writer
 
-Owner decision pending: J3. Every rule of this subsection is Draft text that
-adds to D3. Until the decision a parent binds a notary by name only: V12
-accepts the key that the notary's name yields at check time. After a
+Accepted by Ivan Oparin on 2026-11-13 (J3); the co-author's agreement is
+pending. The rules of this subsection add to D3. Until the co-author agrees
+the text in force stands, under which a parent binds a notary by name only:
+V12 accepts the key that the notary's name yields at check time. After a
 transfer of the name, or after its expiry and a new registration, the new
 holder publishes its own key under `swarma.notary.attest`. Its attestations
 then pass V12 for every parent that names this notary, the attestations of
@@ -782,6 +783,13 @@ closure, until the chain holds the block again or the parent is issued
 again; the issuer SHOULD sign a block that is buried under its own risk
 policy.
 
+The registration order that the key map proposes is such a case. There the
+funding wallet signs the reservation and the first update, and the name's
+output goes to the owner's address. The owner has then signed nothing, and
+under J3.4 the value is not eligible. A notary's name that was registered
+in this order needs one update signed by its owner before a parent may
+name it. The update may repeat the value unchanged.
+
 The owner-pin encoding and the script coverage of the owner proof are open
 in LIP-0008 section 3. Until they exist an unsupported proof refuses under
 J3.5, and byte vectors of profile `/2` wait for them.
@@ -790,7 +798,7 @@ The alternative before the owners is the name alone, as the first paragraph
 describes it: no pin and no walk, and a notary's name that changes hands
 passes on the right to certify.
 
-Cases (owner decision pending: J3). Each uses a verifier that starts after
+Cases (J3). Each uses a verifier that starts after
 the events and holds no journal. Under the name-only rule in force a
 verifier reads no history, so it admits the refusals of S3-1 to S3-5b and of
 S3-7:

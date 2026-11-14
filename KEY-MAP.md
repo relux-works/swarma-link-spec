@@ -330,6 +330,12 @@ registration:
    For a name whose owner key a key service holds, they wait until that
    service signs name operations.
 
+A notary's name that is registered in this order needs one further step.
+LIP-0014 section 7.1 accepts the value of a notary's name only when the
+name's owner wrote it, and in this flow the funding wallet wrote it. The
+owner therefore signs one update of its own, which may repeat the value,
+before a parent names that notary.
+
 The alternative derives agent keys from the operator's seed and exports them
 to the gateway. It allows a restore of an agent key from the seed and needs
 an export interface; a lost agent key can instead be replaced by an update.
