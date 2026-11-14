@@ -206,8 +206,9 @@ interim, as a software secp256k1 item in the Mac Keychain, read under Touch
 ID per signature with every signed field shown first; the keyvault's BIP-85
 path is the later target, once its grant-signing purpose is qualified.
 
-Two further drafts are proposals with nothing decided; both owners decide
-them. [LIP-0015](lips/LIP-0015-trust-root-and-statements.md) proposes the
+Two further drafts are proposals that both owners decide. Ivan Oparin
+accepted their direction as a whole on 2026-11-14, and the co-author's
+agreement is pending. [LIP-0015](lips/LIP-0015-trust-root-and-statements.md) proposes the
 trust anchor that signed configuration waits for: a pin written at
 installation outside the agent's reach, the root name resolved on the
 loader's own node, and typed statements signed by the grant key under
@@ -274,6 +275,17 @@ proposal for a contract profile, a limit kind or an action name has to
 state, and LIP-0008 section 2 names further early limit kinds of the same
 decision. These are semantics without bytes, and nothing of them is
 implemented.
+
+Version 0.1.31 extends those two drafts. In LIP-0015 the pin and the
+configuration statements get a first use, the signing of Curator profiles
+and manifests; of the two Matrix kinds of a certificate statement
+`matrix-cross-signing` is preferred; and keys of other transports get
+kinds of their own through LIP-0018, which gains a list for them. In
+LIP-0016 the draft answers the open questions of its first version, as
+proposals: a Git provider whose files are the exact bytes of the head and
+of the records, one head for one issuer, one anchor for one head, and no
+verified set between a change of the grant key and the first head under
+the new key. The vector set is described and not built.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
