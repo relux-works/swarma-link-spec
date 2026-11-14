@@ -68,12 +68,14 @@ concurrency, uncertain outcomes, replay, denials, the contract mirror,
 defaults, refusal codes, vectors with a checker, and the path of the LIP.
 The guide assigns no identifier and no byte.
 
-LIP-0008 section 2 lists further early limit kinds by meaning: external
-service cost, runtime and concurrency, rate, outbound messages, repository
-writes, storage and egress with host allowlists, name operations, secret
-releases and an owner-confirmation threshold. Coins gain a maximum for one
-spend and for a period and an explicit asset and payment system. An
-allowance of zero of any kind authorizes nothing of that kind.
+LIP-0008 section 2 records the decision that further limit kinds join
+its list: external service cost, runtime and concurrency, rate, outbound
+messages, repository writes, storage and egress, name operations, secret
+releases and an owner-confirmation threshold; that coins carry a maximum
+for one spend and for a period and name their asset and payment system;
+and that an allowance of zero of any kind authorizes nothing. The kinds
+are the decision. The one-line meaning beside each kind is the draft's
+proposal, and a type profile binds it only if it adopts it.
 
 LIP-0005 lists the actions `0x07` and `0x08` as proposals; the reference
 parser accepts neither. The authority frame of LIP-0013 section 3.4 names
