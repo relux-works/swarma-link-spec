@@ -287,6 +287,20 @@ of the records, one head for one issuer, one anchor for one head, and no
 verified set between a change of the grant key and the first head under
 the new key. The vector set is described and not built.
 
+Version 0.1.32 adds four things at Ivan Oparin's decisions of 2026-11-14,
+with the co-author's agreement pending.
+[LIP-0019](lips/LIP-0019-retrieval-by-hash.md) proposes how a reader
+obtains an object that a locator names by its hash: a loader that takes
+endpoints from its configuration or from an unsigned hint, fetches by
+SHA-256 and checks the hash, after which the object is checked like a
+presented one. LIP-0008 section 11.2 lists the members of the seal-key
+endorsement and the order of a verifier's checks, and section 11.3 has the
+issuer's signer show, before issuance, that it can spend the seal. LIP-0008
+also says that Grant v3 keeps its byte names while the prose and Grant v4
+name the roles issuer, recipient and executor. LIP-0017 section 8 lets a
+contract carry the hash of the agreed configuration manifest, which the
+platform executes exactly.
+
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
 
