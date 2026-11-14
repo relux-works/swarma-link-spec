@@ -1488,6 +1488,12 @@ rows that its predecessor served, and a spend for cause of a shared seal
 creates no successor for the row it closes and may create one for the
 others.
 
+[LIP-0027](LIP-0027-row-stop.md) proposes a first profile for the stop coin
+of a row on v4: what a row states for it, the reads of a verifier, the
+record of a row closed for cause and the notary's side, with vectors. They
+are that draft's proposals, and each point stays open until both owners
+accept it.
+
 With these rules D9 reads: one attestation is enough, by the notary that
 the parent names for the child's row. D5 reads on v3: a
 withdrawal is durable at its witnesses and on a chain that holds it; after

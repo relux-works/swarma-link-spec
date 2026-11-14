@@ -164,10 +164,14 @@ which limits, who certifies the child, and which coin its issuance spends.
 | R1.4 | The coins of the rows of one parent are different outpoints, and none of them is the seal of the parent. |
 | R1.5 | A parent that does not meet R1.1 to R1.4 or R3.1 is refused as a whole: it admits no child and no request of its own. The refusal is one of the members of the grant and gets its code with them. |
 
-The five things of R1.1 are the decided content of a v4 row. The outpoint
-and the script of the coin are this draft's way to state "the coin"; the
-script is what a principal compares before it signs, and the outpoint is
-what a verifier reads.
+The five things of R1.1 are the content that LIP-0014 section 9.1 decides
+for a v4 row. The outpoint and the script of the coin are this draft's way
+to state "the coin"; the script is what a principal compares before it
+signs, and the outpoint is what a verifier reads.
+
+Section 10.1 of LIP-0014 adds a sixth thing to a v4 row, the stop coin of
+the row's notary (J2.7). This LIP does not treat it;
+[LIP-0027](LIP-0027-row-stop.md) proposes its profile.
 
 A parent with a pool of 100 and rows of 60 and 40 is valid, and so is one
 with rows of 60 and 30. Rows of 60 and 60 are not. Two rows may name the

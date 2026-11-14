@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.1.45 — 2026-11-14
+
+Adds Draft LIP-0027, a first profile for the stop coin of a row on v4, with
+vectors. Every rule of it is the draft's proposal, and neither owner has
+decided one. No rule of another text changes, and no v3 byte does. No node
+and no store was run.
+
+What it answers. LIP-0014 section 10.1 records the decision of 2026-11-14
+on the stop coin (J2.7), with the co-author's agreement pending: a v4 row
+names a coin of its notary, the notary ends the row for cause by spending
+it, and every verifier whose node shows the spend refuses the row. The
+decision names one code, `ROW_CLOSED_FOR_CAUSE`, for the spent coin. It
+names none for a coin that is not there, and a node answers the question
+whether an output is unspent in the same way for a coin that was spent and
+for one that never existed. What a recovery of the journal of such closures
+charges is not stated either.
+
+The profile. A row states its stop coin as an outpoint and a script, a
+witness key hash. The stop coins of one parent are different outpoints;
+none is the coin of a row or the seal of the parent, and the stop coin of a
+child's row is neither the seal of that child nor the output after it. At
+an admission a verifier reads its journal first. It then establishes that
+the coin is on the active chain as stated, at or below the parent's recent
+block, and that it is unspent in its view, the mempool included. A coin
+that is not on the chain as stated refuses as `ROW_STOP` and records
+nothing. A coin that is on the chain and spent closes the row: the verifier
+writes an entry `row-closed/1` to a journal of LIP-0025 before any further
+admission, and the row stays closed there across eviction, restart and
+reorganisation. A closure that cannot be written makes the journal lost for
+that verifier, which admits nothing until its operator has acted, as
+LIP-0008 section 5.1 says of a seal. A recovery by starting anew charges
+nothing, and the verifier is a newcomer. The notary keeps its stop keys at
+`m/84'/7'/<stop-account>'/0/<i>` in an account of their own, creates the
+coin before the parent is signed, and spends it with inputs that nobody
+else can spend first.
+
+Three codes: `ROW_CLOSED_FOR_CAUSE`, with its name from LIP-0014, and two
+new ones, `ROW_STOP_ALIAS` and `ROW_STOP`. Only the first records
+something.
+
+Vectors. `vectors/LIP-0027/stop-vectors.json` holds 44 vectors over 27
+rules: 8 parents, 19 admissions, 8 octet strings that are or are not an
+entry, and 9 traces of one verifier and its journal, among them a witness
+across an eviction and a restart, a verifier that starts later, a closure
+that cannot be written and a lost journal.
+
+LIP-0014 section 10.1, LIP-0025 section 7, LIP-0026 section 1 and the entry
+of the row stop key in the key registry gain one pointer each. The pointer
+in LIP-0026 also says that a v4 row has a sixth thing beside the five of
+its rule R1.1.
+
 ## 0.1.44 — 2026-11-14
 
 Adds Draft LIP-0026, a first profile for the rows of a v4 parent, their
