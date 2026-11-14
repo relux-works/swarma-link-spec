@@ -13,6 +13,9 @@ pointer. No gap is called closed for a property that its subsection lists as
 open. No v3 byte changes, and neither does any rule or vector of profile
 `swarma-trust-contract/1` or the reference checker.
 
+The number 0.1.29 is not used. This revision was prepared under it and
+landed after 0.1.30, so it takes the next number.
+
 LIP-0014, section 9.1 (J1). The parent signs one row for each child, with
 the executor, the grantee, the cap and the certifier. On v3 the limit is a
 number of compartments, and one child object for each row stays open
