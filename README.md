@@ -271,8 +271,8 @@ and a contract can name a seal whose script is its termination clause and
 whose spend, with action `0x08`, ends every grant under it. Grant v3 does
 not change. [LIP-0018](lips/LIP-0018-extension-guide.md) lists what a
 proposal for a contract profile, a limit kind or an action name has to
-state, and LIP-0008 section 2 names further early limit kinds of the same
-decision. These are semantics without bytes, and nothing of them is
+state, and LIP-0008 section 2 names the further limit kinds of the same
+decision, each with a meaning that is the draft's proposal. These are semantics without bytes, and nothing of them is
 implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
