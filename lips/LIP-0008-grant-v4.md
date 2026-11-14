@@ -96,6 +96,14 @@ encoding need version-specific canonical fixtures before implementation.
 V3 bytes and domains are not reinterpreted as v4. No JSON shown in this LIP is
 an executable fixture, and this LIP assigns no new OP_RETURN bytes.
 
+**Grant v3 after the first public demonstration.** Ivan Oparin decided on
+2026-11-14, and the co-author's agreement is pending: Grant v3 is frozen.
+It gets no new feature and no new byte. Once Grant v4 is qualified, new
+grants are issued on v4 only. Grant v3 then remains for verification
+alone: a verifier keeps checking the v3 grants that exist, so that their
+history stays readable, and no signer issues a new one. What becomes of a
+v3 grant that is still live at that moment is not decided.
+
 ### 1.1. Witness and Legacy construction profiles
 
 The chain pin selects one transaction-construction profile: Witness (W) or
