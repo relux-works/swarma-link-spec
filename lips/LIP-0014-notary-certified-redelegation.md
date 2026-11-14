@@ -1517,10 +1517,13 @@ the owner approves each spend, the payment is approved per spend.
 
 ### 11.1. The delegation key on v4
 
-Owner decision pending: J4. Every rule of this subsection is Draft text. It
-replaces the rule in force for the link below an issue capability. Under
-that rule an agent that its parent names by name signs child grants with
-the key that also signs its messages. v3 does not change.
+Decided by Ivan Oparin on 2026-11-14 (J4); the co-author's agreement is
+pending. The decision replaces the rule in force for the link below an
+issue capability. Under that rule an agent that its parent names by name
+signs child grants with the key that also signs its messages. The decision
+states the opposite as a hard rule: the messaging key never grants
+authority. v3 does not change, and until the co-author agrees the rule in
+force stands.
 
 By the rule in force the parent's recipient signs the child (LIP-0008
 section 12.6): the grantee key, or for a parent issued by name the key that
@@ -1544,7 +1547,8 @@ an agent is that same Nostr key.
 Under this subsection the v4 issue capability carries one more member, the
 delegation key (`delegate.key`), an x-only key. The principal signs it with
 the parent, and the grantee's consent covers it. No name is read for it.
-Its bytes are fixed with the v4 bytes.
+Each parent has a delegation key of its own, which signs the children of
+that parent and of no other. Its bytes are fixed with the v4 bytes.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
@@ -1563,6 +1567,14 @@ A verifier repeats the checks of J4.4 on the parent and on the child at use.
 The checks of the signing service spare a wasted child and bound a thief of
 the caller's channel.
 
+**The messaging key never grants authority.** That is the hard rule of this
+decision, and J4.1 and J4.2 are its form on v4: a key that signs or
+authenticates messages, as a channel key or as a request key, signs no
+grant. On v3 no agent signs a grant at all (J4.7). A delegation key belongs
+to one parent. The party that provides it provides a new key for each
+parent; that is a duty of custody, because a verifier that holds one parent
+cannot see another.
+
 Where V7 checks the delegation request on v3, a v4 verifier checks the
 child's signature under the parent's delegation key, the parent checks of
 J4.3 (a) with `P`, and the child checks of J4.3 (b) with `C`.
@@ -1573,7 +1585,10 @@ grant key has none (LIP-0008 section 5.2). Three things stop such a child:
 the principal spends the parent's seal; a named notary refuses to certify
 it, or withdraws its attestation; and, for a parent by name, the delegating
 operator changes the owner of the agent's name. Under sections 9.1 and 10.1
-the notary is the row's, and it certifies one child for the row. The right
+the notary is the row's, and it certifies one child for the row. On v4 two
+coins add to these stops: the coin of a row admits one issuance for the row
+on the active chain (J1.9), and the notary of the row ends it by spending
+its stop coin (J2.7). The right
 of re-delegation bounds what the thief can sign to the grantees and
 executors that the principal signed (section 2), under section 9.1 to the
 rows. A closure that a verifier never observed is not known to it.
@@ -1588,7 +1603,7 @@ model intends from what the agent's host does; it can bound what it signs.
 And the delegating operator loses the stop it has under the rule in force,
 a rotation of the channel key; it keeps the change of the name's owner.
 
-The owners choose between this text and four alternatives. Keeping the rule
+Four alternatives were set aside. Keeping the rule
 in force keeps what the second paragraph lists: one key for messages and
 grants, a host operator who can re-delegate, and children that stop with
 every change of the key. Signing by the landlord only, on v4 as on v3, needs
@@ -1601,21 +1616,23 @@ before. A delegation key published in the agent's name is a new shape of the
 name value that every reader must learn (LIP-0010), and every rotation of it
 is a name update.
 
-Two further choices of the owners come with this decision. The first is
-whether the delegation signer needs a person for each signature, as the key
-map requires of a grant key, or signs unattended inside the parent's right
-of re-delegation. The proposal is unattended signing, because the right of
-re-delegation and the notary bound what the signer can sign; presence stays
-at the principal's grant key (K5 of the key map). It is the same question as
-the presence rule under LIP-0013 section 3.6 and should get the same answer.
-The second is whether the parent also names the key that every child's seal
-pays, held by the delegating operator apart from the signer, so that the
-operator can spend the seal of a child that a thief of the delegation key
-signed. That costs one more key and a change of the endorsement rule of
-LIP-0008 section 11.1 for children; the proposal is to decide it with the v4
-bytes, together with the row-ending output of section 10.1 (J2.7).
+Two further points were decided with it. The first: the delegation signer
+signs without a person. The rows of the parent, the notary of each row, the
+coin of each row (J1.9) and its stop coin (J2.7) bound what the signer can
+sign, and presence stays at the principal's grant key (K5 of the key map).
+The presence rule of LIP-0013 section 3.6 gives the same answer for an
+agent's key. The second: a key that every child's seal pays, named in the
+parent and held by the delegating operator apart from the signer, is a
+profile option and no part of the first v4 version. With it the operator
+could spend the seal of a child that a thief of the delegation key signed.
+It costs one more key and a change of the endorsement rule of LIP-0008
+section 11.1 for children.
 
-Cases (owner decision pending: J4). All are v4 cases; no v4 implementation
+A sketch that is not decided derives the delegation key of each parent
+from the seed of the operator's signer, as seal keys are derived (LIP-0008
+section 11.1).
+
+Cases (J4). All are v4 cases; no v4 implementation
 exists, and no result is claimed. "Today" is the rule in force, under which
 the channel key signs children:
 
