@@ -47,8 +47,9 @@ the co-author agrees; adoption follows LIP-0001.
 | C6. Any parties, many kinds | Contracts and grants work for any pair of parties, people, companies and agents in any combination, and for many kinds of contract: between businesses, for services, employment, rental and trust. |
 | C7. Windows | A grant's window lies inside its contract's window. Profile `swarma-trust-contract/1` keeps equality as the special case. A framework contract may cover several grants over time. A contract ends early only through a machine rule that names who may declare the end. |
 | C8. Contract seal | For v4 and for framework contracts: the contract names its own confirmed output. Every grant under it also requires that output unspent, and one spend ends them all. The script of the output encodes the termination clause: the issuer alone, either party, both together, or an arbiter. The spend carries a frame with the hash of the signed termination statement. v3 stays as it is: the issuer spends seals, and the reason follows LIP-0011. |
+| C9. Configuration | The contract carries the hash of the configuration manifest that the parties agreed on. The manifest is expressed only through Curator profiles, Curator skills, from the catalog or custom and reviewed, and the systems that the agent may use. Both parties sign it with the contract, and the platform executes exactly it. For a rental the slot launcher composes the agent's read-only runtime context from the pinned profile, the human terms of the contract, the machine terms of the grant and any scope text. |
 
-The eight directions are the owner's. Everything else in this LIP is the
+The nine directions are the owner's. Everything else in this LIP is the
 draft's proposal and is not decided: the members of the contract object,
 the construction of its identifier, the two action numbers, the checks of a
 reader and their order, and the limit of one framework contract above a
@@ -117,6 +118,7 @@ their bytes come with a profile (LIP-0018).
 | Framework | Optional. The identifier of the one framework contract that this contract stands under (section 5). |
 | Seal | Optional. The contract's own seal (section 6). |
 | Assent output | Optional. The output whose spend shows assent on chain (section 4). |
+| Configuration | Optional. The hash of the configuration manifest that the parties agreed on (section 8). |
 
 1. **Free form.** The protocol does not interpret the text of a clause. The
    text binds the parties. Under LIP-0006 section 7 it governs an agent's
@@ -302,6 +304,38 @@ The scenarios show which objects each kind of contract uses:
 | Employment | A company and a person | A framework contract for the employment | Grants that let the person, or the person's agent, act on the company's resources | The parties together, or an arbiter, when the clause says so |
 | An agreement without a grant | Alice and Bob | A contract with two signatures and an anchor | None | Nothing ends it early; it has no seal |
 
+### 8. The agreed configuration
+
+A renter who is promised a certain agent has no way to hold the operator to
+it: the contract names a price and limits, and what actually runs in the
+slot is whatever the operator's launcher starts. The decision closes that
+by putting the configuration into the contract.
+
+1. A contract MAY carry the hash of a configuration manifest. The manifest
+   states what the agent is, and it does so only through three things:
+   Curator profiles; Curator skills, which come from the catalog or are
+   custom skills that were reviewed; and the systems that the agent may
+   use.
+2. Both parties sign the contract and with it the hash, so the manifest is
+   a term like any other.
+3. The platform executes exactly the manifest whose hash the contract
+   carries. A launcher that cannot reproduce the hash from what it is about
+   to start does not start it.
+4. For a rental, the slot launcher composes the agent's runtime context
+   from four sources and gives it to the agent read-only: the pinned
+   profile of the manifest, the human terms of the contract, the machine
+   terms of the grant, and a scope text where the contract has one.
+
+Rule 4 is the counterpart, for a rental, of the authority frame of LIP-0013
+section 3.4. A slot serves one grant and lives as long as that grant, so
+its context is composed once, when the slot starts, and it cannot outlive
+the grant. Under LIP-0006 section 7 the human terms and the scope text in
+that context govern the agent's work and no service's effect.
+
+The launcher of the reference rental path gives a slot no contract text
+today. The bytes of a manifest, the way a launcher recomputes its hash, and
+what "the systems that the agent may use" lists are open.
+
 ## Alternatives
 
 - **One hash over the whole document, without salts,** as today. A party
@@ -366,3 +400,5 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 - The closure that a verifier records for a spent contract seal, which
   belongs to the closure profile of v4 (LIP-0008 section 5.1).
 - Refunds at an early end, which LIP-0011 leaves to the contract.
+- The bytes of a configuration manifest, how a launcher recomputes its
+  hash, and the list of systems that an agent may use.
