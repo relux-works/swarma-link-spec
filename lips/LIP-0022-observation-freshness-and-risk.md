@@ -27,10 +27,12 @@ This LIP proposes the first profile for all of them, on Namecoin:
 
 - one observation: every fact of a check lies between two reads of the same
   tip (section 1);
-- node health and the second node: what a healthy node is, when two nodes
-  count as two, and when their tips agree (section 2);
-- the clock and the age of the tip, with the two decided cutoffs (section
-  3);
+- node health and the comparison nodes: what a healthy node is, when two
+  nodes count as two, when their tips agree, and that one healthy node
+  whose tip conflicts refuses the observation (section 2);
+- the clock and the age of the tip, measured from the header of the tip
+  and from the verifier's own first sight of it, with the two decided
+  cutoffs (section 3);
 - the recent block of a grant, at the issuer and at a verifier (section 4);
 - confirmation depth (section 5);
 - nine refusal codes and their order (section 6);
@@ -60,13 +62,14 @@ the rule about the recent block to his decision of 2026-11-11.
 
 Every rule of this LIP is the draft's proposal: the two reads of the tip,
 the health of a node, the label that makes two nodes two, the agreement of
-tips, the age as clock time minus header time, the guard against a clock
-that went back, the bound on a header that is ahead, the class of an action
-without a stated class, the issuer's choice of the recent block, the window
-between the recent block and the anchor, the arithmetic of depth, and the
-nine codes with their order. Neither owner has decided them, and nothing of
-them is implemented. The owners accept or change them through this LIP,
-under LIP-0001.
+tips and the refusal on a tip that conflicts, the age as the larger of the
+header age and the seen age, the first sight that the verifier keeps for
+it, the guard against a clock that went back, the bound on a header that is
+ahead, the class of an action without a stated class, the issuer's choice
+of the recent block, the window between the recent block and the anchor,
+the arithmetic of depth, and the nine codes with their order. Neither owner
+has decided them, and nothing of them is implemented. The owners accept or
+change them through this LIP, under LIP-0001.
 
 Three numbers are provisional. Each is a proposal like the rest, and in
 addition none is to be frozen before a run on a real host has measured what
@@ -93,7 +96,7 @@ The table says which open point each section answers.
 | Part | Can be built now | Waits for |
 | --- | --- | --- |
 | The comparisons of sections 1 to 5 and the order of section 6, as functions of stated tips, times, heights and numbers | Yes | The owners' acceptance, and for three numbers the measurement |
-| The reads on a reading node and on a comparison node | No | A run that shows which calls of the pinned build supply each fact, and how the pending transactions of LIP-0008 sections 5.1 and 5.2 are read against one tip |
+| The reads on a reading node and on a comparison node | No | A run that shows which calls of the pinned build supply each fact, how the pending transactions of LIP-0008 sections 5.1 and 5.2 are read against one tip, and how a tip that changed and came back between the two reads of an observation is noticed (section 1) |
 | The class of each action | No | Action profiles (LIP-0007; LIP-0008 section 12.1) |
 | The classes of evidence and their minimum depths | No | LIP-0008 section 2 leaves them open |
 
@@ -111,7 +114,10 @@ the second has stopped. The decision gives the cutoffs and not the measure.
 The second node raises the same kind of question. Two addresses of one node
 agree on every tip and prove nothing. Two honest nodes differ by one block
 for a few seconds after every new block. A rule has to count the first pair
-as one node and has to say whether the second pair agrees.
+as one node and has to say whether the second pair agrees. A third node
+adds a third case: one comparison node is a block ahead and another has the
+verifier's tip. A rule that asks for one agreeing node alone lets the
+verifier pass over the node that knows a block more.
 
 The recent block has no check at a verifier today beyond its presence on
 the chain. The issuer's name and the consent of a recipient by name are
@@ -173,19 +179,31 @@ B1.6 is the form that LIP-0008 section 12.5 asks for: after the work of an
 observation, the executor checks both measures again before a new
 reservation or effect.
 
-### 2. Node health and the second node
+Two equal reads of the tip do not make the reads between them one
+snapshot, in two cases. A tip that went to another block and came back
+between the two reads looks unchanged. The pending transactions of a node
+change while its tip stands still. B1.4 ties each confirmed fact to the
+active chain at the observed tip, and no rule of this profile ties a
+pending transaction to it or notices the tip that came back. Both cases
+belong to the run that qualifies the reads on a node. Until that run has
+closed them, an implementation of the reads is not qualified for admission,
+whatever the vectors of this LIP say about its comparisons.
 
-An observation is healthy when the reading node and at least one comparison
-node of another source are healthy and the comparison node's tip is the
-reading node's tip or at most `LAG` blocks below it on the same chain.
+### 2. Node health and the comparison nodes
+
+An observation is healthy when three things hold. The reading node is
+healthy. At least one healthy comparison node of another source has the
+reading node's tip, or a block at most `LAG` below it on the same chain. No
+healthy comparison node has a tip that conflicts with the reading node's
+chain.
 
 | Rule | Requirement |
 | --- | --- |
-| B2.1 | A verifier has its reading node and at least one comparison node. A comparison node supplies its tip and nothing else. It needs no transaction index, and no fact of a check is taken from it. |
+| B2.1 | A verifier has its reading node and at least one comparison node. Its configuration names the comparison nodes before an observation begins. An observation asks every one of them, and every answer counts under B2.5. A comparison node supplies its tip and what B2.3 needs: the hash that it gives for the block of height 0, whether it is in initial block download, and the height of the best header that it knows. No fact of a grant, a name or a seal is taken from it, and it needs no transaction index. |
 | B2.2 | Two nodes count as two when their operator provisioned them as separate nodes: separate processes with separate chain state, each of which validates the chain itself and has peers of its own. The verifier's configuration states a source label for each node, and nodes with the same label count as one. Two addresses of one node, a node and a relay in front of it, and two nodes that take their blocks from one upstream alone have one label. |
 | B2.3 | A node is healthy in an observation when it answers, is on the pinned chain (B1.3), is not in initial block download, and knows no header more than `LAG` blocks above its tip. |
-| B2.4 | The tips agree when the comparison node's tip is the reading node's tip, or is the block of the reading node's active chain at a height at most `LAG` below the height of its tip. A comparison node whose tip is above the reading node's tip, further below it, or on another branch does not agree. |
-| B2.5 | An observation is healthy when the reading node is healthy and at least one comparison node with another source label is healthy and agrees. Otherwise the verifier refuses, and nothing is recorded as closed. |
+| B2.4 | The tip of a comparison node stands in one of three relations to the reading node. It agrees when it is the reading node's tip, or the block of the reading node's active chain at a height at most `LAG` below the height of that tip. It is behind when it is a block of the reading node's active chain further below. It conflicts in every other case: it lies above the reading node's tip, or the reading node gives another hash for its height. |
+| B2.5 | An observation is healthy when three things hold: the reading node is healthy; no healthy comparison node has a tip that conflicts, whatever the source label of that node and whatever the other nodes answer; and at least one healthy comparison node with another source label has a tip that agrees. In every other case the verifier refuses, and nothing is recorded as closed. |
 
 The comparison node may be behind and may not be ahead, for a reason. Every
 fact of a check comes from the reading node. A comparison node that is one
@@ -194,10 +212,36 @@ block can hold the spend of a seal. The verifier observes again a moment
 later. A comparison node that is one block behind shows only that it is the
 slower of the two.
 
-Two tips at one height with different hashes do not agree. That is the
-state in which one of two blocks will be dropped, and a verifier that
-admitted on either would rest an effect on a block that may leave the
-chain. Admission waits until the nodes are on one chain again.
+Two tips at one height with different hashes conflict. That is the state in
+which one of two blocks will be dropped, and a verifier that admitted on
+either would rest an effect on a block that may leave the chain. Admission
+waits until the nodes are on one chain again.
+
+A node that conflicts is not outvoted. Take a reading node at height 800, a
+comparison node at height 801 and a second comparison node at the reading
+node's tip. A rule that asked for one agreeing node alone would admit here,
+on a reading that the verifier knows to lack a block, and LIP-0008 section
+4 says that conflicting data never permits an effect. So one healthy node
+that conflicts refuses the observation. That holds also for a comparison
+node with the reading node's own source label: the label says where a node
+takes its blocks from and does not make its answer weaker. The verifier
+asks every configured node in every observation for the same reason. A
+verifier that chose afterwards which answers to count could count the ones
+that agree.
+
+Two kinds of node have no say. A node that is behind by more than `LAG`
+shows nothing that the reading node lacks; it neither agrees nor conflicts,
+and the verifier has one comparison node less. A node that is not healthy
+under B2.3 does not answer, is on another chain, is still loading blocks or
+knows itself that it is behind. The conformance pairs of LIP-0008 name
+lagging and conflicting nodes as refusals. Under B2.5 a reading node that
+lags refuses, because a comparison node is then ahead of it, and a
+comparison node that lags does not count.
+
+The rule costs availability and nothing else. Every further comparison node
+is one more node that is ahead for a moment after a new block, and one more
+node whose operator can refuse every observation of the verifier by a false
+answer. No answer of a comparison node can make the verifier admit.
 
 What agreement shows is limited, and LIP-0008 section 6 says so: it helps
 to find a lagging node and defeats neither a shared upstream nor an
@@ -207,41 +251,81 @@ of provisioning that this profile cannot detect.
 
 ### 3. The clock and the age of the tip
 
-The age of the tip is the verifier's clock minus the time in the header of
-the tip block. The verifier refuses money or irreversible actions when that
-age is 3600 seconds or more and other privileged actions when it is 5400
-seconds or more.
+The age of the tip is the larger of two ages: the verifier's clock minus
+the time in the header of the tip block, and the verifier's clock minus the
+reading at which the verifier first saw that block as the tip. The verifier
+refuses money or irreversible actions when the age is 3600 seconds or more
+and other privileged actions when it is 5400 seconds or more.
 
 | Rule | Requirement |
 | --- | --- |
 | B3.1 | `now` is the verifier's clock in whole seconds of UTC. The verifier reads it after the last read of an observation, and again under B1.6. |
-| B3.2 | The verifier keeps, durably, the largest `now` that it has used for an admission. A clock that reads less than that mark refuses, and the mark stays. |
-| B3.3 | `t` is the time in the header of the tip block of the reading node. Where `t` is more than `S` seconds later than `now`, the verifier refuses: its clock is behind or the header is ahead, and the age cannot be measured. |
-| B3.4 | The age of the tip is `now - t`, and 0 where `t` is later than `now`. |
+| B3.2 | The verifier keeps, durably, the largest `now` that it has used for an admission or written as a first sight (B3.7). A clock that reads less than that mark refuses, and the mark stays. |
+| B3.3 | `t` is the time in the header of the tip block of the reading node. Where `t` is more than `S` seconds later than `now`, the verifier refuses: its clock is behind or the header is ahead, and the header age cannot be measured. |
+| B3.4 | The age of the tip is the larger of its header age and its seen age. The header age is `now - t`, and 0 where `t` is later than `now`. The seen age is `now - f`, where `f` is the first sight of the tip block (B3.7). |
 | B3.5 | An action has one of two classes, which the action profile of the service states and no caller can lower: money or irreversible, and other privileged. An action whose profile states no class has the first. |
 | B3.6 | The verifier refuses an action of the first class when the age is 3600 seconds or more, and an action of the second class when it is 5400 seconds or more. No grace is added. |
+| B3.7 | The first sight of a block is the reading `now` of the first observation that counts for it: the block is the tip of the reading node, the observation is not void (B1.1) and is on the pinned chain (B1.3), and its clock does not read less than the kept mark (B3.2). The verifier writes the first sight durably in that observation, before it admits anything on it, and also where another rule refuses the observation. |
+| B3.8 | A first sight is written once. The verifier does not change or remove it, and it survives a restart. A block that becomes the tip again has the first sight that it had. |
 
 The cutoffs and the rule that the class comes from the action profile are
-the decided design of LIP-0008 section 6. The measure, the two guards and
-the default class are this draft's proposal.
+the decided design of LIP-0008 section 6. The measure with its two ages,
+the first sight, the two guards and the default class are this draft's
+proposal.
 
-The measure has a known error, and `S` bounds it on the side that matters.
-The time in a header is a miner's claim. Consensus accepts it when it is
-later than the median of the eleven blocks before it and at most two hours
-ahead of the accepting node's clock. A header that is ahead makes the tip
-look younger than it is, by at most `S` under B3.3: with `S` at 600
-seconds, an action of the first class stops at the latest 70 minutes after
-a tip whose header ran ten minutes ahead. A header that is behind makes the
-tip look older, and the verifier stops early. A smaller `S` narrows the
-first error and refuses more honest tips whose miner's clock runs ahead,
-each until the verifier's clock has caught up or the next block arrives.
-How often that happens on the main chain is what the run has to measure.
+The two ages catch two different failures. The seen age catches a node that
+receives no block any more: it grows with the verifier's own clock,
+whatever the header of the last block says. The header age catches blocks
+that are old when they arrive: a node that was cut off and is then given
+the blocks of some hours ago sees each of them for the first time, and
+their headers show their age.
+
+The header age alone does not hold the cutoffs. The time in a header is a
+miner's claim. Consensus accepts it when it is later than the median time
+of the eleven blocks before it and at most two hours ahead of the accepting
+node's clock. Take a tip whose header is two hours ahead of the verifier's
+clock at the first sight, and let no block follow. B3.3 refuses the tip for
+6600 seconds, until the clock has come within `S` of the header. By the
+header alone an action of the first class would then be admitted on that
+tip for another 4200 seconds, until three hours after its first sight,
+although no block arrived in all that time. `S` does not prevent it: B3.3
+compares the header with the clock of one check and knows nothing of the
+moment at which the block arrived. Under B3.4 the seen age of that tip is
+6600 seconds when B3.3 lets it pass, and the tip is admitted for no action
+of either class.
+
+The bound of this profile is therefore the following. On one tip, an action
+of the first class is admitted for less than 3600 seconds from the first
+sight of that tip, and an action of the second class for less than 5400
+seconds, for every header that consensus accepts. A header that is behind
+makes the tip look older than it is, and the verifier stops early.
+
+The bound counts from the verifier's first observation of a tip and not
+from the moment at which its node received the block. A verifier that
+observes every few seconds sees a new tip a few seconds late. A verifier
+that observes only when a request arrives can see a tip long after its node
+received it, and for that interval the header alone speaks. The same holds
+for a verifier that starts for the first time and for one that lost its
+first sights: each counts from its first observation afterwards. This
+profile fixes no interval between observations, and the question is open.
+
+The record is small. A first sight is a block hash and a time, 40 octets,
+and at a block about every ten minutes a year of them is about two
+megabytes. That is why B3.8 can keep every one.
+
+`S` keeps a purpose beside the seen age. A header that is far ahead of the
+clock shows that one of the two does not show the time, and a verifier
+whose clock is behind measures every header age too small. A smaller `S` refuses more
+honest tips whose miner's clock runs ahead, each until the verifier's clock
+has caught up or the next block arrives. How often that happens on the main
+chain is what the run has to measure.
 
 The clock itself is an assumption. B3.2 catches a clock that went back, and
-B3.3 catches a clock that is more than `S` behind a fresh header. Neither
-catches a clock that is behind while the tip is old: the age is then
-understated by the error of the clock. A verifier keeps its clock as it
-keeps its keys.
+B3.3 catches a clock that is more than `S` behind a fresh header. A clock
+that is behind by a constant amount understates the header age by that
+amount and leaves the seen age as it is, because the seen age is the
+difference of two of its readings. A clock that stands still or runs slow
+understates both ages. A verifier keeps its clock as it keeps its keys.
 
 The cutoffs do their work in the interval that the window of a grant does
 not cover. While no block arrives, the height of the tip does not advance
@@ -308,7 +392,7 @@ below, and none of them records a closure.
 | `OBSERVATION_CHAIN` | The reading node is not on the pinned chain | B1.3 |
 | `OBSERVATION_VOID` | The tip moved between the first and the last read, or before the effect | B1.1, B1.6 |
 | `NODE_UNHEALTHY` | The reading node is not healthy, or no comparison node with another source label is healthy | B2.3, B2.5 |
-| `NODE_DISAGREEMENT` | No healthy comparison node with another source label agrees with the reading node | B2.4, B2.5 |
+| `NODE_DISAGREEMENT` | A healthy comparison node has a tip that conflicts with the reading node, or no healthy comparison node with another source label has a tip that agrees | B2.4, B2.5 |
 | `OBSERVATION_CLOCK` | The clock reads less than the kept mark, or the header of the tip is more than `S` ahead of it | B3.2, B3.3 |
 | `TIP_AGE` | The tip is too old for the class of the action | B3.6 |
 | `RECENT_BLOCK` | The committed recent block is not on the active chain of the observation | B4.2 |
@@ -335,15 +419,16 @@ observation. A closure that it wrote while it read stays (B1.2).
 ### 7. Vectors
 
 [`vectors/LIP-0022/observation-vectors.json`](../vectors/LIP-0022/observation-vectors.json)
-holds 70 vectors over the 26 rules of this LIP, as
+holds 97 vectors over the 28 rules of this LIP, as
 decisions on stated tips, times, heights and numbers. No vector reads a
 node, and none shows what a node returns.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
 | `observations` | 6 readings, of which 2 pass; 5 facts, of which 2 belong | B1.1, B1.3, B1.4 and B1.6 on the tips of the first and the last read, the genesis hash, a block that holds a fact, and the tip before an effect |
-| `nodes` | 6 healthy, 11 refused | B2.2 to B2.5 on the stated state of a reading node and of comparison nodes with their source labels |
-| `clock` | 7 admitted, 7 refused | B3.2 to B3.6 on a clock reading, the kept mark, the header time of the tip and the class of an action, at both sides of each boundary |
+| `nodes` | 9 healthy, 15 refused, 1 with two findings | B2.1 to B2.5 on the stated state of a reading node and of comparison nodes with their source labels. Among the refused are a node that is ahead and a node on another branch, each beside a node that agrees |
+| `clock` | 11 admitted, 12 refused | B3.2 to B3.7 on a clock reading, the kept mark, the header time of the tip, the first sight of the tip and the class of an action, at both sides of each boundary |
+| `sequences` | 10 | Section 3 over time: one verifier, what it keeps durably at the start and at the end, and a list of observations with the expected outcome of each. Among them are a tip whose header is two hours ahead, a tip with an ordinary header, a restart, a tip that comes back, and first observations that are void or refused |
 | `recent` | 8 on the recent block, of which 2 pass; 7 on the window, of which 3 admit | B4.2 and B4.3 on a committed block, the active chain and the height of the anchor; and the window of LIP-0008 section 7.1 on the height of the tip, with a verdict and no code, because that section names none |
 | `depth` | 3 deep enough, 4 refused | B5.1 to B5.3 on heights, a signed minimum and an operator's floor |
 | `order` | 6 | B6.1 on observations with two findings each |
@@ -352,13 +437,17 @@ A vector whose outcome is not the passing one holds one defect, states the
 expected outcome and names a neighbour with the passing outcome that
 differs from it in that defect. The vectors of the group `order` hold two
 findings each, state the one that the order reports and name no neighbour.
+A sequence states the outcome of each of its steps and names no neighbour;
+where it shows a defect that a checker can have, it names a sequence
+without that defect as its control.
 The list `rules` of the file names for each rule its section, its state,
 which is `proposed` for all, its vectors and what no vector covers.
 
 The vectors use the proposed values of `S`, `LAG` and `K` and state them in
 the file. A change of a provisional number changes the vectors at its
 boundary and no other. Block hashes are placeholders. No vector holds a
-pending transaction, a closure or a reorganisation.
+pending transaction or a closure, and none shows what a reorganisation does
+to a fact.
 
 No checker for these vectors is in this repository. The expected outcomes
 were stated by hand, computed by one implementation and decided again by a
@@ -374,6 +463,7 @@ No node was run for this LIP, and no measurement was taken for it.
 | Statement | Source |
 | --- | --- |
 | A block header is invalid when its time is not later than the median time of the eleven blocks before it, or more than two hours later than the accepting node's clock | Namecoin Core at the tag `nc28.0`: `src/validation.cpp`, the header checks that report `time-too-old` and `time-too-new`; `src/chain.h`, `MAX_FUTURE_BLOCK_TIME` and the span of the median |
+| The median time of a block is the middle value of the times of that block and of the ten before it, after the node has sorted them | The same tag, `src/chain.h`, `GetMedianTimePast` |
 | The seal watch of v0.1 counts its 30 minutes from the moment at which it saw a higher tip | `swarma-chain-lab` at `839bdcca41cd17ffd7c4057de2dc88a521745515`, `experiments/sealwatch/watch.go` |
 | The reference observation pins the genesis hash, refuses a node in initial block download, ties a confirmed transaction to the active chain and refuses when the chain information changed during its reads | The same commit, `experiments/single-use/node.go` |
 | A service of the laboratory keeps the largest clock reading that it has used and compares later readings with it | The same commit, `experiments/rental-booking/service_v2.go` |
@@ -381,18 +471,27 @@ No node was run for this LIP, and no measurement was taken for it.
 
 ## Alternatives
 
-- **The moment of arrival as the measure**, as the seal watch of v0.1 has
-  it. A miner's header time cannot move it. It exists only in a process
-  that watched the block arrive, a verifier that starts has none, and two
-  verifiers on one chain measure different ages. It can be added later as a
-  second, stricter signal for a verifier that runs all the time.
-- **The median time of the last eleven blocks** in place of the header
-  time. It never runs ahead. It is the time of the sixth of those blocks
-  from the top, about five block intervals behind the tip in normal
-  operation, so a cutoff of 60 minutes would refuse much of the time.
-- **No bound on a header that is ahead.** Every header that consensus
-  accepts would count, and a tip could look up to two hours younger than it
-  is. The cutoff of 60 minutes would then mean up to 180.
+- **The header time alone as the measure.** A verifier would keep nothing
+  for it. A tip whose header is two hours ahead would be admitted until
+  three hours after it arrived, as section 3 shows.
+- **The first sight alone as the measure**, as the seal watch of v0.1 has
+  it. A miner's header time could not move it at all. A verifier that
+  starts, and one whose node was cut off and then receives the blocks of
+  some hours ago, would count each of those blocks as new.
+- **The median time of the tip** in place of its header time. It is the
+  middle value of the times of the tip and of the ten blocks before it,
+  which the node sorts first. One header that is ahead does not move it,
+  and six of the eleven do, so it can still be ahead of the clock. Where
+  the times rise with the heights it is the time of the sixth block from
+  the top, five block intervals behind the tip, and a cutoff of 60 minutes
+  would then refuse much of the time.
+- **No bound on a header that is ahead.** The seen age would hold the
+  cutoffs all the same. A clock that is far behind would go unnoticed where
+  a fresh header shows it today.
+- **One agreeing node is enough**, also where another healthy node
+  conflicts. An operator could add comparison nodes without adding
+  refusals. The verifier would pass over a node that shows a block which
+  its reading node lacks.
 - **A comparison node that may be ahead.** It would spare one more
   observation after a new block. The verifier would then admit on a reading
   that it knows to lack a block.
@@ -417,9 +516,22 @@ No node was run for this LIP, and no measurement was taken for it.
   stops actions once the adversary withholds blocks for long enough; it
   does not help against an adversary that feeds a false chain with fresh
   header times, which costs that adversary the work of those blocks.
-- **A miner can hide up to `S` seconds of age** by setting a header ahead,
-  and a verifier whose clock is behind hides as much as its error while the
-  tip is old.
+- **One healthy node that conflicts stops admission.** That is what the
+  rule is for, and it is also a lever: whoever controls one configured
+  comparison node can refuse every observation of the verifier. That party
+  can make no observation pass.
+- **A header time cannot stretch a tip.** A miner that sets a header ahead
+  moves the header age and not the seen age, and the larger of the two
+  counts. A miner that sets a header behind makes verifiers stop early,
+  until the next block.
+- **The seen age starts at the verifier's first observation.** A verifier
+  that did not observe while a block arrived, one that starts for the first
+  time and one that lost its first sights count from the first observation
+  afterwards, and for the time before it the header alone speaks. A store
+  that was replaced by an earlier copy of itself has lost the first sights
+  since that copy, and nothing in this profile notices it.
+- **A clock that stands still hides age.** B3.2 catches a clock that went
+  back. A clock that runs slow understates both ages by what it lost.
 - **A void observation is not a closure.** A party that can make blocks
   arrive during a check cannot close a grant by it. It can delay a check
   for as long as blocks keep arriving at that moment.
@@ -440,9 +552,15 @@ gets its meaning from sections 2 and 3, and its cases still run on nodes.
 
 ## Open questions
 
-- **The owners' acceptance** of the age measure, of the two guards of the
-  clock, of the source label, of the agreement rule, of the window `K` and
-  of the nine codes with their order.
+- **The owners' acceptance** of the age measure with its two ages, of the
+  first sight that a verifier keeps, of the two guards of the clock, of the
+  source label, of the agreement rule and the refusal on a conflict, of the
+  window `K` and of the nine codes with their order.
+- **The interval between observations.** The seen age counts from the
+  verifier's first observation of a tip. Whether the profile fixes how
+  often a verifier observes, and which interval, is open.
+- **The store of first sights.** Its form, and what a verifier does when it
+  finds that the store was lost or went back.
 - **The three provisional numbers**, `S`, `LAG` and `K`, each after the run
   that the table of this LIP names.
 - **The classes of actions.** Which action has which class is the matter of
@@ -451,6 +569,9 @@ gets its meaning from sections 2 and 3, and its cases still run on nodes.
 - **The reads of pending transactions.** How a verifier reads the pending
   spends of a seal and the pending operations of a name against one tip,
   and what the pinned build of the node offers for it.
+- **A tip that changed and came back** between the two reads of an
+  observation. Section 1 does not notice it, and the run that qualifies the
+  reads on a node has to.
 - **Where the source labels are kept** and who may change them. LIP-0008
   asks for an administrator-owned sealed configuration; its form is open.
 - **The tiers of depth** and the classes of evidence (LIP-0008 section 2).

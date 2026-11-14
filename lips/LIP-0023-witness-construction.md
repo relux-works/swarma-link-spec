@@ -22,9 +22,9 @@ profile on Namecoin, in its narrowest useful form:
 
 - the profile is selected by the verifier's authenticated configuration and
   by nothing in a presentation (section 1);
-- the anchor always spends the linkage output of the seal transaction,
-  which makes the anchor an act of the party that built that transaction
-  (section 2);
+- the anchor always spends the linkage output, which is the output that
+  follows the seal in the seal transaction; that makes the anchor an act of
+  the holder of the key that this one output pays (section 2);
 - every input of the two transactions spends a witness key hash with a
   signature of hash type `01` (section 3);
 - the linkage is the only parent that may be unconfirmed; every other input
@@ -49,7 +49,7 @@ the text, it says so:
 
 | LIP-0008 | This profile |
 | --- | --- |
-| The anchor spends the linkage output (section 9) | The same, as a rule that a verifier checks for every grant (C2.3) |
+| The seal transaction creates the seal and an additional output, the linkage output, and the anchor spends it (section 9) | The same, as a rule that a verifier checks for every grant, with the linkage output fixed as the output that follows the seal (C2.3) |
 | Two unconfirmed dependencies are permitted: the linkage output and a same-chain payment output (section 1.1) | The linkage output alone. An unconfirmed payment output refuses (C4.4) |
 | "The exact dependency and payment checks still need versioned fixtures" | Sections 3 and 4, with vectors, for the linkage |
 | The selected profile belongs to the authenticated chain context; "exact pin encoding and fixtures remain open" | A value of the verifier's authenticated configuration (C1.1). Its place in the octets of a grant stays open |
@@ -78,8 +78,9 @@ commitment. If the anchor could be funded by any confirmed coin, any such
 holder could publish it, for example a recipient that was handed the signed
 grant early, a transport or a store. The issuer would have signed and would
 no longer decide whether the grant is issued. The linkage output answers
-that. It is an output of the seal transaction, which the grant names and
-the issuer built, and only the holder of its key can spend it into an
+that. It is the output that follows the seal in the seal transaction. The
+grant names the seal, the transaction is fixed before the grant is signed,
+and only the holder of the key of that one output can spend it into an
 anchor.
 
 The second question is which parents may be unconfirmed. A seal transaction
@@ -109,7 +110,9 @@ no other input may.
 - That subset requires the linkage only where the seal transaction is
   pending or shares the anchor's block. Where the seal transaction is
   confirmed in an earlier block, it admits an anchor that is funded
-  independently.
+  independently. It takes as the linkage output whichever output of the
+  seal transaction the anchor spends, the seal excepted, and admits at most
+  one such input.
 - The laboratory's document names cases that run on regression test nodes:
   a seal transaction and an anchor in one block, refusals, and the
   confirmation of funding. They were not run for this LIP.
@@ -138,29 +141,48 @@ configuration is the only place.
 
 ### 2. The two transactions
 
-The anchor spends exactly one output of the seal transaction, the linkage
-output, and never the seal.
+The linkage output of a grant is the output that follows its seal in the
+seal transaction. The anchor spends that output, no other output of the
+seal transaction, and never the seal.
 
 | Rule | Requirement |
 | --- | --- |
 | C2.1 | `T` is the transaction that holds the output which the grant names as its seal. The named output index exists in `T`. |
 | C2.2 | `A` is the transaction that carries the frame of LIP-0020 W8.5 in its one `OP_RETURN` output. |
-| C2.3 | Exactly one input of `A` spends an output of `T`. That output is the linkage output: it is not the seal, and its script is a witness key hash, the octets `00 14` and 20 further octets. |
+| C2.3 | The linkage output of the grant is the output of `T` whose index is the index of the seal plus one. It exists, and its script is a witness key hash, the octets `00 14` and 20 further octets. Exactly one input of `A` spends an output of `T`, and it spends the linkage output; that input is the linkage input. |
 | C2.4 | No input of `A` spends the seal. |
+| C2.5 | An issuer signs a grant only where the linkage output of its seal pays a key that the issuer's own signer holds. A verifier cannot check this rule: it sees a script and not the holder of its key. |
+
+For a grant whose seal is output 2 of `T`, the linkage output is output 3
+of `T`, and an anchor of that grant has exactly one input from `T`, which
+spends output 3.
 
 C2.3 holds for every grant, also where `T` was confirmed long before `A`.
 The reference subset asks for the linkage only while `T` is pending or in
-the block of `A`. The stricter rule has a purpose: `T` is fixed before the
-grant is signed, the grant names it, and so the issuer chose the linkage
-output and its key. An anchor that spends it comes from the holder of that
-key. An anchor that is funded by any other coin could come from anybody who
-holds the preparation. The cost is one more output in every seal
-transaction and a key that the issuer's signer keeps until the anchor is
-built.
+the block of `A`, and it takes as the linkage whichever output of `T` the
+anchor spends. This profile is stricter on both points, for one purpose.
+The grant names its seal as an output of `T`, and `T` is fixed before the
+grant is signed. The issuer's signature over the seal outpoint therefore
+fixes the output after the seal as well, and with it the key that this
+output pays. An anchor that spends that output comes from the holder of
+that key. An anchor that is funded by any other coin could come from
+anybody who holds the preparation. So could an anchor that spends another
+output of `T`: a seal transaction can pay change, or pay a third party, and
+the holder of such an output can sign an input that spends it. Under C2.3
+such an anchor refuses. The cost is one more output in every seal
+transaction, a fixed place for it, and a key that the issuer's signer keeps
+until the anchor is built.
 
-`T` may hold more than these two outputs: change, and the seals and linkage
-outputs of other grants. This profile reads the seal that the grant names
-and the one output that `A` spends.
+C2.5 is the issuer's half of the rule. A verifier takes the output after
+the seal as the linkage output, whoever holds its key. An issuer that
+signed a grant whose seal is followed by an output of another party would
+have given that party the anchor.
+
+`T` may hold more than these two outputs: change, payments, and the seals
+of other grants, each followed by its own linkage output. This profile
+reads the seal that the grant names and the output after it. The output
+that follows the seal of one grant is the linkage output of that grant
+alone.
 
 ### 3. The inputs
 
@@ -216,7 +238,7 @@ violation shows that those facts are inconsistent.
 
 C4.4 is narrower than LIP-0008 section 1.1, which permits the unconfirmed
 payment output. A verifier can recognise the linkage output without help:
-it is the output of the named `T` that `A` spends. It cannot recognise a
+it is the output after the seal in the named `T`. It cannot recognise a
 payment output: nothing that a grant signs today says which output pays for
 it. Until a proposal fixes that, an unconfirmed payment is indistinguishable
 from arbitrary unconfirmed funding, and this profile refuses it. The cost
@@ -267,27 +289,29 @@ records a closure.
 | `W_SIGHASH_ALL_REQUIRED` | The last octet of a signature is not `01` | C3.1 |
 | `W_PUBLIC_KEY` | The second item is no compressed public key, or it does not hash to the 20 octets of the spent output | C3.1 |
 | `W_ISSUANCE_SPENDS_SEAL` | `A` spends the seal | C2.4 |
-| `W_LINKAGE_SCRIPT` | The output of `T` that `A` spends is no witness key hash | C2.3 |
-| `W_LINKAGE_REQUIRED` | No input of `A` spends an output of `T`, or more than one does | C2.3 |
+| `W_LINKAGE_SCRIPT` | `T` has no output after the seal, or that output is no witness key hash | C2.3 |
+| `W_LINKAGE_REQUIRED` | No input of `A` spends the linkage output, or an input of `A` spends another output of `T` | C2.3 |
 | `W_DEPENDENCY_ORDER` | `A` is confirmed and `T` is pending, in a higher block, or later in the same block | C4.3 |
 | `W_ANCHOR_PENDING` | `A` is not confirmed | C5.1 |
 
-Twelve of these names are stable reasons of the reference laboratory.
-Eleven have the meaning that it gives them. `W_LINKAGE_REQUIRED` is wider
-here, because this profile asks for the linkage always. `W_ANCHOR_PENDING`
-is new. The laboratory reports further reasons for reads of its own, such
-as a transaction that does not match its id; under this specification
-those are matters of the observation (LIP-0022).
+Twelve of these names are stable reasons of the reference laboratory. Ten
+have the meaning that it gives them. `W_LINKAGE_REQUIRED` is wider here,
+because this profile asks for the linkage always and for one fixed output.
+`W_LINKAGE_SCRIPT` reports the script of that fixed output, where the
+laboratory reports the script of whichever output of `T` the anchor spends.
+`W_ANCHOR_PENDING` is new. The laboratory reports further reasons for reads
+of its own, such as a transaction that does not match its id; under this
+specification those are matters of the observation (LIP-0022).
 
 C7.1. The order is: the profile; for `T`, the seal output, then the
 presence of a witness, then the funding of all its inputs, then the form of
 each input in the order of the inputs; for `A`, the spend of the seal, then
-the script of the linkage output, then the number of linkage inputs, then
-the order of `T` and `A`, then the presence of a witness, then the funding
-of its other inputs, then the form of each input in the order of the
-inputs; last, the confirmation of `A`. For one input the form is checked in
-this order: the spent output and the unlocking script, the shape of the
-witness, the hash type, the key.
+the linkage output of `T`, then the inputs of `A` that spend outputs of
+`T`, then the order of `T` and `A`, then the presence of a witness, then
+the funding of its other inputs, then the form of each input in the order
+of the inputs; last, the confirmation of `A`. For one input the form is
+checked in this order: the spent output and the unlocking script, the shape
+of the witness, the hash type, the key.
 
 The frame of the anchor is checked under LIP-0020 (`ISSUANCE_FRAME`), and
 that check stands where LIP-0020 W9.4 puts it.
@@ -295,12 +319,12 @@ that check stands where LIP-0020 W9.4 puts it.
 ### 8. Vectors
 
 [`vectors/LIP-0023/construction-vectors.json`](../vectors/LIP-0023/construction-vectors.json)
-holds 54 vectors over the 17 rules of this LIP.
+holds 63 vectors over the 18 rules of this LIP.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
 | `inputs` | 1 passing, 18 refused, 3 compound | C3.1 on the octets of a spent script, of an unlocking script and of the items of a witness, with the order of C7.1 for an input that has two defects |
-| `graphs` | 5 passing, 20 refused, 7 compound | Sections 1, 2, 4 and 5 and the order of C7.1 on a stated pair of transactions: their blocks and positions, their outputs, and for each input its parent and the result of C3.1 |
+| `graphs` | 7 passing, 25 refused, 9 compound | Sections 1, 2, 4 and 5 and the order of C7.1 on a stated pair of transactions: their blocks and positions, their outputs, and for each input its parent and the result of C3.1. Nine of them test the fixed place of the linkage output, among them a seal transaction with an output of another party, one with the seals of two grants, and one whose seal is its last output |
 
 A vector whose outcome is not the passing one holds one defect, states the
 expected code and names a neighbour with the passing outcome that differs
@@ -313,7 +337,9 @@ The limits of the file are these. The keys are the compressed forms of the
 published test keys of BIP-340 and belong to nobody. The octets of
 signatures are placeholders, and no signature in the file verifies. The
 group `graphs` states facts and holds no transaction: no vector there has a
-transaction id, an amount or a fee. No vector reads a node.
+transaction id, an amount or a fee. Who holds the key of an output is said
+in the claim of a vector and is no fact that a checker reads. No vector
+reads a node.
 
 No checker for these vectors is in this repository. The expected outcomes
 were stated by hand, computed by one implementation and decided again by a
@@ -328,7 +354,7 @@ No node was run for this LIP.
 
 | Statement | Source |
 | --- | --- |
-| The reference subset: the pinned profile, the form of every input, confirmed funding below the spender, the linkage where the seal transaction is pending or shares the anchor's block, no unconfirmed payment parent, and the reasons that it reports | `swarma-chain-lab` at `b03c6f10fad1be135e780d8b1f556fc46805eb06`: `experiments/WITNESS-PROFILE.md`; `experiments/single-use/witness.go`, `VerifyWitnessInputs`; `experiments/single-use/witness_observation.go`, `WitnessCreation` and `WitnessIssuance` |
+| The reference subset: the pinned profile, the form of every input, confirmed funding below the spender, the linkage where the seal transaction is pending or shares the anchor's block, the linkage output as whichever output of the seal transaction the anchor spends, no unconfirmed payment parent, and the reasons that it reports | `swarma-chain-lab` at `b03c6f10fad1be135e780d8b1f556fc46805eb06`: `experiments/WITNESS-PROFILE.md`; `experiments/single-use/witness.go`, `VerifyWitnessInputs`; `experiments/single-use/witness_observation.go`, `WitnessCreation` and `WitnessIssuance` |
 | A transaction id does not cover the witness, and a signature of hash type `01` over a witness key hash commits to every input, every output and the spent amount | BIP141 and BIP143, which LIP-0008 section 1.1 cites |
 | A witness key hash is spent by a witness of exactly two items | Namecoin Core at the tag `nc28.0`, `src/script/interpreter.cpp`, `VerifyWitnessProgram` |
 | The main chain enforces the witness rules from height 475000 | The same tag, `src/kernel/chainparams.cpp` |
@@ -339,6 +365,18 @@ No node was run for this LIP.
   anchor's block**, as the reference subset has it. A seal from a pool that
   was confirmed earlier would need no linkage output. Any holder of the
   preparation could then publish the anchor of such a grant.
+- **Any output of the seal transaction as the linkage**, as the reference
+  subset has it: the verifier takes the output that the anchor spends. A
+  seal transaction could order its outputs freely. Whoever holds another
+  witness output of that transaction, for example its change or a payment
+  to a third party, could then publish the anchor with a copy of the
+  preparation.
+- **A member of the grant that names the linkage outpoint.** The linkage
+  output could stand anywhere in the seal transaction. Every grant would
+  carry one more outpoint in a member that does not exist yet, and a
+  verifier would have one more value to compare. The fixed place after the
+  seal needs no octet, because the signature over the seal outpoint covers
+  it.
 - **The unconfirmed payment parent now.** An issuance could wait for one
   block and not for two. The verifier would have to trust an unsigned
   statement about which output is the payment, or to guess it from a
@@ -359,6 +397,10 @@ No node was run for this LIP.
   as sensitive as the decision to issue: a party that obtains it and holds
   the preparation can publish the anchor of that grant. Which account holds
   the key is a matter of the seal profile.
+- **The output after the seal decides who can publish.** A verifier reads
+  its script and cannot see who holds its key. The rule shows that the
+  holder of that key published the anchor; that this holder is the issuer's
+  signer is the issuer's own care (C2.5).
 - **The grant is signed before the anchor exists.** Between the two the
   issuer can still withhold the anchor. After the anchor is broadcast it
   cannot: anybody can broadcast a signed transaction again.
@@ -385,16 +427,19 @@ alone.
 ## Open questions
 
 - **The owners' acceptance** of the linkage as a rule for every grant, of
-  the refusal of an unconfirmed payment parent, of the form of an input and
-  of the thirteen codes with their order.
+  its fixed place after the seal, of the refusal of an unconfirmed payment
+  parent, of the form of an input and of the thirteen codes with their
+  order.
 - **The unconfirmed payment parent.** What a grant has to sign so that a
   verifier can tell a payment output from other funding.
 - **The pin of the profile in a grant**, and the form of the verifier's
   configuration that holds it today.
 - **The linkage key.** Which account derives it, and who may sign with it;
   both belong to the seal profile.
-- **Seals from a pool.** How a seal transaction that holds the seals of
-  several grants pairs each seal with its linkage output.
+- **The place of the linkage output.** This draft fixes it as the output
+  after the seal, also in a seal transaction that holds the seals of
+  several grants. A member of the grant that names the outpoint is the
+  alternative, and the owners choose.
 - **The Legacy profile**, which LIP-0008 keeps as specification only until
   a chain without the witness rules is pinned.
 - **A run on nodes** of the cases that the laboratory names, under the
