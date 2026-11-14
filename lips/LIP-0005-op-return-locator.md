@@ -69,7 +69,9 @@ locator = location_type(1) || pointer
 | `0x80`-`0xff` | experimental / private use | — | — |
 
 The location type describes the retrieval mechanism, not a server or tracker.
-Endpoint discovery is separate configuration or future profile work. Current
+Endpoint discovery is separate configuration or future profile work;
+[LIP-0019](LIP-0019-retrieval-by-hash.md) proposes a delivery profile for
+the blob store. Current
 landlord/agent name values have closed schemas: they do not accept `blob` or
 `tracker` fields. Their optional Nostr relay hints do not supply a blob/torrent
 endpoint or trigger a fetch. No new name field is implied by this format.
