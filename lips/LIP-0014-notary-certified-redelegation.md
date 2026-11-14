@@ -1025,7 +1025,7 @@ bytes come with v4.
 | J1.4 | The row ledger lives in a ledger store whose continuity is proved against a record outside the store. The contract of that store follows this table. | A lost store refuses every consuming effect under every row |
 | J1.5 | A verifier MUST NOT rely on a statement of a notary or of a signer about a sum over siblings. The attestation carries no such statement. | none of its own |
 | J1.6 | A notary MUST NOT certify two different children, two `child_grant_id` values, under one parent and ordinal, ever, also after a revocation or a withdrawal. It MAY sign again for the same child. Two attestations by one notary for different children of one parent and ordinal are complete evidence against it, as section 9 says today. The notary keeps a durable record for this. On v3 the landlord's signer still admits an ordinal once (section 5). | none at a verifier that holds one bundle |
-| J1.7 | "Used" names three different facts, and under option (a) below none of them is public state about how many child objects exist: the reservation of the ordinal at the v3 landlord's signer; the notary's record of the child it certified for the row; and consumption in the row ledger, which is state of the row's executor, the verifier that consumes. Each is permanent: a revoked child, a withdrawn attestation and a reissue free none of them. A new child takes another row. | none of its own |
+| J1.7 | "Used" names three different facts, and on v3 none of them is public state about how many child objects exist: the reservation of the ordinal at the v3 landlord's signer; the notary's record of the child it certified for the row; and consumption in the row ledger, which is state of the row's executor, the verifier that consumes. Each is permanent: a revoked child, a withdrawn attestation and a reissue free none of them. A new child takes another row. | none of its own |
 | J1.8 | A verifier, a receipt and a report MUST NOT state that a child is the only child of its row. On v4 they may state it for the active chain and for nothing wider (J1.9). | none of its own |
 | J1.9 | v4 only. Each row pins one coin: an output that is confirmed before the parent is signed and that pays a key of the re-delegating side. The issuance of a child MUST spend the coin of the child's row in the transaction that carries the child's commitment, and a verifier checks that input on its own node. A row whose coin another transaction spent admits no child. The exclusivity holds on the active chain and not across forks: after a reorganisation that removes an issuance, another child can spend the coin on the new chain. | A v4 child whose issuance does not spend the coin of its row refuses. The code is fixed with the v4 bytes |
 
@@ -1261,9 +1261,12 @@ Draft text for it, under a pending owner decision (J2).
 
 ### 10.1. One certifier for each row, and the withdrawal for cause
 
-Owner decision pending: J2. Every rule of this subsection is Draft text
-that touches D5 and D9; it uses the rows of section 9.1. Until the decision
-a withdrawal for cause reaches only the parties that observed its frame.
+Decided by Ivan Oparin on 2026-11-14 (J2); the co-author's agreement is
+pending. The decision touches D5 and D9 and uses the rows of section 9.1.
+On v3 each row has one certifier, and D5 is narrowed. On v4 each row also
+names a stop coin of its notary, from the first version. Until the
+co-author agrees the text in force stands, under which a withdrawal for
+cause reaches only the parties that observed its frame.
 The frame of section 10 is addressed by the attestation id: its commitment
 covers that id and the child's grant id, and its locator points at the
 attestation. No step of section 8 looks for it. Notary N1 withdraws its
@@ -1290,24 +1293,26 @@ active chain of a node together with its mempool.
 | After a cause, another named notary cannot certify the row | Yes | Every verifier, one that starts later included: the row names its one certifier |
 | A verifier that saw the cause refuses every later attestation of the row, also for a child signed again under the same ordinal | Yes | Witnesses of an authenticated cause (J2.4) |
 | An attestation of the row that was signed before the cause does not survive it | In a bounded form, for a notary that follows J2.3 (a) and (b): in every view that holds the cause transaction, every seal of the row's succession is spent or absent | A verifier whose chain or mempool holds the cause. Not a view from which the cause is gone, and not an attestation whose seal lies outside the succession |
-| The row's own notary cannot certify the row again after its cause | No | A verifier that starts later admits a new attestation by that notary. This is D5 as the owners wrote it, and option (a) below does not give it |
+| The row's own notary cannot certify the row again after its cause | On v3: no. On v4: yes, by the stop coin of the row (J2.7) | On v3 a verifier that starts later admits a new attestation by that notary; this is D5 as the owners wrote it, and the v3 form does not give it. On v4 every verifier whose node shows the spend of the stop coin refuses the row |
 
-D5 says that a child may not be certified again after a withdrawal for
-cause. With one certifier for each row and nothing more, D5 becomes
-narrower: the notary is forbidden to certify the row again, its witnesses
-enforce that, on v3 the landlord's signer revokes the child, and a verifier
-that starts later relies on the notary's conduct. The owners choose that
-form knowingly, or the stronger one of J2.7.
+**D5 is narrowed on v3.** D5 says that a child may not be certified again
+after a withdrawal for cause. With one certifier for each row and nothing
+more, D5 becomes narrower: the notary is forbidden to certify the row
+again, its witnesses enforce that, the landlord's signer revokes the child,
+and a verifier that starts later relies on the notary's conduct. By the
+decision of 2026-11-14 profile `/2` on v3 takes this narrower form
+knowingly. v4 takes the stronger form of J2.7, under which D5 holds as the
+owners wrote it.
 
-The row gains nothing beyond its member `notary` (section 9.1). The child
-and the attestation gain nothing. Under option (b) below the row gains one
-member (J2.7). Three states are kept apart; they have different triggers,
+On v3 the row gains nothing beyond its member `notary` (section 9.1), and
+the child and the attestation gain nothing. On v4 the row gains one member,
+the stop coin (J2.7). Three states are kept apart; they have different triggers,
 a different reach and different codes:
 
 | State | Trigger | Effect | Code |
 | --- | --- | --- | --- |
 | Attestation withdrawn | The seal it names is spent, in the mempool or in a block, or does not exist on the verifier's node (V18, as in force), or the verifier journalled that spend | That attestation refuses. A new attestation by the row's notary that names another seal is admissible; a verifier does not check the succession of J2.3 (a) from one bundle | `NOTARY_WITHDRAWN` |
-| Row closed for cause | The verifier authenticated a cause for the row (J2.4); under option (b) also: the row's pinned output is spent | Every child of that parent and ordinal refuses, whatever attestation is presented | `ROW_CLOSED_FOR_CAUSE` |
+| Row closed for cause | The verifier authenticated a cause for the row (J2.4); on v4 also: the stop coin of the row is spent (J2.7) | Every child of that parent and ordinal refuses, whatever attestation is presented | `ROW_CLOSED_FOR_CAUSE` |
 | Child revoked | The child's own seal is spent | That child refuses for every verifier under the existing v3 or v4 rule | the existing seal code |
 
 A seal spend without an authenticated cause produces the first state only.
@@ -1315,7 +1320,7 @@ A missing or unreadable frame never forbids a later plain certification.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
-| J2.1 | Each row MUST name exactly one notary, listed in `notaries`. Rows of one parent MAY name different notaries, also for the same agent and grantee. | `CONTRACT_DELEGATE` |
+| J2.1 | Each row MUST name exactly one notary, listed in `notaries`. Rows of one parent MAY name different notaries, also for the same executor and grantee. | `CONTRACT_DELEGATE` |
 | J2.2 | A verifier MUST refuse an attestation whose `notary_name` is not the notary of the child's row, also when the parent names that notary for another row. | `NOTARY_NOT_DESIGNATED` |
 | J2.3 | The duties of the row's notary, (a) to (d). A verifier cannot check them from one bundle. | none at a verifier |
 | J2.3 (a) | One succession of seals for each row. The first attestation that the notary signs for a parent and ordinal names the row's first seal. Every later attestation for that parent and ordinal names a seal of the same succession: a seal already named for the row, or a successor, which is an output of the transaction that spends a seal of the succession. One spending transaction creates at most one successor for a row. The notary names for the row no output that is not reached from the first seal in this way, also not after a withdrawal, an eviction, a reorganisation or a restart. A transaction that creates a successor is a seal creation: its inputs are signed with `SIGHASH_ALL` without `ANYONECANPAY`, and it takes its funding from confirmed outputs (after LIP-0008 section 1.1). The notary signs with the seal of the succession that exists unspent on its own node, and SHOULD wait until the transaction that creates a seal, the first seal included, is confirmed before it names that seal: a transaction that is replaced leaves an attestation naming an output that never exists, and for a first seal it leaves a row that the notary can no longer certify. The notary keeps a durable record of the succession: every seal it named for the row, the transaction that spent it and the successor that transaction created. A notary that cannot produce that record for a row MUST NOT sign for that row again. | none at a verifier |
@@ -1326,7 +1331,7 @@ A missing or unreadable frame never forbids a later plain certification.
 | J2.4a | A verifier that authenticated a cause, in its mempool, in a block, or in a transaction that was shown to it and that it found on its own node, MUST journal the pair of `parent_grant_id` and ordinal as closed for cause before any further admission. The record survives restart, eviction, non-confirmation, reorganisation and a later rotation of the notary's key. A shared seal is no exception to locality: the spend withdraws every attestation that names the seal, and it closes for cause only the row of the attestation that the frame commits to. | `ROW_CLOSED_FOR_CAUSE` for every child of that parent and ordinal |
 | J2.5 | An unauthenticated frame is neither a closure nor proof of misconduct. A misconduct claim MUST include evidence that establishes the alleged violation of J2.3; a matching commitment alone is insufficient. A claim that the notary's key certified a row again after its cause, a breach of J2.3 (c), MUST include an authenticated cause under J2.4 and evidence of the order: the later attestation's `tip_hash` is the block that confirms the cause or a descendant of it, so that it cannot have been signed before. An attestation with an older attested tip shows no order, and the height of an anchor does not date a signature. A claim of a breach of J2.3 (a) needs the transactions named below and no cause. Where the order or the transactions cannot be shown, the report says "not established". | none; a rule for a reader of evidence |
 | J2.6 | On v3 the landlord's signer MUST spend the child's seal once it authenticated a cause for the child's row, observed or shown, and it admits no further request for that ordinal (sections 5 and 10). | none at a verifier; the signer refuses the request |
-| J2.7 | Option (b), the row-ending output. The row gains a fifth member `stop`, an outpoint. The output exists and is confirmed before the parent is signed, so the row's notary takes part in the parent's issuance. It is an output that the notary alone can spend, given like a notary seal by transaction, index and script (section 6.1, member 17); it needs no new spending condition, and it pays a key of the notary that is not its attestation key (section 6.3). A verifier requires `stop` to exist with the named script and to be unspent, the mempool included, and journals a validated spend as it journals a seal spend. The notary ends a row for cause by spending `stop`; the `0x05` frame in that transaction is evidence and no longer the trigger. A plain withdrawal leaves `stop` alone. Under this option the third property of the table above does not depend on the succession of J2.3 (a). The output is bound by outpoint, so a rotation of `attest` does not touch it, and the notary must keep its spending key for the life of the parent. If the notary loses that key, the row can no longer be ended for cause, and the stops of option (a) are what remains. After a reorganisation that removes the output the row refuses until the output is confirmed again. The fee of that spend is the notary's own and must not hang on a coin that somebody else can spend first, for the reason LIP-0008 section 5.2 gives for an issuer's break. A profile in which more than one notary may certify a row, or in which a verifier that starts later must refuse after a cause, MUST have such a state; without it a profile MUST NOT offer either. | A spent `stop`: `ROW_CLOSED_FOR_CAUSE` for every child of the row, whatever seal an attestation names, in every view that holds that spend |
+| J2.7 | v4 only: the stop coin of a row. The row gains a member `stop`, an outpoint. The output exists and is confirmed before the parent is signed, so the row's notary takes part in the parent's issuance. It is an output that the notary alone can spend, given like a notary seal by transaction, index and script (section 6.1, member 17); it needs no new spending condition, and it pays a key of the notary that is not its attestation key (section 6.3). A verifier requires `stop` to exist with the named script and to be unspent, the mempool included, and journals a validated spend as it journals a seal spend. The notary ends a row for cause by spending `stop`; the `0x05` frame in that transaction is evidence and no longer the trigger. A plain withdrawal leaves `stop` alone. With the stop coin the third property of the table above does not depend on the succession of J2.3 (a). The output is bound by outpoint, so a rotation of `attest` does not touch it, and the notary must keep its spending key for the life of the parent. If the notary loses that key, the row can no longer be ended for cause, and the stops of the v3 form are what remains. After a reorganisation that removes the output the row refuses until the output is confirmed again. The fee of that spend is the notary's own and must not hang on a coin that somebody else can spend first, for the reason LIP-0008 section 5.2 gives for an issuer's break. A profile in which more than one notary may certify a row, or in which a verifier that starts later must refuse after a cause, MUST have such a state; without it a profile MUST NOT offer either. | A spent `stop`: `ROW_CLOSED_FOR_CAUSE` for every child of the row, whatever seal an attestation names, in every view that holds that spend |
 
 What follows from J2.3 (a), and what does not. In one view a transaction is
 present only together with the transactions it spends from, and two
@@ -1355,33 +1360,34 @@ reported as a breach.
 
 The steps change as follows. V12 compares `notary_name` with the row before
 it reads the name. V18 keeps the seal check and adds that the journal holds
-no closure for cause of this parent and ordinal. Under option (a) no new
-read is added. One seal may still serve every attestation of a parent
+no closure for cause of this parent and ordinal. On v3 no new read is added; on v4 the verifier also reads the stop coin of
+the row. One seal may still serve every attestation of a parent
 (section 6.4): a successor may serve the rows that its predecessor served,
 and a spend for cause of a shared seal creates no successor for the row it
 closes and may create one for the others.
 
 With these rules D9 reads: one attestation is enough, by the notary that
-the parent names for the child's row. D5 reads under option (a): a
+the parent names for the child's row. D5 reads on v3: a
 withdrawal is durable at its witnesses and on a chain that holds it; after
 a plain withdrawal the row's notary may certify the same child again; after
 a withdrawal for cause the notary must not, its witnesses refuse the row,
-and the landlord's signer revokes the child. Under option (b) the last
-clause reads: and every verifier whose node shows the spend of the row's
-output refuses the row. A spend that never reached a verifier's chain or
-mempool is unknown to it under every option.
+and the landlord's signer revokes the child. On v4 the last clause reads:
+and every verifier whose node shows the spend of the row's stop coin
+refuses the row. A spend that never reached a verifier's chain or mempool
+is unknown to it in both forms.
 
 What stays open:
 
-- **The row's own notary after its cause**, under option (a). If the row's
-  notary signs again after its own cause, through a restored state, a
-  stolen attestation key or a deliberate breach, a verifier that did not
-  witness the cause admits the new attestation until one of three things
-  happens: the child's seal is spent, on v3 by the landlord's signer under
-  J2.6; the notary replaces its attestation key in its name; or the parent
-  is closed. On v4 the child's seal is the delegator's, so the first stop
-  is absent there. The pins of section 7.1, the caps of section 9.1 and
-  the issuer closure of LIP-0008 section 5.2 do not help here.
+- **The row's own notary after its cause**, on v3. If the row's notary
+  signs again after its own cause, through a restored state, a stolen
+  attestation key or a deliberate breach, a verifier that did not witness
+  the cause admits the new attestation until one of three things happens:
+  the child's seal is spent by the landlord's signer under J2.6; the notary
+  replaces its attestation key in its name; or the parent is closed. The
+  pins of section 7.1, the caps of section 9.1 and the issuer closure of
+  LIP-0008 section 5.2 do not help here. On v4 the child's seal is the
+  delegator's, and the stop coin is what closes the row for a verifier
+  that starts later.
 - **A thief of the attestation key can also close.** It signs an
   attestation for a real child, with its own seal, and spends it with a
   signed frame. Every witness closes the row. That is the notary's own
@@ -1393,13 +1399,13 @@ What stays open:
   and not a second way to certify the old child.
 - **A cause that left the view.** A cause seen only in a mempool and then
   evicted is refused by its witnesses and not by a verifier that starts
-  later, under every option, as for every seal (LIP-0008 section 5.1). If
+  later, in both forms, as for every seal (LIP-0008 section 5.1). If
   the cause is evicted before it confirms, or a reorganisation removes it,
   the seal it spent is unspent again in that view, and a verifier without
   a journal admits the attestation that names it until the cause is
   confirmed again. J2.3 (b) makes the notary broadcast it again; if the
-  notary is gone, nothing does. Under option (b) the same holds for the
-  spend of the row's output.
+  notary is gone, nothing does. On v4 the same holds for the spend of the
+  stop coin.
 - **A seal outside the succession.** A notary that names one, by a fault or
   after losing its record, leaves an attestation that the cause does not
   touch.
@@ -1409,31 +1415,32 @@ What stays open:
   withdrawing transaction, sometimes without ever being used; and a row
   whose succession the notary cannot continue, because its record is lost
   or a creating transaction can never confirm again, is unusable, and a
-  new parent or another row is the way out. Without this duty, option (a)
-  does not give the third property of the table at all, and option (b) is
-  what gives it.
+  new parent or another row is the way out. Without this duty the v3 form does
+  not give the third property of the table at all; on v4 the stop coin
+  gives it.
 
-The owners choose a requirement first: must a verifier that starts later,
+The choice began with a requirement: must a verifier that starts later,
 and saw nothing of the cause, refuse a row after it?
 
 | Option | What it gives | Cost |
 | --- | --- | --- |
 | (a) No. One certifier for each row and one succession of seals | The first three properties of the table above. Nothing on chain at issuance; the successor seal of a plain withdrawal is created in the withdrawing transaction | D5 in the narrower form, and D9 becomes "the notary named for that row". After a plain withdrawal only the same notary can certify again, and an absent notary blocks its rows. The notary's tool keeps the record of each succession |
-| (b) Yes. (a) with the row-ending output of J2.7 | D5 as the owners wrote it: every verifier that reads its node refuses the row after a cause, whatever attestation or seal is shown | One confirmed coin of the notary for each row before the parent is signed, paid under D11. The notary takes part in issuance and keeps one more key for the life of the parent. A spend by mistake is final |
+| (b) Yes. (a) with the stop coin of J2.7 | D5 as the owners wrote it: every verifier that reads its node refuses the row after a cause, whatever attestation or seal is shown | One confirmed coin of the notary for each row before the parent is signed, paid under D11. The notary takes part in issuance and keeps one more key for the life of the parent. A spend by mistake is final |
 | (c) Yes, and any named notary may certify any row: each row pins an output that any named notary can spend | D9 as written, certification by another notary after a plain withdrawal, and D5 for every verifier | One coin for each row, a spending condition for one of several keys that has no profile, a second member in every notary's name where LIP-0010 section 9 allows exactly one, a key that can never be retired, and a final word for every named notary over every row |
 
-The proposal is (a) for profile `/2` on v3, recorded as a narrowed D5 and
-with the known limits S2-K1 to S2-K3 in the vector set. On v3 the principal has a
-stop for one child: its signer spends the child's seal. The proposal for v4
-is (b), decided with the v4 bytes: there the delegator owns the child's
-seal, and without the output the principal can stop one child only by
-closing the whole parent. If D5 must hold as written from the first
-version, (b) is the answer on v3 as well. D1 is unchanged.
+Ivan Oparin decided on 2026-11-14: option (a) for profile `/2` on v3,
+recorded as a narrowed D5 and with the known limits S2-K1 to S2-K3 in the
+vector set; and option (b), a stop coin for each row, for v4 from its
+first version. On v3 the principal has a stop for one child: its signer
+spends the child's seal. On v4 the delegator owns the child's seal, and
+without the stop coin the principal could stop one child only by closing
+the whole parent. Option (c) is not taken. D1 is unchanged.
 
-A coarser and cheaper form of option (b) was named and not examined: one
-output for each notary and parent, whose spend ends all rows of that notary
-under the parent at once. Its cost and its limits are not worked out, and
-it is no profile of this text.
+A coarser form of the stop coin is recorded as a future option and is no
+part of the first v4 version: one coin for each notary and parent, whose
+spend ends every row of that notary under the parent at once. It could
+serve as an emergency brake when a notary is compromised. Its cost and its
+limits are not worked out (Alternatives and Other open questions).
 
 Two further designs were set aside. A state for each child that a verifier
 finds on its own node, such as a marker it can index, would give the
@@ -1448,8 +1455,8 @@ one child. A child that names its own notary gives a choice at
 issuance; on v4 the delegator then signs the child again and names the
 other notary.
 
-Cases (owner decision pending: J2). S2-K1 to S2-K3 are known limits, and the
-vector set records their verdicts as limits:
+Cases (J2). S2-K1 to S2-K3 are known limits, and the vector set records
+their verdicts as limits:
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
@@ -1464,11 +1471,12 @@ vector set records their verdicts as limits:
 | S2-7 | A seal spent without a readable frame: the old attestation refuses as `NOTARY_WITHDRAWN`, and a new attestation by the row's notary that names the successor seal is admitted, by a verifier that starts later and by the witness | Admitting the withdrawn attestation because no frame was found is wrong. Closing the row or the child for cause without an authenticated frame is wrong as well; an implementation that closes on every spend breaks the control. |
 | S2-8 | v3: the signer, shown an authenticated cause, spends the child's seal, and the spend is observed on chain; a request for another unused ordinal succeeds | A request for the same ordinal after the cause is refused by the signer, from its durable reservation. Both duties exist in force. |
 | S2-9 | At the notary's tool: a second attestation for the same child while the row's seal is unspent names that same seal; the spend for cause then refuses both at a verifier that starts later as `NOTARY_WITHDRAWN`. After a confirmed plain withdrawal whose transaction created the successor, a new attestation of the same child that names the successor is admitted | The tool refuses to name for a row any output outside the row's succession, whatever its node shows of the earlier seal: spent in the mempool, spent in a block, or absent. |
-| S2-9b | At the notary's tool, on regtest: a plain withdrawal `W` of `A1` creates the successor; the tool signs `A2` naming it; `W` confirms; the cause spends the successor and confirms; a verifier that starts later refuses `A1` and `A2` | `W` is broadcast and evicted before it confirms. At a verifier that starts later `A2` refuses at V18, because its seal does not exist, and `A1` is admitted again: that is the limit of a spend that left the view, not a breach, and a plain withdrawal that vanished closed nothing. The tool then withdraws for cause by spending the first seal, the one unspent on its node; once that confirms, `A1` and `A2` both refuse. Beside it, the forbidden shape, built by hand: a second seal unrelated to `W`, named after the pending `W`; `W` evicted; the cause spends the second seal and confirms; `A1` is admitted after the confirmed cause. The tool must refuse to build this; a verifier cannot refuse it under option (a). |
+| S2-9b | At the notary's tool, on regtest: a plain withdrawal `W` of `A1` creates the successor; the tool signs `A2` naming it; `W` confirms; the cause spends the successor and confirms; a verifier that starts later refuses `A1` and `A2` | `W` is broadcast and evicted before it confirms. At a verifier that starts later `A2` refuses at V18, because its seal does not exist, and `A1` is admitted again: that is the limit of a spend that left the view, not a breach, and a plain withdrawal that vanished closed nothing. The tool then withdraws for cause by spending the first seal, the one unspent on its node; once that confirms, `A1` and `A2` both refuse. Beside it, the forbidden shape, built by hand: a second seal unrelated to `W`, named after the pending `W`; `W` evicted; the cause spends the second seal and confirms; `A1` is admitted after the confirmed cause. The tool must refuse to build this; a verifier cannot refuse it on v3. |
 | S2-9c | At a reader of evidence: `A1` names the first seal and `A2` its successor; the reader, given both creating transactions, reports no breach | The withdrawal that created the successor is removed by a reorganisation, and the first seal is unspent again while `A2` exists: still no breach, at any block. Two attestations whose seals have unrelated creating transactions that both stand in one chain: a breach of J2.3 (a), also when one of the seals has been spent since. A reader that decides from the seals unspent at a block fails both; so does one that reports a breach without the transactions. |
-| S2-K1 | Known limit of option (a). `N1` certifies again after a plain withdrawal: admitted | `N1` signs `A2` with a fresh seal after its own cause; a verifier that starts later and receives `P`, `C` and `A2` admits. Under option (b) it refuses as `ROW_CLOSED_FOR_CAUSE`. |
-| S2-K2 | Known limit of option (a). The same control | `A2`, signed before the cause and naming a seal outside the row's succession, in breach of J2.3 (a), and left unspent: a verifier that starts later admits. Under option (b) it refuses. |
-| S2-K3 | Known limit of every option. A cause that is confirmed in the verifier's chain: every attestation that names a seal of the succession refuses | The cause is evicted before it confirms, or removed by a reorganisation and not confirmed again; the seal it spent is unspent in the verifier's view. A verifier without a journal admits the attestation that names it; a witness of the cause refuses. Under option (b) it is the spend of `stop` that left the view. |
+| S2-K1 | Known limit of the v3 form. `N1` certifies again after a plain withdrawal: admitted | `N1` signs `A2` with a fresh seal after its own cause; a verifier that starts later and receives `P`, `C` and `A2` admits. On v4, once the stop coin of the row is spent, it refuses as `ROW_CLOSED_FOR_CAUSE` (S2-10). |
+| S2-K2 | Known limit of the v3 form. The same control | `A2`, signed before the cause and naming a seal outside the row's succession, in breach of J2.3 (a), and left unspent: a verifier that starts later admits. On v4 it refuses once the stop coin of the row is spent. |
+| S2-K3 | Known limit of both forms. A cause that is confirmed in the verifier's chain: every attestation that names a seal of the succession refuses | The cause is evicted before it confirms, or removed by a reorganisation and not confirmed again; the seal it spent is unspent in the verifier's view. A verifier without a journal admits the attestation that names it; a witness of the cause refuses. On v4 it is the spend of the stop coin that left the view. |
+| S2-10 | v4: a row whose stop coin exists with the named script and is unspent; a child of the row with a valid attestation is admitted, and another row of the same parent with its own unspent stop coin stays admissible after this row is ended | The stop coin of the row spent, in the mempool or in a block: every child of the row refuses as `ROW_CLOSED_FOR_CAUSE`, whatever attestation and seal are shown, also at a verifier that starts after the spend. A stop coin that does not exist with the named script refuses as well. |
 
 ## 11. Staging and the mapping to v3 and v4
 
@@ -1633,6 +1641,11 @@ the channel key signs children:
 - **Anchoring in an update of the notary's name:** rejected by D10. It adds
   one name operation per child to the notary's name history.
 - **A third link for deeper trees:** not taken (D7).
+- **One stop coin for each notary and parent,** whose spend ends every row
+  of that notary under the parent at once: recorded on 2026-11-14 as a
+  future option, for example as an emergency brake for a compromised
+  notary. It is no part of the first v4 version, and its cost and its
+  limits are not worked out (section 10.1).
 
 ## Security consequences
 
@@ -1751,6 +1764,8 @@ called closed for a property that its subsection lists as open.
 - A quorum of notaries for sensitive resources; D9 fixes one of the set.
 - A batched anchor and one seal per parent; D10 fixes one frame per
   attestation now.
+- The coarse form of the stop coin, one coin for each notary and parent,
+  as a future option (section 10.1): its cost and its limits.
 - The v4 bytes of the right of re-delegation, the delegation key of section
   11.1 among them.
 - D4 places the pieces of this LIP after the first proof, as tools around v3
