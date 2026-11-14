@@ -653,6 +653,45 @@ repository token or a wallet RPC within the run's reach produces the
 forbidden effect without a signature. Finding one is a failed qualification
 (J7.8).
 
+### 3.7. Instructions across owners
+
+When one owner wants the executor of another owner to act, somebody's key
+has to sign the instruction. A person cannot confirm every envelope by a
+touch, and a personal key that signed without its holder would serve any
+process of the same OS user. Ivan Oparin decided the pattern for this
+case on 2026-11-14; the co-author's agreement is pending.
+
+The grantee of a grant across owners is the instructing owner's agent, and
+not the owner:
+
+1. The principal issues the trust grant to an agent of the other owner. The
+   grant's `grantee_key` is that agent's key.
+2. The other owner instructs that agent over the owner channel, as for any
+   other work. An owner directs its own agent without an envelope.
+3. The agent signs the envelope of section 3.1 with its key. The key holder
+   releases the signature under the gate of section 3.6: the origin of the
+   run is the owner's command, and the operator's table lists the grant
+   among the grants that runs of that origin may sign under.
+4. The executor admits the envelope under section 3.4, as an instruction on
+   its principal's authority.
+
+A person's keys that need the person's presence are for rare acts. The
+grant key issues a grant. The authority key of a person consents to a
+grant whose grantee is the person, and signs an envelope only when the
+person acts in person (key registry). Neither signs the daily instructions
+that cross from one owner's agents to another's.
+
+A session key is a later option: a key that a person's authority key
+authorizes for a limited time, so that the person signs envelopes without
+a touch for each. Nothing of it is designed here.
+
+**Transports only carry.** Authority comes from the signed envelope inside
+a message, on every transport. The transport delivers the message and
+confers nothing: not on Matrix, whose room and sender the envelope binds,
+and not on any other transport that a later profile adds. A binding of a
+transport key to a name (LIP-0015 section 6) tells a receiver whose device
+sent a message, and it is no authority either.
+
 ## 4. Vectors and reference checker
 
 [`vectors/LIP-0013/trust-vectors.json`](../vectors/LIP-0013/trust-vectors.json)
