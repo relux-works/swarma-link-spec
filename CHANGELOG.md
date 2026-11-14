@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.1.28 — 2026-11-14
+
+Three additions record decisions that Ivan Oparin made on 2026-11-14. The
+co-author's agreement on each is pending, and no implementation is claimed.
+
+LIP-0006, new section 7. Text always governs an agent's work and never a
+service's effect. A service that performs an effect at a resource, such as a
+payment, a landing or the release of a secret, decides from members that a
+machine compares and refuses a grant whose terms carry a text. A service
+that carries requests to an agent passes the text on unchanged, and the
+agent applies it to its work. Money and landings are authorized by members
+only, so a party that wants both a text and an effect issues two grants.
+The cost is stated with the rule: a limit for which no profile has a
+machine member binds no effect service, and whether an agent applied a text
+is judged only afterwards. The former section 7, on related drafts, is now
+section 8. LIP-0014 section 3.3 points to the rule and says that the LIP
+does not yet apply it to profile `/2`.
+
+LIP-0013, section 3.4, the authority frame. The admission gate is the
+program at an executor that runs the checks, and the terms of the LIP now
+name it. It hands each admitted peer instruction to the agent inside a
+read-only frame with the principal, the grant id, the contract terms, the
+scope text of a `/2` contract and the hash of a framework agreement where
+one exists. The frame is built from verified objects only and is outside
+the agent's write authority. An agent's standing instructions carry one
+rule about frames and no contract. On v3 a grant names one agent; on v4 a
+grant can name several executors with signed partitions, and what a frame
+carries there is fixed with the v4 bytes. The encoding of the frame, its
+channel and the proof that an agent cannot write it are open. No step, code
+or vector changes.
+
+A new document, the key registry (`KEY-REGISTRY.md`). It lists every key
+the specification names, in 22 entries. Each entry states the owner, the
+place where the key is published, the holder, the complete list of what it
+signs, a danger level from critical to low, the effect of a leak, the
+recovery and the source. Its rules: one entry for every key; the list of
+uses is closed; a messaging key grants no authority; an entry has the
+status of the part that defines its key. Five entries follow decisions of
+the same day: the authority key of a person who receives grants and, on v4,
+the delegation key, the coin key of a row, the optional child-seal key and
+the stop key of a row. The entry of the agent's Nostr key records that a
+gate at the key holder takes the place of presence. LIP-0014, LIP-0013 and
+the key map take those rules in later revisions and state the earlier text
+until then. The danger levels are the draft's proposal. The release order
+in `RELEASE.md` and the specification set in the README include the new
+document.
+
 ## 0.1.27 — 2026-11-13
 
 LIP-0010, section 7: a note that is not normative, recorded at Ivan Oparin's

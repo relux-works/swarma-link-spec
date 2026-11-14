@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.27
+**Version:** 0.1.28
 
-**Date:** 2026-11-13
+**Date:** 2026-11-14
 
 **Status:** Draft
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.27
+## Draft profiles and design decisions in v0.1.28
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
