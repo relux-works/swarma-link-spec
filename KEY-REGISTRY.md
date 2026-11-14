@@ -86,6 +86,8 @@ and wait for the owners' confirmation.
 | Single-use seal key, issuer branch | medium | LIP-0002 and LIP-0006; the v4 profile is open |
 | Single-use seal key, grantee branch | high | LIP-0002 and LIP-0006; the v4 profile is open |
 | Provider key | medium | Key map, in use in the rental profile |
+| Contract seal keys | medium | LIP-0017 section 6; decision of 2026-11-14, agreement pending |
+| Assent output keys | low | LIP-0017 section 4; decision of 2026-11-14, agreement pending |
 | Principal's Nostr key | low; high where a grant names it as grantee | LIP-0004 and LIP-0010, in use on v3 |
 | Authority key of a person | high | Decision of 2026-11-14, agreement pending |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
@@ -248,6 +250,41 @@ and wait for the owners' confirmation.
   separately, so a forged offer alone issues no grant.
 - Recovery: a new key and a new pin; packages under the old pin refuse.
 - Source: key map, in use in the rental profile.
+
+**Contract seal keys**
+
+- Owner: the parties that the termination clause of a contract names: the
+  issuer, each party, both parties, or an arbiter.
+- Published: in the contract, which names the outpoint and the script of
+  its seal.
+- Holder: the signer of each party that the clause names, and the
+  arbiter's.
+- Signs: the spend of the contract seal, which ends the contract and every
+  grant under it.
+- Danger: medium.
+- Leak: under a clause that lets one key end the contract, the thief of
+  that key ends the contract and every grant under it. Under the clause
+  "both together" it needs both keys. It creates no authority.
+- Recovery: a new contract with a new seal, and new grants under it.
+- Source: LIP-0017 section 6; decision of 2026-11-14, agreement pending.
+  The scripts of the four clauses are open.
+
+**Assent output keys**
+
+- Owner: each party of a contract that shows its assent on chain.
+- Published: in the contract, which names the assent output and its
+  script.
+- Holder: each party's signer.
+- Signs: the input that spends the assent output in the anchor transaction
+  of the contract.
+- Danger: low.
+- Leak: the thief of one key can do nothing alone, because the output
+  needs every party's signature. With all keys it spends the output
+  without the anchor, and the contract then shows no assent on chain; the
+  signatures of the contract stand.
+- Recovery: none needed for the contract. A later contract names a new
+  output.
+- Source: LIP-0017 section 4; decision of 2026-11-14, agreement pending.
 
 ## Recipients
 
