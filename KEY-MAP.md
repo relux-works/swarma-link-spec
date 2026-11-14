@@ -320,6 +320,7 @@ previous section says.
 | Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
 | Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
 | Delegation key of a re-delegating agent, v4 (decision of 2026-11-14, J4; agreement pending) | Not fixed; a sketch that is not decided derives it for each parent from the seed of the operator's signer. The key is in no name | A signing service of the operator that consented to the parent as its recipient, outside the agent's OS user and outside the service that holds the request or channel key; the service holds no name-owner, seal or funding key (LIP-0014 section 11.1) | A new parent grant |
+| Coin key of a row of a re-delegating agent, v4 (decision of 2026-11-14, J1; agreement pending) | A separate key, derived from the seed of the operator's signer in an account of its own, as v4 seal keys are; the account and the path are not fixed | The operator's signer (LIP-0014 section 9.1) | A new parent grant |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
 
 Two reasons carry the layout. The grant key stays outside every wallet

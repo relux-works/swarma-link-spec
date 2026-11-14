@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.1.36 — 2026-11-14
+
+Three points of LIP-0014 that 0.1.35 left open now have an answer. Both
+owners agree on the first. Ivan Oparin decided the other two on 2026-11-14,
+and the co-author's agreement on them is pending. No v3 byte changes, and
+neither does any rule or vector of profile `swarma-trust-contract/1` or
+the reference checker.
+
+The text of a v4 child (section 3.4). In the first version of v4 a
+re-delegation narrows only typed fields and appends no text. The co-author
+answered so on 2026-11-14, and the owner who decided the other parts of J5
+agreed on the same day, on the condition that the system can be built
+without layers of text. Narrowing by text that a notary checks, possibly
+with keys, stays in the plans for the next revision, and nothing of it is
+defined. The draft reads the agreement as the inheritance of J5.1: a child
+carries its parent's text unchanged. The v4 bytes are open.
+
+An effect requested under a text (J5b, section 3.4). An executor refuses a
+landing or a payment that is requested under a grant with a text. That is
+the default. The owner's confirmation of one operation stays as an
+exception, with its exact arguments (J5.9) and recorded as the owner's
+decision. The draft reads the exception as course (c), the confirmation of
+effects, and gives the choice of it to the executor's owner. Course (b),
+the confirmation of every action, is not taken; its rule and its case
+S5-4b are removed, and the table of courses keeps its row. LIP-0013
+section 3.4 says the same of its steps.
+
+The key of a row's coin (J1, section 9.1). On v4 the coin of a row pays a
+separate key, derived from the seed of the operator's signer in an account
+of its own, as seal keys are derived (LIP-0008 section 11.1). Who funds
+the coin, and the account and the path of the key, stay open. The key
+registry and the key map carry the key.
+
 ## 0.1.35 — 2026-11-14
 
 Records the co-author's answer on one open point of LIP-0014 and decides

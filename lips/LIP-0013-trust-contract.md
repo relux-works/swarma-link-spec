@@ -467,9 +467,10 @@ For a contract of profile `/2`, LIP-0014 records decisions of 2026-11-14
 that add to these steps; the co-author's agreement on them is pending. Its
 section 3.4 adds two refusals after 6d for a grant with a scope text, a
 refusal of `land` and `spend` under such a grant after 6e, and a field
-`scope_text` to the record of step 7 (J5). Whether that refusal gives way
-to a hold at step 9 for the owner's confirmation is a pending owner
-decision (J5b). Its section 9.1 adds a ledger
+`scope_text` to the record of step 7 (J5). That refusal is the default.
+At an executor whose owner chose the exception it gives way to a hold at
+step 9 for the owner's confirmation of one operation (J5b). Its section
+9.1 adds a ledger
 for each row to the reservation of step 9 (J1). Profile `/1`, its steps and
 its vectors do not change.
 

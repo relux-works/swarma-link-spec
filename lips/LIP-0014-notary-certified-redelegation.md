@@ -65,18 +65,19 @@ anchor, and the action `0x05`.
 
 Five additions to the decisions above were decided by Ivan Oparin: J3 on
 2026-11-13 and the others on 2026-11-14. The co-author's agreement on each
-is pending. Their rules stand in this LIP, each in one subsection that
-opens with the decision and carries a label of this table. None of them is
-adopted before the co-author agrees, and until then the text in force
-stays as it is.
+is pending. One point of J5 is agreed by both owners: what a v4 child does
+with its parent's text (section 3.4). Their rules stand in this LIP, each in
+one subsection that opens with the decision and carries a label of this
+table. None of them is adopted before the co-author agrees, and until then
+the text in force stays as it is.
 
 | Label | Touches | The decision | Until the co-author agrees |
 | --- | --- | --- | --- |
-| J1. Rows | D6 | The parent signs one row for each child it permits, with the executor, the grantee, the cap and the certifier of that child. On v3 the limit is a number of compartments. On v4 each row also pins a coin that the issuance of its child must spend. Section 9.1. | A pool that the children share, and lists of the agents and grantees a child may name (sections 2 and 9). |
+| J1. Rows | D6 | The parent signs one row for each child it permits, with the executor, the grantee, the cap and the certifier of that child. On v3 the limit is a number of compartments. On v4 each row also pins a coin that the issuance of its child must spend, and the coin pays a separate key, derived from the seed of the operator's signer in an account of its own. Section 9.1. | A pool that the children share, and lists of the agents and grantees a child may name (sections 2 and 9). |
 | J2. Withdrawal for cause | D5 and D9; N6 and N8 of LIP-0012 | Each row names one notary, and only that notary certifies the row. It keeps one succession of seals for the row, and a cause counts only when the notary's signature covers its frame. On v3 D5 is narrowed. On v4 each row also names a stop coin of its notary, whose spend ends the row for every verifier. Section 10.1. | Any named notary certifies, and a withdrawal for cause reaches only the parties that observed its frame (section 10). |
 | J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Section 7.1. | A parent binds a notary by name only (section 7). |
 | J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else: the messaging key never grants authority. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
-| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and no executor performs a landing or a payment automatically under one. Whether it refuses such a request or holds it for the owner's confirmation is pending (J5b). What a v4 child does with its parent's text is not decided: the co-author answered on 2026-11-14, and the owner's confirmation is pending. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
+| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and no executor performs a landing or a payment automatically under one. It refuses such a request, and the owner's confirmation of one operation stays as an exception (J5b). On v4 a re-delegation narrows only typed fields and appends no text; both owners agree on that point. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
 
 Three further decisions stand in other LIPs. J7, signing under a grant for
 each run (LIP-0013 section 3.6), was decided by Ivan Oparin on 2026-11-14
@@ -281,18 +282,18 @@ that executor. Section 3.4 records the decision of 2026-11-14 on this (J5).
 
 ### 3.4. One text along the path, and what a text does to an effect
 
-Decided by Ivan Oparin on 2026-11-14 (J5), in four parts; the co-author's
-agreement is pending on each. On v3 a child carries its parent's text
-unchanged. A text governs an agent's work and never a service's effect, and
-money and landings go into a grant without a text. What an executor does
-with a landing or a payment that is still requested under a grant with a
-text, refusal or the owner's confirmation, is a pending owner decision
-(J5b). Profile `/2` gains no new member, and on v4 the ref, the revision and
-the payee are machine members. And these rules are in force before an
-executor enters enforcing mode. What a v4 child does with its parent's text
-is not decided: the subsection records the co-author's answer of
-2026-11-14 and holds no rule for it. Until the co-author
-agrees section 3.3 stands alone: a text narrows a grant, the notary judges a
+Decided by Ivan Oparin on 2026-11-14 (J5), in four parts and a fifth that
+followed on the same day (J5b); the co-author's agreement is pending on
+each. On v3 a child carries its parent's text unchanged. A text governs an
+agent's work and never a service's effect, and money and landings go into a
+grant without a text. An executor refuses a landing or a payment that is
+still requested under a grant with a text, and the owner's confirmation of
+one operation stays as an exception (J5b). Profile `/2` gains no new member,
+and on v4 the ref, the revision and the payee are machine members. And these
+rules are in force before an executor enters enforcing mode. One further
+point is agreed by both owners: on v4 a re-delegation narrows only typed
+fields and appends no text. Until the co-author agrees to the five parts,
+section 3.3 stands alone: a text narrows a grant, the notary judges a
 child's text against the parent's once, at certification, and no step
 compares an instruction with the text. Take a child whose text limits the
 work to one component of a repository. An instruction that concerns another
@@ -310,7 +311,7 @@ applied restriction.
 
 | Property | Closed? | For whom |
 | --- | --- | --- |
-| The child's text is not wider than the parent's | On v3: yes, completely, because no second text exists. On v4: not decided | Every verifier of a child of profile `/2`, one that starts later included |
+| The child's text is not wider than the parent's | On v3: yes, completely, because no second text exists. On v4: agreed for the first version, in which a child appends no text; the rule is written with the v4 bytes | Every verifier of a child of profile `/2`, one that starts later included |
 | A grant with a text is never executed by an executor that cannot read | Yes, by J5.4 | Every executor that accepts profile `/2` |
 | No record says that a text was checked | Yes, by J5.5 | Every reader of a record |
 | No landing and no payment rests on a reading of words | Yes, by J5.5: no executor performs a `land` or a `spend` automatically under a grant with a text | Every executor that accepts profile `/2` |
@@ -351,16 +352,24 @@ which carries no authority. That matches what v4 says of constraints:
 unknown semantics refuse, and no unimplemented policy evaluator may stand
 in for the checks (LIP-0008 section 12.2).
 
-One question is a pending owner decision (J5b): what an executor does with
-a `land` or a `spend` that is still requested under a grant with a text.
-J5.5 has one branch for each course, and until the decision the refusal
-applies:
+The four parts left one question open: what an executor does with a
+`land` or a `spend` that is still requested under a grant with a text.
+Ivan Oparin decided it later on 2026-11-14 (J5b), and the co-author's
+agreement is pending: the refusal is the default, and the owner's
+confirmation stays as an exception, with exact arguments and recorded as
+the owner's decision. Three courses were considered:
 
 | Course | The request | State and cost |
 | --- | --- | --- |
-| Refusal | The executor refuses it. | The Draft text until J5b is decided. A text and a landing never meet in one grant. |
-| (c) Confirmation of effects | The executor holds a `land` or a `spend` until its owner confirms that one operation, bound to the exact revision or amount (J5.9). `instruct` and `review` stay the agent's work. | Pending. The owner confirms each landing under a grant that has a text. A review under a text can still feed the gate of a landing under another grant. |
-| (b) Confirmation of every action | No predicate over a text exists, so every instruction, review, landing and payment under a grant with a text waits for the owner's confirmation. | Pending. Grants meant for unattended work carry no text. |
+| Refusal | The executor refuses it. | The default. A text and a landing never meet in one grant. |
+| (c) Confirmation of effects | The executor holds a `land` or a `spend` until its owner confirms that one operation, bound to the exact revision or amount (J5.9). `instruct` and `review` stay the agent's work. | The exception. It applies only at an executor whose owner chose it. The owner confirms each landing under a grant that has a text. A review under a text can still feed the gate of a landing under another grant. |
+| (b) Confirmation of every action | No predicate over a text exists, so every instruction, review, landing and payment under a grant with a text would wait for the owner's confirmation. | Not taken. Grants meant for unattended work would carry no text. |
+
+The default and the exception are the decision. Three things are the
+draft's reading of it: that the exception is course (c), with the binding
+of J5.9; that the executor's owner, who also confirms, chooses it for an
+executor; and that course (b) is not taken. How an owner makes that choice
+is the deployment's.
 
 One rule is excluded by the decision of 2026-11-14: that the agent applies
 the text to every action, landings and payments included. An effect would
@@ -371,16 +380,15 @@ after the fact.
 | --- | --- | --- |
 | J5.1 | A child of profile `/2` MUST carry its parent's `scope_text_sha256` unchanged: both empty, or both the same value. A child MUST NOT add a text where the parent has none and MUST NOT drop the parent's text. Equality is of octets; a different line ending or Unicode form is a different text. | `CHILD_TEXT_DIFFERS`, at V9, before the attestation is read |
 | J5.2 | Every member of a child's contract is handled by exactly one row of the member table below. A member to which a profile assigns no row, and a member whose semantics the verifier does not know, refuses, also when child and parent carry equal bytes (LIP-0008 section 12.2). For each narrowing relation the profile states what the executor compares the member with at the effect. | The code of the member's row |
-| J5.3 | For a child of profile `/2` the attestation's `textual` is `none` or `identical`, which is what V14 computes from two equal hashes. D1 is unchanged: a child with equal text still needs its attestation. Whether the value `within` stays in the attestation object belongs to the open v4 question. | An attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`, at V14 |
+| J5.3 | For a child of profile `/2` the attestation's `textual` is `none` or `identical`, which is what V14 computes from two equal hashes. D1 is unchanged: a child with equal text still needs its attestation. Whether the value `within` stays in the attestation object is for the later revision that narrows by text. | An attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`, at V14 |
 | J5.4 | An executor whose `text` setting is `none` MUST refuse a grant whose `scope_text_sha256` is not empty, root or child, after step 6d of LIP-0013. An executor whose setting is `conduct` MUST hold the exact octets that hash to that value; its admission gate makes that check before it builds an authority frame (LIP-0013 section 3.4). | `TEXT_UNSUPPORTED`; without the octets `TEXT_UNAVAILABLE` |
-| J5.5 | At an executor with `conduct` the agent applies the text to its work, which is `instruct` and `review`, as a restriction on what the structured members allow; a text never adds. The executor MUST NOT perform a `land` or a `spend` automatically under a grant whose text is not empty. On v4 the same holds for every command that the action profile marks as an effect at a resource. An issuer that wants a text and an effect issues two grants, and SHOULD NOT list `land` or `spend` in a contract that carries a text. No admission step establishes that an agent's work lies within a text, and no record, receipt or attestation may report that it did. A confirmation, where a course has one, is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then exactly one branch applies. Which one is a pending owner decision (J5b), and until it is made the refusal applies. | By the branch |
+| J5.5 | At an executor with `conduct` the agent applies the text to its work, which is `instruct` and `review`, as a restriction on what the structured members allow; a text never adds. The executor MUST NOT perform a `land` or a `spend` automatically under a grant whose text is not empty. On v4 the same holds for every command that the action profile marks as an effect at a resource. An issuer that wants a text and an effect issues two grants, and SHOULD NOT list `land` or `spend` in a contract that carries a text. No admission step establishes that an agent's work lies within a text, and no record, receipt or attestation may report that it did. A confirmation is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then one of two branches applies (J5b). The refusal is the default. The confirmation is an exception and applies only at an executor whose owner chose it. | By the branch |
 | J5.5, refusal | The executor refuses the request, after step 6e of LIP-0013. | `TEXT_UNSUPPORTED` |
-| J5.5 (c) | Owner decision pending: J5b. For `land` and `spend`, and on v4 for every command that the action profile marks as an effect at a resource, the executor MUST NOT perform the effect automatically under a grant whose text is not empty. It holds the effect until its owner confirms it under J5.9, or it refuses. `instruct` and `review` are conduct. | `TEXT_NEEDS_APPROVAL` |
-| J5.5 (b) | Owner decision pending: J5b. For every action, `instruct` and `review` included, a request under a grant whose text is not empty MUST NOT take effect automatically. An instruction is not given to a run as an instruction, a review verdict is not counted by a landing gate, and an effect at a resource is not performed, until one of two things has happened: the executor evaluated a predicate that a profile defines for that text, and it holds; or the executor's owner confirmed that request under J5.9. Otherwise the request is held or refuses. No predicate is defined in the first version, so under (b) every such request waits for the owner. Parsing, storing and certifying the grant are not blocked. | `TEXT_NEEDS_APPROVAL` |
+| J5.5 (c) | The exception (J5b). For `land` and `spend`, and on v4 for every command that the action profile marks as an effect at a resource, the executor MUST NOT perform the effect automatically under a grant whose text is not empty. It holds the effect until its owner confirms it under J5.9, or it refuses. `instruct` and `review` are conduct. | `TEXT_NEEDS_APPROVAL` |
 | J5.6 | An inherited text is the root's. Its words refer to the parties and resources of the root grant, which the bundle carries (V2). A reader MUST NOT resolve them against the child's grantee, executor or run. | none; a rule of reading |
 | J5.7 | A restriction that must hold at admission MUST be a structured member. The executor compares that member with the arguments actually passed to the privileged call, resolved immediately before the effect, when step 6 of LIP-0013 runs again. A plan, a title or a description of the arguments is not the arguments. | The code of the member, before the effect |
 | J5.8 | Words of the delegator travel only as the body of an instruction (LIP-0013 section 3.3), which is data until admitted. Explanation that should bind nobody belongs in `note`. An operative text MUST NOT be treated as explanation without a new, signed and consented contract. | none of its own |
-| J5.9 | Owner decision pending: J5b; the rule serves the courses (c) and (b). A confirmation binds one operation and is used once. The owner's command MUST name the `event_id` of the request and the `grant_id` it was admitted under; the action; the resolved target, which is the repository and the ref for `land` and the payee for `spend`; and the content of the effect, which is the exact revision to be landed for `land` and the amount for `spend`. For `instruct` and `review` under (b) the event id fixes the body. Immediately before the effect the executor resolves the actual arguments again (J5.7) and compares them with the confirmation. If the revision, the target, the amount or the payee differs, the confirmation does not apply, and the effect is held again or refuses. A candidate that was rebased, regenerated or amended is another revision and needs its own confirmation. The executor records the use of a confirmation durably before the effect, and a second effect under it refuses. A retry of the same event is not a second use; it falls under the existing rule of one effect per event. A confirmation widens nothing: every structured check of the grant runs as it does without one. The wire form of the command is the deployment's; what it binds is not. | `TEXT_NEEDS_APPROVAL` |
+| J5.9 | The rule serves the exception of J5.5 (c). A confirmation binds one operation and is used once. The owner's command MUST name the `event_id` of the request and the `grant_id` it was admitted under; the action; the resolved target, which is the repository and the ref for `land` and the payee for `spend`; and the content of the effect, which is the exact revision to be landed for `land` and the amount for `spend`. Immediately before the effect the executor resolves the actual arguments again (J5.7) and compares them with the confirmation. If the revision, the target, the amount or the payee differs, the confirmation does not apply, and the effect is held again or refuses. A candidate that was rebased, regenerated or amended is another revision and needs its own confirmation. The executor journals the confirmation as its owner's decision, with the arguments that it names, and records its use durably before the effect; a second effect under it refuses. A retry of the same event is not a second use; it falls under the existing rule of one effect per event. A confirmation widens nothing: every structured check of the grant runs as it does without one. The wire form of the command is the deployment's; what it binds is not. | `TEXT_NEEDS_APPROVAL` |
 
 The owner's command of J5.9 is the verified owner command that a2a already
 uses (LIP-0013 section 3.5); the bytes of the confirmation record are open.
@@ -424,12 +432,13 @@ The steps change as follows. V9 gains one equality, of the two text hashes.
 V14 checks `none` and `identical` against the two hashes. The bundle of V2
 carries one text. Step 6 of LIP-0013 gains the refusals of J5.4 after 6d
 and the refusal of J5.5 after 6e, for contracts that carry the member;
-step 7 gains `scope_text`. Under a course with a confirmation the refusal
-after 6e gives way to a hold at step 9 and the confirmation of J5.9.
+step 7 gains `scope_text`. At an executor that takes the exception of
+J5.5 (c) the refusal after 6e gives way to a hold at step 9 and the
+confirmation of J5.9.
 Profile `/1`, its vectors and kind 8185 do not change.
 
 J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3. For roots,
-J5.4, J5.5 and J5.7, and J5.9 where a course with a confirmation is taken,
+J5.4, J5.5 and J5.7, and J5.9 at an executor that takes the exception,
 are a precondition of enforcing mode for every executor that accepts
 profile `/2`, and the setting `text` is `none` unless the
 executor's owner set `conduct`. An executor that accepted `/2` contracts and
@@ -446,10 +455,12 @@ What stays open:
   That is behavioural trust in the principal's own executor, checked after
   the fact by an owner, a moderator or an arbiter. No summary of this
   subsection may say that scope text is enforced.
-- **The effect requested under a text.** Refusal, or the owner's
-  confirmation of each effect, or of every action: a pending owner
-  decision (J5b). A confirmation is a person's judgement. It can be wrong,
-  and it is independent of the model that proposed the effect.
+- **A confirmed effect rests on a person's judgement.** Under the
+  exception of J5.5 (c) an effect that was requested under a text is
+  performed on the word of the executor's owner. That judgement can be
+  wrong, and it is independent of the model that proposed the effect. How
+  an owner chooses the exception for an executor, and the bytes of the
+  confirmation record, are not fixed.
 - **Reviews feed landing gates.** A review is an agent's work, also a
   review given under a grant with a text, and such a review can let a
   landing under another grant, one without a text, pass its gate. It is
@@ -463,24 +474,27 @@ What stays open:
   payment. On v3 that limit does not exist for an effect. On v4 the ref,
   the exact revision and the payee are machine members, and a path stays
   words.
-- **The text of a v4 child.** Whether a v4 child carries its parent's text
-  unchanged, or may add to it, is not decided. Both owners decide it. The
-  co-author's answer is recorded below, before the cases, and no rule
-  follows from it.
+- **Narrowing by text on v4.** The first version of v4 has none: a child
+  appends no text. Layers of text that a notary checks, possibly with keys,
+  are in the plans for the next revision, and nothing of them is defined.
+  The v4 bytes that carry a child's text are not fixed either.
 - **J5.6 is a rule of reading** and cannot be tested mechanically.
 - **The delegator cannot bind a narrower task in the grant.** It states the
   task in the instruction.
 
-The decision of 2026-11-14 has four parts. The first is exact inheritance on
-v3 (J5.1 to J5.3). It reverses no decision: R3 of LIP-0008 section 12.6, N2
-of LIP-0012 and the decision that the notary performs the textual check
-stand, and on v3 a different text no longer occurs. The second is the
-principle for effects (J5.5): a text governs an agent's work and never a
-service's effect, and money and landings go into a grant without a text. The
-course for an effect that is still requested under a text is not part of the
-decision; it is pending as J5b. The third concerns members for a ref, a path
-and a payee. Profile `/2` gains none, because each needs an envelope tag and
-an effect check that LIP-0013 does not have. The ref, the exact revision and
+The decision of 2026-11-14 has four parts, and a fifth followed on the same
+day. The first is exact inheritance on v3 (J5.1 to J5.3). It reverses no
+decision: R3 of LIP-0008 section 12.6, N2 of LIP-0012 and the decision that
+the notary performs the textual check stand, and on v3 a different text no
+longer occurs. The second is the principle for effects (J5.5): a text
+governs an agent's work and never a service's effect, and money and landings
+go into a grant without a text. The course for an effect that is still
+requested under a text was not among the four. The fifth part decides it
+(J5b): the refusal is the default, and the owner's confirmation of one
+operation, with its exact arguments and recorded as the owner's decision,
+stays as an exception. The third concerns members for a ref, a path and a
+payee. Profile `/2` gains none, because each needs an envelope tag and an
+effect check that LIP-0013 does not have. The ref, the exact revision and
 the payee are machine members of the v4 action profile from its first
 version, and a path inside a repository stays words until a rule exists that
 compares a diff with a path. The fourth is the staging of the root rule
@@ -495,15 +509,19 @@ A policy language is reserved and not adopted (LIP-0008 section 12.4). A
 qualified evaluator for texts does not exist, and "qualified" has no
 definition yet.
 
-**The text of a v4 child: the co-author's answer.** The co-author answered
-this question on 2026-11-14. As a first approximation, a re-delegation on
-v4 narrows only typed fields and appends no text. Narrowing by text with a
-notary, possibly with keys, goes into the plans for the next revision. The
-joint decision is not made, and its state is: owner confirmation pending.
-The owner who decided the other parts of J5 leaned towards layers of text
-that a notary checks. The co-author's answer defers that lean and does not
-reject it. Until both owners agree, this LIP holds no rule for the text of
-a v4 child, and no rule or case of this subsection changes.
+**The text of a v4 child.** Both owners agree on this point. The co-author
+answered the question on 2026-11-14: as a first approximation, a
+re-delegation on v4 narrows only typed fields and appends no text, and
+narrowing by text with a notary, possibly with keys, goes into the plans
+for the next revision. The owner who decided the other parts of J5 had
+leaned towards layers of text that a notary checks. On the same day that
+owner agreed to the answer, and so to deferring the layers, on one
+condition: that the system can be built without them. The lean is deferred
+and not rejected. The agreement fixes no byte. This draft reads it as the
+inheritance of J5.1 carried over to the first version of v4: a child
+carries its parent's text unchanged, and nothing lets it add a text,
+change one or drop one. The v4 bytes that carry the text are open, and the
+agreement changes no rule or case of this subsection.
 
 Cases (J5):
 
@@ -512,10 +530,9 @@ Cases (J5):
 | S5-1 | Child and parent with the same non-empty text hash, the exact octets present, `textual` `identical` | A child with another text hash and an attestation that says `within` under the rules in force: `CHILD_TEXT_DIFFERS`, never `CHILD_NOT_CERTIFIED`. Variants that differ only in line endings, in Unicode form or in a final newline, each with its hash recomputed and the grant signed again, refuse the same way. In force this child is admitted with `within`. |
 | S5-2 | Both without text, `textual` `none`; and both with the same text, `identical`; each with a valid attestation | Three separate negatives: a text added under a parent without one, and the parent's text dropped: `CHILD_TEXT_DIFFERS`; an attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`. A child with equal text and no attestation still refuses as `CHILD_NOT_CERTIFIED`. In force, adding and dropping are admitted with `within`. |
 | S5-3 | An executor with `text` `none` admits a `/2` grant without a text | The same executor refuses a `/2` grant with a text, root or child: `TEXT_UNSUPPORTED`. In force it is admitted. The case covers the executor that cannot read and always runs beside S5-4. |
-| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, and the record says `present` | The text says "only changes under docs/", and an envelope asks for a `land` under the grant with the text. Under every course no landing happens automatically, whatever the diff touches. Under the refusal of the Draft text the request refuses as `TEXT_UNSUPPORTED`, and a `spend` refuses the same way; under (c) or (b) it is held, or refuses as `TEXT_NEEDS_APPROVAL`, until the owner confirms. A record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
+| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, and the record says `present` | The text says "only changes under docs/", and an envelope asks for a `land` under the grant with the text. Under both branches no landing happens automatically, whatever the diff touches. By default the request refuses as `TEXT_UNSUPPORTED`, and a `spend` refuses the same way; at an executor that takes the exception it is held, or refuses as `TEXT_NEEDS_APPROVAL`, until the owner confirms. A record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
 | S5-4a | Two grants of one principal to one grantee at one executor: one with the text and the actions `instruct` and `review`, one without a text and with `land` for the repository. An instruction under the first is admitted with `scope_text` `present`, and a landing under the second is performed | An executor that refuses the grant without a text because another grant of the same principal carries one fails the control. An executor that performs the landing under the grant with the text fails S5-4. |
-| S5-4c | Pending (J5b), under (c) and (b): under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation. A record that says the text was checked is wrong in every variant. |
-| S5-4b | Pending (J5b), under (b) only: a text-bearing `instruct` that the owner confirmed under J5.9 is given to a run as an instruction; a review that the owner confirmed is counted by the gate | The same `instruct` with no predicate and no confirmation: held, or `TEXT_NEEDS_APPROVAL`, and no run receives it as an instruction. The same for a review verdict: the landing gate does not count it. Under the refusal and under (c) both are admitted as the agent's work, and the vector records that verdict. |
+| S5-4c | The exception (J5b), at an executor whose owner chose it: under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation; the same request and the same confirmation at an executor whose owner did not choose the exception: refused as `TEXT_UNSUPPORTED`, and nothing is performed. A record that says the text was checked is wrong in every variant. |
 | S5-5 | The actual resolved arguments of the privileged call lie inside every structured member | Signed arguments that are narrow and a real call with wider arguments, including a target that changes between check and call: refused before the effect. v4 already requires it (LIP-0008 section 12.2); a test of the signed description alone is not this case. |
 | S5-6 | A narrower action set, repository list and window, one at a time, with the identical text and a valid attestation | Each made wider, one at a time, refuses with its mechanical code and not with a certification code. Budget variants run in the spend profile only. |
 | S5-7 | Members of the member table | Parent and child carry the same member of unknown semantics, not merely an extra JSON key: refused. |
@@ -1094,7 +1111,7 @@ bytes come with v4.
 | J1.6 | A notary MUST NOT certify two different children, two `child_grant_id` values, under one parent and ordinal, ever, also after a revocation or a withdrawal. It MAY sign again for the same child. Two attestations by one notary for different children of one parent and ordinal are complete evidence against it, as section 9 says today. The notary keeps a durable record for this. On v3 the landlord's signer still admits an ordinal once (section 5). | none at a verifier that holds one bundle |
 | J1.7 | "Used" names three different facts, and on v3 none of them is public state about how many child objects exist: the reservation of the ordinal at the v3 landlord's signer; the notary's record of the child it certified for the row; and consumption in the row ledger, which is state of the row's executor, the verifier that consumes. Each is permanent: a revoked child, a withdrawn attestation and a reissue free none of them. A new child takes another row. | none of its own |
 | J1.8 | A verifier, a receipt and a report MUST NOT state that a child is the only child of its row. On v4 they may state it for the active chain and for nothing wider (J1.9). | none of its own |
-| J1.9 | v4 only. Each row pins one coin: an output that is confirmed before the parent is signed and that pays a key of the re-delegating side. The issuance of a child MUST spend the coin of the child's row in the transaction that carries the child's commitment, and a verifier checks that input on its own node. A row whose coin another transaction spent admits no child. The exclusivity holds on the active chain and not across forks: after a reorganisation that removes an issuance, another child can spend the coin on the new chain. | A v4 child whose issuance does not spend the coin of its row refuses. The code is fixed with the v4 bytes |
+| J1.9 | v4 only. Each row pins one coin: an output that is confirmed before the parent is signed and that pays a key of the re-delegating side. That key is a separate key: the signer of that side's operator derives it from its seed, in an account of its own, as seal keys are derived (LIP-0008 section 11.1), and it is neither the delegation key nor the messaging key. The issuance of a child MUST spend the coin of the child's row in the transaction that carries the child's commitment, and a verifier checks that input on its own node. A row whose coin another transaction spent admits no child. The exclusivity holds on the active chain and not across forks: after a reorganisation that removes an issuance, another child can spend the coin on the new chain. | A v4 child whose issuance does not spend the coin of its row refuses. The code is fixed with the v4 bytes |
 
 The ledger store of J1.4 has an identity, given once by the executor's
 operator, and a position that only moves forward. Where a restore of the
@@ -1212,11 +1229,11 @@ What stays open:
   that removes that issuance, a thief of the delegation key (section 11.1)
   can issue another child that spends the coin on the new chain. The
   decision accepts this boundary.
-- **The key of a row's coin.** The decision has the coin pay a key of the
-  re-delegating side. The delegation key of section 11.1 signs child grants
-  and no transaction, so the coin needs another key of that side, or that
-  rule changes. Which key it is, and who funds the coin, is open and is
-  fixed with the v4 bytes.
+- **Who funds the coin of a row.** The key that the coin pays is decided:
+  a separate key, derived from the seed of the operator's signer in an
+  account of its own. The delegation key of section 11.1 signs child grants
+  and no transaction, and that rule stands. Who funds the coin, and the
+  account and the path of its key, are not fixed.
 - **The split is fixed when the parent is issued.** Moving budget between
   rows, or adding a row, needs a new parent, which is an ordinary issuance
   with its chain cost. The delegator cannot choose later which worker gets
@@ -1249,7 +1266,10 @@ What the limit is was a choice among four options:
 Ivan Oparin decided on 2026-11-14: option (a) for profile `/2` on v3, with
 the limit named a compartment limit, and option (c) for v4, where the
 delegator signs children alone. On v4 the coin of a row pays a key of the
-re-delegating side (J1.9). The decision accepts the boundary of (c): one
+re-delegating side (J1.9). A further decision of the same day names that
+key: a separate key, derived from the seed of the operator's signer in an
+account of its own, as seal keys are derived. The decision on rows accepts
+the boundary of (c): one
 child for each row holds on the active chain only. Options (b) and (d) are
 not taken. D7, D10 and D12 are unchanged, and the landlord's reservation on
 v3 is kept.
@@ -1855,9 +1875,9 @@ subsection lists as open.
 - The coarse form of the stop coin, one coin for each notary and parent,
   as a future option (section 10.1): its cost and its limits.
 - Narrowing the scope of a v4 child by text that a notary checks, possibly
-  with keys. The co-author's answer of 2026-11-14 puts it into the plans
-  for the next revision (section 3.4); it is no part of the first version
-  of v4, and the owner's confirmation of that answer is pending.
+  with keys. Both owners agreed on 2026-11-14 to leave it to the next
+  revision (section 3.4); it is no part of the first version of v4, and
+  nothing of it is defined.
 - The v4 bytes of the right of re-delegation, the delegation key of section
   11.1 among them.
 - D4 places the pieces of this LIP after the first proof, as tools around v3

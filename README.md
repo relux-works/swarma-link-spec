@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.35
+**Version:** 0.1.36
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.35
+## Draft profiles and design decisions in v0.1.36
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -228,35 +228,34 @@ Two independent reviews of the design found eight gaps, and version 0.1.24
 recorded each as an open question. Each now has Draft text, labelled J1 to
 J8. Ivan Oparin decided them, J3, J6 and J8 on 2026-11-13 and J1, J2, J4, J5
 and J7 on 2026-11-14, and the co-author's agreement on each is pending. One
-part of J5 is still a pending owner decision, and the text of a v4 child is
-undecided: the co-author answered on 2026-11-14 that, as a first
-approximation, a re-delegation on v4 narrows only typed fields and appends
-no text, and the owner's confirmation is pending. Nothing of it is adopted
-before both owners agree. The rules in force stay beside it as they are, and
-no gap is called closed for a property that its text lists as open. Five
-decisions stand in LIP-0014. The parent signs rows that fix the executor,
-the grantee, the cap and the certifier of each child; on v4 each row also
-pins a coin that the issuance of its child must spend, so that one child for
-each row holds on the active chain (J1, section 9.1). Each row has one
-notary, with one succession of seals and a cause that counts only when the
-notary's signature covers its frame; on v3 that narrows D5, and on v4 each
-row names a stop coin of its notary whose spend ends the row for every
-verifier that sees it (J2, section 10.1). A notary is pinned by name,
-registration and owner key (J3, section 7.1). A delegation key that the
-parent names signs children on v4 and nothing else, because the messaging
-key never grants authority (J4, section 11.1). On v3 a child carries its
-parent's scope text unchanged, and no executor performs a landing or a
-payment automatically under a grant with a text. Whether it refuses such a
-request or holds it for the owner's confirmation is pending, and what a v4
-child does with its parent's text is not decided (J5, section 3.4). In
-LIP-0008 section 5.2 an owner-signed change of an issuer's name that a
-verifier saw closes that issuer's grants durably (J6). In LIP-0013 section
-3.6 the service that holds an agent's key signs a run's objects only under
-what its operator listed for the origin of that run; that gate is a
-condition of enforcing mode and takes the place of presence for an agent's
-key (J7). In LIP-0011 section 7 the signed invocation is the request of a
-verdict (J8). No v3 byte changes, and neither does any rule or vector of the
-profile `swarma-trust-contract/1`.
+point of J5 is agreed by both owners: in the first version of v4 a
+re-delegation narrows only typed fields and appends no text. Nothing of the
+rest is adopted before both owners agree. The rules in force stay beside the
+Draft text as they are, and no gap is called closed for a property that its
+text lists as open. Five decisions stand in LIP-0014. The parent signs rows
+that fix the executor, the grantee, the cap and the certifier of each child;
+on v4 each row also pins a coin that the issuance of its child must spend,
+so that one child for each row holds on the active chain; the coin pays a
+separate key, derived from the seed of the operator's signer (J1, section
+9.1). Each row has one notary, with one succession of seals and a cause that
+counts only when the notary's signature covers its frame; on v3 that narrows
+D5, and on v4 each row names a stop coin of its notary whose spend ends the
+row for every verifier that sees it (J2, section 10.1). A notary is pinned
+by name, registration and owner key (J3, section 7.1). A delegation key that
+the parent names signs children on v4 and nothing else, because the
+messaging key never grants authority (J4, section 11.1). On v3 a child
+carries its parent's scope text unchanged, and no executor performs a
+landing or a payment automatically under a grant with a text: it refuses
+such a request, and the owner's confirmation of one operation stays as an
+exception. On v4 a child narrows only typed fields and appends no text (J5,
+section 3.4). In LIP-0008 section 5.2 an owner-signed change of an issuer's
+name that a verifier saw closes that issuer's grants durably (J6). In
+LIP-0013 section 3.6 the service that holds an agent's key signs a run's
+objects only under what its operator listed for the origin of that run; that
+gate is a condition of enforcing mode and takes the place of presence for an
+agent's key (J7). In LIP-0011 section 7 the signed invocation is the request
+of a verdict (J8). No v3 byte changes, and neither does any rule or vector
+of the profile `swarma-trust-contract/1`.
 
 [LIP-0009](lips/LIP-0009-replaceable-services.md) proposes replaceable services:
 compatible type profiles, portable state, fenced cut-over with replacement

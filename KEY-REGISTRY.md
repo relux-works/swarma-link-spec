@@ -451,14 +451,20 @@ of that child.
 - Owner: the re-delegating side.
 - Published: in the parent grant. Each row of the parent pins one confirmed
   coin, and the issuance of the row's child must spend it.
-- Holder: the signer of the re-delegating side. Which key of that side the
-  coin pays is fixed with the v4 bytes.
+- Holder: the signer of the re-delegating side's operator. The coin pays a
+  separate key, derived from the seed of that signer in an account of its
+  own, as seal keys are derived (LIP-0008 section 11.1). It is neither the
+  delegation key nor the messaging key. The account and the path are not
+  fixed.
 - Signs: the input that spends the row's coin in the issuance of that row's
   child.
 - Danger: medium.
 - Leak: the thief spends the coin outside an issuance, after which no child
   can be issued for that row. It issues nothing: a child also needs the
-  delegation key.
+  delegation key. If the account takes the layout of the seal account, the
+  known weakness of that layout applies: the account's extended public key
+  together with one private key yields every key of the account (LIP-0008
+  section 11.1).
 - Recovery: a new parent grant; rows are fixed when a parent is issued.
 - Source: LIP-0014 section 9.1, rule J1.9; decision of 2026-11-14,
   agreement pending. One child for each row then holds on the active chain
@@ -740,10 +746,9 @@ that tests them keeps the three apart:
 
 ## Open points
 
-- Which key of the re-delegating side the coin of a row pays (LIP-0014
-  section 9.1). The delegation key signs child grants and nothing else, so
-  the coin needs another key of that side, or that rule changes. It is
-  fixed with the v4 bytes.
+- Who funds the coin of a row, and the account and the path of its key
+  (LIP-0014 section 9.1). The key itself is decided: a separate key,
+  derived from the seed of the operator's signer.
 - The key that controls the output of a certificate set head. LIP-0016
   names the output and no key for it.
 - The source of the issuer's key of a v4 single-use seal (LIP-0008 section
