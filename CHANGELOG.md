@@ -61,14 +61,25 @@ the nodes. Section 7 leaves open the recency policy of the committed recent
 block, and LIP-0021 leaves open how one consistent observation is taken.
 
 The profile. An observation is a set of reads between two reads of the same
-tip; where the tip moved, it is void, and nothing is recorded as closed. A
-comparison node supplies its tip alone. Two nodes count as two when their
-operator labels them as of different sources, and the tips agree when the
-comparison node's tip is the reading node's tip or at most one block below
-it on the same chain. The age of the tip is the verifier's clock minus the
-time in the header of the tip block. A clock that reads less than the
-largest reading that the verifier has used refuses, and so does a header
-that is more than 600 seconds ahead of the clock. An action whose profile
+tip; where the tip moved, it is void, and nothing is recorded as closed.
+The verifier's configuration names the comparison nodes, and an observation
+asks each of them for its tip and for what shows its health. Two nodes
+count as two when their operator labels them as of different sources. A tip
+agrees when it is the reading node's tip or at most one block below it on
+the same chain, and it conflicts when it lies above that tip or on another
+branch. One healthy comparison node whose tip conflicts refuses the
+observation, whatever the others answer, and at least one node of another
+source has to agree. The age of the tip is the larger of two ages: the
+verifier's clock minus the time in the header of the tip block, and the
+clock minus the first sight, the reading at which the verifier first
+observed that block as the tip. The verifier keeps every first sight
+durably. On one tip a money or irreversible action is therefore admitted
+for less than 3600 seconds from the first sight, for every header that
+consensus accepts; the bound counts from the verifier's first observation
+of the tip and not from the moment at which its node received the block. A
+clock that reads less than the largest reading that the verifier has used
+refuses, and so does a header that is more than 600 seconds ahead of the
+clock. An action whose profile
 states no class has the stricter one. A verifier checks that the recent
 block of a grant is on the active chain and that the issuance anchor is
 confirmed above it by at most 432 blocks. The depth of a fact is the height
@@ -83,14 +94,20 @@ Nine codes with an order: `OBSERVATION_CHAIN`, `OBSERVATION_VOID`,
 `RECENT_BLOCK`, `RECENT_BLOCK_WINDOW` and `CONFIRMATIONS`. The first six
 stand before every rule of a grant, and none records a closure.
 
-Vectors. `vectors/LIP-0022/observation-vectors.json` holds 70 vectors over
-26 rules, at both sides of every boundary: the two cutoffs, the bound on a
-header, the kept mark of the clock, the lag, the window of the anchor, the
-half-open window of a grant in heights and the larger of two minimum
-depths. They state tips, times and heights and read no node. No node was
-run and no measurement was taken.
+Vectors. `vectors/LIP-0022/observation-vectors.json` holds 97 vectors over
+28 rules, at both sides of every boundary: the two cutoffs for both ages,
+the bound on a header, the kept mark of the clock, the lag, the window of
+the anchor, the half-open window of a grant in heights and the larger of
+two minimum depths. The node vectors hold a node that is ahead and a node
+on another branch, each beside a node that agrees. Ten vectors are
+sequences of observations over time, among them a tip whose header is two
+hours ahead and a tip with an ordinary header. They state tips, times and
+heights and read no node. No node was run and no measurement was taken.
 
 LIP-0008 sections 6 and 7 and LIP-0021 section 1 gain one pointer each.
+O6.3 of LIP-0021 gains the definition of a step of a walk, the examination
+of one output: a walk that ends with the last output that the bound allows
+is complete. No vector of LIP-0021 changes.
 
 ## 0.1.39 — 2026-11-14
 
