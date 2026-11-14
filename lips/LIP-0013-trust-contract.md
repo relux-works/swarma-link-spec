@@ -478,9 +478,9 @@ its vectors do not change.
 
 ### 3.6. Signing under a grant
 
-Owner decision pending: J7. Every rule of this subsection is Draft text.
-Until the decision nothing limits which run of an agent signs under which
-grant. A grant is issued to a key, and every run of the agent that holds
+Decided by Ivan Oparin on 2026-11-14 (J7); the co-author's agreement is
+pending. Until the co-author agrees the text in force stands, under which
+nothing limits which run of an agent signs under which grant. A grant is issued to a key, and every run of the agent that holds
 the key can act under it. Worker `W` is the grantee of a grant from
 principal A for an action at A's executor. `W` also admits instructions
 from an orchestrator of another party, B, under a second grant. B's
@@ -527,6 +527,11 @@ the consents it signed and of the denials of J7.3 (e).
 
 With every refusal nothing is signed.
 
+The origin of a run and the authority frame of section 3.4 name the same
+admission. The frame tells the agent under which grant its instruction
+stands, and the key holder's record tells the gate under which grants the
+run that this instruction started may sign.
+
 The check itself is a lookup before each signature, at the key holder. The
 work around it is larger than the lookup: the caller binding, the isolation
 of the signing channel, the version of the table and recovery after a
@@ -565,34 +570,30 @@ signing path. Six things stay open:
   exists, a key holder that lost them is one whose operator sets it up
   anew.
 
-The owners decide five things with this text:
+Ivan Oparin decided five points with this text on 2026-11-14:
 
-1. Whether to adopt the gate, with the six open points recorded. The
-   proposal is to adopt it.
-2. Whether the gate is a condition of enforcing mode. The case of the first
+1. The gate is adopted, with the six open points recorded.
+2. The gate is a condition of enforcing mode. The case of the first
    paragraph arises with one-hop grants and does not wait for
-   re-delegation. The proposal is that each owner confirms, with its
-   approval of enforcing mode (section 3.4), that the key holders of its
-   grantee identities run the gate; an executor cannot check that. Left to
-   deployment, the first enforcing executor admits the case.
-3. The threat boundary. The proposal is an honest key holder and an
-   untrusted run, as here. A gate that also holds against a hostile host
-   needs a signed origin that the receiver checks, with an authorizer and a
-   custody boundary that the host does not control; one more label signed
-   by the same host adds nothing. That stays an open option for v4.
-4. Where the operator's table lives while sections of an agent host's
-   configuration are unsigned (K4 of the key map). The proposal is a file
-   of the key holder's OS user, outside the agent's write authority, set by
-   the operator, with the version of J7.2, and without a signature until
-   the trust anchor of LIP-0015 exists.
-5. The presence rule of the key map. It asks for presence per signature for
-   every key that a grant names as grantee, before the executors that admit
-   it enter enforcing mode. An agent's key cannot have a person for each
-   signature. The proposal is that for a grantee key that belongs to an
-   agent the gate takes the place of presence, that presence stays for a
-   person's key, and that the key map says so. If the rule is kept as it
-   reads, no agent can be a grantee at an enforcing executor. Without this
-   decision the gate and the key map contradict each other.
+   re-delegation. Each owner confirms, with its approval of enforcing mode
+   (section 3.4), that the key holders of its agents' grantee identities
+   run the gate; an executor cannot check that.
+3. The threat boundary is an honest key holder and an untrusted run, as
+   here. A gate that also holds against a hostile host needs a signed
+   origin that the receiver checks, with an authorizer and a custody
+   boundary that the host does not control; one more label signed by the
+   same host adds nothing. That stays open for v4.
+4. The operator's table lives in a file of the key holder's OS user,
+   outside the agent's write authority, set by the operator, with the
+   version of J7.2, which only moves forward. It carries no signature
+   while sections of an agent host's configuration are unsigned (K4 of the
+   key map), until the trust anchor of LIP-0015 exists.
+5. The presence rule of the key map changes. It asked for presence per
+   signature for every key that a grant names as grantee, before the
+   executors that admit it enter enforcing mode. An agent's key cannot
+   have a person for each signature. For a grantee key that belongs to an
+   agent the gate takes the place of presence, presence stays for a
+   person's key, and the key map says so.
 
 Four other designs were set aside. A grant per run puts one issuance on
 chain for every run. The Link book estimates, at 355 bytes for an issuance
@@ -607,7 +608,7 @@ origin would narrow what a run can do under a listed grant; it is a policy
 language at the key holder, and the first version lists grants, parents and
 contracts and says what that leaves open.
 
-Cases (owner decision pending: J7). Their identifiers begin with S7, for
+Cases (J7). Their identifiers begin with S7, for
 this decision. Every case runs against the real signing endpoint with real
 callers; a helper that is handed a trusted run identifier tests nothing. On
 a refusal the test checks that no signature exists. Today no gate exists,
@@ -710,8 +711,9 @@ committed file, and that planted defects fail with their named codes.
   that holds the key can act under every grant issued to it, whichever
   party's work that run is doing. An agent that works for two parties can
   thereby carry one party's instruction into an action under the other
-  party's grant. Section 3.6 states the case and holds Draft text for it,
-  under a pending owner decision (J7); it is open question T10.
+  party's grant. Section 3.6 states the case and the gate that Ivan
+  Oparin decided for it on 2026-11-14 (J7), with the co-author's agreement
+  pending; it is open question T10.
 - **Replay and delay.** The nonce journal and the time window bound replay.
   Holding a pending envelope does not reopen the window (section 3.5).
 - **Public graph.** On mainnet, names, keys and the bundle make "who trusts
@@ -739,4 +741,5 @@ protocol text and a conformance change that names the vector set.
 | T7 | Whether an issuer MUST, rather than SHOULD, omit a zero v3 budget | SHOULD; the verifier compares the value, so both forms bind. |
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
-| T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Section 3.6 states the case. | Draft text in section 3.6, under a pending owner decision (J7): the service that holds the agent's key signs a run's objects only under what its operator listed for the origin of that run. This adds no record to the chain. Undecided. |
+| T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Section 3.6 states the case. | Section 3.6, decided by Ivan Oparin on 2026-11-14 (J7): the service that holds the agent's key signs a run's objects only under what its operator listed for the origin of that run. This adds no record to the chain. The co-author's agreement is pending. |
+| T11 | The authority frame of section 3.4: its encoding, the channel by which the admission gate hands it to the agent's run, and how a deployment shows that the agent cannot write it | A deployment profile. Undecided. |
