@@ -748,7 +748,9 @@ that tests them keeps the three apart:
 
 - Who funds the coin of a row, and the account and the path of its key
   (LIP-0014 section 9.1). The key itself is decided: a separate key,
-  derived from the seed of the operator's signer.
+  derived from the seed of the operator's signer. Draft
+  [LIP-0026](lips/LIP-0026-rows-and-accounts.md) proposes the three, and
+  the owners have not decided them.
 - The key that controls the output of a certificate set head. LIP-0016
   names the output and no key for it.
 - The source of the issuer's key of a v4 single-use seal (LIP-0008 section

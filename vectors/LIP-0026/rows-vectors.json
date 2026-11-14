@@ -1,0 +1,6229 @@
+{
+  "schema": "swarma-link-spec/lip-0026-vectors/1",
+  "lip": "LIP-0026",
+  "note": "Draft vectors for LIP-0026. No vector holds a grant, a transaction or an entry of a journal: rows, limits, coins, inputs and requests are stated facts. Identifiers of grants and of requests, public keys, transaction ids and scripts are placeholders. A vector of the groups parents, fit and coins whose outcome is not the passing one holds one defect and names a neighbour with the passing outcome that differs from it in that defect; a vector marked compound holds two defects and names none. A trace of the group ledgers states the outcome of each request and the accounts at its end, and names no neighbour. The refusal of a parent has no code. No verdict of this file records a closure.",
+  "codes": [
+    "CHILD_ORDINAL",
+    "CHILD_AGENT_NOT_ALLOWED",
+    "CHILD_GRANTEE_NOT_ALLOWED",
+    "CHILD_BUDGET_OVER",
+    "ROW_COIN",
+    "ROW_COIN_REQUIRED",
+    "OWN_LIMIT_OVER",
+    "ROW_CAP_OVER"
+  ],
+  "fields": {
+    "limits": "A limit has kind, resource, unit and amount; its key is the first three. No vector holds a period.",
+    "parents": "parent.seal is the seal of the parent; notaries are the notaries that it pins; pools states one amount for a limit key. A row states its executor, its recipient in one mode, its limits, its certifier and its coin.",
+    "fit": "child.ordinal selects the row. A recipient by key has request_public_key alone; a recipient by name has name and owner_public_key.",
+    "coins": "row_coin is the coin as the row states it. node.coin_transaction is what the verifier's node gives for the transaction of that outpoint: null where it knows none; block_height null where it is pending; outputs lists the scripts of its outputs by index. child.seal_txid is the seal transaction of the child, and child.anchor_inputs lists the outpoints that the inputs of its anchor spend. W_LINKAGE_REQUIRED is the code of LIP-0023 for an anchor that does not have exactly one input from its seal transaction.",
+    "ledgers": "grants lists the facts of each grant: a child states its parent and its ordinal, and a parent the executor and the limits of each row. Each step is one request at one executor, with its identity, what it consumes and the expected outcome: reserved, held for an identity that already holds a reservation, or a code. end lists, for each executor that reserved something, its accounts with their amounts, in the order of the canonical form of their keys."
+  },
+  "rules": [
+    {
+      "rule": "R1.1",
+      "section": "1",
+      "title": "what a row states",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-09",
+        "parent-11",
+        "parent-12"
+      ]
+    },
+    {
+      "rule": "R1.2",
+      "section": "1",
+      "title": "a limit and its key",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-05",
+        "parent-06"
+      ]
+    },
+    {
+      "rule": "R1.3",
+      "section": "1",
+      "title": "the pool over the rows",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-02",
+        "parent-03",
+        "parent-04",
+        "parent-05",
+        "parent-13"
+      ]
+    },
+    {
+      "rule": "R1.4",
+      "section": "1",
+      "title": "different coins, and none is the seal",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-07",
+        "parent-08"
+      ]
+    },
+    {
+      "rule": "R1.5",
+      "section": "1",
+      "title": "a parent that is refused as a whole",
+      "state": "proposed",
+      "vectors": [
+        "parent-03",
+        "parent-04",
+        "parent-06",
+        "parent-07",
+        "parent-08",
+        "parent-10",
+        "parent-11",
+        "parent-12"
+      ],
+      "not_covered": "The vectors state `refused` for a parent. No vector holds a child or a request under a refused parent."
+    },
+    {
+      "rule": "R2.1",
+      "section": "2",
+      "title": "the ordinal first",
+      "state": "proposed",
+      "vectors": [
+        "fit-01",
+        "fit-03",
+        "fit-05",
+        "fit-06",
+        "fit-16"
+      ]
+    },
+    {
+      "rule": "R2.2",
+      "section": "2",
+      "title": "the executor of the row",
+      "state": "proposed",
+      "vectors": [
+        "fit-01",
+        "fit-07",
+        "fit-08",
+        "fit-09",
+        "fit-17"
+      ]
+    },
+    {
+      "rule": "R2.3",
+      "section": "2",
+      "title": "the recipient of the row",
+      "state": "proposed",
+      "vectors": [
+        "fit-01",
+        "fit-03",
+        "fit-10",
+        "fit-11",
+        "fit-12",
+        "fit-18"
+      ]
+    },
+    {
+      "rule": "R2.4",
+      "section": "2",
+      "title": "the limits of the row",
+      "state": "proposed",
+      "vectors": [
+        "fit-01",
+        "fit-02",
+        "fit-04",
+        "fit-13",
+        "fit-14",
+        "fit-15"
+      ]
+    },
+    {
+      "rule": "R2.5",
+      "section": "2",
+      "title": "the order, after the parent and before the attestation",
+      "state": "proposed",
+      "vectors": [
+        "fit-16",
+        "fit-17",
+        "fit-18"
+      ]
+    },
+    {
+      "rule": "R3.1",
+      "section": "3",
+      "title": "the script of the coin",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-10"
+      ]
+    },
+    {
+      "rule": "R3.2",
+      "section": "3",
+      "title": "the coin on the active chain, at or below the parent's recent block",
+      "state": "proposed",
+      "vectors": [
+        "coin-01",
+        "coin-02",
+        "coin-03",
+        "coin-04",
+        "coin-05",
+        "coin-06",
+        "coin-07",
+        "coin-08",
+        "coin-15"
+      ]
+    },
+    {
+      "rule": "R3.3",
+      "section": "3",
+      "title": "the anchor spends the coin",
+      "state": "proposed",
+      "vectors": [
+        "coin-01",
+        "coin-09",
+        "coin-10",
+        "coin-11",
+        "coin-12"
+      ]
+    },
+    {
+      "rule": "R3.4",
+      "section": "3",
+      "title": "an ordinary input of the anchor",
+      "state": "proposed",
+      "vectors": [
+        "coin-01",
+        "coin-14"
+      ]
+    },
+    {
+      "rule": "R3.5",
+      "section": "3",
+      "title": "one child for each row on the active chain",
+      "state": "proposed",
+      "vectors": [
+        "coin-12",
+        "coin-13"
+      ],
+      "not_covered": "coin-12 and coin-13 state the two sides of the boundary. No vector holds a receipt or a report."
+    },
+    {
+      "rule": "R4.1",
+      "section": "4",
+      "title": "the path of a row key",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer. No vector holds a key or a path."
+    },
+    {
+      "rule": "R4.2",
+      "section": "4",
+      "title": "the descriptor of the row account",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer."
+    },
+    {
+      "rule": "R4.3",
+      "section": "4",
+      "title": "one index for one row",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer."
+    },
+    {
+      "rule": "R4.4",
+      "section": "4",
+      "title": "who funds the coin",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the operator."
+    },
+    {
+      "rule": "R4.5",
+      "section": "4",
+      "title": "what a row key signs",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer. No vector holds a transaction or a signature."
+    },
+    {
+      "rule": "R4.6",
+      "section": "4",
+      "title": "no other key, no other input",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer."
+    },
+    {
+      "rule": "R4.7",
+      "section": "4",
+      "title": "one check of the whole anchor",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the signer."
+    },
+    {
+      "rule": "R5.1",
+      "section": "5",
+      "title": "an account",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01"
+      ]
+    },
+    {
+      "rule": "R5.2",
+      "section": "5",
+      "title": "own accounts and row accounts",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01",
+        "ledger-02",
+        "ledger-11",
+        "ledger-12"
+      ]
+    },
+    {
+      "rule": "R5.3",
+      "section": "5",
+      "title": "a request under a grant that is no child",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01",
+        "ledger-02",
+        "ledger-13"
+      ]
+    },
+    {
+      "rule": "R5.4",
+      "section": "5",
+      "title": "a request under a child",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01",
+        "ledger-02",
+        "ledger-03",
+        "ledger-05"
+      ]
+    },
+    {
+      "rule": "R5.5",
+      "section": "5",
+      "title": "the pool is no account",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01",
+        "ledger-04"
+      ]
+    },
+    {
+      "rule": "R5.6",
+      "section": "5",
+      "title": "one atomic reservation and its order",
+      "state": "proposed",
+      "vectors": [
+        "ledger-03",
+        "ledger-04",
+        "ledger-08",
+        "ledger-09",
+        "ledger-10",
+        "ledger-12"
+      ]
+    },
+    {
+      "rule": "R5.7",
+      "section": "5",
+      "title": "one request identity, one reservation",
+      "state": "proposed",
+      "vectors": [
+        "ledger-06",
+        "ledger-07"
+      ]
+    },
+    {
+      "rule": "R5.8",
+      "section": "5",
+      "title": "nothing lowers an account",
+      "state": "proposed",
+      "vectors": [
+        "ledger-07"
+      ],
+      "not_covered": "ledger-07 shows a second document of a row. No vector holds a revocation, a withdrawal, a restart or an effect of unknown outcome."
+    },
+    {
+      "rule": "R5.9",
+      "section": "5",
+      "title": "the exposure of the principal",
+      "state": "proposed",
+      "vectors": [
+        "ledger-01"
+      ],
+      "not_covered": "ledger-01 ends with the own limit plus the rows reserved. No vector states an exposure as a value."
+    },
+    {
+      "rule": "R6.1",
+      "section": "6",
+      "title": "the order at an admission",
+      "state": "proposed",
+      "vectors": [
+        "coin-15"
+      ],
+      "not_covered": "coin-15 states the order of the two codes of the coin. No vector holds a check of LIP-0023 or of an attestation beside them."
+    },
+    {
+      "rule": "R6.2",
+      "section": "6",
+      "title": "the order at a reservation",
+      "state": "proposed",
+      "vectors": [
+        "ledger-10"
+      ]
+    }
+  ],
+  "parents": [
+    {
+      "id": "parent-01",
+      "rules": [
+        "R1.1",
+        "R1.2",
+        "R1.3",
+        "R1.4",
+        "R3.1"
+      ],
+      "claim": "A pool of 100 and two rows of 60 and 40 at two executors. The first names its recipient by key, the second by name.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-02",
+      "rules": [
+        "R1.3"
+      ],
+      "claim": "Rows of 60 and 30 under a pool of 100: the rows may leave a part of the pool unused.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 30
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-03",
+      "rules": [
+        "R1.3",
+        "R1.5"
+      ],
+      "claim": "Rows of 60 and 41 under a pool of 100: one atom above the pool.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 41
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-04",
+      "rules": [
+        "R1.3",
+        "R1.5"
+      ],
+      "claim": "A row limits a key for which the parent states no pool.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              },
+              {
+                "kind": "model requests",
+                "resource": "model-a",
+                "unit": "request",
+                "amount": 5
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-05"
+    },
+    {
+      "id": "parent-05",
+      "rules": [
+        "R1.2",
+        "R1.3"
+      ],
+      "claim": "A second kind of limit in one row, with a pool of its own: each key is summed apart.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          },
+          {
+            "kind": "model requests",
+            "resource": "model-a",
+            "unit": "request",
+            "amount": 5
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              },
+              {
+                "kind": "model requests",
+                "resource": "model-a",
+                "unit": "request",
+                "amount": 5
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-06",
+      "rules": [
+        "R1.2",
+        "R1.5"
+      ],
+      "claim": "A row states two limits with the same key.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              },
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 10
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-07",
+      "rules": [
+        "R1.4",
+        "R1.5"
+      ],
+      "claim": "Two rows state the same coin.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-08",
+      "rules": [
+        "R1.4",
+        "R1.5"
+      ],
+      "claim": "The coin of a row is the seal of the parent.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-09",
+      "rules": [
+        "R1.1"
+      ],
+      "claim": "Two rows name the same executor and the same recipient. Each has its own ordinal, limit and coin.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-10",
+      "rules": [
+        "R3.1",
+        "R1.5"
+      ],
+      "claim": "The script that a row states for its coin is a key hash and no witness key hash.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "76a914ee4575038ea9f784c5123200596f76c7589198be88ac"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-11",
+      "rules": [
+        "R1.1",
+        "R1.5"
+      ],
+      "claim": "A row names a certifier that the parent does not pin.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-c",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-12",
+      "rules": [
+        "R1.1",
+        "R1.5"
+      ],
+      "claim": "A row states a recipient in both modes at once.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea",
+              "name": "id/worker-one",
+              "owner_public_key": "02318f8188397307a2d1756eedf0f9121028cda473a148545e4fa7dccbc0fb2b7c"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-13",
+      "rules": [
+        "R1.3"
+      ],
+      "claim": "Two rows of the largest amount that the number form allows, under a pool of that amount: the sum is exact and above the pool.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 9007199254740991
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 9007199254740991
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 9007199254740991
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    }
+  ],
+  "fit": [
+    {
+      "id": "fit-01",
+      "rules": [
+        "R2.1",
+        "R2.2",
+        "R2.3",
+        "R2.4"
+      ],
+      "claim": "A child of row 1 with the executor, the recipient and the limit of its row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "fit-02",
+      "rules": [
+        "R2.4"
+      ],
+      "claim": "A child of row 1 with a smaller limit than its row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 10
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "fit-03",
+      "rules": [
+        "R2.1",
+        "R2.3"
+      ],
+      "claim": "A child of row 2, whose recipient is named by name.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 2,
+        "executor": {
+          "name": "id/service-y",
+          "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+        },
+        "recipient": {
+          "name": "id/worker-two",
+          "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 40
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "fit-04",
+      "rules": [
+        "R2.4"
+      ],
+      "claim": "A child without a limit: it can consume nothing that is counted.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": []
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "fit-05",
+      "rules": [
+        "R2.1"
+      ],
+      "claim": "The ordinal 0.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 0,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_ORDINAL",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-06",
+      "rules": [
+        "R2.1"
+      ],
+      "claim": "The ordinal 3 under a parent with two rows.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 3,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_ORDINAL",
+      "valid_neighbour": "fit-03"
+    },
+    {
+      "id": "fit-07",
+      "rules": [
+        "R2.2"
+      ],
+      "claim": "The child names another service than its row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-z",
+          "public_key": "02c27a1131941a94af6f2413817996d9dcab7d73812dc0ea536b48e8b3a1407475"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_AGENT_NOT_ALLOWED",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-08",
+      "rules": [
+        "R2.2"
+      ],
+      "claim": "The child names the service of its row with another pinned public key.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "020c88b66ae698a62eccaad49a8e3e21d460efa462fd3b12b4dca198c70781e52b"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_AGENT_NOT_ALLOWED",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-09",
+      "rules": [
+        "R2.2"
+      ],
+      "claim": "A child of row 1 that names the executor of row 2.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-y",
+          "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_AGENT_NOT_ALLOWED",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-10",
+      "rules": [
+        "R2.3"
+      ],
+      "claim": "The child names another request key than its row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0224ee3124b1c47e62d9a3e971ca1931cd4257be6b3662d2c3b6b320050960df78"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_GRANTEE_NOT_ALLOWED",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-11",
+      "rules": [
+        "R2.3"
+      ],
+      "claim": "The row names its recipient by key, and the child names a recipient by name.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "name": "id/worker-one",
+          "owner_public_key": "02318f8188397307a2d1756eedf0f9121028cda473a148545e4fa7dccbc0fb2b7c"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_GRANTEE_NOT_ALLOWED",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-12",
+      "rules": [
+        "R2.3"
+      ],
+      "claim": "A child of row 2 names the name of its row with another owner key.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 2,
+        "executor": {
+          "name": "id/service-y",
+          "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+        },
+        "recipient": {
+          "name": "id/worker-two",
+          "owner_public_key": "02798f68308f8213b62c9174834f62a4a9e777a8997c377769fa2873b9fa97d56d"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 40
+          }
+        ]
+      },
+      "expect": "CHILD_GRANTEE_NOT_ALLOWED",
+      "valid_neighbour": "fit-03"
+    },
+    {
+      "id": "fit-13",
+      "rules": [
+        "R2.4"
+      ],
+      "claim": "The limit of the child is one atom above the limit of its row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 61
+          }
+        ]
+      },
+      "expect": "CHILD_BUDGET_OVER",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-14",
+      "rules": [
+        "R2.4"
+      ],
+      "claim": "The child has a limit whose key its row does not have: another kind.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          },
+          {
+            "kind": "model requests",
+            "resource": "model-a",
+            "unit": "request",
+            "amount": 1
+          }
+        ]
+      },
+      "expect": "CHILD_BUDGET_OVER",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-15",
+      "rules": [
+        "R2.4"
+      ],
+      "claim": "The child states its limit in another unit than its row, so the key is another one.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "coin",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_BUDGET_OVER",
+      "valid_neighbour": "fit-01"
+    },
+    {
+      "id": "fit-16",
+      "rules": [
+        "R2.1",
+        "R2.5"
+      ],
+      "claim": "Two defects: the ordinal 3, and another executor. The ordinal is checked before any row is read.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 3,
+        "executor": {
+          "name": "id/service-z",
+          "public_key": "02c27a1131941a94af6f2413817996d9dcab7d73812dc0ea536b48e8b3a1407475"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 60
+          }
+        ]
+      },
+      "expect": "CHILD_ORDINAL",
+      "compound": true
+    },
+    {
+      "id": "fit-17",
+      "rules": [
+        "R2.2",
+        "R2.5"
+      ],
+      "claim": "Two defects: another executor, and a limit above the row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-z",
+          "public_key": "02c27a1131941a94af6f2413817996d9dcab7d73812dc0ea536b48e8b3a1407475"
+        },
+        "recipient": {
+          "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 61
+          }
+        ]
+      },
+      "expect": "CHILD_AGENT_NOT_ALLOWED",
+      "compound": true
+    },
+    {
+      "id": "fit-18",
+      "rules": [
+        "R2.3",
+        "R2.5"
+      ],
+      "claim": "Two defects: another recipient, and a limit above the row.",
+      "parent": {
+        "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+        "seal": {
+          "txid": "286fc6b912549d1858be276f47760442fe11045a0ff90588f5e7916b569e73fe",
+          "vout": 0
+        },
+        "notaries": [
+          "id/notary-a",
+          "id/notary-b"
+        ],
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 50
+          }
+        ],
+        "pools": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 100
+          }
+        ],
+        "rows": [
+          {
+            "executor": {
+              "name": "id/service-x",
+              "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+            },
+            "recipient": {
+              "request_public_key": "0276a035d635b5159a2a03f30a937f5edca12ff47b098859e9bde17141100ab9ea"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 60
+              }
+            ],
+            "certifier": "id/notary-a",
+            "coin": {
+              "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+              "vout": 0,
+              "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+            }
+          },
+          {
+            "executor": {
+              "name": "id/service-y",
+              "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+            },
+            "recipient": {
+              "name": "id/worker-two",
+              "owner_public_key": "025baa497c6544178d8cdf1d4337e0ec679d27d0a83b917047285b37c30639622f"
+            },
+            "limits": [
+              {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom",
+                "amount": 40
+              }
+            ],
+            "certifier": "id/notary-b",
+            "coin": {
+              "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+              "vout": 0,
+              "script_hex": "0014521558d7de93379998521b9465cfad73f04b0264"
+            }
+          }
+        ]
+      },
+      "child": {
+        "ordinal": 1,
+        "executor": {
+          "name": "id/service-x",
+          "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+        },
+        "recipient": {
+          "request_public_key": "0224ee3124b1c47e62d9a3e971ca1931cd4257be6b3662d2c3b6b320050960df78"
+        },
+        "own_limits": [
+          {
+            "kind": "coins",
+            "resource": "namecoin",
+            "unit": "atom",
+            "amount": 61
+          }
+        ]
+      },
+      "expect": "CHILD_GRANTEE_NOT_ALLOWED",
+      "compound": true
+    }
+  ],
+  "coins": [
+    {
+      "id": "coin-01",
+      "rules": [
+        "R3.2",
+        "R3.3",
+        "R3.4"
+      ],
+      "claim": "The coin is confirmed at height 650, the parent commits a recent block at height 700, and the anchor of the child spends the coin beside its linkage input and a funding input.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "coin-02",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The coin is confirmed in the parent's recent block itself.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 700,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "coin-03",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The coin is confirmed one block above the parent's recent block.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 701,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-02"
+    },
+    {
+      "id": "coin-04",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The transaction of the coin is pending.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": null,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-05",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The node does not know the transaction of the coin.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": null
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-06",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The output at the stated index has another script than the row states.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00146969243ab81f2e15cb5d7d349640a13e950f77aa",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-07",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The transaction of the coin has no output at the stated index.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": []
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-08",
+      "rules": [
+        "R3.2"
+      ],
+      "claim": "The block that holds the coin is not on the active chain of the observation.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": false,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-09",
+      "rules": [
+        "R3.3"
+      ],
+      "claim": "The anchor of the child does not spend the coin: it is funded by another confirmed output.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_REQUIRED",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-10",
+      "rules": [
+        "R3.3"
+      ],
+      "claim": "The anchor spends the coin of another row of the same parent.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "1a59671198ba20f4b71ff1a42b2265d083fc115c3e1398e4baa1ceb26255e365",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_REQUIRED",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-11",
+      "rules": [
+        "R3.3"
+      ],
+      "claim": "The anchor spends another output of the transaction that holds the coin.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_REQUIRED",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-12",
+      "rules": [
+        "R3.3",
+        "R3.5"
+      ],
+      "claim": "A second child of the row, after the issuance of the first spent the coin: its confirmed anchor cannot have that input and spends other outputs.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_REQUIRED",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-13",
+      "rules": [
+        "R3.5"
+      ],
+      "claim": "The accepted boundary: a reorganisation removed the first issuance, and the anchor of another child spends the coin on the chain that the verifier now validates. The facts are those of coin-01.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "coin-14",
+      "rules": [
+        "R3.4"
+      ],
+      "claim": "The coin is an output of the child's own seal transaction, and the anchor spends it beside the linkage output: two inputs from the seal transaction, which LIP-0023 C2.3 refuses before this profile is asked.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3",
+            "00140f57d1f9c2a0d4d6de816e71447e23523b0298ea"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "anchor_inputs": [
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 2
+          },
+          {
+            "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "coin-01"
+    },
+    {
+      "id": "coin-15",
+      "rules": [
+        "R3.2",
+        "R6.1"
+      ],
+      "claim": "Two defects: the coin is confirmed above the parent's recent block, and the anchor does not spend it. The coin is checked as the row states it before the anchor is read for it.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "vout": 0,
+        "script_hex": "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 701,
+          "on_active_chain": true,
+          "outputs": [
+            "0014be98046dc7b71c0b029bafe0b5be4cfbbb4bf80d",
+            "0014d42fc87c422b4e7850067077346fca70eaf55f74"
+          ]
+        }
+      },
+      "child": {
+        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN",
+      "compound": true
+    }
+  ],
+  "ledgers": [
+    {
+      "id": "ledger-01",
+      "rules": [
+        "R5.1",
+        "R5.2",
+        "R5.3",
+        "R5.4",
+        "R5.5",
+        "R5.9"
+      ],
+      "claim": "One parent with an own limit of 50 and rows of 60 and 40, over three executors. Each child spends its row in full at its executor, and the parent spends its own limit at a third. 150 are reserved, which is the own limit plus the rows, and no account of one executor is charged for a request at another.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 2,
+          "executor": {
+            "name": "id/service-y",
+            "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-y",
+          "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "request": "6c4e113c85f46da6bbaba428242b427c6bfbd9c92977ecdc4f82244db27eb2d2",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-p",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "40cfee8142ae74e818fa9417359851de7ba45e2e78d7daf30f27d1ec260e2e8e",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-y",
+          "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "request": "984ad88addf05f61a8085fe51c2e9f7abd7208dc48e75c22aeaac0c88617f58d",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-p",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "226de68e6a05cb626ed7ed2a8ed8b74473474e9378492273c478f49c9c11d994",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          }
+        ],
+        "id/service-y": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 2,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          }
+        ],
+        "id/service-p": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 50
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-02",
+      "rules": [
+        "R5.2",
+        "R5.3",
+        "R5.4"
+      ],
+      "claim": "The parent and two siblings name one service, so one ledger holds the own account of the parent and both row accounts. Direct requests of the parent and requests of the two children come in turn, each up to its ceiling. A request of a child moves no own account of the parent, and a direct request moves no row.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 2,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "40cfee8142ae74e818fa9417359851de7ba45e2e78d7daf30f27d1ec260e2e8e",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 20
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "request": "6c4e113c85f46da6bbaba428242b427c6bfbd9c92977ecdc4f82244db27eb2d2",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "226de68e6a05cb626ed7ed2a8ed8b74473474e9378492273c478f49c9c11d994",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+          "request": "984ad88addf05f61a8085fe51c2e9f7abd7208dc48e75c22aeaac0c88617f58d",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "43ae46817ec369d95a94846a7c98791104029c1afb615384939c1c6de0891c52",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "cdce6321bfc7d3d32f6fbfc9af3cc70c2851cbfef642166ec9e1b8bfac6c7021",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 50
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 2,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-03",
+      "rules": [
+        "R5.4",
+        "R5.6"
+      ],
+      "claim": "Two documents of row 1, each with an own limit of 60 under a row of 60. 30 under the first and 30 under the second fill the row. One atom more under either refuses for the row, and both own accounts stay as they were.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "ROW_CAP_OVER"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "8aa699df0935aad4435f5923f8ced5a2e114b8f93bdd22bc22b53c3490f02c30",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "ROW_CAP_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-04",
+      "rules": [
+        "R5.5",
+        "R5.6"
+      ],
+      "claim": "No borrowing. Row 1 has 50 of its 60 left, and row 2 is full. A request of 10 under a second document of row 2 refuses, although the rows together have 50 left under the pool.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "a31a71e95626e0f74938951815ce0a7c1955f49ad9d33349405f6f427078f44d",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 2,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ]
+        },
+        {
+          "id": "c45eea4c8b1ad7764bc03690eb0d722f4dbc1246d1ebc8321f18fc797b6b6f7d",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 2,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "a31a71e95626e0f74938951815ce0a7c1955f49ad9d33349405f6f427078f44d",
+          "request": "6c4e113c85f46da6bbaba428242b427c6bfbd9c92977ecdc4f82244db27eb2d2",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 40
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "c45eea4c8b1ad7764bc03690eb0d722f4dbc1246d1ebc8321f18fc797b6b6f7d",
+          "request": "984ad88addf05f61a8085fe51c2e9f7abd7208dc48e75c22aeaac0c88617f58d",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "ROW_CAP_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 10
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "a31a71e95626e0f74938951815ce0a7c1955f49ad9d33349405f6f427078f44d",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 10
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 2,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 40
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-05",
+      "rules": [
+        "R5.4"
+      ],
+      "claim": "The own account of the parent is full, and a child of the same service still spends under its row. A checker that charges the parent's own limit for a child's request refuses the second request.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "40cfee8142ae74e818fa9417359851de7ba45e2e78d7daf30f27d1ec260e2e8e",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 20
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "request": "226de68e6a05cb626ed7ed2a8ed8b74473474e9378492273c478f49c9c11d994",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 20
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 50
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-06",
+      "rules": [
+        "R5.7"
+      ],
+      "claim": "A request is presented again with the same identity: it holds its reservation and is not charged a second time.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "held"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "held"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 60
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-07",
+      "rules": [
+        "R5.7",
+        "R5.8"
+      ],
+      "claim": "A request that holds a reservation under the first document of a row is presented again under the second document. It is not charged again, and the own account of the second document stays empty.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 30
+            }
+          ],
+          "expect": "held"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-08",
+      "rules": [
+        "R5.6"
+      ],
+      "claim": "Two requests of 10 compete for the last 15 of a row, the first document before the second.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 45
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "ROW_CAP_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 55
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 55
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-09",
+      "rules": [
+        "R5.6"
+      ],
+      "claim": "The same two requests in the other order: the other one is reserved. In either order one of the two is refused, and the row ends at 55.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "id": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 45
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "ROW_CAP_OVER"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "0d5da125096ef4c1f8c1e0166ed2d2f24a7341f42d5a9b076f020152089f2086",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 10
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "adb807620c5d7a18f20e19f4bde169f66d735a4d5acb43464ecf5f15aeb05ba2",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 45
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 55
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-10",
+      "rules": [
+        "R5.6",
+        "R6.2"
+      ],
+      "claim": "A request consumes two limit keys, coins and model requests. The third request fits the coins and exceeds the requests: nothing of it is reserved, and the coin accounts stay as they were.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                },
+                {
+                  "kind": "model requests",
+                  "resource": "model-a",
+                  "unit": "request",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            },
+            {
+              "kind": "model requests",
+              "resource": "model-a",
+              "unit": "request",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            },
+            {
+              "kind": "model requests",
+              "resource": "model-a",
+              "unit": "request",
+              "amount": 1
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            },
+            {
+              "kind": "model requests",
+              "resource": "model-a",
+              "unit": "request",
+              "amount": 1
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "2dd75a2bd6c5d7f93a37b6d621bc793d544a194f254b59be1b4b8947f7f3d476",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            },
+            {
+              "kind": "model requests",
+              "resource": "model-a",
+              "unit": "request",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8aa699df0935aad4435f5923f8ced5a2e114b8f93bdd22bc22b53c3490f02c30",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 10
+            }
+          ],
+          "expect": "reserved"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          },
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "model requests",
+                "resource": "model-a",
+                "unit": "request"
+              }
+            },
+            "amount": 2
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 30
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "model requests",
+                "resource": "model-a",
+                "unit": "request"
+              }
+            },
+            "amount": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-11",
+      "rules": [
+        "R5.2"
+      ],
+      "claim": "A request consumes a limit key for which its grant states no limit: the ceiling is 0, and nothing is reserved.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 60
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "model requests",
+              "resource": "model-a",
+              "unit": "request",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        },
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "8e4601f92727c47a4184ee60da46c04df8db6f18272ce9489b3b485385bac67b",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 5
+            }
+          ],
+          "expect": "reserved"
+        }
+      ],
+      "end": {
+        "id/service-x": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 5
+          },
+          {
+            "account": {
+              "account": "row",
+              "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+              "ordinal": 1,
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "ledger-12",
+      "rules": [
+        "R5.2",
+        "R5.6"
+      ],
+      "claim": "A child with an own limit of 0 under a row of 60: an allowance of zero authorizes nothing.",
+      "grants": [
+        {
+          "id": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": [
+            {
+              "executor": {
+                "name": "id/service-x",
+                "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 60
+                }
+              ]
+            },
+            {
+              "executor": {
+                "name": "id/service-y",
+                "public_key": "020e5a5f9e71903bcf70193c0176052a20f7b46f5a1a5f40796d1ed9f05877bc90"
+              },
+              "limits": [
+                {
+                  "kind": "coins",
+                  "resource": "namecoin",
+                  "unit": "atom",
+                  "amount": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "parent": "dbb4f37647f507113249abe215ba5e955e03ff6d7052700217caf6d5a9c0f9f9",
+          "ordinal": 1,
+          "executor": {
+            "name": "id/service-x",
+            "public_key": "02df4178cf960f78677ab666cb4c392c48ffd31116388763a00ac8abf42788670f"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 0
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-x",
+          "grant": "11aa8b7d1c2be9c9fbd0475f64080508c727aa9f5a9b70335f4f017edea65bd0",
+          "request": "dbc40c0e72a3de74f98e8fa9d62874de1cbc1f0d3edbde46994feca0a47ce7ec",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        }
+      ],
+      "end": {}
+    },
+    {
+      "id": "ledger-13",
+      "rules": [
+        "R5.3"
+      ],
+      "claim": "A grant that is no child and has no rows: its requests move its own account alone.",
+      "grants": [
+        {
+          "id": "766f21cd4cdbca06ccdabaa30c3afb7a79228322a3b60aa4b7445e0ae6e3ee80",
+          "executor": {
+            "name": "id/service-p",
+            "public_key": "0216cb6d760d87fc7ca84123d67406f5290e8218f41b3fa14f3dd77de094fd409a"
+          },
+          "own_limits": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "rows": []
+        }
+      ],
+      "steps": [
+        {
+          "executor": "id/service-p",
+          "grant": "766f21cd4cdbca06ccdabaa30c3afb7a79228322a3b60aa4b7445e0ae6e3ee80",
+          "request": "73199aed17dab1514512b14074091b4dcac9c58db5d1d91112e0315591654bc1",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 50
+            }
+          ],
+          "expect": "reserved"
+        },
+        {
+          "executor": "id/service-p",
+          "grant": "766f21cd4cdbca06ccdabaa30c3afb7a79228322a3b60aa4b7445e0ae6e3ee80",
+          "request": "3b1e384cc16c631acbd76a02d3c0af9dd5ff4063904e6e932cb8960c31dbc5a7",
+          "consumes": [
+            {
+              "kind": "coins",
+              "resource": "namecoin",
+              "unit": "atom",
+              "amount": 1
+            }
+          ],
+          "expect": "OWN_LIMIT_OVER"
+        }
+      ],
+      "end": {
+        "id/service-p": [
+          {
+            "account": {
+              "account": "own",
+              "grant": "766f21cd4cdbca06ccdabaa30c3afb7a79228322a3b60aa4b7445e0ae6e3ee80",
+              "limit": {
+                "kind": "coins",
+                "resource": "namecoin",
+                "unit": "atom"
+              }
+            },
+            "amount": 50
+          }
+        ]
+      }
+    }
+  ]
+}

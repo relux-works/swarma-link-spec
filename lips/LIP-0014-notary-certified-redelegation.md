@@ -1225,6 +1225,12 @@ successor of the state it holds, and a block boundary for a recovery, with
 vectors. They are that draft's proposals; it selects no store, and each
 point stays open until both owners accept it.
 
+[LIP-0026](LIP-0026-rows-and-accounts.md) proposes a first profile for rows
+on v4: what a row states, the checks of a child against its row, the coin
+of a row with the account of its key, and the accounts that a request
+debits, with vectors. They are that draft's proposals, and each point stays
+open until both owners accept it.
+
 The subsection replaces these parts of the text in force: the members
 `agents`, `grantees` and `max_children` of section 2; the attestation
 members 15, `budget`, and 16, `prev_attestation_id`, of section 6.1, so

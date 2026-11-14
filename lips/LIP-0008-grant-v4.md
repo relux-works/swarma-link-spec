@@ -1259,6 +1259,12 @@ independent journals MUST NOT consume a shared apparent parent remainder.
 Distributed serialization, reservation/reconciliation encoding and recovery
 remain open, not an implementation claim.
 
+[LIP-0026](LIP-0026-rows-and-accounts.md) proposes which accounts of an
+executor's ledger a request debits where a parent has rows: the own account
+of its grant, and for a request under a child also the row of its parent.
+They are that draft's proposals, and each point stays open until both
+owners accept it.
+
 Proof bundles carry complete signed objects or exact resolvable references.
 The receiver MUST recompute each ID under section 8.1 and match it to the
 ordered path and committed parent. Unresolved, mismatched or ambiguous proofs

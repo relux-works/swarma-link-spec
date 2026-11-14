@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.1.44 — 2026-11-14
+
+Adds Draft LIP-0026, a first profile for the rows of a v4 parent, their
+coins and the accounts of a grant, with vectors. Every rule of it is the
+draft's proposal, and neither owner has decided one. No rule of another
+text changes, and no v3 byte does. No node, no signer and no store was run.
+
+What it answers. LIP-0014 section 9.1 records the decision of 2026-11-14 on
+rows (J1), with the co-author's agreement pending: a parent signs one row
+for each child, an executor reserves a request under a child in two
+ledgers, and on v4 each row pins a coin that the issuance of its child
+spends. It leaves open who funds the coin and the account and the path of
+its key, and it names no code for a child whose issuance does not spend the
+coin. LIP-0008 section 12.2 charges a request against every applicable
+link, and LIP-0014 section 9 keeps the parent's own budget apart from the
+pool; neither says which counter an executor keeps under which key.
+
+The profile. A row states its executor, the recipient of the child in one
+mode, its limits, its certifier and its coin, as an outpoint and a script.
+For each limit key a pool bounds the sum of the rows. A verifier checks a
+child against the row of its ordinal on signed octets alone, in the order
+and with the four codes of J1.2. The coin has a witness key hash script and
+is confirmed on the active chain at or below the parent's committed recent
+block, which is how a verifier reads "confirmed before the parent is
+signed"; one input of the child's anchor spends it. A row key has the path
+`m/84'/7'/<row-account>'/0/<i>` in an account of 10 or above that holds row
+keys alone; the operator of the re-delegating side funds the coin; and the
+signer signs with a row key one kind of input, the one that spends the coin
+in the anchor of that row's child. An executor keeps own accounts and row
+accounts. A request under a child debits the own account of the child and
+the row of its parent, and no own account of the parent; the pool is no
+account, and no row borrows from another. One request identity holds one
+reservation.
+
+Two points are the draft's own reading where texts meet, and the LIP names
+them first for the owners: the recent block as the mark of the moment of
+signing, and the row as the parent's link for a request under a child.
+
+Eight codes with an order. Five have their names from LIP-0014:
+`CHILD_ORDINAL`, `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`,
+`CHILD_BUDGET_OVER` and `ROW_CAP_OVER`. Three are new: `ROW_COIN`,
+`ROW_COIN_REQUIRED` and `OWN_LIMIT_OVER`.
+
+Vectors. `vectors/LIP-0026/rows-vectors.json` holds 59 vectors over 33
+rules: 13 parents, 18 children against their rows, 15 on the coin, and 13
+traces of an executor's ledger, among them one parent over three executors,
+direct requests beside the requests of two siblings, two documents of one
+row, a repeated request and a request that consumes two limit keys. They
+state facts and hold no grant, no transaction and no entry of a journal.
+
+LIP-0014 section 9.1, LIP-0008 section 12.2 and the open points of the key
+registry gain one pointer each.
+
 ## 0.1.43 — 2026-11-14
 
 Adds Draft LIP-0025, the journal continuity profile for Grant v4, with

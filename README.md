@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.43
+**Version:** 0.1.44
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.43
+## Draft profiles and design decisions in v0.1.44
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -464,6 +464,24 @@ the draft's proposal, and neither owner has decided one. The draft selects
 no store and no service for the outside record, and nothing of it was built
 or run. The 66 vectors in [`vectors/LIP-0025/`](vectors/LIP-0025/) hold
 histories, decision tables and twelve traces of the consent journal.
+
+Version 0.1.44 adds [LIP-0026](lips/LIP-0026-rows-and-accounts.md), a first
+profile for the rows of a v4 parent. The rows, their two ledgers and the
+coin of a row are decided in LIP-0014 section 9.1, with the co-author's
+agreement pending; who funds the coin, the account and the path of its key,
+and which counter an executor keeps under which key are open there. The
+draft proposes: what a row states, and a pool that bounds the rows for each
+kind of limit; the checks of a child against the row of its ordinal, on
+signed octets alone; a coin with a witness key hash script that is
+confirmed at or below the parent's recent block, and an input of the
+child's anchor that spends it; a row account of the signer, apart from
+seals and funding, whose keys sign that one kind of input; and the accounts
+of an executor's ledger, in which a request under a child debits the own
+account of the child and the row of its parent, and never the parent's own
+account. Every rule is the draft's proposal, and neither owner has decided
+one. The 59 vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) state rows,
+coins and requests as facts, among them a trace of one parent over three
+executors; no node, no signer and no store was run for the draft.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
