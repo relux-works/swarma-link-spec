@@ -72,6 +72,13 @@ v4 support. No v4 implementation or conformance result is claimed here.
 
 ## Proposal
 
+**Names of the parties.** Grant v3 names the parties after the rental it was
+built for: `landlord_name`, `landlord_sig` and `agent_name`. Those are names
+of bytes, and the bytes stay as they are. The prose of this specification
+and Grant v4 name the roles instead: the issuer, the recipient and the
+executor. Ivan Oparin decided this on 2026-11-14; the co-author's agreement
+is pending.
+
 ### 1. Versioned signed authority
 
 V4 binds the network/genesis, issuer, target, recipient, validity interval in
@@ -867,6 +874,67 @@ descriptor into a watch-only wallet of the pinned Namecoin Core build;
 support for coin type 7 and Namecoin addresses in the chosen signing device;
 and recovery, where the BIP-44 gap limit of 20 unused addresses assumes that
 indices are used in order.
+
+### 11.2. The seal-key endorsement
+
+Section 11 lets a verifier accept a seal, and call a spend of it the
+issuer's, only under an endorsement by the issuer. On 2026-11-14 Ivan Oparin
+fixed what the endorsement states and the order in which a verifier checks
+it; the co-author's agreement is pending. The members are named by meaning,
+and their bytes stay open.
+
+| Member | Meaning |
+| --- | --- |
+| Issuer pin | The issuer that the endorsement speaks for, as the grant binds it: its name, the registration of that name and its owner key (section 3). |
+| Network and genesis | The chain on which the seal exists. |
+| Profile | The profile under which the script is read: the construction profile of section 1.1 and the kind of seal. |
+| Outpoint | The exact transaction and output index of the seal. |
+| Seal public key | The key that the seal pays. |
+| Script | The exact bytes of the seal's script. |
+| Reference | The grant, or the signed preparation of section 9, that the seal belongs to. |
+| Signature | A BIP-340 signature by the grant key over the typed digest of these members, under a domain that belongs to endorsements alone (section 8). |
+
+A verifier checks an endorsement in this order and refuses at the first
+failure:
+
+1. The script of the output at the endorsed outpoint, read on the
+   verifier's own node, equals the endorsed script byte for byte.
+2. The endorsed script is the single-key script of its profile for the
+   endorsed public key.
+3. The signature verifies under the grant key of the pinned issuer.
+4. The grant names the same outpoint as its seal.
+5. Only after these four does the verifier classify a spend of that output
+   as the issuer's (section 5.1).
+
+The refusal codes come with the bytes. The order covers the revocable-only
+seal; the endorsement of a single-use seal follows its output profile,
+which is open (section 11.1).
+
+### 11.3. The issuer shows that it can spend the seal
+
+A seal that its issuer cannot spend is a grant that nobody can revoke. A
+wrong derivation index, a key that was never stored and a script that the
+signer does not control all stay unnoticed until the day a revocation is
+needed. Ivan Oparin decided on 2026-11-14 that the signer finds this out
+before issuance; the co-author's agreement is pending.
+
+1. Before it signs a grant, the issuer's signer MUST show that it can spend
+   the grant's seal. It builds and signs the transaction that spends the
+   seal, and it does not broadcast it.
+2. The signer records that signed transaction in its journal, with the
+   grant, before the grant is signed.
+3. The recorded transaction also revokes. Whoever holds it can broadcast
+   it, so the operator can revoke the grant when the signer is down or its
+   key is not at hand.
+4. A proof that a verifier can see, for example in the endorsement of
+   section 11.2, is optional and is not defined.
+
+Two limits belong to the rule. The recorded transaction fixes its fee when
+it is signed, so whether it still confirms later depends on the fees of
+that day: it shows that the key works and is a reserve for revocation, not
+a guarantee of one. And the journal now holds a transaction that ends a
+grant, so it is kept like the other records of the signer, outside an
+agent's reach.
 
 ### 12. Invocation and bounded issuance-capability chains
 
