@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.39
+**Version:** 0.1.40
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.39
+## Draft profiles and design decisions in v0.1.40
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -383,6 +383,27 @@ owner has decided one. The 140 vectors in
 [`vectors/LIP-0021/`](vectors/LIP-0021/) state octets and facts and read no
 chain; no node was run for the draft, and no checker for the vectors is
 published.
+
+Version 0.1.40 adds
+[LIP-0022](lips/LIP-0022-observation-freshness-and-risk.md), the first
+observation, freshness and risk profile for Grant v4, on Namecoin. The
+cutoffs of 60 and 90 minutes and the two independent nodes that agree on
+the tip are decided design in LIP-0008, which left the age measure, the
+clocks and the criteria for the nodes open. The draft proposes: one
+observation between two reads of the same tip, void and without closure
+when the tip moved; a second node of another source whose tip is the
+reading node's tip or one block below it on the same chain; the age of the
+tip as the verifier's clock minus the header time, with a guard against a
+clock that went back and a bound on a header that is ahead; the recent
+block of a grant on the active chain, with the issuance anchor confirmed
+above it within a window; the arithmetic of confirmation depth; and nine
+refusal codes with their order. Every rule is the draft's proposal, and
+neither owner has decided one. Three of its numbers are provisional and are
+not to be frozen before a run on a real host has measured what they bound:
+600 seconds for a header that is ahead, one block of lag, and 432 blocks
+between the recent block and the anchor. The 70 vectors in
+[`vectors/LIP-0022/`](vectors/LIP-0022/) state tips, times and heights and
+read no node; no node was run and no measurement was taken for the draft.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

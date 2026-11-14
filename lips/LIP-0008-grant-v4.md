@@ -778,6 +778,11 @@ independent-node criteria and risk classification still need profile definition
 and qualification. This decision does not rewrite historical normative v0.1's
 existing 30-minute `STOP` rule.
 
+[LIP-0022](LIP-0022-observation-freshness-and-risk.md) proposes the age
+measure, the guards of the clock and the criteria for the second node, with
+vectors. They are that draft's proposals, and each point stays open until
+both owners accept it.
+
 ### 7. Acceptance interval versus signing-time bound
 
 A seal transaction ID is known before confirmation and can be known before
@@ -791,6 +796,11 @@ binds construction to knowledge of that block hash, not to a precise wall-clock
 signing time. Block-time labels, a caller timestamp or a future seal outpoint
 cannot substitute. Exact field encoding, recency/reorg policy and vectors remain
 open; no such field is retroactively added to LIP-0003 bytes.
+
+[LIP-0022](LIP-0022-observation-freshness-and-risk.md) proposes the recency
+policy: the committed block is on the active chain, and the issuance anchor
+is confirmed above it within a stated number of blocks. It is that draft's
+proposal and stays open until both owners accept it.
 
 ### 7.1. Validity in block heights
 

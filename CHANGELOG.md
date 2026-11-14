@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.1.40 — 2026-11-14
+
+Adds Draft LIP-0022, the observation, freshness and risk profile for Grant
+v4 on Namecoin, with vectors. Every rule of it is the draft's proposal, and
+neither owner has decided one. No rule of another text changes, and no v3
+byte does; the observation and the 30-minute stop of normative v0.1 stay as
+they are.
+
+What it answers. LIP-0008 section 6 records as decided design that money or
+irreversible actions stop at a tip age of 60 minutes and other privileged
+actions at 90, and that admission needs two independent nodes that agree on
+the tip. It leaves open the age measure, the clocks and the criteria for
+the nodes. Section 7 leaves open the recency policy of the committed recent
+block, and LIP-0021 leaves open how one consistent observation is taken.
+
+The profile. An observation is a set of reads between two reads of the same
+tip; where the tip moved, it is void, and nothing is recorded as closed. A
+comparison node supplies its tip alone. Two nodes count as two when their
+operator labels them as of different sources, and the tips agree when the
+comparison node's tip is the reading node's tip or at most one block below
+it on the same chain. The age of the tip is the verifier's clock minus the
+time in the header of the tip block. A clock that reads less than the
+largest reading that the verifier has used refuses, and so does a header
+that is more than 600 seconds ahead of the clock. An action whose profile
+states no class has the stricter one. A verifier checks that the recent
+block of a grant is on the active chain and that the issuance anchor is
+confirmed above it by at most 432 blocks. The depth of a fact is the height
+of the tip minus the height of its block, plus one.
+
+Three numbers are provisional: the 600 seconds, the lag of one block and
+the 432 blocks. The LIP names for each the measurement on a real host that
+has to precede its freezing.
+
+Nine codes with an order: `OBSERVATION_CHAIN`, `OBSERVATION_VOID`,
+`NODE_UNHEALTHY`, `NODE_DISAGREEMENT`, `OBSERVATION_CLOCK`, `TIP_AGE`,
+`RECENT_BLOCK`, `RECENT_BLOCK_WINDOW` and `CONFIRMATIONS`. The first six
+stand before every rule of a grant, and none records a closure.
+
+Vectors. `vectors/LIP-0022/observation-vectors.json` holds 70 vectors over
+26 rules, at both sides of every boundary: the two cutoffs, the bound on a
+header, the kept mark of the clock, the lag, the window of the anchor, the
+half-open window of a grant in heights and the larger of two minimum
+depths. They state tips, times and heights and read no node. No node was
+run and no measurement was taken.
+
+LIP-0008 sections 6 and 7 and LIP-0021 section 1 gain one pointer each.
+
 ## 0.1.39 — 2026-11-14
 
 Adds Draft LIP-0021, the name ownership and history profile for Grant v4 on

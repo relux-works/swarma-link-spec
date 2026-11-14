@@ -152,6 +152,9 @@ that a presenter supplies is an input.
 | O1.2 | All reads of one check belong to one consistent observation of the node. How that observation is taken is the matter of the observation profile, which is open (LIP-0008 sections 4 and 6). Pending operations enter a check only through LIP-0008 section 5.2 (J6.4), and a verifier reads their scripts as it reads confirmed ones. |
 | O1.3 | A node that does not supply a fact of O1.1 has proved nothing. The rule that needed the read refuses, and the refusal is no evidence about the name. |
 
+[LIP-0022](LIP-0022-observation-freshness-and-risk.md) proposes the
+observation of O1.2.
+
 ### 2. The owner pin
 
 The owner pin is the public key itself in its compressed form, because both
