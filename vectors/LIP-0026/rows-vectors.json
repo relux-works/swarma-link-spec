@@ -7,16 +7,21 @@
     "CHILD_AGENT_NOT_ALLOWED",
     "CHILD_GRANTEE_NOT_ALLOWED",
     "CHILD_BUDGET_OVER",
+    "ROW_COIN_IN_SEAL_TRANSACTION",
     "ROW_COIN",
     "ROW_COIN_REQUIRED",
     "OWN_LIMIT_OVER",
     "ROW_CAP_OVER"
   ],
+  "codes_of_lip_0023": [
+    "W_ISSUANCE_SPENDS_SEAL",
+    "W_LINKAGE_REQUIRED"
+  ],
   "fields": {
     "limits": "A limit has kind, resource, unit and amount; its key is the first three. No vector holds a period.",
     "parents": "parent.seal is the seal of the parent; notaries are the notaries that it pins; pools states one amount for a limit key. A row states its executor, its recipient in one mode, its limits, its certifier and its coin.",
     "fit": "child.ordinal selects the row. A recipient by key has request_public_key alone; a recipient by name has name and owner_public_key.",
-    "coins": "row_coin is the coin as the row states it. node.coin_transaction is what the verifier's node gives for the transaction of that outpoint: null where it knows none; block_height null where it is pending; outputs lists the scripts of its outputs by index. child.seal_txid is the seal transaction of the child, and child.anchor_inputs lists the outpoints that the inputs of its anchor spend. W_LINKAGE_REQUIRED is the code of LIP-0023 for an anchor that does not have exactly one input from its seal transaction.",
+    "coins": "row_coin is the coin as the row states it. node.coin_transaction is what the verifier's node gives for the transaction of that outpoint: null where it knows none; block_height null where it is pending; outputs lists the scripts of its outputs by index. child.seal is the seal outpoint that the child names, and child.anchor_inputs lists the outpoints that the inputs of its anchor spend. Two outcomes are codes of LIP-0023 for an anchor that it refuses before this profile is asked: W_ISSUANCE_SPENDS_SEAL for an input that spends the seal (C2.4), and W_LINKAGE_REQUIRED for inputs from the seal transaction that are not exactly one input on the output after the seal (C2.3). The group holds no other check of LIP-0023.",
     "ledgers": "grants lists the facts of each grant: a child states its parent and its ordinal, and a parent the executor and the limits of each row. Each step is one request at one executor, with its identity, what it consumes and the expected outcome: reserved, held for an identity that already holds a reservation, or a code. end lists, for each executor that reserved something, its accounts with their amounts, in the order of the canonical form of their keys."
   },
   "rules": [
@@ -193,11 +198,16 @@
     {
       "rule": "R3.4",
       "section": "3",
-      "title": "an ordinary input of the anchor",
+      "title": "the coin is no output of the child's seal transaction",
       "state": "proposed",
       "vectors": [
         "coin-01",
-        "coin-14"
+        "coin-14",
+        "coin-16",
+        "coin-17",
+        "coin-18",
+        "coin-19",
+        "coin-20"
       ]
     },
     {
@@ -210,6 +220,17 @@
         "coin-13"
       ],
       "not_covered": "coin-12 and coin-13 state the two sides of the boundary. No vector holds a receipt or a report."
+    },
+    {
+      "rule": "R3.6",
+      "section": "3",
+      "title": "an ordinary input of the anchor, and another one than the linkage input",
+      "state": "proposed",
+      "vectors": [
+        "coin-01",
+        "coin-18"
+      ],
+      "not_covered": "coin-01 and coin-18 state two inputs. No vector holds the form of an input or the confirmation of its parent; those are vectors of LIP-0023."
     },
     {
       "rule": "R4.1",
@@ -371,9 +392,13 @@
       "title": "the order at an admission",
       "state": "proposed",
       "vectors": [
-        "coin-15"
+        "coin-14",
+        "coin-15",
+        "coin-17",
+        "coin-19",
+        "coin-20"
       ],
-      "not_covered": "coin-15 states the order of the two codes of the coin. No vector holds a check of LIP-0023 or of an attestation beside them."
+      "not_covered": "coin-15, coin-17 and coin-19 state the order of the three codes of the coin, and coin-14 and coin-20 a code of LIP-0023 before them. No vector holds a check of an attestation beside them."
     },
     {
       "rule": "R6.2",
@@ -3393,9 +3418,10 @@
       "rules": [
         "R3.2",
         "R3.3",
-        "R3.4"
+        "R3.4",
+        "R3.6"
       ],
-      "claim": "The coin is confirmed at height 650, the parent commits a recent block at height 700, and the anchor of the child spends the coin beside its linkage input and a funding input.",
+      "claim": "The coin is confirmed at height 650, the parent commits a recent block at height 700, and the anchor of the child spends the coin beside its linkage input and a funding input. The coin and the seal of the child are in two transactions.",
       "parent_recent_block_height": 700,
       "row_coin": {
         "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
@@ -3413,7 +3439,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3454,7 +3483,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3495,7 +3527,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3537,7 +3572,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3572,7 +3610,10 @@
         "coin_transaction": null
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3614,7 +3655,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3653,7 +3697,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3695,7 +3742,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3737,7 +3787,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3775,7 +3828,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3817,7 +3873,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3860,7 +3919,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3898,7 +3960,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3919,9 +3984,10 @@
     {
       "id": "coin-14",
       "rules": [
-        "R3.4"
+        "R3.4",
+        "R6.1"
       ],
-      "claim": "The coin is an output of the child's own seal transaction, and the anchor spends it beside the linkage output: two inputs from the seal transaction, which LIP-0023 C2.3 refuses before this profile is asked.",
+      "claim": "Two findings. The coin is output 0 of the child's seal transaction, whose output 1 is the seal and whose output 2 the linkage output, and the anchor spends the coin beside the linkage output. LIP-0023 C2.3 refuses the anchor for its two inputs from the seal transaction, before this profile is asked, and its code keeps its meaning.",
       "parent_recent_block_height": 700,
       "row_coin": {
         "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
@@ -3940,7 +4006,10 @@
         }
       },
       "child": {
-        "seal_txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+        "seal": {
+          "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
+          "vout": 1
+        },
         "anchor_inputs": [
           {
             "txid": "7c33a72c3a25db256d9a5a25bb56001c82d1715e887a6567f92e7a94d1004b8f",
@@ -3957,7 +4026,7 @@
         ]
       },
       "expect": "W_LINKAGE_REQUIRED",
-      "valid_neighbour": "coin-01"
+      "compound": true
     },
     {
       "id": "coin-15",
@@ -3983,7 +4052,10 @@
         }
       },
       "child": {
-        "seal_txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
         "anchor_inputs": [
           {
             "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
@@ -3996,6 +4068,225 @@
         ]
       },
       "expect": "ROW_COIN",
+      "compound": true
+    },
+    {
+      "id": "coin-16",
+      "rules": [
+        "R3.4"
+      ],
+      "claim": "One input with two roles. Output 0 of a transaction is the seal of the child and output 1 a witness key hash, confirmed at height 650. The parent names output 1 as the coin of the row. The anchor of the child spends output 1 once, beside a funding input. LIP-0023 finds its one linkage input, the coin is on the chain as stated, and the anchor spends it; the coin is an output of the child's seal transaction.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "vout": 1,
+        "script_hex": "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3",
+            "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5",
+            "001454e574cb78962b82cab52763191ec352b95e8c9e"
+          ]
+        }
+      },
+      "child": {
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_IN_SEAL_TRANSACTION",
+      "valid_neighbour": "coin-18"
+    },
+    {
+      "id": "coin-17",
+      "rules": [
+        "R3.4",
+        "R6.1"
+      ],
+      "claim": "Two findings: the coin is the third output of the child's seal transaction, and the anchor spends the linkage output alone and not the coin. The comparison of the two transaction ids stands before the other checks of the coin.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "vout": 2,
+        "script_hex": "001454e574cb78962b82cab52763191ec352b95e8c9e"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3",
+            "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5",
+            "001454e574cb78962b82cab52763191ec352b95e8c9e"
+          ]
+        }
+      },
+      "child": {
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_IN_SEAL_TRANSACTION",
+      "compound": true
+    },
+    {
+      "id": "coin-18",
+      "rules": [
+        "R3.4",
+        "R3.6"
+      ],
+      "claim": "The control of coin-16: the same seal transaction and the same anchor, with the coin in another transaction that is confirmed at the same height. The linkage input and the input of the coin are two inputs.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "fddee74607fb55c6efe810dba5b92b7ab6398d1a2008cb574124a8a76b5c3908",
+        "vout": 0,
+        "script_hex": "00142e8ee706f261cb0584d8dbcf1f85031328938900"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00142e8ee706f261cb0584d8dbcf1f85031328938900"
+          ]
+        }
+      },
+      "child": {
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "fddee74607fb55c6efe810dba5b92b7ab6398d1a2008cb574124a8a76b5c3908",
+            "vout": 0
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "coin-19",
+      "rules": [
+        "R3.4",
+        "R6.1"
+      ],
+      "claim": "Two findings: the one input with two roles of coin-16, and a seal transaction that is confirmed above the parent's recent block. The comparison of the two transaction ids is reported.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "vout": 1,
+        "script_hex": "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 701,
+          "on_active_chain": true,
+          "outputs": [
+            "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3",
+            "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5",
+            "001454e574cb78962b82cab52763191ec352b95e8c9e"
+          ]
+        }
+      },
+      "child": {
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "ROW_COIN_IN_SEAL_TRANSACTION",
+      "compound": true
+    },
+    {
+      "id": "coin-20",
+      "rules": [
+        "R3.4",
+        "R6.1"
+      ],
+      "claim": "Two findings: the row names the seal of the child itself as its coin, and the anchor spends it beside the linkage output. LIP-0023 C2.4 refuses an anchor that spends the seal, before this profile is asked.",
+      "parent_recent_block_height": 700,
+      "row_coin": {
+        "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+        "vout": 0,
+        "script_hex": "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3"
+      },
+      "node": {
+        "coin_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "001437ddc1104ee30c3cd4eb55e4be359b58faadd0c3",
+            "001469ea4dcc2e03ed4806c596ea2ead6e5974d42bf5",
+            "001454e574cb78962b82cab52763191ec352b95e8c9e"
+          ]
+        }
+      },
+      "child": {
+        "seal": {
+          "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+          "vout": 0
+        },
+        "anchor_inputs": [
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 0
+          },
+          {
+            "txid": "7787995640f52f4ef0f78db0bcbc1bbf15774c2d3f9e6fc4117b8cd4aa2bf109",
+            "vout": 1
+          },
+          {
+            "txid": "f468585fda069bdda94e4ac840975783ac947d6cc62651b8086be2a69ff13482",
+            "vout": 0
+          }
+        ]
+      },
+      "expect": "W_ISSUANCE_SPENDS_SEAL",
       "compound": true
     }
   ],

@@ -29,13 +29,13 @@ This LIP proposes the first profile for rows on v4, on Namecoin:
 - the checks of a child against its row, on signed octets alone (section
   2);
 - the coin of a row: its script, the block at or below which it is
-  confirmed, and the input of the child's anchor that spends it (section
-  3);
+  confirmed, that it lies outside the child's seal transaction, and the
+  input of the child's anchor that spends it (section 3);
 - the row account of the signer: its path, its index, its funding, and the
   one kind of input that a row key signs (section 4);
 - the accounts of an executor's ledger, and which of them a request debits
   (section 5);
-- eight refusal codes, three of them new, and their order (section 6);
+- nine refusal codes, four of them new, and their order (section 6);
 - vectors, among them a trace of one parent over three executors and a
   trace of direct requests beside the requests of siblings (section 7).
 
@@ -75,12 +75,16 @@ and the owners should look at them first:
    where LIP-0008 section 12.2 and LIP-0014 section 9 meet.
 3. The path of a row key, the account that holds it and the party that
    funds the coin (section 4).
-4. Three codes: `ROW_COIN` and `ROW_COIN_REQUIRED` for the refusal that
-   J1.9 leaves without a name, and `OWN_LIMIT_OVER` for the refusal of an
-   own account, which J1.3 leaves without one.
-5. The script of the coin is a witness key hash, and the coin is no output
-   of the seal transaction of the row's child (R3.1, R3.4). Both follow
-   from LIP-0023, which is a draft itself.
+4. Four codes: `ROW_COIN` and `ROW_COIN_REQUIRED` for the refusal that
+   J1.9 leaves without a name, `ROW_COIN_IN_SEAL_TRANSACTION` for the rule
+   of point 5, and `OWN_LIMIT_OVER` for the refusal of an own account,
+   which J1.3 leaves without one.
+5. The coin is no output of the seal transaction of the row's child
+   (R3.4). The decision does not treat the case. LIP-0023 admits an anchor
+   whose one input from the seal transaction is at once the linkage input
+   and the input of the coin, and this profile refuses it, so that the two
+   roles have two inputs. The script of the coin is a witness key hash
+   (R3.1), which follows from LIP-0023, a draft itself.
 
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
@@ -201,16 +205,17 @@ the row, and nothing in the child selects another one.
 ### 3. The coin of a row
 
 The coin of a row is one output with a witness key hash script, confirmed
-at or below the parent's recent block, and the anchor of the row's child
-has an input that spends it.
+at or below the parent's recent block and outside the seal transaction of
+the row's child, and the anchor of that child has an input that spends it.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | R3.1 | The script that a row states for its coin is a witness key hash: the octets `00 14` and 20 further octets. | The parent is refused (R1.5) |
 | R3.2 | A verifier establishes on its own node, in the observation of the check (LIP-0022 section 1), that the transaction of the coin's outpoint has an output at the stated index with exactly the stated script, and that this transaction is confirmed on the active chain at a height that is not above the height of the parent's committed recent block (LIP-0022 section 4). | `ROW_COIN` |
 | R3.3 | One input of the child's anchor spends the outpoint of the coin of the child's row. | `ROW_COIN_REQUIRED` |
-| R3.4 | That input is an ordinary input of the anchor under LIP-0023: it has the form of C3.1, and it spends a confirmed output under C4.2. It is not the linkage input. An issuer does not take, as the seal transaction of a child, the transaction that holds the coin of the child's row: the anchor would have two inputs from its seal transaction and refuse under LIP-0023 C2.3. | The codes of LIP-0023 |
+| R3.4 | The coin of a child's row is no output of the child's seal transaction: the transaction id of the coin's outpoint differs from the transaction id of the seal outpoint that the child names. A verifier compares the two on the signed octets of the parent and of the child. | `ROW_COIN_IN_SEAL_TRANSACTION` |
 | R3.5 | A verifier, a receipt and a report state that a child is the only child of its row for the active chain of the observation and for nothing wider (LIP-0014 J1.8). | None of its own |
+| R3.6 | The input that spends the coin is an ordinary input of the anchor under LIP-0023: it has the form of C3.1, and it spends a confirmed output under C4.2. Under R3.4 it is another input than the linkage input. | The codes of LIP-0023 |
 
 The decision asks for a coin that is confirmed before the parent is signed.
 A verifier cannot read the moment of a signature. It can read the recent
@@ -230,6 +235,26 @@ anchor with that input: its anchor spends something else and refuses under
 R3.3. The same holds for a child of a row whose coin another transaction
 spent before any issuance. That an anchor is confirmed is a rule of
 LIP-0023 (C5.1).
+
+R3.4 refuses a case that LIP-0023 admits. Take a transaction whose output 0
+is the seal of the child and whose output 1 is a witness key hash. Output 1
+is the linkage output of that seal (LIP-0023 C2.3). If the parent names the
+same output as the coin of the row, one input of the anchor spends it and
+fills both roles. LIP-0023 finds its one linkage input, R3.2 finds the
+coin, and R3.3 finds it spent. Nothing then shows that the key of the row
+took part beside the linkage key, because one signature stands for both.
+
+The other places of a coin in the child's seal transaction lead nowhere
+under LIP-0023, and its codes keep their meaning. Where the coin is a third
+output, an anchor that spends it has two inputs from its seal transaction
+and refuses there as `W_LINKAGE_REQUIRED`. Where the coin is the seal
+itself, an anchor that spends it refuses there as `W_ISSUANCE_SPENDS_SEAL`.
+So R3.4 refuses nothing that could have been issued except the one input
+with two roles, and it does so by one comparison of two signed transaction
+ids. With it the linkage input and the input of the coin are two inputs.
+That the two outputs pay two keys is a rule for the signer (R4.1), and a
+verifier does not see it. The cost falls on a re-delegating side that
+prepares seals and coins ahead: it uses two transactions.
 
 The exclusivity is that of the active chain. After a reorganisation that
 removes an issuance, another child whose anchor spends the coin on the new
@@ -344,16 +369,20 @@ the invocation (LIP-0020 section 6); the vectors state both as facts.
 | `CHILD_AGENT_NOT_ALLOWED` | The child names another executor than its row | R2.2 | LIP-0014 J1.2 |
 | `CHILD_GRANTEE_NOT_ALLOWED` | The child names another recipient than its row | R2.3 | LIP-0014 J1.2 |
 | `CHILD_BUDGET_OVER` | A limit of the child is above the limit of its row, or has a key that the row does not have | R2.4 | LIP-0014 J1.2 |
+| `ROW_COIN_IN_SEAL_TRANSACTION` | The coin of the child's row is an output of the child's seal transaction | R3.4 | New |
 | `ROW_COIN` | The coin of the row is not on the active chain as the row states it, or is confirmed above the parent's recent block | R3.2 | New |
 | `ROW_COIN_REQUIRED` | No input of the child's anchor spends the coin of its row | R3.3 | New |
 | `OWN_LIMIT_OVER` | A reservation would exceed an own account | R5.6 | New |
 | `ROW_CAP_OVER` | A reservation would exceed a row account | R5.6 | LIP-0014 J1.3 |
 
 R6.1. At the admission of a child, the four checks of section 2 stand in
-their order, at the place that R2.5 names. `ROW_COIN` and then
-`ROW_COIN_REQUIRED` stand after the checks of LIP-0023 on the child's
-anchor. Where these two stand relative to the checks of the child's
-attestation comes with the profile of the attestation.
+their order, at the place that R2.5 names. The three checks of the coin
+stand after the checks of LIP-0023 on the child's seal transaction and
+anchor, in this order: `ROW_COIN_IN_SEAL_TRANSACTION`, then `ROW_COIN`,
+then `ROW_COIN_REQUIRED`. A child that LIP-0023 refuses gets the code of
+LIP-0023, and no code of that LIP changes its meaning. Where the three
+stand relative to the checks of the child's attestation comes with the
+profile of the attestation.
 
 R6.2. At a reservation, the order is that of R5.6. A request that is
 refused reserves nothing.
@@ -363,14 +392,14 @@ None of these refusals records a closure.
 ### 7. Vectors
 
 [`vectors/LIP-0026/rows-vectors.json`](../vectors/LIP-0026/rows-vectors.json)
-holds 59 vectors over the 33 rules of this LIP, as decisions on stated
+holds 64 vectors over the 34 rules of this LIP, as decisions on stated
 facts. No vector holds a grant, a transaction or an entry of a journal.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
 | `parents` | 4 valid, 9 refused | Section 1 and R3.1 on the stated rows and pools of a parent |
 | `fit` | 4 passing, 11 refused, 3 compound | Section 2 on a parent and a child, with the order of R2.5 for a child that has two defects |
-| `coins` | 3 passing, 11 refused, 1 compound | Section 3 on a row's coin, on what a node gives for it, and on the inputs of the child's anchor |
+| `coins` | 4 passing, 11 refused, 5 compound | Section 3 in the order of R6.1, on a row's coin, on the seal that the child names, on what a node gives for the coin, and on the inputs of the child's anchor. Two outcomes are codes of LIP-0023, for an anchor that it refuses before this profile is asked |
 | `ledgers` | 13 traces | Section 5 as a state machine: grants, executors, and a list of requests with the expected outcome of each and the accounts at the end |
 
 A vector of the first three groups whose outcome is not the passing one
@@ -385,6 +414,11 @@ Two traces show the accounting across executors and inside one ledger.
 over three executors, and ends with 150 reserved and nothing above a
 ceiling. `ledger-02` runs direct requests of the parent beside the requests
 of two siblings in one ledger, each up to its ceiling.
+
+`coin-16` is the one input with two roles: the output after the child's
+seal is also the coin of the row, and the anchor spends it once. LIP-0023
+admits that anchor, and R3.4 refuses the child. Its control is `coin-18`,
+with the coin in another transaction and two inputs for the two roles.
 
 The limits of the file are these. Identifiers, keys, transaction ids and
 scripts are placeholders. A trace runs its requests one after another: no
@@ -432,6 +466,11 @@ No node, no signer and no store was run for this LIP.
 - **Hardened indices for row keys.** The extended public key would give no
   row key. A watch-only node would import each script one by one, as
   LIP-0008 section 11.1 says of seals, and the choice is the same as there.
+- **Refusing only a coin that is the linkage output**, and no other output
+  of the child's seal transaction. The rule would be narrower in words. A
+  coin elsewhere in that transaction can have no child under LIP-0023, as
+  section 3 shows, so the narrower rule would admit parents with a row that
+  can never be used.
 - **A member of the child that names the coin.** A verifier would read the
   coin from the child. The row already names it, and a second place could
   disagree with the first.
@@ -446,6 +485,9 @@ No node, no signer and no store was run for this LIP.
   an issuance leaves the row without a child for good. R4.5 is the signer's
   rule against it, and a thief of the key is not bound by it. Such a thief
   issues nothing.
+- **Two inputs are not two keys.** R3.4 keeps one input from standing for
+  the linkage and for the coin. A signer that pays both outputs to one key
+  breaks R4.1, and no verifier sees it.
 - **One child for each row holds on the active chain.** A reorganisation
   that removes an issuance frees the coin on the new chain. The decision
   accepts it, and R3.5 keeps a report from saying more.

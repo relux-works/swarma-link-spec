@@ -24,7 +24,10 @@ child against the row of its ordinal on signed octets alone, in the order
 and with the four codes of J1.2. The coin has a witness key hash script and
 is confirmed on the active chain at or below the parent's committed recent
 block, which is how a verifier reads "confirmed before the parent is
-signed"; one input of the child's anchor spends it. A row key has the path
+signed"; one input of the child's anchor spends it. The coin is no output
+of the child's seal transaction, so that the linkage input of LIP-0023 and
+the input of the coin are two inputs: LIP-0023 alone admits an anchor in
+which one input is both. A row key has the path
 `m/84'/7'/<row-account>'/0/<i>` in an account of 10 or above that holds row
 keys alone; the operator of the re-delegating side funds the coin; and the
 signer signs with a row key one kind of input, the one that spends the coin
@@ -38,13 +41,15 @@ Two points are the draft's own reading where texts meet, and the LIP names
 them first for the owners: the recent block as the mark of the moment of
 signing, and the row as the parent's link for a request under a child.
 
-Eight codes with an order. Five have their names from LIP-0014:
+Nine codes with an order. Five have their names from LIP-0014:
 `CHILD_ORDINAL`, `CHILD_AGENT_NOT_ALLOWED`, `CHILD_GRANTEE_NOT_ALLOWED`,
-`CHILD_BUDGET_OVER` and `ROW_CAP_OVER`. Three are new: `ROW_COIN`,
-`ROW_COIN_REQUIRED` and `OWN_LIMIT_OVER`.
+`CHILD_BUDGET_OVER` and `ROW_CAP_OVER`. Four are new:
+`ROW_COIN_IN_SEAL_TRANSACTION`, `ROW_COIN`, `ROW_COIN_REQUIRED` and
+`OWN_LIMIT_OVER`. The three codes of the coin stand after the checks of
+LIP-0023, whose codes keep their meaning.
 
-Vectors. `vectors/LIP-0026/rows-vectors.json` holds 59 vectors over 33
-rules: 13 parents, 18 children against their rows, 15 on the coin, and 13
+Vectors. `vectors/LIP-0026/rows-vectors.json` holds 64 vectors over 34
+rules: 13 parents, 18 children against their rows, 20 on the coin, and 13
 traces of an executor's ledger, among them one parent over three executors,
 direct requests beside the requests of two siblings, two documents of one
 row, a repeated request and a request that consumes two limit keys. They

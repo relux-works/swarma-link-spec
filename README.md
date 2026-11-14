@@ -473,13 +473,14 @@ and which counter an executor keeps under which key are open there. The
 draft proposes: what a row states, and a pool that bounds the rows for each
 kind of limit; the checks of a child against the row of its ordinal, on
 signed octets alone; a coin with a witness key hash script that is
-confirmed at or below the parent's recent block, and an input of the
-child's anchor that spends it; a row account of the signer, apart from
+confirmed at or below the parent's recent block and is no output of the
+child's seal transaction, and an input of the child's anchor that spends
+it; a row account of the signer, apart from
 seals and funding, whose keys sign that one kind of input; and the accounts
 of an executor's ledger, in which a request under a child debits the own
 account of the child and the row of its parent, and never the parent's own
 account. Every rule is the draft's proposal, and neither owner has decided
-one. The 59 vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) state rows,
+one. The 64 vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) state rows,
 coins and requests as facts, among them a trace of one parent over three
 executors; no node, no signer and no store was run for the draft.
 
