@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.1.32 — 2026-11-14
+
+Four additions record decisions that Ivan Oparin made on 2026-11-14. The
+co-author's agreement on each is pending, and nothing of them is
+implemented.
+
+LIP-0019, retrieval by hash. A locator can name a blob store and a hash,
+and nothing said how a reader gets the bytes. The draft proposes a delivery
+profile and its loader: endpoints from the loader's own configuration and
+from an unsigned hint; a fetch by SHA-256 with bounds on size and time and
+without redirects; and a check that the bytes hash to what was asked,
+after which the object is checked exactly like a presented one. Retrieval
+adds availability and no authority: a store can make a reader refuse and
+cannot make it accept. The uses are audits, disputes, parent grants and
+certificate sets. LIP-0005 points to the draft.
+
+LIP-0008, section 11.2, the seal-key endorsement. Its members by meaning:
+the issuer pin, network and genesis, the profile, the exact outpoint, the
+seal public key, the exact script, the grant or preparation it belongs to,
+and a BIP-340 signature by the grant key under a domain of its own. A
+verifier checks, in this order: the script on its own node equals the
+endorsed script; that script is the single-key script of the endorsed key;
+the signature verifies under the pinned issuer's grant key; the grant
+names the same outpoint; and only then does it classify a spend as the
+issuer's. The bytes stay open.
+
+LIP-0008, section 11.3. Before it signs a grant, the issuer's signer shows
+that it can spend the seal: it signs the spending transaction, records it
+in its journal and does not broadcast it. The recorded transaction can
+also revoke the grant when the signer is down. Its fee is fixed when it is
+signed, which the section names as a limit.
+
+LIP-0008 also states the names of the parties. Grant v3 keeps its byte
+names `landlord_name`, `landlord_sig` and `agent_name`; the prose and
+Grant v4 name the roles: issuer, recipient and executor.
+
+LIP-0017, section 8 and decision C9. A contract may carry the hash of the
+configuration manifest that the parties agreed on, expressed only through
+Curator profiles, Curator skills and the systems that the agent may use.
+The platform executes exactly that manifest. For a rental the slot
+launcher composes the agent's read-only runtime context from the pinned
+profile, the human terms of the contract, the machine terms of the grant
+and any scope text. The reference rental path gives a slot no contract
+text today.
+
 ## 0.1.31 — 2026-11-14
 
 LIP-0015 and LIP-0016 record that Ivan Oparin accepted their direction as a
