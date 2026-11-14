@@ -911,6 +911,13 @@ authority and logical request as well as object identity. Exact ID preimages,
 signature encoding, replay keys and cross-version journal bindings require
 fixtures; existing v3 signed-grant IDs and wallet-v1 commitments stay unchanged.
 
+[LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes bytes for this
+section and for section 8: the canonical form with two exact forms for an
+integer, the registry of types with their tags, the signed form, the
+identifier, the consent of both parties and the issuance commitment, with
+vectors. They are that draft's proposals, and each point stays open until
+both owners accept it.
+
 ### 9. Dependent issuance transactions and profile timing
 
 Let seal transaction T create both the grant seal and an additional output L.

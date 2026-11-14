@@ -1,0 +1,2391 @@
+{
+  "schema": "swarma-link-spec/lip-0020-vectors/1",
+  "lip": "LIP-0020",
+  "note": "Draft vectors for LIP-0020. Keys are published BIP-340 test keys, never real keys. Contract identifiers, the name transaction and the grant payloads are placeholders. A payload that holds only `type`, or `type` and `note`, stands in for an object whose members are open. It shows the digest, signature and identifier rules and is not a valid object of its type. The list `rules` names, for each rule of LIP-0020, its section, its state and the vectors that exercise it; every rule is `proposed`, because neither owner has accepted one. Where an entry gives `hex`, the octets are the vector and `text` only shows them. Each refused vector holds one defect and names a valid neighbour. Signatures are made by the default signing algorithm of BIP-340 with 32 zero octets of auxiliary randomness unless `aux_rand` says otherwise. No checker for these vectors is in this repository yet; the checks that need a node are the cases of LIP-0020 section 7.5 and are not in this file.",
+  "test_keys": [
+    {
+      "name": "issuer",
+      "role": "the issuer's grant key in these vectors",
+      "source": "BIP-340 test vector 0",
+      "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+    },
+    {
+      "name": "recipient",
+      "role": "the recipient's request key, or the channel key of its name",
+      "source": "BIP-340 test vector 1",
+      "public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659"
+    },
+    {
+      "name": "other",
+      "role": "a key that the object does not name",
+      "source": "BIP-340 test vector 2",
+      "public_key": "dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8"
+    },
+    {
+      "name": "off-curve",
+      "role": "a value that is no x coordinate of a curve point",
+      "source": "BIP-340 test vector 5",
+      "public_key": "eefdea4cdb677750a420fee807eacf21eb9898ae79b9768766e4faa04a2d4a34"
+    }
+  ],
+  "parameters": {
+    "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+    "other_genesis": "0e94a77b682bf18097197356b9a0fc9aafe754cd8c5e9d0fb3cd471b6fc0c7ae",
+    "contract_a": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+    "contract_b": "4b3e4180dfb036c82ab76d7e19eb92ba003535479c5a33303fe5b7fed34373c0",
+    "name_txid": "bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e",
+    "created_at": 1794528000,
+    "now": 1794600000,
+    "largest_number": 9007199254740991,
+    "largest_depth": 16
+  },
+  "rules": [
+    {
+      "rule": "W1.1",
+      "section": "1",
+      "title": "size and depth",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-11",
+        "canon-i-30"
+      ]
+    },
+    {
+      "rule": "W1.2",
+      "section": "1",
+      "title": "UTF-8 and one JSON object",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-01",
+        "canon-i-15",
+        "canon-i-16",
+        "canon-i-17",
+        "canon-i-18",
+        "canon-i-19",
+        "canon-i-20",
+        "canon-i-21",
+        "canon-i-22"
+      ]
+    },
+    {
+      "rule": "W1.3",
+      "section": "1",
+      "title": "no name twice",
+      "state": "proposed",
+      "vectors": [
+        "canon-i-06",
+        "canon-i-07"
+      ]
+    },
+    {
+      "rule": "W1.4",
+      "section": "1",
+      "title": "the values",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-03",
+        "canon-v-09",
+        "canon-v-10",
+        "canon-i-23",
+        "canon-i-24",
+        "canon-i-25",
+        "canon-i-26",
+        "canon-i-27",
+        "canon-i-28",
+        "canon-i-29"
+      ]
+    },
+    {
+      "rule": "W1.5",
+      "section": "1",
+      "title": "strings",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-05",
+        "canon-v-06",
+        "canon-v-08",
+        "canon-i-12",
+        "canon-i-13",
+        "canon-i-14"
+      ]
+    },
+    {
+      "rule": "W1.6",
+      "section": "1",
+      "title": "one spelling",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-01",
+        "canon-v-02",
+        "canon-v-03",
+        "canon-v-04",
+        "canon-v-05",
+        "canon-v-06",
+        "canon-v-07",
+        "canon-v-08",
+        "canon-i-01",
+        "canon-i-02",
+        "canon-i-03",
+        "canon-i-04",
+        "canon-i-05",
+        "canon-i-08",
+        "canon-i-09",
+        "canon-i-10",
+        "canon-i-11"
+      ]
+    },
+    {
+      "rule": "W2.1",
+      "section": "2",
+      "title": "each integer member has one form",
+      "state": "proposed",
+      "vectors": [
+        "canon-v-09",
+        "issuance-i-05"
+      ]
+    },
+    {
+      "rule": "W2.2",
+      "section": "2",
+      "title": "the number form",
+      "state": "proposed",
+      "vectors": [
+        "canon-i-24",
+        "canon-i-25",
+        "canon-i-26",
+        "canon-i-27",
+        "canon-i-28",
+        "canon-i-29",
+        "issuance-i-06"
+      ]
+    },
+    {
+      "rule": "W2.3",
+      "section": "2",
+      "title": "the string form",
+      "state": "proposed",
+      "vectors": [
+        "int-v-01",
+        "int-v-02",
+        "int-v-03",
+        "int-v-04",
+        "int-i-01",
+        "int-i-02",
+        "int-i-03",
+        "int-i-04",
+        "int-i-05",
+        "int-i-06",
+        "int-i-07",
+        "int-i-08",
+        "int-i-09",
+        "int-i-10",
+        "int-i-11",
+        "int-i-12",
+        "int-i-13"
+      ]
+    },
+    {
+      "rule": "W2.4",
+      "section": "2",
+      "title": "exact arithmetic",
+      "state": "proposed",
+      "vectors": [
+        "canon-i-29"
+      ]
+    },
+    {
+      "rule": "W3.1",
+      "section": "3",
+      "title": "the type member",
+      "state": "proposed",
+      "vectors": [
+        "digest-01",
+        "digest-02",
+        "digest-03",
+        "digest-04",
+        "digest-05",
+        "digest-06",
+        "digest-07",
+        "signed-i-15",
+        "signed-i-16",
+        "signed-i-17",
+        "assent-i-08"
+      ]
+    },
+    {
+      "rule": "W3.2",
+      "section": "3",
+      "title": "a closed list of members",
+      "state": "proposed",
+      "vectors": [
+        "assent-i-01",
+        "assent-i-02",
+        "assent-i-05",
+        "issuance-i-05"
+      ]
+    },
+    {
+      "rule": "W3.3",
+      "section": "3",
+      "title": "no fallback between versions",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-15",
+        "assent-i-07"
+      ]
+    },
+    {
+      "rule": "W3.4",
+      "section": "3",
+      "title": "earlier formats keep their rules",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-16",
+        "consent-c-05"
+      ]
+    },
+    {
+      "rule": "W3.5",
+      "section": "3",
+      "title": "hexadecimal members",
+      "state": "proposed",
+      "vectors": [
+        "assent-i-03",
+        "assent-i-04"
+      ]
+    },
+    {
+      "rule": "W3.6",
+      "section": "3",
+      "title": "public keys",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-14",
+        "assent-i-06"
+      ]
+    },
+    {
+      "rule": "W3.7",
+      "section": "3",
+      "title": "descriptive members",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-03",
+        "signed-i-01"
+      ]
+    },
+    {
+      "rule": "W4.1",
+      "section": "4",
+      "title": "the typed digest",
+      "state": "proposed",
+      "vectors": [
+        "digest-01",
+        "digest-02",
+        "digest-03",
+        "digest-04",
+        "digest-05",
+        "digest-06",
+        "digest-07",
+        "digest-cross-01",
+        "signed-v-01",
+        "signed-i-02",
+        "signed-i-03"
+      ]
+    },
+    {
+      "rule": "W4.2",
+      "section": "4",
+      "title": "the tag is the type",
+      "state": "proposed",
+      "vectors": [
+        "digest-cross-01",
+        "signed-i-04"
+      ]
+    },
+    {
+      "rule": "W5.1",
+      "section": "5",
+      "title": "what is signed",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-01",
+        "signed-i-01",
+        "assent-v-01",
+        "assent-v-02",
+        "assent-v-03"
+      ]
+    },
+    {
+      "rule": "W5.2",
+      "section": "5",
+      "title": "strict verification",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-06",
+        "signed-i-07",
+        "signed-i-08",
+        "signed-i-09",
+        "signed-i-10",
+        "signed-i-11"
+      ]
+    },
+    {
+      "rule": "W5.3",
+      "section": "5",
+      "title": "the signed form",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-01",
+        "signed-i-12",
+        "signed-i-13"
+      ]
+    },
+    {
+      "rule": "W5.4",
+      "section": "5",
+      "title": "several signatures, one object",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-02",
+        "issuance-v-03",
+        "issuance-i-03"
+      ]
+    },
+    {
+      "rule": "W5.5",
+      "section": "5",
+      "title": "the key of the place",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-05",
+        "signed-i-14",
+        "assent-b-06"
+      ]
+    },
+    {
+      "rule": "W6.1",
+      "section": "6",
+      "title": "the identifier",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-01",
+        "signed-v-03",
+        "assent-v-01",
+        "assent-v-02",
+        "assent-v-03",
+        "id-01"
+      ]
+    },
+    {
+      "rule": "W6.2",
+      "section": "6",
+      "title": "outside the identifier",
+      "state": "proposed",
+      "vectors": [
+        "signed-v-02"
+      ]
+    },
+    {
+      "rule": "W6.3",
+      "section": "6",
+      "title": "recomputed, never trusted",
+      "state": "proposed",
+      "vectors": [
+        "signed-i-12",
+        "id-02",
+        "id-03",
+        "id-04"
+      ]
+    },
+    {
+      "rule": "W6.4",
+      "section": "6",
+      "title": "identifier, digest and content address",
+      "state": "proposed",
+      "vectors": [
+        "issuance-i-09",
+        "id-01"
+      ]
+    },
+    {
+      "rule": "W7.1",
+      "section": "7.1",
+      "title": "the assent object",
+      "state": "proposed",
+      "vectors": [
+        "assent-v-01",
+        "assent-v-02",
+        "assent-v-03"
+      ]
+    },
+    {
+      "rule": "W7.2",
+      "section": "7.1",
+      "title": "checks of an assent",
+      "state": "proposed",
+      "vectors": [
+        "assent-b-01",
+        "assent-b-02",
+        "assent-b-03",
+        "assent-b-04",
+        "assent-b-05",
+        "assent-b-06"
+      ]
+    },
+    {
+      "rule": "W7.3",
+      "section": "7.2",
+      "title": "the consent event",
+      "state": "proposed",
+      "vectors": [
+        "consent-v-01"
+      ]
+    },
+    {
+      "rule": "W7.4",
+      "section": "7.2",
+      "title": "checks of a consent event",
+      "state": "proposed",
+      "vectors": [
+        "consent-c-01",
+        "consent-c-02",
+        "consent-c-03",
+        "consent-c-04",
+        "consent-c-05",
+        "consent-c-06",
+        "consent-c-07",
+        "consent-c-08",
+        "consent-c-09",
+        "consent-c-11"
+      ]
+    },
+    {
+      "rule": "W7.5",
+      "section": "7.3",
+      "title": "consent of a recipient by key",
+      "state": "proposed",
+      "vectors": [
+        "consent-c-01",
+        "consent-c-10"
+      ]
+    },
+    {
+      "rule": "W7.6",
+      "section": "7.3",
+      "title": "consent of a recipient by name",
+      "state": "proposed",
+      "vectors": [
+        "consent-c-14",
+        "consent-c-15",
+        "issuance-v-02"
+      ]
+    },
+    {
+      "rule": "W7.7",
+      "section": "7.3",
+      "title": "a later change of the channel key",
+      "state": "proposed",
+      "vectors": [
+        "consent-c-14"
+      ]
+    },
+    {
+      "rule": "W7.8",
+      "section": "7.4",
+      "title": "the time of a consent",
+      "state": "proposed",
+      "vectors": [
+        "consent-c-12",
+        "consent-c-13"
+      ]
+    },
+    {
+      "rule": "W8.1",
+      "section": "8",
+      "title": "the issuance preparation",
+      "state": "proposed",
+      "vectors": [
+        "issuance-v-01",
+        "issuance-v-02"
+      ]
+    },
+    {
+      "rule": "W8.2",
+      "section": "8",
+      "title": "what the preparation binds",
+      "state": "proposed",
+      "vectors": [
+        "issuance-v-01",
+        "issuance-v-03",
+        "issuance-i-10"
+      ]
+    },
+    {
+      "rule": "W8.3",
+      "section": "8",
+      "title": "the evidence output and the mode",
+      "state": "proposed",
+      "vectors": [
+        "issuance-v-02",
+        "issuance-i-01",
+        "issuance-i-02"
+      ]
+    },
+    {
+      "rule": "W8.4",
+      "section": "8",
+      "title": "the frame",
+      "state": "proposed",
+      "vectors": [
+        "issuance-v-01",
+        "issuance-i-03",
+        "issuance-i-04",
+        "issuance-i-07",
+        "issuance-i-08",
+        "issuance-i-09"
+      ]
+    },
+    {
+      "rule": "W8.5",
+      "section": "8",
+      "title": "the check of the anchor",
+      "state": "proposed",
+      "vectors": [
+        "issuance-i-10",
+        "issuance-i-11"
+      ]
+    }
+  ],
+  "canonical": {
+    "valid": [
+      {
+        "id": "canon-v-01",
+        "rules": [
+          "W1.2",
+          "W1.6"
+        ],
+        "claim": "The empty object.",
+        "text": "{}",
+        "hex": "7b7d",
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      {
+        "id": "canon-v-02",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "One member; the neighbour of the whitespace and number cases.",
+        "text": "{\"a\":1}",
+        "hex": "7b2261223a317d",
+        "sha256": "015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862"
+      },
+      {
+        "id": "canon-v-03",
+        "rules": [
+          "W1.4",
+          "W1.6"
+        ],
+        "claim": "Nested objects and arrays; an array keeps its order.",
+        "text": "{\"a\":1,\"b\":\"x\",\"c\":[3,1,{\"d\":2,\"e\":\"x\"}]}",
+        "hex": "7b2261223a312c2262223a2278222c2263223a5b332c312c7b2264223a322c2265223a2278227d5d7d",
+        "sha256": "38d9490ecf223bbc5a5f14e515e93cf8ef8c4e85cb067b6d2c6ac64c459ce79c"
+      },
+      {
+        "id": "canon-v-04",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "Names in code unit order: uppercase letters, then the underscore, then lowercase letters.",
+        "text": "{\"A\":1,\"B\":2,\"_\":0,\"a\":3,\"a1\":5,\"a_\":6,\"b\":4}",
+        "hex": "7b2241223a312c2242223a322c225f223a302c2261223a332c226131223a352c22615f223a362c2262223a347d",
+        "sha256": "1cb62933cc4e51c5a414a680a2e3672ea45664e34abc8e7a8405ecbb9b33b736"
+      },
+      {
+        "id": "canon-v-05",
+        "rules": [
+          "W1.5",
+          "W1.6"
+        ],
+        "claim": "Names ordered by UTF-16 code units: U+1F600, whose first code unit is D83D, stands before U+FB33. Order by code points or by UTF-8 bytes would put U+FB33 first.",
+        "text": "{\"1\":0,\"é\":1,\"ö\":2,\"€\":3,\"😀\":4,\"דּ\":5}",
+        "hex": "7b2231223a302c22c3a9223a312c22c3b6223a322c22e282ac223a332c22f09f9880223a342c22efacb3223a357d",
+        "sha256": "8d98a1dc387d521be35871700352e0b9612344a7bbaf8270d5716310f18327b4"
+      },
+      {
+        "id": "canon-v-06",
+        "rules": [
+          "W1.5",
+          "W1.6"
+        ],
+        "claim": "Strings outside ASCII, and a URL, are written literally in UTF-8: no escape for a slash, an ampersand or an angle bracket.",
+        "text": "{\"note\":\"Доверенность №4 für José 許可\",\"url\":\"https://example.org/a?b=1&c=<x>#frag\"}",
+        "hex": "7b226e6f7465223a22d094d0bed0b2d0b5d180d0b5d0bdd0bdd0bed181d182d18c20e28496342066c3bc72204a6f73c3a920e8a8b1e58faf222c2275726c223a2268747470733a2f2f6578616d706c652e6f72672f613f623d3126633d3c783e2366726167227d",
+        "sha256": "090b96f05de1d66e01dacbf39e75cafd3e9f599fd4ff59dd81da221e98077038"
+      },
+      {
+        "id": "canon-v-07",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "The two escapes: a quotation mark and a backslash.",
+        "text": "{\"s\":\"a\\\"b\\\\c\"}",
+        "hex": "7b2273223a22615c22625c5c63227d",
+        "sha256": "97a1049b950c4967857a84a892616be14cfa33824839b42b557d9299074e9ea6"
+      },
+      {
+        "id": "canon-v-08",
+        "rules": [
+          "W1.5",
+          "W1.6"
+        ],
+        "claim": "U+007F and U+2028 are written literally; neither is below U+0020.",
+        "text": "{\"s\":\"ab c\"}",
+        "hex": "7b2273223a22617f62e280a863227d",
+        "sha256": "6b159f5d6222bd3bc7e85888816b5c2f74bd8f7d2a53b9fea92418974e37176a"
+      },
+      {
+        "id": "canon-v-09",
+        "rules": [
+          "W1.4",
+          "W2.1"
+        ],
+        "claim": "The largest integer of the number form, and zero.",
+        "text": "{\"max\":9007199254740991,\"zero\":0}",
+        "hex": "7b226d6178223a393030373139393235343734303939312c227a65726f223a307d",
+        "sha256": "d1c6de4fff64001e181a639bafdc8cf052b2b3c99db136a90f8653ac648f1b48"
+      },
+      {
+        "id": "canon-v-10",
+        "rules": [
+          "W1.4"
+        ],
+        "claim": "Booleans, an empty string and an empty array.",
+        "text": "{\"e\":\"\",\"f\":false,\"l\":[],\"t\":true}",
+        "hex": "7b2265223a22222c2266223a66616c73652c226c223a5b5d2c2274223a747275657d",
+        "sha256": "587bc0be46a3aa6d6a57a923f366f8f2c8d5dfcdca79f29f0b771996fa88c21f"
+      },
+      {
+        "id": "canon-v-11",
+        "rules": [
+          "W1.1"
+        ],
+        "claim": "Sixteen levels of nesting, the largest depth.",
+        "text": "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{}}}}}}}}}}}}}}}}",
+        "hex": "7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d",
+        "sha256": "2137a19cb68eaf39d52492b019dc041a5ecda620b398ac543699958416dad07d"
+      }
+    ],
+    "invalid": [
+      {
+        "id": "canon-i-01",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "A space after the colon.",
+        "text": "{\"a\": 1}",
+        "hex": "7b2261223a20317d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-02",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "A line feed after the closing brace.",
+        "hex": "7b2261223a317d0a",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-03",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "A space before the opening brace.",
+        "text": " {\"a\":1}",
+        "hex": "207b2261223a317d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-04",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "Members in another order.",
+        "text": "{\"b\":\"x\",\"a\":1,\"c\":[3,1,{\"d\":2,\"e\":\"x\"}]}",
+        "hex": "7b2262223a2278222c2261223a312c2263223a5b332c312c7b2264223a322c2265223a2278227d5d7d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-03"
+      },
+      {
+        "id": "canon-i-05",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "The names of canon-v-05 in code point order: U+FB33 before U+1F600.",
+        "text": "{\"1\":0,\"é\":1,\"ö\":2,\"€\":3,\"דּ\":5,\"😀\":4}",
+        "hex": "7b2231223a302c22c3a9223a312c22c3b6223a322c22e282ac223a332c22efacb3223a352c22f09f9880223a347d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-05"
+      },
+      {
+        "id": "canon-i-06",
+        "rules": [
+          "W1.3"
+        ],
+        "claim": "One name twice.",
+        "text": "{\"a\":1,\"a\":2}",
+        "hex": "7b2261223a312c2261223a327d",
+        "expect": "WIRE_DUPLICATE",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-07",
+        "rules": [
+          "W1.3"
+        ],
+        "claim": "One name twice, the second spelled with an escape. Names are compared after escapes are resolved, so this is a duplicate before it is a spelling.",
+        "text": "{\"a\":1,\"\\u0061\":2}",
+        "hex": "7b2261223a312c225c7530303631223a327d",
+        "expect": "WIRE_DUPLICATE",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-08",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "An escape for a letter that is written literally.",
+        "text": "{\"s\":\"\\u0061\\\"b\\\\c\"}",
+        "hex": "7b2273223a225c75303036315c22625c5c63227d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-07"
+      },
+      {
+        "id": "canon-i-09",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "An escaped slash.",
+        "text": "{\"note\":\"x\",\"url\":\"https:\\/\\/example.org\"}",
+        "hex": "7b226e6f7465223a2278222c2275726c223a2268747470733a5c2f5c2f6578616d706c652e6f7267227d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-06"
+      },
+      {
+        "id": "canon-i-10",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "An escape for U+00E9, which is written literally.",
+        "text": "{\"s\":\"Jos\\u00e9\"}",
+        "hex": "7b2273223a224a6f735c7530306539227d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-06"
+      },
+      {
+        "id": "canon-i-11",
+        "rules": [
+          "W1.6"
+        ],
+        "claim": "A surrogate pair written as two escapes. The pair is a valid scalar value; its spelling is not canonical.",
+        "text": "{\"s\":\"\\ud83d\\ude00\"}",
+        "hex": "7b2273223a225c75643833645c7564653030227d",
+        "expect": "WIRE_NOT_CANONICAL",
+        "valid_neighbour": "canon-v-05"
+      },
+      {
+        "id": "canon-i-12",
+        "rules": [
+          "W1.5"
+        ],
+        "claim": "An escape that yields an unpaired surrogate.",
+        "text": "{\"s\":\"\\ud83d\"}",
+        "hex": "7b2273223a225c7564383364227d",
+        "expect": "WIRE_STRING",
+        "valid_neighbour": "canon-v-05"
+      },
+      {
+        "id": "canon-i-13",
+        "rules": [
+          "W1.5"
+        ],
+        "claim": "An escaped line feed: a code point below U+0020.",
+        "text": "{\"s\":\"a\\nb\"}",
+        "hex": "7b2273223a22615c6e62227d",
+        "expect": "WIRE_STRING",
+        "valid_neighbour": "canon-v-08"
+      },
+      {
+        "id": "canon-i-14",
+        "rules": [
+          "W1.5"
+        ],
+        "claim": "An escaped U+001F.",
+        "text": "{\"s\":\"a\\u001fb\"}",
+        "hex": "7b2273223a22615c753030316662227d",
+        "expect": "WIRE_STRING",
+        "valid_neighbour": "canon-v-08"
+      },
+      {
+        "id": "canon-i-15",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A raw line feed inside a string, which JSON does not allow.",
+        "hex": "7b2273223a22610a62227d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-08"
+      },
+      {
+        "id": "canon-i-16",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "An octet FF inside a string: not UTF-8.",
+        "hex": "7b2273223a2261ff62227d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-06"
+      },
+      {
+        "id": "canon-i-17",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A surrogate encoded as three octets (ED A0 BD): not UTF-8.",
+        "hex": "7b2273223a22eda0bd227d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-05"
+      },
+      {
+        "id": "canon-i-18",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A byte order mark before the object.",
+        "text": "﻿{\"a\":1}",
+        "hex": "efbbbf7b2261223a317d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-19",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "An array at the top level.",
+        "text": "[1]",
+        "hex": "5b315d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-20",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A truncated object.",
+        "text": "{\"a\":1",
+        "hex": "7b2261223a31",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-21",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A second object after the first.",
+        "text": "{\"a\":1}{\"a\":1}",
+        "hex": "7b2261223a317d7b2261223a317d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-22",
+        "rules": [
+          "W1.2"
+        ],
+        "claim": "A leading zero, which is no JSON number.",
+        "text": "{\"a\":01}",
+        "hex": "7b2261223a30317d",
+        "expect": "WIRE_JSON",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-23",
+        "rules": [
+          "W1.4"
+        ],
+        "claim": "A null.",
+        "text": "{\"a\":null}",
+        "hex": "7b2261223a6e756c6c7d",
+        "expect": "WIRE_VALUE",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-24",
+        "rules": [
+          "W1.4",
+          "W2.2"
+        ],
+        "claim": "A negative number.",
+        "text": "{\"a\":-1}",
+        "hex": "7b2261223a2d317d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-25",
+        "rules": [
+          "W1.4",
+          "W2.2"
+        ],
+        "claim": "A negative zero.",
+        "text": "{\"a\":-0}",
+        "hex": "7b2261223a2d307d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-26",
+        "rules": [
+          "W1.4",
+          "W2.2"
+        ],
+        "claim": "A fraction, although its value is the integer 1.",
+        "text": "{\"a\":1.0}",
+        "hex": "7b2261223a312e307d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-27",
+        "rules": [
+          "W1.4",
+          "W2.2"
+        ],
+        "claim": "An exponent.",
+        "text": "{\"a\":1e0}",
+        "hex": "7b2261223a3165307d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-02"
+      },
+      {
+        "id": "canon-i-28",
+        "rules": [
+          "W1.4",
+          "W2.2"
+        ],
+        "claim": "One above the largest integer of the number form.",
+        "text": "{\"max\":9007199254740992,\"zero\":0}",
+        "hex": "7b226d6178223a393030373139393235343734303939322c227a65726f223a307d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-09"
+      },
+      {
+        "id": "canon-i-29",
+        "rules": [
+          "W1.4",
+          "W2.2",
+          "W2.4"
+        ],
+        "claim": "Two above the largest integer. A reader that parses numbers as binary64 turns this token into 9007199254740992 and loses the difference; the check is on the digits.",
+        "text": "{\"max\":9007199254740993,\"zero\":0}",
+        "hex": "7b226d6178223a393030373139393235343734303939332c227a65726f223a307d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "canon-v-09"
+      },
+      {
+        "id": "canon-i-30",
+        "rules": [
+          "W1.1"
+        ],
+        "claim": "Seventeen levels of nesting.",
+        "text": "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{}}}}}}}}}}}}}}}}}",
+        "hex": "7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b2261223a7b7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d",
+        "expect": "WIRE_SIZE",
+        "valid_neighbour": "canon-v-11"
+      }
+    ]
+  },
+  "integers": {
+    "note": "The string form of section 2, for a member whose bound is 2^64 - 1. Each entry is the content of the JSON string. Refused entries refuse as WIRE_INTEGER. The number form is covered by canon-v-09 and canon-i-24 to canon-i-29; a member in the wrong one of the two forms is covered by issuance-i-05 and issuance-i-06.",
+    "bound": "18446744073709551615",
+    "valid": [
+      {
+        "id": "int-v-01",
+        "rules": [
+          "W2.3"
+        ],
+        "value": "0"
+      },
+      {
+        "id": "int-v-02",
+        "rules": [
+          "W2.3"
+        ],
+        "value": "1"
+      },
+      {
+        "id": "int-v-03",
+        "rules": [
+          "W2.3"
+        ],
+        "value": "9007199254740993"
+      },
+      {
+        "id": "int-v-04",
+        "rules": [
+          "W2.3"
+        ],
+        "value": "18446744073709551615"
+      }
+    ],
+    "invalid": [
+      {
+        "id": "int-i-01",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "empty",
+        "value": "",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-02",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "two zeros",
+        "value": "00",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-03",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a leading zero",
+        "value": "01",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-04",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a plus sign",
+        "value": "+1",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-05",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a minus sign",
+        "value": "-1",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-06",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a fraction",
+        "value": "1.0",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-07",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "an exponent",
+        "value": "1e3",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-08",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a leading space",
+        "value": " 1",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-09",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a trailing space",
+        "value": "1 ",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-10",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a hexadecimal spelling",
+        "value": "0x10",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-11",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a separator",
+        "value": "1_000",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-12",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "a fullwidth digit, U+FF11",
+        "value": "１",
+        "expect": "WIRE_INTEGER"
+      },
+      {
+        "id": "int-i-13",
+        "rules": [
+          "W2.3"
+        ],
+        "claim": "one above the bound of the member",
+        "value": "18446744073709551616",
+        "expect": "WIRE_INTEGER"
+      }
+    ]
+  },
+  "digests": {
+    "types": [
+      {
+        "id": "digest-01",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-grant/4",
+        "use": "signature",
+        "tag_hex": "737761726d612d6772616e742f34",
+        "tag_sha256": "eb2b9dc1647237e0e0d7e024a19f4ee95379c20ff01f4ccb7cf1168840fef67a",
+        "payload": "{\"type\":\"swarma-grant/4\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d6772616e742f34227d",
+        "typed_digest": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+        "sha256": "6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765"
+      },
+      {
+        "id": "digest-02",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-invocation/1",
+        "use": "signature",
+        "tag_hex": "737761726d612d696e766f636174696f6e2f31",
+        "tag_sha256": "6c346e893f9e9033583763afc8cdbd951aa45f22cca6618b9269918ad8d540d2",
+        "payload": "{\"type\":\"swarma-invocation/1\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d696e766f636174696f6e2f31227d",
+        "typed_digest": "6d7bfdf149aeb5728d47f95be87bb451488ace580870360c3d0eeefea36bd446",
+        "sha256": "e01a2d091bdbfbcb9eb9e8690b107f0beb09ef611ce2bbe52786596226f09d73"
+      },
+      {
+        "id": "digest-03",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-receipt/1",
+        "use": "signature",
+        "tag_hex": "737761726d612d726563656970742f31",
+        "tag_sha256": "4a451eeb0d2457d68cf38833dbfeb50616fc9aaaea61a7c5fb240fb3433c2902",
+        "payload": "{\"type\":\"swarma-receipt/1\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d726563656970742f31227d",
+        "typed_digest": "f4e31098c721028a487c703ab8c7b2ccaf90e52c78220326d9c3fcede96df815",
+        "sha256": "dfdefdcbcf7077082855a3533a0439883b5b1edaa46f99dcff5ac522a23d34bd"
+      },
+      {
+        "id": "digest-04",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-seal-endorsement/1",
+        "use": "signature",
+        "tag_hex": "737761726d612d7365616c2d656e646f7273656d656e742f31",
+        "tag_sha256": "e8dc66c8ad4edabcb99ef1ac044481214c650a92888cda513818517ab9de83c2",
+        "payload": "{\"type\":\"swarma-seal-endorsement/1\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d7365616c2d656e646f7273656d656e742f31227d",
+        "typed_digest": "a8b7bbac76992ee3fee01672a616a74cf245c8b821ab0c856d1c076bb30b6ea8",
+        "sha256": "9162372a94cb7e88d2b4b1e0da8da0fbfe7a84275366c003cfa634c71ad2b3c9"
+      },
+      {
+        "id": "digest-05",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-contract-assent/1",
+        "use": "signature",
+        "tag_hex": "737761726d612d636f6e74726163742d617373656e742f31",
+        "tag_sha256": "d85ca55e564a957af0af8d2d717c99cb73f81311091dfeb79ee9b4e3e50609a7",
+        "payload": "{\"type\":\"swarma-contract-assent/1\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d",
+        "typed_digest": "d22d1344457dcea11b6593b91a582f18ca1f9888744030aaced7b4646c532e41",
+        "sha256": "a68cfe02b8b4ea792986d8e817a69452891a7bd70d9fd075c76fcc1f33984a8f"
+      },
+      {
+        "id": "digest-06",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-issuance/1",
+        "use": "commitment",
+        "tag_hex": "737761726d612d69737375616e63652f31",
+        "tag_sha256": "9e92a490b158cf3f282ecec2787ebeac19754564c26660efb184e9e9bd7d48b9",
+        "payload": "{\"type\":\"swarma-issuance/1\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d69737375616e63652f31227d",
+        "typed_digest": "1e311b3e7a8b742ea92d67ed2899b4abfb93113f644e8cca1822a560af90c8e2",
+        "sha256": "62990ca0592ac899380631c197ae43e58c43fa0201a001a28d9e7b4f1bf5e91d"
+      },
+      {
+        "id": "digest-07",
+        "rules": [
+          "W3.1",
+          "W4.1"
+        ],
+        "type": "swarma-notary-attestation/2",
+        "use": "signature",
+        "tag_hex": "737761726d612d6e6f746172792d6174746573746174696f6e2f32",
+        "tag_sha256": "4da61b7d378b5f088c2040be8b867d32b4ad62b345a045708ca2402f093d2bb5",
+        "payload": "{\"type\":\"swarma-notary-attestation/2\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d6e6f746172792d6174746573746174696f6e2f32227d",
+        "typed_digest": "40e9f75a20f6c8eb0aea1d2706b2045e0081d1cee64506a5becf40f69024a22a",
+        "sha256": "9d006e8539fe55651cf2958dbefb28e87fe417b6feca5261ea62ac9ef3a8357d"
+      }
+    ],
+    "cross": {
+      "id": "digest-cross-01",
+      "rules": [
+        "W4.1",
+        "W4.2"
+      ],
+      "claim": "The same octets under the tag of another type give another digest. A reader never computes this: the tag is the type that the payload states.",
+      "payload": "{\"type\":\"swarma-grant/4\"}",
+      "payload_hex": "7b2274797065223a22737761726d612d6772616e742f34227d",
+      "under_own_type": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+      "under": "swarma-invocation/1",
+      "typed_digest": "a6ac7d3f3cf57058d1d720e43d4522982ba3123e1c1a3a3ba739f43dd499d730"
+    }
+  },
+  "signed": {
+    "note": "A payload that holds only `type`, or `type` and `note`, stands in for an object whose members are open. It shows the digest, signature and identifier rules and is not a valid object of its type.",
+    "valid": [
+      {
+        "id": "signed-v-01",
+        "rules": [
+          "W4.1",
+          "W5.1",
+          "W5.3",
+          "W6.1"
+        ],
+        "claim": "A signature by the default algorithm of BIP-340 with 32 zero octets of auxiliary randomness.",
+        "place": "a signed object of type swarma-grant/4 under key issuer",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "aux_rand": "0000000000000000000000000000000000000000000000000000000000000000",
+        "payload": "{\"type\":\"swarma-grant/4\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d6772616e742f34227d",
+        "typed_digest": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+        "signature": "e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "id_of_object": "6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765",
+        "content_address": "e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0"
+      },
+      {
+        "id": "signed-v-02",
+        "rules": [
+          "W5.4",
+          "W6.2"
+        ],
+        "claim": "The same payload signed with other auxiliary randomness: another valid signature, another content address, the same identifier as signed-v-01.",
+        "place": "a signed object of type swarma-grant/4 under key issuer",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "aux_rand": "0101010101010101010101010101010101010101010101010101010101010101",
+        "payload": "{\"type\":\"swarma-grant/4\"}",
+        "payload_hex": "7b2274797065223a22737761726d612d6772616e742f34227d",
+        "typed_digest": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+        "signature": "b2314d268769c5b752b2b4dd83c5bfdefc4a60acd13eba4656b469386c503aec8d56cf82d5801fd002a1c760fe999bf1b7824d0dffb56e0c9ef3cc859dcc0eb3",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"b2314d268769c5b752b2b4dd83c5bfdefc4a60acd13eba4656b469386c503aec8d56cf82d5801fd002a1c760fe999bf1b7824d0dffb56e0c9ef3cc859dcc0eb3\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226232333134643236383736396335623735326232623464643833633562666465666334613630616364313365626134363536623436393338366335303361656338643536636638326435383031666430303261316337363066653939396266316237383234643064666662353665306339656633636338353964636330656233227d",
+        "id_of_object": "6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765",
+        "content_address": "30e43ddef89974430fab5acffc3deb404b53f837d3f499c919204d1b51b9173a"
+      },
+      {
+        "id": "signed-v-03",
+        "rules": [
+          "W3.7",
+          "W6.1"
+        ],
+        "claim": "A payload with a descriptive member. The member is part of the canonical bytes, so the digest and the identifier differ from signed-v-01.",
+        "place": "a signed object of type swarma-grant/4 under key issuer",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "aux_rand": "0000000000000000000000000000000000000000000000000000000000000000",
+        "payload": "{\"note\":\"first\",\"type\":\"swarma-grant/4\"}",
+        "payload_hex": "7b226e6f7465223a226669727374222c2274797065223a22737761726d612d6772616e742f34227d",
+        "typed_digest": "205e4a131aaf2595b1919dbe40e0ceaf57c0162b0faca20ec2fb0c4b18a207f9",
+        "signature": "687771bdcf1bf3c972e05bcba3be5f766beee256fc09cc06687a7d83b6a3aade2f37dcf1fa8546603c9e975b0b2fdd6c1f126ee1ad070380679135413de2f6d0",
+        "signed_form": "{\"payload\":{\"note\":\"first\",\"type\":\"swarma-grant/4\"},\"signature\":\"687771bdcf1bf3c972e05bcba3be5f766beee256fc09cc06687a7d83b6a3aade2f37dcf1fa8546603c9e975b0b2fdd6c1f126ee1ad070380679135413de2f6d0\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b226e6f7465223a226669727374222c2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a223638373737316264636631626633633937326530356263626133626535663736366265656532353666633039636330363638376137643833623661336161646532663337646366316661383534363630336339653937356230623266646436633166313236656531616430373033383036373931333534313364653266366430227d",
+        "id_of_object": "4170241461f931baa659d852b95ecfcd99d3702c10bd13a07c8f9cf11b82ac8e",
+        "content_address": "ab355260f6d1c24ac0450d1c31c2ed4c2ccdee026cdd01adbc2f67a41be7b672"
+      }
+    ],
+    "invalid": [
+      {
+        "id": "signed-i-01",
+        "rules": [
+          "W3.7",
+          "W5.1"
+        ],
+        "claim": "The payload of signed-v-03 under the signature of signed-v-01: a signed member was added after signing.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"note\":\"first\",\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b226e6f7465223a226669727374222c2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-03"
+      },
+      {
+        "id": "signed-i-02",
+        "rules": [
+          "W4.1"
+        ],
+        "claim": "A signature over the plain SHA-256 of the payload, without the tag.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"fbea28b34b1206bf8042e00f3cbfc18bc39aacc5eccc64d156bb319c145e67861ccfa1f5a4b14ee64ffd44f15a9a06bd243450595d76716e48ab0635276f3ca6\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226662656132386233346231323036626638303432653030663363626663313862633339616163633565636363363464313536626233313963313435653637383631636366613166356134623134656536346666643434663135613961303662643234333435303539356437363731366534386162303633353237366633636136227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-03",
+        "rules": [
+          "W4.1"
+        ],
+        "claim": "A signature in the fixed-prefix style of the earlier formats: SHA-256 of the type string followed by the payload.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"3208d56a683e02e0a1f01460266950a56f9eed3c89839bdcd73bbcfa7a48eb6f3b13f8e3f3f7053f5919bf030f5101b9c84adef45c7212a04eba989e6b1be114\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a223332303864353661363833653032653061316630313436303236363935306135366639656564336338393833396264636437336262636661376134386562366633623133663865336633663730353366353931396266303330663531303162396338346164656634356337323132613034656261393839653662316265313134227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-04",
+        "rules": [
+          "W4.2"
+        ],
+        "claim": "A signature over the digest under the tag of swarma-invocation/1.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"cd8af00e9acc7584b403fd1022939afd340485a9bf8f304093ecaac2c02e59ada8af811b4228cf4db46cc5b0f388e825eb917584b187c054c7f5e34fe61fcbd5\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226364386166303065396163633735383462343033666431303232393339616664333430343835613962663866333034303933656361616332633032653539616461386166383131623432323863663464623436636335623066333838653832356562393137353834623138376330353463376635653334666536316663626435227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-05",
+        "rules": [
+          "W5.5"
+        ],
+        "claim": "A valid signature by a key other than the one that the place names.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"ae2de8509df1434172b815499c7b6204f0eb27aaf25a03abbb0fa7ff5466d3118532400154d282cd09fd826d1c029740e84b0d3f95e177370595c4a7af892080\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226165326465383530396466313433343137326238313534393963376236323034663065623237616166323561303361626262306661376666353436366433313138353332343030313534643238326364303966643832366431633032393734306538346230643366393565313737333730353935633461376166383932303830227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-06",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "A signature of 63 octets.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd65\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a22653934393866633133376631626633663662316332613835653033343136613132306234353132383031613838326633313164613166383962353135303863316337383932323036666134376639353465356533336430313731306136313537653666343031393565623135646266633436336164343637313062643635227d",
+        "expect": "WIRE_SIGNATURE_FORM",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-07",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "A signature of 65 octets.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd656100\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a2265393439386663313337663162663366366231633261383565303334313661313230623435313238303161383832663331316461316638396235313530386331633738393232303666613437663935346535653333643031373130613631353765366634303139356562313564626663343633616434363731306264363536313030227d",
+        "expect": "WIRE_SIGNATURE_FORM",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-08",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "The signature of signed-v-01 in uppercase hexadecimal.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"E9498FC137F1BF3F6B1C2A85E03416A120B4512801A882F311DA1F89B51508C1C7892206FA47F954E5E33D01710A6157E6F40195EB15DBFC463AD46710BD6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a224539343938464331333746314246334636423143324138354530333431364131323042343531323830314138383246333131444131463839423531353038433143373839323230364641343746393534453545333344303137313041363135374536463430313935454231354442464334363341443436373130424436353631227d",
+        "expect": "WIRE_SIGNATURE_FORM",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-09",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "The first half of the signature is the field size p, which is no x coordinate.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fc7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666665666666666663326663373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-10",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "The second half of the signature is the group order n.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633166666666666666666666666666666666666666666666666666666666666666656261616564636536616634386130336262666432356538636430333634313431227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-11",
+        "rules": [
+          "W5.2"
+        ],
+        "claim": "A signature whose nonce point has an odd y coordinate. It differs from signed-v-01 in its second half only.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1598c2917785f2dbeb41ab4ba59c19773ec5dfaddbc7bc46e9381a489b461d0f6\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633135393863323931373738356632646265623431616234626135396331393737336563356466616464626337626334366539333831613438396234363164306636227d",
+        "expect": "WIRE_SIGNATURE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-12",
+        "rules": [
+          "W5.3",
+          "W6.3"
+        ],
+        "claim": "A signed form that states an identifier beside the payload.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b226964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-13",
+        "rules": [
+          "W5.3"
+        ],
+        "claim": "A signed form without a signature.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"}}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d7d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-14",
+        "rules": [
+          "W5.5",
+          "W3.6"
+        ],
+        "claim": "The place names a key that is no point of the curve.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "eefdea4cdb677750a420fee807eacf21eb9898ae79b9768766e4faa04a2d4a34",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_KEY",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-15",
+        "rules": [
+          "W3.1",
+          "W3.3"
+        ],
+        "claim": "A type that the registry does not hold. The signature is valid for these octets; no reader reads version 5 as version 4.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/5\"},\"signature\":\"9034b566486cceb0affe82cde1f38d0657a68021dac8f94dee9b24d9bf407eac3b6ead3833e2fe1343b2239146027014d75ba1a0a159ae288f1fc699a821e5bf\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f35227d2c227369676e6174757265223a223930333462353636343836636365623061666665383263646531663338643036353761363830323164616338663934646565396232346439626634303765616333623665616433383333653266653133343362323233393134363032373031346437356261316130613135396165323838663166633639396138323165356266227d",
+        "expect": "WIRE_TYPE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-16",
+        "rules": [
+          "W3.1",
+          "W3.4"
+        ],
+        "claim": "A payload without `type`, with the version member of a v3 grant.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"version\":3},\"signature\":\"bd588351823cfd8a881dc6557f0bef11715ed855db56a744c74db9085793555bde216774c8498cd264b80f8d83e58947cf4d0dc993d2749c5dbd8ac5daaa62a7\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2276657273696f6e223a337d2c227369676e6174757265223a226264353838333531383233636664386138383164633635353766306265663131373135656438353564623536613734346337346462393038353739333535356264653231363737346338343938636432363462383066386438336535383934376366346430646339393364323734396335646264386163356461616136326137227d",
+        "expect": "WIRE_TYPE",
+        "valid_neighbour": "signed-v-01"
+      },
+      {
+        "id": "signed-i-17",
+        "rules": [
+          "W3.1"
+        ],
+        "claim": "A `type` that is a number.",
+        "expected_type": "swarma-grant/4",
+        "public_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+        "signed_form": "{\"payload\":{\"type\":4},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a347d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_TYPE",
+        "valid_neighbour": "signed-v-01"
+      }
+    ]
+  },
+  "identifiers": [
+    {
+      "id": "id-01",
+      "rules": [
+        "W6.1",
+        "W6.4"
+      ],
+      "claim": "Three hashes of one object, and each has its own use: the identifier is the SHA-256 of the payload, the typed digest is what the signature covers, and the content address is the SHA-256 of the signed form.",
+      "object": "signed-v-01",
+      "identifier": "6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765",
+      "typed_digest": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+      "content_address": "e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0"
+    },
+    {
+      "id": "id-02",
+      "rules": [
+        "W6.3"
+      ],
+      "claim": "A reference that equals the recomputed identifier.",
+      "object": "signed-v-01",
+      "reference": "6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765",
+      "expect": "ok"
+    },
+    {
+      "id": "id-03",
+      "rules": [
+        "W6.3"
+      ],
+      "claim": "A reference that states the content address in place of the identifier.",
+      "object": "signed-v-01",
+      "reference": "e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+      "expect": "WIRE_ID"
+    },
+    {
+      "id": "id-04",
+      "rules": [
+        "W6.3"
+      ],
+      "claim": "A reference that states the typed digest in place of the identifier.",
+      "object": "signed-v-01",
+      "reference": "f1e62e34f6b79cd5c28a4b1edbb50b737bb3f4d2bd26805764b64eb5e7372f75",
+      "expect": "WIRE_ID"
+    }
+  ],
+  "assents": {
+    "valid": [
+      {
+        "id": "assent-v-01",
+        "rules": [
+          "W7.1",
+          "W5.1",
+          "W6.1"
+        ],
+        "claim": "The issuer assents to contract A with its grant key.",
+        "party_key": "issuer",
+        "payload": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"}",
+        "payload_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d",
+        "typed_digest": "c06bfb52ce945744e55677586c3c7361a92a0b06c5c9ed421e25f681e97f29bd",
+        "signature": "199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d",
+        "assent_id": "abcef8bbac2569f04ebe944b2190df526766c93ca7d8c36383a6a6238e38a4a3",
+        "content_address": "fd53e48ec4d1906479ea56bbf2a6d5eebf0e21789b742dc5e36c38cb1e604e42"
+      },
+      {
+        "id": "assent-v-02",
+        "rules": [
+          "W7.1",
+          "W5.1",
+          "W6.1"
+        ],
+        "claim": "Another party assents to the same contract. Its assent is another object with another identifier.",
+        "party_key": "recipient",
+        "payload": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"type\":\"swarma-contract-assent/1\"}",
+        "payload_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d",
+        "typed_digest": "9f5d4993e9ab9f2c93446a28db390bbccb6c80b593665564529fce40e5e888f8",
+        "signature": "7631e56afcd526f64d0fcf6ad987a0181deb56b894d570ee68ee69f13ad89ac1aefad8e61c9501fe934e3a588927cd944e1e8d8a969c11ca1238ff89c37bdd76",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"7631e56afcd526f64d0fcf6ad987a0181deb56b894d570ee68ee69f13ad89ac1aefad8e61c9501fe934e3a588927cd944e1e8d8a969c11ca1238ff89c37bdd76\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223736333165353661666364353236663634643066636636616439383761303138316465623536623839346435373065653638656536396631336164383961633161656661643865363163393530316665393334653361353838393237636439343465316538643861393639633131636131323338666638396333376264643736227d",
+        "assent_id": "9365565481438d70bea82eb46f45b38dedc7358553c081c607d1e4de6a2a3e4d",
+        "content_address": "121819aa66d581a17bf501ded2ec164ea6124677fa9b51ee42d4a8f5ed00e08c"
+      },
+      {
+        "id": "assent-v-03",
+        "rules": [
+          "W7.1",
+          "W5.1",
+          "W6.1"
+        ],
+        "claim": "A key that the contract does not name assents to contract A. The object is well formed; the binding case assent-b-05 refuses it.",
+        "party_key": "other",
+        "payload": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8\",\"type\":\"swarma-contract-assent/1\"}",
+        "payload_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264643330386166656335373737653133313231666137326239636331623763633031333937313533303962303836633936306531386664393639373734656238222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d",
+        "typed_digest": "7693b173f1ef7daba68dcd7d46abed4670259b7918e86877b1f45b7c9cc2bb97",
+        "signature": "ef112941870edb86b0e10b8d56fc62063d2e0188c62fc9483168837fd7041a5060fe1fd2c186adfde03be09fe03936eedf773660154eefc18b9f91393eb4fe3c",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"ef112941870edb86b0e10b8d56fc62063d2e0188c62fc9483168837fd7041a5060fe1fd2c186adfde03be09fe03936eedf773660154eefc18b9f91393eb4fe3c\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264643330386166656335373737653133313231666137326239636331623763633031333937313533303962303836633936306531386664393639373734656238222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226566313132393431383730656462383662306531306238643536666336323036336432653031383863363266633934383331363838333766643730343161353036306665316664326331383661646664653033626530396665303339333665656466373733363630313534656566633138623966393133393365623466653363227d",
+        "assent_id": "e5ee4eef5df074d9894e434ad4cf32afac49abc44bc7658bba0eff64409236f3",
+        "content_address": "3ca5913691ca328c4aa24bf27f5784a76e2d0fb3426ec3887363fe15782e25e7"
+      }
+    ],
+    "invalid": [
+      {
+        "id": "assent-i-01",
+        "rules": [
+          "W3.2"
+        ],
+        "claim": "A member that the type does not list.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"note\":\"x\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"de9bd30b9e7eb68769a1fac459d83b1314884b781ba66cf36a4a1b269c785493369b9425bfda923d9889efab8a87852adcfe3edf4cc797d42a63be79f15214c2\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226e6f7465223a2278222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226465396264333062396537656236383736396131666163343539643833623133313438383462373831626136366366333661346131623236396337383534393333363962393432356266646139323364393838396566616238613837383532616463666533656466346363373937643432613633626537396631353231346332227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-02",
+        "rules": [
+          "W3.2"
+        ],
+        "claim": "A required member is missing.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"eeee68884b53f25e7ab3a7529999bbbd7af4393b8c84c3a7f9e4ca34d22ec5e46a54e17b55b0abff18a9e0b92dfa67af7d427968a8494fe8a06f5e41f59089e4\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226565656536383838346235336632356537616233613735323939393962626264376166343339336238633834633361376639653463613334643232656335653436613534653137623535623061626666313861396530623932646661363761663764343237393638613834393466653861303666356534316635393038396534227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-03",
+        "rules": [
+          "W3.5"
+        ],
+        "claim": "The contract identifier in uppercase hexadecimal.",
+        "signed_form": "{\"payload\":{\"contract\":\"6E01E587B9931DE4A32076D48CD9A64460D6FA0AEAAC953E19201127A4D7AFBF\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"127b2764ef8f91ceb89b3afab83aabe2b4f865babd342a7dc9395401875bd65f80408795669c1248b4b6787c833ee074b51408472528a995b043543b5a72b3de\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236453031453538374239393331444534413332303736443438434439413634343630443646413041454141433935334531393230313132374134443741464246222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223132376232373634656638663931636562383962336166616238336161626532623466383635626162643334326137646339333935343031383735626436356638303430383739353636396331323438623462363738376338333365653037346235313430383437323532386139393562303433353433623561373262336465227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-04",
+        "rules": [
+          "W3.5"
+        ],
+        "claim": "The contract identifier one character short.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afb\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"7d986dc09460c4f350cb17c04278990b999a71ccddcd7c771b12afee081730ba38533f19ca58c06de2941e7cbc79d9d0312b06129659898f24e16ddf9d409f4a\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a22366530316535383762393933316465346133323037366434386364396136343436306436666130616561616339353365313932303131323761346437616662222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223764393836646330393436306334663335306362313763303432373839393062393939613731636364646364376337373162313261666565303831373330626133383533336631396361353863303664653239343165376362633739643964303331326230363132393635393839386632346531366464663964343039663461227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-05",
+        "rules": [
+          "W3.2"
+        ],
+        "claim": "A boolean where the type lists a string.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":true,\"type\":\"swarma-contract-assent/1\"},\"signature\":\"f14815c2623683818d5af1c6bc086a3a55f9f7e91641db41eb7971811fb853c349e559bf8a6d658dd6dcf0b39613bf1a4a60cfbdda1a1a76e915f30b13316794\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a747275652c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226631343831356332363233363833383138643561663163366263303836613361353566396637653931363431646234316562373937313831316662383533633334396535353962663861366436353864643664636630623339363133626631613461363063666264646131613161373665393135663330623133333136373934227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-06",
+        "rules": [
+          "W3.6"
+        ],
+        "claim": "A party key that is no point of the curve.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"eefdea4cdb677750a420fee807eacf21eb9898ae79b9768766e4faa04a2d4a34\",\"type\":\"swarma-contract-assent/1\"},\"signature\":\"0ac2c943277433c918328537c9c2500591049f2ec49450b174a5b45251dc147b486bad4147f6b3f3f35db82a852e42f9c1976e4ad4e0f990382e2ad56ce88735\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2265656664656134636462363737373530613432306665653830376561636632316562393839386165373962393736383736366534666161303461326434613334222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223061633263393433323737343333633931383332383533376339633235303035393130343966326563343934353062313734613562343532353164633134376234383662616434313437663662336633663335646238326138353265343266396331393736653461643465306639393033383265326164353663653838373335227d",
+        "expect": "WIRE_KEY",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-07",
+        "rules": [
+          "W3.3"
+        ],
+        "claim": "A version of the type that the registry does not hold.",
+        "signed_form": "{\"payload\":{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"type\":\"swarma-contract-assent/2\"},\"signature\":\"b620f5319539ada66ea4b44d814ad2c5f3a4bab1682b588f986c80737a6f9056e75c9cbf99ecce2842e6244a24602db2fadcffb21bb86f12c7ef4dc3ba017947\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f32227d2c227369676e6174757265223a226236323066353331393533396164613636656134623434643831346164326335663361346261623136383262353838663938366338303733376136663930353665373563396362663939656363653238343265363234346132343630326462326661646366666232316262383666313263376566346463336261303137393437227d",
+        "expect": "WIRE_TYPE",
+        "valid_neighbour": "assent-v-01"
+      },
+      {
+        "id": "assent-i-08",
+        "rules": [
+          "W3.1"
+        ],
+        "claim": "The octets of a placeholder grant where the place requires an assent.",
+        "signed_form": "{\"payload\":{\"type\":\"swarma-grant/4\"},\"signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\"}",
+        "signed_form_hex": "7b227061796c6f6164223a7b2274797065223a22737761726d612d6772616e742f34227d2c227369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631227d",
+        "expect": "WIRE_TYPE",
+        "valid_neighbour": "assent-v-01"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "assent-b-01",
+        "rules": [
+          "W7.2"
+        ],
+        "claim": "The assent of assent-v-01 for a grant on the same chain that binds contract A, whose contract names the issuer's grant key for the issuing party.",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d",
+        "context": {
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "ok"
+      },
+      {
+        "id": "assent-b-02",
+        "rules": [
+          "W7.2"
+        ],
+        "claim": "The grant binds contract B.",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d",
+        "context": {
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "4b3e4180dfb036c82ab76d7e19eb92ba003535479c5a33303fe5b7fed34373c0",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "ASSENT_BINDING"
+      },
+      {
+        "id": "assent-b-03",
+        "rules": [
+          "W7.2"
+        ],
+        "claim": "The grant is on another chain.",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d",
+        "context": {
+          "genesis": "0e94a77b682bf18097197356b9a0fc9aafe754cd8c5e9d0fb3cd471b6fc0c7ae",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "ASSENT_BINDING"
+      },
+      {
+        "id": "assent-b-04",
+        "rules": [
+          "W7.2"
+        ],
+        "claim": "The assent of another party of the contract (assent-v-02) offered as the issuer's.",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a223736333165353661666364353236663634643066636636616439383761303138316465623536623839346435373065653638656536396631336164383961633161656661643865363163393530316665393334653361353838393237636439343465316538643861393639633131636131323338666638396333376264643736227d",
+        "context": {
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "ASSENT_PARTY"
+      },
+      {
+        "id": "assent-b-05",
+        "rules": [
+          "W7.2"
+        ],
+        "claim": "The assent of a key that the contract does not name (assent-v-03).",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2264643330386166656335373737653133313231666137326239636331623763633031333937313533303962303836633936306531386664393639373734656238222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226566313132393431383730656462383662306531306238643536666336323036336432653031383863363266633934383331363838333766643730343161353036306665316664326331383661646664653033626530396665303339333665656466373733363630313534656566633138623966393133393365623466653363227d",
+        "context": {
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "ASSENT_PARTY"
+      },
+      {
+        "id": "assent-b-06",
+        "rules": [
+          "W7.2",
+          "W5.5"
+        ],
+        "claim": "The payload of assent-v-01 signed by another key.",
+        "signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226537316565386536666264633864353335373063363332313463336365353937626132343961306132346563386233366166383337333361393536343363366138636365646165393666623433663938626338363635396431376539623732326431656637663361626130626634353863353730386239353736396437643866227d",
+        "context": {
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "party": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+        },
+        "expect": "WIRE_SIGNATURE"
+      }
+    ]
+  },
+  "consent_events": {
+    "note": "`context` states what the checker knows from the grant and from its node: the mode of the recipient, the chain, the contract, for a recipient by key the request key of the grant, for a recipient by name the key that the output named as evidence yields and the key that the name lists today, and the checker's clock.",
+    "valid": [
+      {
+        "id": "consent-v-01",
+        "rules": [
+          "W7.3"
+        ],
+        "claim": "The consent event of the recipient for contract A, signed by the recipient's key.",
+        "event": "{\"id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"}",
+        "event_hex": "7b226964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d",
+        "id_preimage": "[0,\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",1794528000,8181,[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"\"]",
+        "event_id": "619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c",
+        "sig": "eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df"
+      }
+    ],
+    "cases": [
+      {
+        "id": "consent-c-01",
+        "rules": [
+          "W7.4",
+          "W7.5"
+        ],
+        "claim": "By key: the event's key is the request key that the grant signs.",
+        "event": "{\"id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"}",
+        "event_hex": "7b226964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "ok"
+      },
+      {
+        "id": "consent-c-02",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "Another kind. The event is signed correctly for its own content.",
+        "event": "{\"id\":\"f9c816992c129bef99e091bb4be01b1f1d86b01edd99af37346f1e1b009c0ce8\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8185,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"52b4e2f8fba5ec2d8bcd18e124c57d60e13a7d663b678dbc03cf12a0bc705dff290db8ca044e1f7b5a5694c810a8a7529fa27baa69c85acf03409c0ccddafbc3\"}",
+        "event_hex": "7b226964223a2266396338313639393263313239626566393965303931626234626530316231663164383662303165646439396166333733343666316531623030396330636538222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138352c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a223532623465326638666261356563326438626364313865313234633537643630653133613764363633623637386462633033636631326130626337303564666632393064623863613034346531663762356135363934633831306138613735323966613237626161363963383561636630333430396330636364646166626333227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-03",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "Content that is not empty.",
+        "event": "{\"id\":\"a7b5fae0517abe551b74fbc5cfd37fa2992079820b56801dc213eaec891649b9\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"yes\",\"sig\":\"5a4eb321db3961adeb8779f493913e0ab2e8508ad790375f8ee337a5989b28d7e4936e018221c7e295260a4dd69487b51dee31be55aca2d3a26a0a6484fc2a85\"}",
+        "event_hex": "7b226964223a2261376235666165303531376162653535316237346662633563666433376661323939323037393832306235363830316463323133656165633839313634396239222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22796573222c22736967223a223561346562333231646233393631616465623837373966343933393133653061623265383530386164373930333735663865653333376135393839623238643765343933366530313832323163376532393532363061346464363934383762353164656533316265353561636132643361323661306136343834666332613835227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-04",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "The three tags in another order.",
+        "event": "{\"id\":\"78dd6711dd37751566053da032ee8378cff20c0001f4c1fde5b0f67105b43fa1\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"]],\"content\":\"\",\"sig\":\"d9c2ed294950b2c6ed4e411e85d71d37a79af2b1c9c50cdf7546575e76fe89b496fc0486d295cd8cf0cf86cf1fcc750382796c2884a69443175ddce3886640f5\"}",
+        "event_hex": "7b226964223a2237386464363731316464333737353135363630353364613033326565383337386366663230633030303166346331666465356230663637313035623433666131222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d5d2c22636f6e74656e74223a22222c22736967223a226439633265643239343935306232633665643465343131653835643731643337613739616632623163396335306364663735343635373565373666653839623439366663303438366432393563643863663063663836636631666363373530333832373936633238383461363934343331373564646365333838363634306635227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-05",
+        "rules": [
+          "W7.4",
+          "W3.4"
+        ],
+        "claim": "The `t` value of a v3 consent with the three tags of this profile.",
+        "event": "{\"id\":\"eba966172c957dc6a80f1cf82a137e92f438d63128a74497ecb73b1c4c6d0f1e\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-rental-consent-v1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"abc74ccf9ec21cfb7198763c790ad825310624d5202580c625a9edfcbec78fbf44bd1b28d652338f86e7820e16fb95e7b76f186d74cda7d218cee4c0dc528076\"}",
+        "event_hex": "7b226964223a2265626139363631373263393537646336613830663163663832613133376539326634333864363331323861373434393765636237336231633463366430663165222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d72656e74616c2d636f6e73656e742d7631225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226162633734636366396563323163666237313938373633633739306164383235333130363234643532303235383063363235613965646663626563373866626634346264316232386436353233333866383665373832306531366662393565376237366631383664373463646137643231386365653463306463353238303736227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-06",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "A fourth tag.",
+        "event": "{\"id\":\"fd52f9da17ac810c34589a84a0d86060dc7a77dee4a7e89930c54496e35d470b\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"],[\"booking\",\"4b3e4180dfb036c82ab76d7e19eb92ba003535479c5a33303fe5b7fed34373c0\"]],\"content\":\"\",\"sig\":\"15489526a3517ed2a6c4249e892a6adddf77f1c9605629eaaa77102c8838ba1cd13d545830fab16e5f875db77e6a232a3b1f9e89ba2a348e85547c0f7ace32e5\"}",
+        "event_hex": "7b226964223a2266643532663964613137616338313063333435383961383461306438363036306463376137376465653461376538393933306335343439366533356434373062222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d2c5b22626f6f6b696e67222c2234623365343138306466623033366338326162373664376531396562393262613030333533353437396335613333333033666535623766656433343337336330225d5d2c22636f6e74656e74223a22222c22736967223a223135343839353236613335313765643261366334323439653839326136616464646637376631633936303536323965616161373731303263383833386261316364313364353435383330666162313665356638373564623737653661323332613362316639653839626132613334386538353534376330663761636533326535227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-07",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "An `id` that the event's content does not yield.",
+        "event": "{\"id\":\"f94154771bcdf9eb71ee625743f16cc347d96ae119127708c698d65bce2784ae\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"}",
+        "event_hex": "7b226964223a2266393431353437373162636466396562373165653632353734336631366363333437643936616531313931323737303863363938643635626365323738346165222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SHAPE"
+      },
+      {
+        "id": "consent-c-08",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "The event binds contract B.",
+        "event": "{\"id\":\"122b4d6d14c5b28dff7cfa47062ceba7de8e23c188ffcd6349bfbf93cb435ebe\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"4b3e4180dfb036c82ab76d7e19eb92ba003535479c5a33303fe5b7fed34373c0\"]],\"content\":\"\",\"sig\":\"04caa35221b45bff723b5ccd719a591680c52775bfb2dc8a380494a04c88339801bdaf518b66432c32700644a1a03d38b3c3f689f1ba09b78a8267224959afb1\"}",
+        "event_hex": "7b226964223a2231323262346436643134633562323864666637636661343730363263656261376465386532336331383866666364363334396266626639336362343335656265222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2234623365343138306466623033366338326162373664376531396562393262613030333533353437396335613333333033666535623766656433343337336330225d5d2c22636f6e74656e74223a22222c22736967223a223034636161333532323162343562666637323362356363643731396135393136383063353237373562666232646338613338303439346130346338383333393830316264616635313862363634333263333237303036343461316130336433386233633366363839663162613039623738613832363732323439353961666231227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_BINDING"
+      },
+      {
+        "id": "consent-c-09",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "The event binds another chain.",
+        "event": "{\"id\":\"659ca39c01636b7eb3090db74ee1bf24d190b0aa9111b26968306faa0c4ca1a6\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"0e94a77b682bf18097197356b9a0fc9aafe754cd8c5e9d0fb3cd471b6fc0c7ae\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"817766607a36d46c6b3892773d1a1a5f108d1ef86bcff93c1d0ae1ab77a8772bd1cf5e471436349389c96f5c84b43152292552fa54cc0108cab1ff8ff55134ae\"}",
+        "event_hex": "7b226964223a2236353963613339633031363336623765623330393064623734656531626632346431393062306161393131316232363936383330366661613063346361316136222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230653934613737623638326266313830393731393733353662396130666339616166653735346364386335653964306662336364343731623666633063376165225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a223831373736363630376133366434366336623338393237373364316131613566313038643165663836626366663933633164306165316162373761383737326264316366356534373134333633343933383963393666356338346234333135323239323535326661353463633031303863616231666638666635353133346165227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_BINDING"
+      },
+      {
+        "id": "consent-c-10",
+        "rules": [
+          "W7.5"
+        ],
+        "claim": "By key: a valid event by a key other than the grant's request key.",
+        "event": "{\"id\":\"fb8b49aad5c35e83823aefec2da8f9efa16dbd197fd0c5c95192ccc28c34c4e7\",\"pubkey\":\"dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"0dd8eea3bdc2529d025b087d20db31180c3714c6579f56f5859e9493d4ca8aa10ac867e42586b285cb2ff2e1c981a1ccc125dbb41565787e0be8f840795599bc\"}",
+        "event_hex": "7b226964223a2266623862343961616435633335653833383233616566656332646138663965666131366462643139376664306335633935313932636363323863333463346537222c227075626b6579223a2264643330386166656335373737653133313231666137326239636331623763633031333937313533303962303836633936306531386664393639373734656238222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a223064643865656133626463323532396430323562303837643230646233313138306333373134633635373966353666353835396539343933643463613861613130616338363765343235383662323835636232666632653163393831613163636331323564626234313536353738376530626538663834303739353539396263227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_KEY"
+      },
+      {
+        "id": "consent-c-11",
+        "rules": [
+          "W7.4"
+        ],
+        "claim": "A signature taken from another event of the same key.",
+        "event": "{\"id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"78d3ab7a532f7fa5a73cc6cfe5647a69a5cd11651168727a462aa812d3183f0bf7c4198058eb4345ffc30246f54826b94609dc9b4d1065faf808dd29d2903709\"}",
+        "event_hex": "7b226964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a223738643361623761353332663766613561373363633663666535363437613639613563643131363531313638373237613436326161383132643331383366306266376334313938303538656234333435666663333032343666353438323662393436303964633962346431303635666166383038646432396432393033373039227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_SIGNATURE"
+      },
+      {
+        "id": "consent-c-12",
+        "rules": [
+          "W7.8"
+        ],
+        "claim": "An event whose `created_at` is one second later than the checker's clock.",
+        "event": "{\"id\":\"ccb13de766cebfbb17bbc62c21cc2d706b8aaab94016b25ac9a578038ede3d66\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794600001,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"a0e10277188e008bb8ee0fd7f30f6a1dd8248e4e7ef8165b392e06bd44f33684785aad728e47984675ccca6ca42ba0cb843a490dfbf5cb62a9e779b94cdc0db7\"}",
+        "event_hex": "7b226964223a2263636231336465373636636562666262313762626336326332316363326437303662386161616239343031366232356163396135373830333865646533643636222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343630303030312c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226130653130323737313838653030386262386565306664376633306636613164643832343865346537656638313635623339326530366264343466333336383437383561616437323865343739383436373563636361366361343262613063623834336134393064666266356362363261396537373962393463646330646237227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_TIME"
+      },
+      {
+        "id": "consent-c-13",
+        "rules": [
+          "W7.8"
+        ],
+        "claim": "An event whose `created_at` equals the checker's clock.",
+        "event": "{\"id\":\"891dfbb0b18f01ad5aedf1d777325af0551832b044839aa6cc9e9d9a535c6ef0\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794600000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"6262c74a6edf104111bbee621f74a848445761ad9dca3e0347cce0318bb94b31d8af927e3ab0183348200569bc79088ed150c22ac6afb67a646792c217261b9a\"}",
+        "event_hex": "7b226964223a2238393164666262306231386630316164356165646631643737373332356166303535313833326230343438333961613663633965396439613533356336656630222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343630303030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a223632363263373461366564663130343131316262656536323166373461383438343435373631616439646361336530333437636365303331386262393462333164386166393237653361623031383333343832303035363962633739303838656431353063323261633661666236376136343637393263323137323631623961227d",
+        "context": {
+          "mode": "key",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "request_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "ok"
+      },
+      {
+        "id": "consent-c-14",
+        "rules": [
+          "W7.6",
+          "W7.7"
+        ],
+        "claim": "By name: the output named as evidence yields the event's key for the channel. The name lists another key today; the consent stays valid, and requests are authenticated under today's key.",
+        "event": "{\"id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"}",
+        "event_hex": "7b226964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d",
+        "context": {
+          "mode": "name",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "evidence_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "current_channel_public_key": "dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8",
+          "now": 1794600000
+        },
+        "expect": "ok"
+      },
+      {
+        "id": "consent-c-15",
+        "rules": [
+          "W7.6"
+        ],
+        "claim": "By name: the output named as evidence yields another key than the event's. That the event's key is the one the name lists today does not help.",
+        "event": "{\"id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"pubkey\":\"dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659\",\"created_at\":1794528000,\"kind\":8181,\"tags\":[[\"t\",\"swarma-contract-consent/1\"],[\"genesis\",\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\"],[\"contract\",\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\"]],\"content\":\"\",\"sig\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"}",
+        "event_hex": "7b226964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227075626b6579223a2264666631643737663261363731633566333631383337323664623233343162653538666561653164613264656365643834333234306637623530326261363539222c22637265617465645f6174223a313739343532383030302c226b696e64223a383138312c2274616773223a5b5b2274222c22737761726d612d636f6e74726163742d636f6e73656e742f31225d2c5b2267656e65736973222c2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730225d2c5b22636f6e7472616374222c2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266225d5d2c22636f6e74656e74223a22222c22736967223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d",
+        "context": {
+          "mode": "name",
+          "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+          "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+          "evidence_public_key": "dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8",
+          "current_channel_public_key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659",
+          "now": 1794600000
+        },
+        "expect": "CONSENT_KEY"
+      }
+    ]
+  },
+  "issuance": {
+    "valid": [
+      {
+        "id": "issuance-v-01",
+        "rules": [
+          "W8.1",
+          "W8.2",
+          "W8.4"
+        ],
+        "claim": "A recipient by key. The grant is the placeholder of signed-v-01.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "preparation": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"grant_id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"grant_signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\",\"issuer_assent\":{\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"},\"recipient_consent\":{\"event_id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"signature\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"},\"type\":\"swarma-issuance/1\"}",
+        "preparation_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226772616e745f6964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c226772616e745f7369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631222c226973737565725f617373656e74223a7b227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d2c22726563697069656e745f636f6e73656e74223a7b226576656e745f6964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227369676e6174757265223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d2c2274797065223a22737761726d612d69737375616e63652f31227d",
+        "commitment": "08a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93",
+        "pointer": "e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "script_hex": "6a03534c01420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9301e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "script_length": 72
+      },
+      {
+        "id": "issuance-v-02",
+        "rules": [
+          "W8.1",
+          "W8.3",
+          "W7.6"
+        ],
+        "claim": "A recipient by name: the preparation names the output of the recipient's name that the issuer read. The transaction id is a placeholder.",
+        "inputs": {
+          "mode": "name",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01",
+          "name_output": {
+            "txid": "bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e",
+            "vout": 1
+          }
+        },
+        "preparation": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"grant_id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"grant_signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\",\"issuer_assent\":{\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"},\"recipient_consent\":{\"event_id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"name_output\":{\"txid\":\"bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e\",\"vout\":1},\"signature\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"},\"type\":\"swarma-issuance/1\"}",
+        "preparation_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226772616e745f6964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c226772616e745f7369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631222c226973737565725f617373656e74223a7b227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d2c22726563697069656e745f636f6e73656e74223a7b226576656e745f6964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c226e616d655f6f7574707574223a7b2274786964223a2262633438396464303831643332633837386634666637656462326161623931386265343434366336336464663664613437383134666337653839316430653965222c22766f7574223a317d2c227369676e6174757265223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d2c2274797065223a22737761726d612d69737375616e63652f31227d",
+        "commitment": "d63e68af29a76dd30408ddee6a576c50e782a6fcebc96e1557fe030e8bef88f9",
+        "pointer": "e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "script_hex": "6a03534c014202d63e68af29a76dd30408ddee6a576c50e782a6fcebc96e1557fe030e8bef88f901e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "script_length": 72
+      },
+      {
+        "id": "issuance-v-03",
+        "rules": [
+          "W8.2",
+          "W5.4"
+        ],
+        "claim": "The grant of signed-v-02: the same identifier as in issuance-v-01 under another signature. The commitment and the pointer differ, because the preparation binds the signature.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-02",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "preparation": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"grant_id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"grant_signature\":\"b2314d268769c5b752b2b4dd83c5bfdefc4a60acd13eba4656b469386c503aec8d56cf82d5801fd002a1c760fe999bf1b7824d0dffb56e0c9ef3cc859dcc0eb3\",\"issuer_assent\":{\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"},\"recipient_consent\":{\"event_id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"signature\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"},\"type\":\"swarma-issuance/1\"}",
+        "preparation_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226772616e745f6964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c226772616e745f7369676e6174757265223a226232333134643236383736396335623735326232623464643833633562666465666334613630616364313365626134363536623436393338366335303361656338643536636638326435383031666430303261316337363066653939396266316237383234643064666662353665306339656633636338353964636330656233222c226973737565725f617373656e74223a7b227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d2c22726563697069656e745f636f6e73656e74223a7b226576656e745f6964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c227369676e6174757265223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d2c2274797065223a22737761726d612d69737375616e63652f31227d",
+        "commitment": "88567b8225eec34616da81855b52fd6c416109258b3ed86c5da092e3189c962c",
+        "pointer": "30e43ddef89974430fab5acffc3deb404b53f837d3f499c919204d1b51b9173a",
+        "script_hex": "6a03534c01420288567b8225eec34616da81855b52fd6c416109258b3ed86c5da092e3189c962c0130e43ddef89974430fab5acffc3deb404b53f837d3f499c919204d1b51b9173a",
+        "script_length": 72
+      }
+    ],
+    "invalid": [
+      {
+        "id": "issuance-i-01",
+        "rules": [
+          "W8.3"
+        ],
+        "claim": "A recipient by key, and the presentation carries an evidence output.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01",
+          "name_output": {
+            "txid": "bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e",
+            "vout": 1
+          }
+        },
+        "anchored_commitment": "08a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93",
+        "expect": "ISSUANCE_MODE",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-02",
+        "rules": [
+          "W8.3"
+        ],
+        "claim": "A recipient by name, and the presentation carries no evidence output.",
+        "inputs": {
+          "mode": "name",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "anchored_commitment": "d63e68af29a76dd30408ddee6a576c50e782a6fcebc96e1557fe030e8bef88f9",
+        "expect": "ISSUANCE_MODE",
+        "valid_neighbour": "issuance-v-02"
+      },
+      {
+        "id": "issuance-i-03",
+        "rules": [
+          "W8.4",
+          "W5.4"
+        ],
+        "claim": "The grant is presented under the signature of signed-v-02, and the frame is that of issuance-v-01. The pointer of the frame is the content address of the signed grant that was anchored.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-02",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "script_hex": "6a03534c01420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9301e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "expect": "ISSUANCE_FRAME",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-04",
+        "rules": [
+          "W8.4"
+        ],
+        "claim": "The frame of issuance-v-01 with payload version 01, the version of a v3 issuance.",
+        "script_hex": "6a03534c01420108a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9301e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "expect": "ISSUANCE_FRAME",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-05",
+        "rules": [
+          "W2.1",
+          "W3.2"
+        ],
+        "claim": "A stored preparation whose `vout` is in the string form. The member has the number form, and no reader converts.",
+        "preparation": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"grant_id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"grant_signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\",\"issuer_assent\":{\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"},\"recipient_consent\":{\"event_id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"name_output\":{\"txid\":\"bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e\",\"vout\":\"1\"},\"signature\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"},\"type\":\"swarma-issuance/1\"}",
+        "preparation_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226772616e745f6964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c226772616e745f7369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631222c226973737565725f617373656e74223a7b227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d2c22726563697069656e745f636f6e73656e74223a7b226576656e745f6964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c226e616d655f6f7574707574223a7b2274786964223a2262633438396464303831643332633837386634666637656462326161623931386265343434366336336464663664613437383134666337653839316430653965222c22766f7574223a2231227d2c227369676e6174757265223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d2c2274797065223a22737761726d612d69737375616e63652f31227d",
+        "expect": "WIRE_MEMBER",
+        "valid_neighbour": "issuance-v-02"
+      },
+      {
+        "id": "issuance-i-06",
+        "rules": [
+          "W2.2"
+        ],
+        "claim": "A stored preparation whose `vout` is written with a fraction.",
+        "preparation": "{\"contract\":\"6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf\",\"genesis\":\"000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770\",\"grant_id\":\"6450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765\",\"grant_signature\":\"e9498fc137f1bf3f6b1c2a85e03416a120b4512801a882f311da1f89b51508c1c7892206fa47f954e5e33d01710a6157e6f40195eb15dbfc463ad46710bd6561\",\"issuer_assent\":{\"party\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"signature\":\"199ea4f8552c7238ddf3f789ffa562e365d7d7ae87ed5cc4807fc601d134fc027e6f17078562341451b9c75423cd9859e2c4f8077dfb6941809b947dcea93dc8\"},\"recipient_consent\":{\"event_id\":\"619770e6b635948410a4c8595f21ca045c4ea5ddd0551c8d01658c80bff2b83c\",\"name_output\":{\"txid\":\"bc489dd081d32c878f4ff7edb2aab918be4446c63ddf6da47814fc7e891d0e9e\",\"vout\":1.0},\"signature\":\"eedc7ae1890eb3c2afb392b93c485aadd6e5076c0640090d649d74b08bb1250975ac677fd22f00dcf9da92ad723f298e4d6907eb4311d730b9de86502c3b61df\"},\"type\":\"swarma-issuance/1\"}",
+        "preparation_hex": "7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c226772616e745f6964223a2236343530303130646535363435373662646136623262663833633839306236356463666431643132326565363537313133623766633362393737656366373635222c226772616e745f7369676e6174757265223a226539343938666331333766316266336636623163326138356530333431366131323062343531323830316138383266333131646131663839623531353038633163373839323230366661343766393534653565333364303137313061363135376536663430313935656231356462666334363361643436373130626436353631222c226973737565725f617373656e74223a7b227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c227369676e6174757265223a223139396561346638353532633732333864646633663738396666613536326533363564376437616538376564356363343830376663363031643133346663303237653666313730373835363233343134353162396337353432336364393835396532633466383037376466623639343138303962393437646365613933646338227d2c22726563697069656e745f636f6e73656e74223a7b226576656e745f6964223a2236313937373065366236333539343834313061346338353935663231636130343563346561356464643035353163386430313635386338306266663262383363222c226e616d655f6f7574707574223a7b2274786964223a2262633438396464303831643332633837386634666637656462326161623931386265343434366336336464663664613437383134666337653839316430653965222c22766f7574223a312e307d2c227369676e6174757265223a226565646337616531383930656233633261666233393262393363343835616164643665353037366330363430303930643634396437346230386262313235303937356163363737666432326630306463663964613932616437323366323938653464363930376562343331316437333062396465383635303263336236316466227d2c2274797065223a22737761726d612d69737375616e63652f31227d",
+        "expect": "WIRE_NUMBER",
+        "valid_neighbour": "issuance-v-02"
+      },
+      {
+        "id": "issuance-i-07",
+        "rules": [
+          "W8.4"
+        ],
+        "claim": "The frame of issuance-v-01 with action 02, the action of a batch anchor.",
+        "script_hex": "6a03534c02420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9301e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "expect": "ISSUANCE_FRAME",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-08",
+        "rules": [
+          "W8.4"
+        ],
+        "claim": "The frame of issuance-v-01 without a locator (location type 00).",
+        "script_hex": "6a03534c01220208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9300",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "expect": "ISSUANCE_FRAME",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-09",
+        "rules": [
+          "W8.4",
+          "W6.4"
+        ],
+        "claim": "The frame of issuance-v-01 whose pointer is the identifier of the grant in place of the content address of its signed form.",
+        "script_hex": "6a03534c01420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93016450010de564576bda6b2bf83c890b65dcfd1d122ee657113b7fc3b977ecf765",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "expect": "ISSUANCE_FRAME",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-10",
+        "rules": [
+          "W8.2",
+          "W8.5"
+        ],
+        "claim": "The issuer's assent is presented under another valid signature than the one that was anchored. The grant, and with it the pointer, are those of issuance-v-01; the recomputed commitment differs.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent_signed_form_hex": "7b227061796c6f6164223a7b22636f6e7472616374223a2236653031653538376239393331646534613332303736643438636439613634343630643666613061656161633935336531393230313132376134643761666266222c2267656e65736973223a2230303030303030303030363262373263356532636562343566626338353837653830376331353562306461373335653634383364666261326630613963373730222c227061727479223a2266393330386130313932353863333130343933343466383566383964353232396235333163383435383336663939623038363031663131336263653033366639222c2274797065223a22737761726d612d636f6e74726163742d617373656e742f31227d2c227369676e6174757265223a226135333739393961646564643432623831656636353032616536376564613135303064663735376362323962313030663531333930303432666363336139366438616637336131373639653665666433386333623838343734376466323832313662303835623065313134313534386664346332353835663635383231373239227d",
+          "recipient_consent": "consent-v-01"
+        },
+        "script_hex": "6a03534c01420208a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a9301e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "recomputed_commitment": "9e28e67596afa3212b629ca2480ec69bad545da4acfe3bc567a104a4d77009b3",
+        "expect": "ISSUANCE_COMMITMENT",
+        "valid_neighbour": "issuance-v-01"
+      },
+      {
+        "id": "issuance-i-11",
+        "rules": [
+          "W8.5"
+        ],
+        "claim": "The frame holds the commitment of issuance-v-02 and the pointer of issuance-v-01, and the presentation is that of issuance-v-01.",
+        "inputs": {
+          "mode": "key",
+          "grant": "signed-v-01",
+          "issuer_assent": "assent-v-01",
+          "recipient_consent": "consent-v-01"
+        },
+        "script_hex": "6a03534c014202d63e68af29a76dd30408ddee6a576c50e782a6fcebc96e1557fe030e8bef88f901e55b1893e8f41bd23d5f306696a728844721388e15e246abb049a9c88b8c59a0",
+        "recomputed_commitment": "08a0d8033a1eb887a1bb9c7965c92130fa2b133f5d908f435123d660eccf2a93",
+        "expect": "ISSUANCE_COMMITMENT",
+        "valid_neighbour": "issuance-v-01"
+      }
+    ]
+  }
+}

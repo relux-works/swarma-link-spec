@@ -80,6 +80,9 @@ Reserved and experimental ranges are allocations for future profiles, not
 currently accepted values. The reference parser accepts only the two defined
 actions, `0x01` and `0x02`, and the five defined location types, with their
 exact pointer lengths. Actions `0x03` to `0x08` are proposals of Draft LIPs.
+[LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes payload version
+`0x02` of action `0x01` for the issuance of a v4 grant; the reference parser
+does not accept it.
 
 ### Sizes
 

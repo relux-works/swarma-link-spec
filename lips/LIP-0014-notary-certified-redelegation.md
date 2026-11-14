@@ -658,6 +658,8 @@ The signature is BIP-340 by `notary_key` over
 `SHA-256("swarma-notary-v1" || attestation bytes)`. The 16-byte ASCII prefix
 has no terminator or length, in the fixed-prefix style of LIP-0004 section 2.
 The typed-hash plan of LIP-0008 section 8 may replace it before adoption.
+[LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes that replacement as
+a successor type, `swarma-notary-attestation/2`, and gives it no member yet.
 `attestation_id` is the SHA-256 of the compact object
 `{"attestation":…,"signature":…}`.
 

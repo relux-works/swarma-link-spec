@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.36
+**Version:** 0.1.37
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.36
+## Draft profiles and design decisions in v0.1.37
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -331,6 +331,22 @@ also says that Grant v3 keeps its byte names while the prose and Grant v4
 name the roles issuer, recipient and executor. Under LIP-0017 section 8 a
 contract under which the platform starts an agent carries the hash of the
 agreed configuration manifest, which the platform executes exactly.
+
+Version 0.1.37 adds [LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md),
+the first proposal of bytes for Grant v4. It covers the layer that every v4
+object shares: one canonical form, RFC 8785 over a restricted set of
+values; two exact forms for an integer, so that no amount passes through a
+binary64 number; a registry of seven object types, each with one identifier
+that stands in the signed bytes and names its signing digest; the signed
+form; an identifier that leaves the signature out; the consent of both
+parties to a contract, with the rule for a recipient that a grant names by
+name; and what an issuance anchor commits to, in a LIP-0005 frame with
+payload version `0x02`. Every rule is the draft's proposal, and neither
+owner has decided a byte of it. The members of a grant, an invocation, a
+receipt, a seal-key endorsement and the successor of the notary attestation
+stay open. The 137 vectors in [`vectors/LIP-0020/`](vectors/LIP-0020/) were
+computed by two implementations that share no code, and no checker for them
+is published.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

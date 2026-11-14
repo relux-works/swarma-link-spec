@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.1.37 — 2026-11-14
+
+Adds Draft LIP-0020, the wire registry for Grant v4, with vectors. It is
+the first proposal of bytes for Grant v4. Every rule of it is the draft's
+proposal, and neither owner has decided a byte. No v3 byte changes, and
+neither does any rule or vector of profile `swarma-trust-contract/1` or
+the reference checker.
+
+The layer that every v4 object shares (sections 1 to 6). The canonical
+bytes are the RFC 8785 serialization of one JSON object over a restricted
+set of values: no `null`, no code point below U+0020, numbers only as
+integers up to 2^53 - 1. A reader refuses unless its own serialization of
+the parsed value equals the octets it received. An integer has one of two
+forms, a JSON number or a decimal string with a stated bound, and the wrong
+form refuses; amounts and cumulative counters take the string form. Every
+payload states its `type`, the name of the object type and its version in
+one string, and that string is also the tag of the typed digest, the tagged
+hash of BIP-340. A signature is BIP-340 over the typed digest under strict
+verification. The identifier of an object is the SHA-256 of its canonical
+payload and leaves the signature out; the SHA-256 of the signed form is
+its content address. The registry lists seven types. Five have an
+identifier and a digest and no members yet: the grant, the invocation, the
+receipt, the seal-key endorsement and a successor of the notary
+attestation.
+
+Consent (section 7). The issuer signs a typed assent to the contract. The
+recipient signs a Nostr event of kind 8181 with three tags, as a browser
+signer can. For a recipient that the grant names by name, the consenting
+key is the key that the name yielded for the Nostr channel when the grant
+was issued; the issuer records the output of the name that it read, a
+verifier reads that output on its own node, and a later change of the
+channel key by the same owner leaves the consent valid. The `created_at`
+of the event is never compared with a block height.
+
+Issuance (section 8). The issuance preparation states the grant, the
+issuer's assent and the recipient's consent, each with its signature. Its
+typed digest is the issuance commitment, carried in a LIP-0005 frame with
+action `0x01` and payload version `0x02`; the pointer is the content
+address of the signed grant. Payload version `0x01` keeps its v3 meaning.
+
+Refusal codes and vectors (sections 9 and 10). The layer has 25 new codes
+and one order of checks. `vectors/LIP-0020/wire-vectors.json` holds 137
+vectors over the 41 rules, each refused vector with one defect and a valid
+neighbour. They were computed by two implementations that share no code;
+no checker for them is in this repository.
+
+LIP-0008 section 8.1, LIP-0005 section 2 and LIP-0014 section 6.1 each
+gain one sentence that names LIP-0020, and three rows of the index of open
+questions point to it. No rule of those texts changes.
+
 ## 0.1.36 — 2026-11-14
 
 Three points of LIP-0014 that 0.1.35 left open now have an answer. Both
