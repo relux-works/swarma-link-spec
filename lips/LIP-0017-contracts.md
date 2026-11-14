@@ -50,10 +50,11 @@ the co-author agrees; adoption follows LIP-0001.
 | C9. Configuration | The contract carries the hash of the configuration manifest that the parties agreed on. The manifest is expressed only through Curator profiles, Curator skills, from the catalog or custom and reviewed, and the systems that the agent may use. Both parties sign it with the contract, and the platform executes exactly it. For a rental the slot launcher composes the agent's read-only runtime context from the pinned profile, the human terms of the contract, the machine terms of the grant and any scope text. |
 
 The nine directions are the owner's. Everything else in this LIP is the
-draft's proposal and is not decided: the members of the contract object,
-the construction of its identifier, the two action numbers, the checks of a
-reader and their order, and the limit of one framework contract above a
-contract.
+draft's proposal and is not decided: the members of the contract object, the
+construction of its identifier, the two action numbers, the checks of a
+reader and their order, the limit of one framework contract above a
+contract, and, in section 8, which contracts must carry the configuration
+hash and what a reader and a launcher refuse.
 
 ## Motivation
 
@@ -118,7 +119,7 @@ their bytes come with a profile (LIP-0018).
 | Framework | Optional. The identifier of the one framework contract that this contract stands under (section 5). |
 | Seal | Optional. The contract's own seal (section 6). |
 | Assent output | Optional. The output whose spend shows assent on chain (section 4). |
-| Configuration | Optional. The hash of the configuration manifest that the parties agreed on (section 8). |
+| Configuration | The hash of the configuration manifest that the parties agreed on. The profile of a contract under which the platform starts an agent requires it; other contracts carry none (section 8). |
 
 1. **Free form.** The protocol does not interpret the text of a clause. The
    text binds the parties. Under LIP-0006 section 7 it governs an agent's
@@ -314,11 +315,12 @@ it: the contract names a price and limits, and what actually runs in the
 slot is whatever the operator's launcher starts. The decision closes that
 by putting the configuration into the contract.
 
-1. A contract MAY carry the hash of a configuration manifest. The manifest
-   states what the agent is, and it does so only through three things:
-   Curator profiles; Curator skills, which come from the catalog or are
-   custom skills that were reviewed; and the systems that the agent may
-   use.
+1. A contract under which the platform starts an agent in an agreed
+   configuration carries the hash of that configuration's manifest. The
+   manifest states what the agent is, and it does so only through three
+   things: Curator profiles; Curator skills, which come from the catalog
+   or are custom skills that were reviewed; and the systems that the agent
+   may use.
 2. Both parties sign the contract and with it the hash, so the manifest is
    a term like any other.
 3. The platform executes exactly the manifest whose hash the contract
@@ -329,15 +331,42 @@ by putting the configuration into the contract.
    profile of the manifest, the human terms of the contract, the machine
    terms of the grant, and a scope text where the contract has one.
 
+Rules 1 to 4 restate decision C9, with two readings that are the draft's.
+Rule 1 takes "the contract" of the decision to be a contract under which
+the platform starts an agent. The second sentence of rule 3 reads
+"executes exactly it" as a refusal to start.
+
+The draft also says where the hash is required and what happens without
+it. Whether a contract carries the hash is a rule of its profile, which
+fixes the members (LIP-0018 section 1). The profile of a rental, and of
+any other contract under which the platform starts an agent, requires the
+member. A reader of such a profile refuses a contract that lacks it, as it
+refuses any contract that lacks a required member, and so a launcher never
+starts a slot without a hash to reproduce. The profile of a contract that
+starts no agent, such as the agreement without a grant of section 7, has
+no such member, and section 1 therefore does not ask it of every contract.
+The profiles that exist today have no such member, and none of them
+changes.
+
 Rule 4 is the counterpart, for a rental, of the authority frame of LIP-0013
 section 3.4. A slot serves one grant and lives as long as that grant, so
 its context is composed once, when the slot starts, and it cannot outlive
 the grant. Under LIP-0006 section 7 the human terms and the scope text in
 that context govern the agent's work and no service's effect.
 
-The launcher of the reference rental path gives a slot no contract text
-today. The bytes of a manifest, the way a launcher recomputes its hash, and
-what "the systems that the agent may use" lists are open.
+The reference rental path gives a slot no contract text today. The
+initial data that a new slot receives is one closed block with a version
+number and at most six further members: the booking identifier, the
+slot's name, the channel secret, the bearer token for the model, the
+address of the model proxy and the hash of its certificate. This is a
+reading of the
+[bootstrap schema](https://github.com/relux-works/swarma-chain-lab/blob/65bf8aa171bb3ee7b2ab09d96d426d8e5e9f5cbf/experiments/single-use/payloadbootstrap/codec/codec.go#L18-L26)
+of the reference laboratory at that commit, and the Link book describes the
+same six in its
+[chapter on rental](https://github.com/relux-works/swarma-docs/blob/de27b6b008b1ac061bb6ca0b6660e9fa74a2b4f4/link-book/ru/08-arenda.md#L241);
+no running slot was inspected for it. The bytes of a manifest, the way a
+launcher recomputes its hash, and what "the systems that the agent may
+use" lists are open.
 
 ## Alternatives
 
@@ -386,6 +415,7 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 | A termination frame that the signatures on the seal input cover | A frame in another transaction, and one that the signatures do not cover: the contract is ended by the spend, and the frame is no evidence. |
 | An anchor that spends the assent output that the contract names | An anchor that spends another output shows no assent on chain; the signatures of the contract stand. |
 | A grant under a contract that names a framework contract, all three windows nested | A contract whose window reaches outside its framework contract refuses, and so does a framework contract that names another one. |
+| A rental contract whose configuration hash the launcher reproduces from what it is about to start | A manifest that differs in one profile, one skill or one system gives another hash, and the launcher starts nothing. A contract of a profile that requires the hash and carries none is refused, and nothing starts. A contract that starts no agent is valid without the hash. |
 
 ## Open questions
 

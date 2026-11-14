@@ -52,6 +52,10 @@ A profile that carries a text also says so. LIP-0006 section 7 then
 applies: the text governs an agent's work, and whatever an effect depends
 on is a machine member.
 
+A profile for a contract under which the platform starts an agent requires
+the hash of the agreed configuration, and a reader of that profile refuses
+a contract without it (LIP-0017 section 8, a proposal of that draft).
+
 ## 2. A limit kind
 
 A limit kind is one countable resource that a grant can bound for an
