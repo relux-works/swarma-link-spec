@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.1.33 — 2026-11-14
+
+Five further directions of Ivan Oparin of 2026-11-14 are recorded. The
+co-author's agreement on each is pending.
+
+LIP-0013, new section 3.7, instructions across owners. The grantee of a
+grant from one owner to the other is an agent of the receiving owner. That
+owner directs the agent over the owner channel, the agent signs the
+envelope with its key through its key holder under the gate of section
+3.6, and the executor admits it under section 3.4. A person's keys that
+need presence are for rare acts: issuing a grant, and consenting to a
+grant whose grantee is the person. A session key is named as a later
+option. The section also states that a transport only carries: authority
+comes from the signed envelope inside a message, on every transport.
+
+Key map. The requirements on a key service describe a personal key
+service for each person, on every platform the person uses, with a social
+key under a policy for each application and an authority key that signs
+only with the person present and every field shown. Decision K6: for
+grants issued to Ivan Oparin a separate authority key is named in each
+grant, the name keeps the social Nostr key for messages, and for the
+interim the authority key lives in the macOS Keychain like the grant key;
+the reading that puts an authority key into the name is rejected. The
+scope of K2 is settled: permanent roles have names, a worker agent may
+stay key-only, and an agent that becomes permanent keeps its key. The key
+registry points to K6.
+
+LIP-0008, section 1. Grant v3 is frozen after the first public
+demonstration: no new feature and no new byte. Once Grant v4 is
+qualified, new grants are issued on v4 only, and v3 remains for
+verification alone. What becomes of a v3 grant that is still live then is
+not decided.
+
 ## 0.1.29 — 2026-11-14
 
 Holds Draft text for the eight gaps that version 0.1.24 recorded, labelled
