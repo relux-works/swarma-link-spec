@@ -111,9 +111,9 @@ The record holds hashes, never the request or the response. Their bytes stay
 with the parties. In a dispute a party discloses them, and anyone recomputes
 the two hashes. Where the service profile has the recipient sign the request
 bytes themselves, a disclosed request also shows who sent it. That does not
-hold for every profile: section 7 states a case in which the bytes that
-were judged carry no signature, and holds Draft text for it, under a
-pending owner decision (J8).
+hold for every profile: section 7 states a case in which the bytes that were
+judged carry no signature, and holds Draft text for it, under a decision
+that awaits the co-author's agreement (J8).
 
 Verdicts for one grant form a chain through the previous-verdict field. The
 last one commits to the bytes of the earlier ones: a termination after the
@@ -252,9 +252,10 @@ on which that term is applied and prescribes no refund.
 
 ### 7. The request as evidence
 
-Owner decision pending: J8. Every rule of this section is Draft text, for
-v4 only. Until the decision the request bytes of a verdict are what the
-service profile defines (section 2), and one profile is known to break the
+Accepted by Ivan Oparin on 2026-11-13 (J8); the co-author's agreement is
+pending. Every rule of this section is Draft text, for v4 only. Until the
+co-author agrees the request bytes of a verdict are what the service
+profile defines (section 2), and one profile is known to break the
 assumption that a disclosed request shows its sender: a renter's message in
 the rental profile, which travels under NIP-17 and NIP-59. There the sender
 signs the seal event, whose content is the encrypted message; the message
@@ -323,15 +324,15 @@ shown:
 The response hash and what counts as one violation stay open (section 2),
 and the object ID waits for the bytes of LIP-0008 section 8.1.
 
-The owners decide two things with this text. The first is the trade
-itself: a request under a moderated grant carries a signature that can be
-shown to a moderator and an arbiter. The proposal is to accept it, with the
-notice of J8.8, whose wording is the owners'. The alternative keeps
-requests deniable; a verdict can then show no signature at all, and the
-case of the first paragraph stays. The second is the service's record. The
-proposal is the MUST of J8.6, at the cost of storage and retention at every
-moderated service; the record remains the service's own statement. As a
-SHOULD, a service may have nothing to show for admission in a dispute.
+Two things were accepted with this text on 2026-11-13. The first is the
+trade itself: a request under a moderated grant carries a signature that
+can be shown to a moderator and an arbiter, with the notice of J8.8, whose
+wording is the owners'. The alternative kept requests deniable; a verdict
+could then show no signature at all, and the case of the first paragraph
+would stay. The second is the service's record: the MUST of J8.6, at the
+cost of storage and retention at every moderated service. The record
+remains the service's own statement. As a SHOULD, a service might have
+nothing to show for admission in a dispute.
 
 Seven other designs were set aside, and none is proposed. Hashing the seal
 and opening the ciphertext for the arbiter needs the conversation key,
@@ -354,7 +355,7 @@ acknowledged the invocation between those two blocks; it is still a
 statement of that key and still not the instant at which the request was
 signed, at both costs.
 
-Cases (owner decision pending: J8). Their identifiers begin with S8, for
+Cases (J8). Their identifiers begin with S8, for
 this decision. All are v4 cases; no implementation exists, and no result is
 claimed. Today no check of request bytes exists, and vectors wait for the
 preimage of the object ID:
@@ -416,7 +417,7 @@ moderator key is replaced.
 
 The record and the chain carry hashes only. A short request can be guessed
 from its hash. A salt beside the request would prevent that; section 7
-drafts one, under a pending owner decision (J8).
+drafts one, under a decision that awaits the co-author's agreement (J8).
 
 The reference is read after the fact. A recipient whose node never fetched
 the verdict loses no protection: closure and the right to dispute it do not
@@ -427,8 +428,8 @@ on chain still shows that a verdict with that identifier was claimed.
 
 No normative conformance class changes. A future vector set pairs these
 controls; each refused case leaves the closure rules untouched. Section 7
-carries the cases of its Draft text, which is under a pending owner
-decision (J8):
+carries the cases of its Draft text, which is under a decision that awaits
+the co-author's agreement (J8):
 
 | Valid control | Refusal or invariant |
 | --- | --- |
@@ -449,7 +450,7 @@ decision (J8):
 - The definition of the request bytes for each service profile, and a salt
   against guessing short requests (a gap found in review). Section 7 states
   the case of the rental profile and holds Draft text for both, under a
-  pending owner decision (J8).
+  decision that awaits the co-author's agreement (J8).
 - How the rules text expresses which verdict ends the contract, and whether
   that threshold is also a machine-readable contract term.
 - Replacement of the moderator key during a contract.

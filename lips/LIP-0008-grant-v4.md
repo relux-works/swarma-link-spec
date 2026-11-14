@@ -333,11 +333,11 @@ that a reorganisation replaced is no longer the chain's history. An effect
 performed while the grant was admissible is not undone by a later refusal,
 and a refusal is not undone for the time it lasted.
 
-Section 5.2 holds Draft text, under a pending owner decision (J6), that
-adds a durable closure for an owner-signed change of the name that a
-verifier saw. It would replace the statement of rule 5 that the verifier
-writes no closure, and the suspension of admission by a pending name spend
-that this section mentions below.
+Section 5.2 holds Draft text, under a decision that awaits the co-author's
+agreement (J6), that adds a durable closure for an owner-signed change of
+the name that a verifier saw. It would replace the statement of rule 5 that
+the verifier writes no closure, and the suspension of admission by a pending
+name spend that this section mentions below.
 
 A verifier MAY cache the result of a walk. A cached result is valid only for
 the predicate it was computed for: the same active chain up to the cached
@@ -473,8 +473,9 @@ section 12 before any new reservation or effect. The grant's signed executor,
 the invocation's executor and the authenticated service's pinned name/key MUST
 agree; an invoker-selected executor never supplies missing grant authority.
 
-Section 5.2 holds Draft text, under a pending owner decision (J6), that
-adds to step 1 a read of every pending operation of the issuer's name.
+Section 5.2 holds Draft text, under a decision that awaits the co-author's
+agreement (J6), that adds to step 1 a read of every pending operation of the
+issuer's name.
 
 An executor is a particular service's Namecoin name plus pinned public key,
 not just `wallet.nmc` or another type. The executor profile binds that key to
@@ -541,9 +542,11 @@ retry or refuse without creating this permanent closure.
 
 ### 5.2. Observed owner break of the issuer name and durable closure
 
-Owner decision pending: J6. Every rule of this section is Draft text, for
-v4 only. Until the decision the name rule stops an issuer's grants more
-slowly and less finally than a seal spend stops one grant. The grant key
+Accepted by Ivan Oparin on 2026-11-13 (J6); the co-author's agreement is
+pending. Every rule of this section is Draft text, for v4 only. Until the
+co-author agrees the text in force stands, under which the name rule stops
+an issuer's grants more slowly and less finally than a seal spend stops one
+grant. The grant key
 leaks, and the name owner broadcasts an update that replaces it. The walk
 of section 3 runs on the active chain, so while the update is unconfirmed
 it finds no change, and every grant under the leaked key stays admissible.
@@ -663,7 +666,8 @@ The rules add no object type and no kind of transaction. They do cost
 something: every operation of an issuer name, a renewal included, is funded
 from coins that no hot service can spend.
 
-The owners choose among three courses. The proposal is the text above:
+Three courses were before the owners, and Ivan Oparin accepted the first
+on 2026-11-13. It is the text above:
 durable closure at first sight, keyed by registration, owner and `swarma`
 bytes, with the retired key, and with J6.6 and J6.7. The second course keys
 the closure by an epoch, so that a deliberate return to an old value works
@@ -676,7 +680,7 @@ named in every grant adds nothing, because the name output already is that
 seal, and a thief that signs grants would name a seal of its own. A
 confirmation depth before the change counts makes the stop slower.
 
-Cases (owner decision pending: J6). Their identifiers begin with S6, for
+Cases (J6). Their identifiers begin with S6, for
 this decision. They run on regtest, through the verifier's real name read.
 Witness and newcomer are two verifiers with separate stores on the same
 chain; one process relabelled as new is not a newcomer.
@@ -1063,8 +1067,9 @@ proof path is listed for the origin of that run (J7, decided by Ivan Oparin
 on 2026-11-14, with the co-author's agreement pending). Under
 [LIP-0011](LIP-0011-termination-for-violation.md) section 7 the signed
 invocation is the request of a verdict, and an invocation that travels
-inside an encrypted message binds a salted hash of the content (J8, a
-pending owner decision).
+inside an encrypted message binds a salted hash of the content (J8,
+accepted by Ivan Oparin on 2026-11-13, with the co-author's agreement
+pending).
 
 #### 12.2. Proof path, attenuation and budget accounting
 
@@ -1309,12 +1314,12 @@ issuer, money-key or upstream-secret compromise remains outside service limits.
 
 Replacing a leaked grant key stops an issuer's grants more slowly and less
 finally than a seal spend stops one grant. The name rule of section 3 gives
-its verdict on the active chain: a pending update at most suspends admission,
-under an observation profile that is not defined, and a reorganisation that
-removes a confirmed update makes the grants admissible again. A validated
-issuer spend of a seal closes its grant durably from the mempool (section
-5.1). Section 5.2 states the case and holds Draft text for it, under a
-pending owner decision (J6).
+its verdict on the active chain: a pending update at most suspends
+admission, under an observation profile that is not defined, and a
+reorganisation that removes a confirmed update makes the grants admissible
+again. A validated issuer spend of a seal closes its grant durably from the
+mempool (section 5.1). Section 5.2 states the case and holds Draft text for
+it, under a decision that awaits the co-author's agreement (J6).
 
 ## Conformance impact and v3 compatibility
 
@@ -1400,16 +1405,16 @@ fixtures independently; agreement between two implementations alone is not the
 oracle. Freeze historical v0.1 fixtures and report successor results separately.
 This is a conformance plan, not a published runner or interoperability result.
 
-Section 5.2 carries the cases of its Draft text, which is under a pending
-owner decision (J6). Under it the row above on a change that a
-reorganisation orphans reads differently for a verifier that saw the
-change: that verifier keeps refusing.
+Section 5.2 carries the cases of its Draft text, which is under a decision
+that awaits the co-author's agreement (J6). Under it the row above on a
+change that a reorganisation orphans reads differently for a verifier that
+saw the change: that verifier keeps refusing.
 
 ## Open questions
 
 - **The name rule as an emergency stop** (a gap found in review). Section
-  5.2 states the case and holds Draft text for it, under a pending owner
-  decision (J6).
+  5.2 states the case and holds Draft text for it, under a decision that
+  awaits the co-author's agreement (J6).
 - Whether the issuer rule of section 3 should also require that the bound
   owner wrote the `swarma` value in force, as LIP-0014 section 7.1 drafts
   for a notary's name. No attack on an issuer is claimed: its registration
