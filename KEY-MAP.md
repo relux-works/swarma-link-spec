@@ -24,6 +24,10 @@ Rotation below names required operator work, not an automatic migration protocol
 The table describes existing rental/wallet profiles; the v4 paragraph above is
 a separate design proposal.
 
+The [key registry](KEY-REGISTRY.md) lists every key of the specification,
+those outside this map included, each with its owner, its holder, what it
+signs, a danger level, the effect of a leak and the recovery.
+
 | Key / custodian | Signs or authorizes | Rotation / breakage | Theft and containment |
 | --- | --- | --- | --- |
 | Name owner / cold | Updates/transfers `id/`, `d/`. | Transfer name output; old key loses control. | Hijack names/bindings; protect cold custody. |

@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.25
+**Version:** 0.1.28
 
-**Date:** 2026-11-13
+**Date:** 2026-11-14
 
 **Status:** Draft
 
@@ -35,6 +35,7 @@ Out of scope here, specified elsewhere and referenced by name:
 | [Revocation](protocol/revocation.md) | Normative: seal spend closes the grant; watcher states pending and final |
 | [Conformance](conformance/README.md) | Normative classes and the v0.1 evidence vectors |
 | [Key map](KEY-MAP.md) | Informative: custody, rotation and compromise boundaries for rental and wallet keys |
+| [Key registry](KEY-REGISTRY.md) | Draft: the one list of every key the specification names, with owner, holder, use, danger level and recovery; each entry has the status of the part that defines its key |
 | [`lips/`](lips/) | Link Improvement Proposals (LIPs; not normative until adopted) |
 | [`RELEASE.md`](RELEASE.md) | How each revision is released with its PDF |
 | [`decisions/`](decisions/) | Adopted design decisions with context and consequences |
@@ -64,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.25
+## Draft profiles and design decisions in v0.1.28
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -257,12 +258,34 @@ profile: `swarma` is the only member Link defines, the reader ignores the
 owner's other members and stays strict inside `swarma`; the agent key is
 written once, in `nostr` in the NIP-05 shape, and both published forms of
 `nostr` yield the same key. `d/` stays discovery only, with a deployment rule
-to register `d/<label>` together with `id/<label>`. It records Ivan Oparin's
+to register `d/<label>` together with `id/<label>`. A note of 2026-11-13
+records that this pair is a convention outside Namecoin consensus and that
+an additional convention with a single level of registration is under
+consideration; it changes no rule. The LIP records Ivan Oparin's
 four decisions of 2026-11-10 and awaits the co-author's agreement. No reader
 implements these rules yet; LIP-0004 values keep their own rules.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
+
+Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
+co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
+section 7 states the rule for words in a grant: text always governs an
+agent's work and never a service's effect. A service that performs an
+effect, such as a payment, a landing or the release of a secret, decides
+from members that a machine compares and refuses a grant whose terms carry
+a text. A service that carries requests to an agent passes the text on, and
+the agent applies it. [LIP-0013](lips/LIP-0013-trust-contract.md) section
+3.4 adds the authority frame. The admission gate, the program that runs an
+executor's checks, hands each admitted instruction to the agent inside a
+read-only frame that names the principal, the grant, the contract terms and
+any scope text; the agent's standing instructions carry one rule and no
+contract. The [key registry](KEY-REGISTRY.md) lists every key the
+specification names, with its owner, the place where it is published, its
+holder, what it signs, a danger level, the effect of a leak and the
+recovery. It includes the v4 keys of the same day's decisions, whose rules
+LIP-0014 takes in its next revision. No implementation is claimed for any
+of the three.
 
 These drafts do not replace the normative v0.1 profile, adopt new conformance
 requirements or rewrite historical evidence. LIP-0002's signed-envelope

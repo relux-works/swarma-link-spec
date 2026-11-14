@@ -273,7 +273,58 @@ and reconcile the outcome; changing a nonce, key, root or journal to retry an
 uncertain effect is outside this recovery contract. There is no automatic
 pruning, migration or reset that restores consumed authority.
 
-### 7. Related design drafts
+### 7. Text governs work, fields govern effects
+
+A wallet service cannot read. If a grant for payments carried the sentence
+"pay only for hosting", the service could ignore words that the issuer
+signed, or it could act on a model's reading of them. Ivan Oparin decided on
+2026-11-14 that a service does neither; the co-author's agreement is
+pending. The rule, in his words:
+
+> Text always governs an agent's work and never a service's effect.
+
+A text here means words that a grant's terms make operative, such as the
+scope text of [LIP-0014](LIP-0014-notary-certified-redelegation.md) section
+3.3 or the human terms of a rental contract. A `note` that carries no
+authority ([LIP-0013](LIP-0013-trust-contract.md) section 2.3) is not a text
+in this sense.
+
+The rule sorts grant-gated services by what they do with a request:
+
+| Kind of service | What it does | A grant whose terms carry a text |
+| --- | --- | --- |
+| Effect service | Performs an effect at a resource from the members of a signed request: it pays, lands a change or releases a secret. | The service refuses the grant. |
+| Transport service | Carries a request or a message to an agent and performs no effect at a resource itself, as a rental gateway does. | The service passes the text to the agent with the request, and the agent applies it to its work. |
+
+1. An effect service MUST decide from members that a machine compares: the
+   action, its parameters and targets, the amounts and the window. It MUST
+   refuse a grant whose terms carry a text, and it MUST NOT leave that
+   decision to a model.
+2. A transport service MUST pass the text to the agent unchanged. It adds no
+   reading of its own.
+3. Money and landings are authorized by members only. A party that wants an
+   agent to work under a text, and also to pay or to land, issues two
+   grants: one that carries the text, for the agent's work, and one without
+   a text, for the effect service.
+
+The wallet service v1 profile already has the shape of an effect service.
+Its terms object has exactly five machine members and no member for a text
+(section 3), and a grant that is bound to another contract hash refuses
+there. Passing a text to an agent is not part of any profile of this LIP; it
+belongs to the profile of a transport service. In the trust contract of
+LIP-0013 the actions `land` and `spend` end in an effect at a resource, and
+`instruct` and `review` are an agent's work.
+
+The rule buys one property: no payment, no landing and no release of a
+secret rests on a reading of words, by a model or by a service. It costs
+expressiveness at effect services. A limit that should bind a payment or a
+landing has to exist as a member that a machine compares, and a limit for
+which no profile has such a member, for example a path inside a repository,
+binds no effect service at all. The agent's half stays conduct: no admission
+step establishes that an agent applied a text to its work, and only an
+owner, a moderator or an arbiter can judge that afterwards.
+
+### 8. Related design drafts
 
 [LIP-0007](LIP-0007-service-types.md) proposes service type/action tables and
 name self-declaration. [LIP-0008](LIP-0008-grant-v4.md) proposes signed resource

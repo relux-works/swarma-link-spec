@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.25 — 2026-11-13
+## 0.1.29 — 2026-11-14
 
 Holds Draft text for the eight gaps that version 0.1.24 recorded, each under
 a pending owner decision, J1 to J8. Nothing of it is adopted until the
@@ -50,6 +50,85 @@ admission, and time and delivery apart.
 The key map carries a pending sentence for K2 and a row for the delegation
 key (J4), and a note on the presence rule (J7). LIP-0012 and LIP-0010 point
 to the texts that concern the notary.
+## 0.1.28 — 2026-11-14
+
+Three additions record decisions that Ivan Oparin made on 2026-11-14. The
+co-author's agreement on each is pending, and no implementation is claimed.
+
+LIP-0006, new section 7. Text always governs an agent's work and never a
+service's effect. A service that performs an effect at a resource, such as a
+payment, a landing or the release of a secret, decides from members that a
+machine compares and refuses a grant whose terms carry a text. A service
+that carries requests to an agent passes the text on unchanged, and the
+agent applies it to its work. Money and landings are authorized by members
+only, so a party that wants both a text and an effect issues two grants.
+The cost is stated with the rule: a limit for which no profile has a
+machine member binds no effect service, and whether an agent applied a text
+is judged only afterwards. The former section 7, on related drafts, is now
+section 8. LIP-0014 section 3.3 points to the rule and says that the LIP
+does not yet apply it to profile `/2`.
+
+LIP-0013, section 3.4, the authority frame. The admission gate is the
+program at an executor that runs the checks, and the terms of the LIP now
+name it. It hands each admitted peer instruction to the agent inside a
+read-only frame with the principal, the grant id, the contract terms, the
+scope text of a `/2` contract and the hash of a framework agreement where
+one exists. The frame is built from verified objects only and is outside
+the agent's write authority. An agent's standing instructions carry one
+rule about frames and no contract. On v3 a grant names one agent; on v4 a
+grant can name several executors with signed partitions, and what a frame
+carries there is fixed with the v4 bytes. The encoding of the frame, its
+channel and the proof that an agent cannot write it are open. No step, code
+or vector changes.
+
+A new document, the key registry (`KEY-REGISTRY.md`). It lists every key
+the specification names, in 22 entries. Each entry states the owner, the
+place where the key is published, the holder, the complete list of what it
+signs, a danger level from critical to low, the effect of a leak, the
+recovery and the source. Its rules: one entry for every key; the list of
+uses is closed; a messaging key grants no authority; an entry has the
+status of the part that defines its key. Five entries follow decisions of
+the same day: the authority key of a person who receives grants and, on v4,
+the delegation key, the coin key of a row, the optional child-seal key and
+the stop key of a row. The entry of the agent's Nostr key records that a
+gate at the key holder takes the place of presence. LIP-0014, LIP-0013 and
+the key map take those rules in later revisions and state the earlier text
+until then. The danger levels are the draft's proposal. The release order
+in `RELEASE.md` and the specification set in the README include the new
+document.
+
+## 0.1.27 — 2026-11-13
+
+LIP-0010, section 7: a note that is not normative, recorded at Ivan Oparin's
+direction. The pair of `id/<label>` and `d/<label>` is a convention outside
+Namecoin consensus and misleads: a person reads the two as one identity, and
+the chain holds two unrelated names. An additional naming convention with a
+single level of registration is under consideration, and the authors' own
+parsers would handle only that level. Nothing of that convention is defined.
+The protocol rule and the deployment rule of section 7 are unchanged, and
+the list of open questions names the point.
+
+## 0.1.26 — 2026-11-13
+
+LIP-0008, the conformance row for an unconfirmed parent under profile W. The
+row gave one reason why a funding transaction with a legacy or a wrapped
+input refuses: a third party could change its txid. That reason holds for a
+legacy input. A wrapped witness input is signed in the witness, which BIP141
+keeps out of the txid, and BIP141 requires its scriptSig to be exactly the
+push of the redeem script. It refuses because profile W admits native
+P2WPKH inputs only (section 1.1). The row now gives each reason. The valid
+control and both refusals are unchanged.
+
+## 0.1.25 — 2026-11-13
+
+Ten rows of the action tables render whole again. Each row gave its payload
+as one code span with two bars inside, such as
+`version(1) || commitment(32) || locator`. A Markdown table splits a row at
+every unescaped bar, also inside a code span, so the rendered row ended
+after `version(1)` and lost the commitment and the locator. The operands are
+now separate code spans with escaped bars between them. The rows are the six
+actions of LIP-0005, action `0x03` in LIP-0011, actions `0x04` and `0x05` in
+LIP-0014 and action `0x06` in LIP-0016. No byte, name or rule changes.
 
 ## 0.1.24 — 2026-11-13
 

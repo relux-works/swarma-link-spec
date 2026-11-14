@@ -90,7 +90,7 @@ LIP-0005 frame with a new action:
 
 | Action | Name | Payload |
 | --- | --- | --- |
-| `0x06` | certificate set head | `version(1) || head_commitment(32) || locator` |
+| `0x06` | certificate set head | `version(1)` \|\| `head_commitment(32)` \|\| `locator` |
 
 ```text
 head_commitment = SHA-256( "swarma-certset-anchor-v1" || head_id )

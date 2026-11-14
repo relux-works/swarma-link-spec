@@ -37,12 +37,12 @@ Readers refuse every other encoding: OP_PUSHDATA1/2/4, a split id, OP_1..OP_16 f
 
 | Action | Name | Payload |
 | --- | --- | --- |
-| `0x01` | grant issuance | `version(1) || commitment(32) || locator` |
-| `0x02` | anchor batch | `version(1) || batch_commitment(32) || locator` |
-| `0x03` | termination for violation, proposed in [LIP-0011](LIP-0011-termination-for-violation.md); the reference parser does not accept it | `version(1) || termination_commitment(32) || locator` |
-| `0x04` | notary attestation, proposed in [LIP-0014](LIP-0014-notary-certified-redelegation.md); the reference parser does not accept it | `version(1) || attestation_commitment(32) || locator` |
-| `0x05` | notary withdrawal for cause, proposed in LIP-0014; the reference parser does not accept it | `version(1) || withdrawal_commitment(32) || locator` |
-| `0x06` | certificate set head, proposed in [LIP-0016](LIP-0016-certificate-store.md); the reference parser does not accept it | `version(1) || head_commitment(32) || locator` |
+| `0x01` | grant issuance | `version(1)` \|\| `commitment(32)` \|\| `locator` |
+| `0x02` | anchor batch | `version(1)` \|\| `batch_commitment(32)` \|\| `locator` |
+| `0x03` | termination for violation, proposed in [LIP-0011](LIP-0011-termination-for-violation.md); the reference parser does not accept it | `version(1)` \|\| `termination_commitment(32)` \|\| `locator` |
+| `0x04` | notary attestation, proposed in [LIP-0014](LIP-0014-notary-certified-redelegation.md); the reference parser does not accept it | `version(1)` \|\| `attestation_commitment(32)` \|\| `locator` |
+| `0x05` | notary withdrawal for cause, proposed in LIP-0014; the reference parser does not accept it | `version(1)` \|\| `withdrawal_commitment(32)` \|\| `locator` |
+| `0x06` | certificate set head, proposed in [LIP-0016](LIP-0016-certificate-store.md); the reference parser does not accept it | `version(1)` \|\| `head_commitment(32)` \|\| `locator` |
 | `0x07`-`0x7f` | reserved for Swarma Link | — |
 | `0x80`-`0xff` | experimental / private use | — |
 
