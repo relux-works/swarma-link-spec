@@ -1,6 +1,9 @@
 # LIP-0016: Certificate store
 
-- **Status:** Draft. A proposal; nothing in it is decided.
+- **Status:** Draft. Ivan Oparin accepted its direction as a whole on
+  2026-11-14; the co-author's agreement is pending, and no rule of it is
+  adopted. The answers that this revision gives to the open questions of
+  the first draft are the draft's proposals.
 - **Created:** 2026-11-12
 - **Affects:** publication of the statements of LIP-0015, the action table
   of LIP-0005
@@ -76,6 +79,11 @@ The signature is BIP-340 by `issuer_key` over
 `SHA-256("swarma-certset-v1" || head bytes)`. `head_id` is the SHA-256 of
 the compact object `{"head":…,"signature":…}`.
 
+A head covers one issuer. An operator with several issuing names publishes
+one head for each. A head over several issuers would need a rule for the
+key that signs it, which belongs to the organization identity that LIP-0015
+sketches, and it is not proposed.
+
 The set of a head holds every statement the issuer still publishes,
 revocations and ended statements included: a statement is revoked by a later
 statement (LIP-0015 section 6), and both stay in the set. A set published
@@ -105,6 +113,11 @@ The anchor transaction of a head with `seq` above 1 spends the
 its grant (LIP-0008 section 9). The heads of one issuer thus form a chain
 of spends, and only the newest head has an unspent output.
 
+One anchor transaction anchors one head. A batch of heads in one
+transaction would save fees for an operator of many issuers. It needs one
+commitment over several heads and one input for each issuer's chain of
+spends, and it is left to a later proposal.
+
 ## 4. Providers
 
 A provider gives a reader two operations: list the head and the statement
@@ -113,6 +126,28 @@ configuration. The first provider is a Git hosting repository with one file
 per statement and one file for the current head. The location types of
 LIP-0005, a content-addressed blob store and BitTorrent, are later
 providers. A provider is not trusted for anything but availability.
+
+### 4.1. The Git provider
+
+The proposal for the first provider adds no format of its own. A file
+holds the exact bytes of one object of this LIP:
+
+| Path | Content |
+| --- | --- |
+| `head.json` | The current head: the compact object `{"head":…,"signature":…}`, with no trailing newline. Its SHA-256 is the `head_id`. |
+| `statements/<id>.json` | One record of the set: the compact object `{"statement":…,"signature":…}`, with no trailing newline. `<id>` is the record id in 64 lowercase hex. |
+
+One repository, or one directory of a repository, holds the store of one
+issuer. The list of the provider is the set of files under `statements/`.
+It has no bytes of its own: the head commits to the set through `count` and
+`set_sha256`, so a file that is missing or added fails step 3 of section 5.
+A reader computes each id from the bytes of the file and does not trust
+the file's name. It takes the files from any commit that it fetched; the
+history of the repository, its branches and the signatures on its commits
+are no evidence for it.
+
+An issuer may keep earlier heads beside the current one. A reader does not
+read them.
 
 ## 5. Reading the store
 
@@ -151,6 +186,14 @@ never seen this issuer before. A host that replaces a record by one with a
 forged signature changes that record's id and fails step 3. A reader that
 cannot complete steps 1 to 6 has no verified set and treats the keys it
 wanted to look up as unbound.
+
+**After a change of the grant key.** Between the name update that changes
+an issuer's grant key and the first head under the new key, step 2 fails
+for the old head, because its key is no longer the name's grant key. The
+reader then has no verified set, and every subject of that issuer is
+unbound. It MUST NOT fall back to the old set. The issuer keeps the gap
+short: it prepares the complete set under the new key before the update
+and anchors its first head as soon as the update is confirmed.
 
 Commit-signing keys are records too: a `git-signing-ssh` statement binds a
 commit-signing key to the name. The signatures on a provider repository's
@@ -193,12 +236,21 @@ None. A future vector set pairs these controls:
 | The same mixed set with each record of its own type | A configuration statement whose signature does not verify under `swarma-config-v1`, one whose `root_name` differs from the head's `issuer_name`, a configuration statement signed under the certificate domain, and a listed object with an unknown first member each fail as `STORE_RECORD_INVALID`. |
 | A rotation statement in the set that continues the chain from a loader's pin | A rotation statement with a bad signature leaves the set readable, because the store checks its inclusion only; the loader refuses it under LIP-0015 section 5. Reporting it as verified by the store is wrong. |
 | The newest head | A head whose output is spent fails as `HEAD_SUPERSEDED`; a head signed by a key that is no longer the name's grant key fails as `HEAD_SIGNATURE`. |
+| A reader after the first head under a new grant key: the subjects of the new set are bound | The same reader between the name update and that head: `HEAD_SIGNATURE` for the old head, and every subject unbound. Reading the old set as still valid is wrong. |
+| A Git store whose files hold the exact bytes of the head and of each record | A record file with a trailing newline, and a file whose bytes hash to an id that the set does not hold: `STORE_INCOMPLETE`. A file under a name that its bytes do not hash to is read by its bytes. |
+
+The vector set of this LIP is described here and not built. It holds the
+controls of this table as exact bytes: records of the three types, heads
+with their signatures and ids, the anchor scripts, and for each refusal the
+one change that produces it. The reference checker of LIP-0013 is the place
+for it.
 
 ## Open questions
 
-- The exact file layout of the Git provider and the bytes of its list.
-- Whether a head may cover several issuers, for an organization.
+- The key that controls the output of a head. This LIP names the output
+  and no key for it.
+- How a reader learns where the store of an issuer is. Today a provider is
+  addressed by configuration.
+- A head for several issuers, with the organization identity.
 - A batch of heads in one anchor transaction.
-- What a reader does between a change of the issuer's grant key and the
-  first head under the new key.
-- Adoption and vectors.
+- Adoption, and the building of the vector set.
