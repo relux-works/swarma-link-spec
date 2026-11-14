@@ -386,8 +386,10 @@ is given with it. An agent that receives the instruction text alone cannot
 tell which grant admitted it or what that grant allows. An agent whose
 standing instructions quote the contracts it serves applies them to every
 message, admitted or not, and keeps applying them after a seal is spent.
-Ivan Oparin decided the following on 2026-11-14; the co-author's agreement
-is pending.
+
+Ivan Oparin decided on 2026-11-14 what the next three paragraphs and the
+table state; the co-author's agreement is pending. Everything after them
+is the draft's own proposal, which no owner has decided.
 
 The admission gate hands each admitted peer instruction to the agent inside
 a read-only authority frame. The frame says on whose authority the
@@ -401,45 +403,62 @@ instruction stands and within which terms:
 | Scope text | For a contract of profile `/2` (LIP-0014) whose `scope_text_sha256` is not empty: the exact octets of that text. Absent otherwise. |
 | Framework agreement | The hash of a framework agreement, where the contract names one. No profile defines such an agreement yet, so the member is absent today. |
 
-1. The gate builds the frame from the objects it verified in steps 3 to 6:
-   the grant, the contract bytes and the bundle. Nothing that a message says
-   about its own principal, grant or terms enters the frame.
-2. The frame is read-only for the agent. The gate and the frames it issues
-   are outside the agent's write authority; a frame that the agent's run
-   could write or replace is no frame.
-3. One frame belongs to one admitted instruction. The gate creates it at
-   step 7 and hands it over with the instruction text of that event. A peer
-   message that reaches the agent without a frame is data. In shadow mode
-   nothing is admitted, so no frame is created.
-4. The agent's standing instructions, its root profile, carry one standing
-   rule and no contract. The rule says that a peer instruction counts only
-   inside a frame, that the agent works within the frame's terms, and that
-   it applies the frame's scope text as a restriction on that work. The
-   terms of a specific contract MUST NOT be written into the standing
-   instructions or the system prompt. They reach the agent only in the
-   frame of an instruction that was admitted under that contract.
-5. A scope text in a frame governs the agent's work and no effect
-   (LIP-0006 section 7). The checks of step 9, and those of a service that
-   performs an effect, compare members, with or without a frame.
-
-Rule 4 follows from two lifetimes. The gate checks the grant again at every
-instruction (step 6c), while standing instructions are loaded when the
-agent starts and stay until it starts again. Terms written there would
-outlive a spent seal and a closed window, and they would stand beside every
-message, whether a grant admitted it or not.
+The agent's standing instructions, its root profile, carry one standing
+rule and no contract. The terms of a specific contract MUST NOT be written
+into the standing instructions or the system prompt. They reach the agent
+only in the frame of an instruction that was admitted under that contract.
 
 On Grant v3 a grant names one agent, `agent_name`, so a frame has one
 executor, and step 6b has already established that it is this one. On v4 a
 grant can name several executors, each with a signed partition of the
-limits (LIP-0008 section 4). What the frame carries at each of them is
-fixed with the v4 bytes.
+limits (LIP-0008 section 4).
 
-The frame is local to the executor. It is not signed, it does not travel,
-and no sender or third party can see it. It does not make an agent keep to
-its terms: it tells the agent what they are, and the checks of step 9 bound
-the effects. Three points are open: the encoding of the frame, the channel
-by which the gate hands it to the agent's run, and how a deployment shows
-that the agent cannot write it.
+The draft adds these rules. They are proposals:
+
+1. The gate builds the frame from the objects it verified: the grant and
+   the contract bytes of steps 3 to 6, and a scope text under rule 2.
+   Nothing that a message says about its own principal, grant or terms
+   enters the frame.
+2. A frame carries a scope text only after the gate checked that text. The
+   gate MUST hold the exact octets, and their SHA-256 MUST equal the
+   `scope_text_sha256` of the contract that passed step 6d. The check
+   belongs to the frame, for a root as for a child. LIP-0014 checks the
+   texts of a child's bundle in its step V2, and for a root its steps end
+   at V1, so no other step makes this check for a root. Without the
+   octets, or with octets of another hash, the gate builds no frame and
+   refuses the instruction as `TEXT_UNAVAILABLE`. A contract whose
+   `scope_text_sha256` is empty has no text, and its frame carries none.
+3. Read-only means that the gate and the frames it issues are outside the
+   agent's write authority. A frame that the agent's run could write or
+   replace is no frame.
+4. One frame belongs to one admitted instruction. The gate creates it at
+   step 7 and hands it over with the instruction text of that event. A peer
+   message that reaches the agent without a frame is data. In shadow mode
+   nothing is admitted, so no frame is created.
+5. The standing rule says that a peer instruction counts only inside a
+   frame, that the agent works within the frame's terms, and that it
+   applies the frame's scope text as a restriction on that work.
+6. A scope text in a frame governs the agent's work and no effect
+   (LIP-0006 section 7). The checks of step 9, and those of a service that
+   performs an effect, compare members, with or without a frame.
+
+The reason for keeping contracts out of the standing instructions lies in
+two lifetimes. The gate checks the grant again at every instruction (step
+6c), while standing instructions are loaded when the agent starts and stay
+until it starts again. Terms written there would outlive a spent seal and a
+closed window, and they would stand beside every message, whether a grant
+admitted it or not.
+
+The decision leaves open how a frame is made and carried. Whether it is
+signed, whether it ever leaves the executor and who else may see it are not
+decided. The draft proposes the simplest form: a frame that is local to the
+executor, unsigned and shown to nobody else. A signed handoff from outside
+the agent's write boundary would meet the decision as well. Also open are
+the encoding of the frame, the channel by which the gate hands it to the
+agent's run, how a deployment shows that the agent cannot write it, and
+what the frame carries at each executor of a v4 grant. A frame does not
+make an agent keep to its terms: it tells the agent what they are, and the
+checks of step 9 bound the effects.
 
 A refusal is reported as its code only. The executor does not reveal grant
 contents, ledger state or the reason a key was refused beyond the code.
