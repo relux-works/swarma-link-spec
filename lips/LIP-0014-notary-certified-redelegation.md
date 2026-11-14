@@ -76,7 +76,7 @@ stays as it is.
 | J2. Withdrawal for cause | D5 and D9; N6 and N8 of LIP-0012 | Each row names one notary, and only that notary certifies the row. It keeps one succession of seals for the row, and a cause counts only when the notary's signature covers its frame. On v3 D5 is narrowed. On v4 each row also names a stop coin of its notary, whose spend ends the row for every verifier. Section 10.1. | Any named notary certifies, and a withdrawal for cause reaches only the parties that observed its frame (section 10). |
 | J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Section 7.1. | A parent binds a notary by name only (section 7). |
 | J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else: the messaging key never grants authority. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
-| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and no executor performs a landing or a payment automatically under one. Whether it refuses such a request or holds it for the owner's confirmation is pending (J5b). What a v4 child does with its parent's text is not decided. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
+| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and no executor performs a landing or a payment automatically under one. Whether it refuses such a request or holds it for the owner's confirmation is pending (J5b). What a v4 child does with its parent's text is not decided: the co-author answered on 2026-11-14, and the owner's confirmation is pending. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
 
 Three further decisions stand in other LIPs. J7, signing under a grant for
 each run (LIP-0013 section 3.6), was decided by Ivan Oparin on 2026-11-14
@@ -290,7 +290,8 @@ text, refusal or the owner's confirmation, is a pending owner decision
 (J5b). Profile `/2` gains no new member, and on v4 the ref, the revision and
 the payee are machine members. And these rules are in force before an
 executor enters enforcing mode. What a v4 child does with its parent's text
-is not decided, and this LIP says nothing about it. Until the co-author
+is not decided: the subsection records the co-author's answer of
+2026-11-14 and holds no rule for it. Until the co-author
 agrees section 3.3 stands alone: a text narrows a grant, the notary judges a
 child's text against the parent's once, at certification, and no step
 compares an instruction with the text. Take a child whose text limits the
@@ -463,8 +464,9 @@ What stays open:
   the exact revision and the payee are machine members, and a path stays
   words.
 - **The text of a v4 child.** Whether a v4 child carries its parent's text
-  unchanged, or may add to it, is open. Both owners decide it, and nothing
-  of it is written here.
+  unchanged, or may add to it, is not decided. Both owners decide it. The
+  co-author's answer is recorded below, before the cases, and no rule
+  follows from it.
 - **J5.6 is a rule of reading** and cannot be tested mechanically.
 - **The delegator cannot bind a narrower task in the grant.** It states the
   task in the instruction.
@@ -492,6 +494,16 @@ clause narrows, and it puts the delegator's text into the executor's scope.
 A policy language is reserved and not adopted (LIP-0008 section 12.4). A
 qualified evaluator for texts does not exist, and "qualified" has no
 definition yet.
+
+**The text of a v4 child: the co-author's answer.** The co-author answered
+this question on 2026-11-14. As a first approximation, a re-delegation on
+v4 narrows only typed fields and appends no text. Narrowing by text with a
+notary, possibly with keys, goes into the plans for the next revision. The
+joint decision is not made, and its state is: owner confirmation pending.
+The owner who decided the other parts of J5 leaned towards layers of text
+that a notary checks. The co-author's answer defers that lean and does not
+reject it. Until both owners agree, this LIP holds no rule for the text of
+a v4 child, and no rule or case of this subsection changes.
 
 Cases (J5):
 
@@ -1842,6 +1854,10 @@ subsection lists as open.
   attestation now.
 - The coarse form of the stop coin, one coin for each notary and parent,
   as a future option (section 10.1): its cost and its limits.
+- Narrowing the scope of a v4 child by text that a notary checks, possibly
+  with keys. The co-author's answer of 2026-11-14 puts it into the plans
+  for the next revision (section 3.4); it is no part of the first version
+  of v4, and the owner's confirmation of that answer is pending.
 - The v4 bytes of the right of re-delegation, the delegation key of section
   11.1 among them.
 - D4 places the pieces of this LIP after the first proof, as tools around v3

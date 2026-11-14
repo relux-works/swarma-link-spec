@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.35 — 2026-11-14
+
+Records the co-author's answer on one open point of LIP-0014 and decides
+nothing. The point is what a v4 child does with its parent's scope text
+(J5, section 3.4). The co-author answered on 2026-11-14: as a first
+approximation, a re-delegation on v4 narrows only typed fields and appends
+no text, and narrowing by text with a notary, possibly with keys, goes into
+the plans for the next revision. The joint decision is not made; its state
+is "owner confirmation pending". The owner who decided the other parts of
+J5 leaned towards layers of text that a notary checks, and the answer
+defers that lean and does not reject it. No rule, case, byte or code
+changes, and LIP-0014 still holds no rule for the text of a v4 child. The
+later revision is listed under the open questions of the LIP.
+
 ## 0.1.34 — 2026-11-14
 
 Four additions record decisions that Ivan Oparin made on 2026-11-14. The
