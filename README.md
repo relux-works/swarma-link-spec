@@ -391,17 +391,20 @@ cutoffs of 60 and 90 minutes and the two independent nodes that agree on
 the tip are decided design in LIP-0008, which left the age measure, the
 clocks and the criteria for the nodes open. The draft proposes: one
 observation between two reads of the same tip, void and without closure
-when the tip moved; a second node of another source whose tip is the
-reading node's tip or one block below it on the same chain; the age of the
-tip as the verifier's clock minus the header time, with a guard against a
-clock that went back and a bound on a header that is ahead; the recent
-block of a grant on the active chain, with the issuance anchor confirmed
-above it within a window; the arithmetic of confirmation depth; and nine
-refusal codes with their order. Every rule is the draft's proposal, and
-neither owner has decided one. Three of its numbers are provisional and are
-not to be frozen before a run on a real host has measured what they bound:
-600 seconds for a header that is ahead, one block of lag, and 432 blocks
-between the recent block and the anchor. The 70 vectors in
+when the tip moved; comparison nodes that the configuration names, of
+which one of another source has the reading node's tip or the block below
+it on the same chain, and of which no healthy one has a tip that conflicts;
+the age of the tip as the larger of two ages, the verifier's clock minus
+the header time and the clock minus the verifier's own first sight of the
+tip, which it keeps durably, with a guard against a clock that went back
+and a bound on a header that is ahead; the recent block of a grant on the
+active chain, with the issuance anchor confirmed above it within a window;
+the arithmetic of confirmation depth; and nine refusal codes with their
+order. Every rule is the draft's proposal, and neither owner has decided
+one. Three of its numbers are provisional and are not to be frozen before a
+run on a real host has measured what they bound: 600 seconds for a header
+that is ahead, one block of lag, and 432 blocks between the recent block
+and the anchor. The 97 vectors in
 [`vectors/LIP-0022/`](vectors/LIP-0022/) state tips, times and heights and
 read no node; no node was run and no measurement was taken for the draft.
 
