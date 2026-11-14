@@ -118,8 +118,7 @@ an agent cannot write it are open, and the text marks which rules are the
 decision and which are the draft's own. No other step or code changes, and
 no vector.
 
-A new document, the key registry (`KEY-REGISTRY.md`). It lists every key the
-specification names, in 27 entries. Each entry states the owner, the place
+A new document, the key registry (`KEY-REGISTRY.md`). It lists every key the specification names, in 29 entries. Each entry states the owner, the place
 where the key is published, the holder, the complete list of what it signs,
 a danger level from critical to low, the effect of a leak, the recovery and
 the source. Its rules: one entry for every key; the list of uses is closed,
