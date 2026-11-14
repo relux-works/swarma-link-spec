@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.40
+**Version:** 0.1.41
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.40
+## Draft profiles and design decisions in v0.1.41
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -404,6 +404,23 @@ not to be frozen before a run on a real host has measured what they bound:
 between the recent block and the anchor. The 70 vectors in
 [`vectors/LIP-0022/`](vectors/LIP-0022/) state tips, times and heights and
 read no node; no node was run and no measurement was taken for the draft.
+
+Version 0.1.41 adds [LIP-0023](lips/LIP-0023-witness-construction.md), a
+first construction profile for Grant v4: the Witness profile of LIP-0008 on
+Namecoin, in its narrowest useful form. A verifier takes the profile from
+its own authenticated configuration. The anchor of every grant spends the
+linkage output of the seal transaction, so that only the party that built
+the seal transaction can publish the anchor. Every input of the two
+transactions spends a witness key hash with a signature of hash type `01`.
+The linkage output is the one parent that may be unconfirmed, and every
+other input spends an output that is confirmed below its spender. An
+unconfirmed payment output, which LIP-0008 permits, refuses under this
+profile until a proposal says how a verifier authenticates it. An effect
+needs a confirmed anchor. Thirteen refusal codes have an order; twelve of
+their names are reasons that the reference laboratory already reports for
+its own subset. Every rule is the draft's proposal, and neither owner has
+decided one. The 54 vectors in [`vectors/LIP-0023/`](vectors/LIP-0023/)
+state octets and facts and read no node; no node was run for the draft.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

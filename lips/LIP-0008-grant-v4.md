@@ -142,6 +142,12 @@ Seal and anchor may confirm in the same block, in dependency order. No mempool
 observation alone authorizes an effect, and inclusion or one-block latency is
 not guaranteed.
 
+[LIP-0023](LIP-0023-witness-construction.md) proposes a first Witness profile
+for Namecoin, with vectors: the anchor always spends the linkage output, the
+linkage output is the one parent that may be unconfirmed, and an unconfirmed
+payment output refuses until a proposal of its own covers it. They are that
+draft's proposals, and each point stays open until both owners accept it.
+
 [BIP141](https://bips.dev/141/) excludes witness from `txid`; its protection
 against third-party signature-data malleability requires fully signed witness
 inputs. The SIGHASH_ALL rule uses the chain's standard witness signing preimage

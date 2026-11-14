@@ -1,0 +1,1948 @@
+{
+  "schema": "swarma-link-spec/lip-0023-vectors/1",
+  "lip": "LIP-0023",
+  "note": "Draft vectors for LIP-0023. No vector reads a node. Keys are the compressed forms of published BIP-340 test keys and belong to nobody. The octets of signatures are placeholders, and no signature in this file verifies. The group graphs states facts and holds no transaction. A vector whose outcome is not ok holds one defect and names a neighbour with the outcome ok that differs from it in that defect; a vector marked compound holds two defects and names none. No verdict of this file records a closure.",
+  "fields": {
+    "inputs": "spent_script_hex is the script of the output that the input spends; witness_hex lists the items of its witness in their order.",
+    "graphs": "t is the seal transaction and a the anchor. height and position are null for a pending transaction; position is the place of a transaction in its block. carries_witness is false for a transaction without a witness for any input. t.outputs names the kind of each output of t by its index; seal_vout is the index that the grant names. An input of a that has spends_output_of_t spends that output of t; every other input states parent_height, the height of the block that holds the transaction whose output it spends, or null where that transaction is pending. form is the result of C3.1 for the input, as the group inputs decides it. purpose is admission or construction: for construction a pending anchor is no refusal."
+  },
+  "test_keys": {
+    "compressed_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "other_compressed_public_key": "02dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8"
+  },
+  "rules": [
+    {
+      "rule": "C1.1",
+      "section": "1",
+      "title": "the profile from the verifier's authenticated configuration",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-04",
+        "graph-05"
+      ]
+    },
+    {
+      "rule": "C1.2",
+      "section": "1",
+      "title": "nothing in a presentation selects a profile",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector holds a presentation. The graph vectors state the profile as a value of the configuration."
+    },
+    {
+      "rule": "C2.1",
+      "section": "2",
+      "title": "the seal transaction",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-06"
+      ]
+    },
+    {
+      "rule": "C2.2",
+      "section": "2",
+      "title": "the anchor and its frame",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "The frame is checked under LIP-0020, whose vectors hold it. No vector here holds an output of the anchor."
+    },
+    {
+      "rule": "C2.3",
+      "section": "2",
+      "title": "exactly one linkage input",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-14",
+        "graph-15",
+        "graph-16"
+      ]
+    },
+    {
+      "rule": "C2.4",
+      "section": "2",
+      "title": "the anchor never spends the seal",
+      "state": "proposed",
+      "vectors": [
+        "graph-13"
+      ]
+    },
+    {
+      "rule": "C3.1",
+      "section": "3",
+      "title": "the form of every input",
+      "state": "proposed",
+      "vectors": [
+        "input-01",
+        "input-02",
+        "input-03",
+        "input-04",
+        "input-05",
+        "input-06",
+        "input-07",
+        "input-08",
+        "input-09",
+        "input-10",
+        "input-11",
+        "input-12",
+        "input-13",
+        "input-14",
+        "input-15",
+        "input-16",
+        "input-17",
+        "input-18",
+        "input-19",
+        "input-20",
+        "input-21",
+        "input-22",
+        "graph-07",
+        "graph-11",
+        "graph-12",
+        "graph-20",
+        "graph-23"
+      ]
+    },
+    {
+      "rule": "C3.2",
+      "section": "3",
+      "title": "checked on octets by the verifier",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector reads a node, and none verifies a signature."
+    },
+    {
+      "rule": "C4.1",
+      "section": "4",
+      "title": "the funding of the seal transaction",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-03",
+        "graph-08",
+        "graph-09",
+        "graph-10"
+      ]
+    },
+    {
+      "rule": "C4.2",
+      "section": "4",
+      "title": "the funding of the anchor",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-03",
+        "graph-21",
+        "graph-22"
+      ]
+    },
+    {
+      "rule": "C4.3",
+      "section": "4",
+      "title": "the order of the two transactions",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-02",
+        "graph-17",
+        "graph-18",
+        "graph-19"
+      ]
+    },
+    {
+      "rule": "C4.4",
+      "section": "4",
+      "title": "no exception for a payment output",
+      "state": "proposed",
+      "vectors": [
+        "graph-21"
+      ]
+    },
+    {
+      "rule": "C5.1",
+      "section": "5",
+      "title": "an effect needs a confirmed anchor",
+      "state": "proposed",
+      "vectors": [
+        "graph-01",
+        "graph-03",
+        "graph-24",
+        "graph-25"
+      ]
+    },
+    {
+      "rule": "C5.2",
+      "section": "5",
+      "title": "one block for both",
+      "state": "proposed",
+      "vectors": [
+        "graph-02"
+      ]
+    },
+    {
+      "rule": "C6.1",
+      "section": "6",
+      "title": "a replaced seal transaction",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector holds two seal transactions or a grant."
+    },
+    {
+      "rule": "C6.2",
+      "section": "6",
+      "title": "a replaced anchor",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector holds two anchors."
+    },
+    {
+      "rule": "C7.1",
+      "section": "7",
+      "title": "the order of refusals",
+      "state": "proposed",
+      "vectors": [
+        "input-20",
+        "input-21",
+        "input-22",
+        "graph-26",
+        "graph-27",
+        "graph-28",
+        "graph-29",
+        "graph-30",
+        "graph-31",
+        "graph-32"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "input-01",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "A witness key hash, an empty unlocking script, and a witness with a signature that ends in 01 and the key. The octets of the signature are placeholders.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "ok"
+    },
+    {
+      "id": "input-02",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is a key hash, and the signature and the key stand in the unlocking script.",
+      "spent_script_hex": "76a9147dd65592d0ab2fe0d0257d571abf032cd9db93dc88ac",
+      "unlocking_script_hex": "4730440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b0254012102f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "witness_hex": [],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-03",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is a script hash that wraps the witness key hash, and the witness is as in input-01.",
+      "spent_script_hex": "a91469ea5ff598a286f418ae77503ce85d83da4ae88e87",
+      "unlocking_script_hex": "1600147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-04",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is the witness key hash, and the unlocking script is not empty.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "0100",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-05",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is a witness script hash.",
+      "spent_script_hex": "0020947e8091b532e8a823483ef3a0d448137e779557db9ead9ce6abbaa71ae5250e",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-06",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is a Taproot output.",
+      "spent_script_hex": "5120f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-07",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The spent output is an output of a name whose address script is the witness key hash: the script begins with a name prefix and is no witness key hash.",
+      "spent_script_hex": "531169642f6c6970303032332d6973737565720d7b22737761726d61223a7b7d7d6d7500147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-08",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The witness of the input is empty.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [],
+      "expect": "W_WITNESS_SHAPE",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-09",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The witness has three items.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "00",
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_WITNESS_SHAPE",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-10",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The witness has one item.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401"
+      ],
+      "expect": "W_WITNESS_SHAPE",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-11",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The second item is the uncompressed form of the key, 65 octets.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "04f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9388f7b0f632de8140fe337e62a37f3566500a99934c2231b6cb9fd7584b8e672"
+      ],
+      "expect": "W_WITNESS_SHAPE",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-12",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The first item has 8 octets, one fewer than the shortest signature with its hash type.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f801",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_WITNESS_SHAPE",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-13",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The signature ends in 81, SIGHASH_ALL with ANYONECANPAY.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025481",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-14",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The signature ends in 03, SIGHASH_SINGLE.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025403",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-15",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The signature ends in 02, SIGHASH_NONE.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025402",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-16",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The signature ends in 83, SIGHASH_SINGLE with ANYONECANPAY.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025483",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-17",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The key in the witness is another key than the one whose hash the spent output holds. A node does not validate such a spend.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8"
+      ],
+      "expect": "W_PUBLIC_KEY",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-18",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The second item has 33 octets and a first octet of 04.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "04f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_PUBLIC_KEY",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-19",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The second item has a first octet of 02 before a value that is no x coordinate of a point of the curve.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025401",
+        "02eefdea4cdb677750a420fee807eacf21eb9898ae79b9768766e4faa04a2d4a34"
+      ],
+      "expect": "W_PUBLIC_KEY",
+      "valid_neighbour": "input-01"
+    },
+    {
+      "id": "input-20",
+      "rules": [
+        "C3.1",
+        "C7.1"
+      ],
+      "claim": "Two defects: the spent output is a key hash, and the signature ends in 81. The spent output is checked first.",
+      "spent_script_hex": "76a9147dd65592d0ab2fe0d0257d571abf032cd9db93dc88ac",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025481",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "compound": true
+    },
+    {
+      "id": "input-21",
+      "rules": [
+        "C3.1",
+        "C7.1"
+      ],
+      "claim": "Two defects: the witness has three items, and its signature ends in 81. The shape is checked before the hash type.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "00",
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025481",
+        "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      ],
+      "expect": "W_WITNESS_SHAPE",
+      "compound": true
+    },
+    {
+      "id": "input-22",
+      "rules": [
+        "C3.1",
+        "C7.1"
+      ],
+      "claim": "Two defects: the signature ends in 81, and the key is another key. The hash type is checked before the key.",
+      "spent_script_hex": "00147dd65592d0ab2fe0d0257d571abf032cd9db93dc",
+      "unlocking_script_hex": "",
+      "witness_hex": [
+        "30440220a4d3f8a152b643fd4138645eaeab456156a136cbeb2dffaf0a88e9344c6c079402207536989316da614f930cb6072942b15736cbd0969bc7352f10393a382a9b025481",
+        "02dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8"
+      ],
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "compound": true
+    }
+  ],
+  "graphs": [
+    {
+      "id": "graph-01",
+      "rules": [
+        "C1.1",
+        "C2.1",
+        "C2.3",
+        "C4.1",
+        "C4.2",
+        "C4.3",
+        "C5.1"
+      ],
+      "claim": "T is confirmed at height 700 with funding from height 650. A is confirmed in the next block, spends the linkage output of T and one coin from height 660.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-02",
+      "rules": [
+        "C4.3",
+        "C5.2"
+      ],
+      "claim": "T and A are confirmed in one block, T at an earlier position, and A spends the linkage output.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 700,
+        "position": 4,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-03",
+      "rules": [
+        "C4.1",
+        "C4.2",
+        "C5.1"
+      ],
+      "claim": "Both transactions are pending, and the check is made for the construction and not for an admission.",
+      "purpose": "construction",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-04",
+      "rules": [
+        "C1.1"
+      ],
+      "claim": "The configuration states no construction profile.",
+      "purpose": "admission",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_PROFILE_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-05",
+      "rules": [
+        "C1.1"
+      ],
+      "claim": "The configuration states the Legacy profile.",
+      "purpose": "admission",
+      "profile": "L",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_PROFILE_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-06",
+      "rules": [
+        "C2.1"
+      ],
+      "claim": "The grant names an output index that T does not have.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 3,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_SEAL_OUTPUT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-07",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "T carries no witness: all its inputs are spent the old way.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": false,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_WITNESS_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-08",
+      "rules": [
+        "C4.1"
+      ],
+      "claim": "An input of T spends an output of a pending transaction.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          },
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-09",
+      "rules": [
+        "C4.1"
+      ],
+      "claim": "An input of T spends an output of a transaction in T's own block.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 700,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "valid_neighbour": "graph-10"
+    },
+    {
+      "id": "graph-10",
+      "rules": [
+        "C4.1"
+      ],
+      "claim": "An input of T spends an output of a transaction in the block below T.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 699,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-11",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "An input of T spends a key hash.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          },
+          {
+            "parent_height": 650,
+            "form": "W_NATIVE_P2WPKH_REQUIRED"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-12",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "An input of T has a signature that ends in 81.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "W_SIGHASH_ALL_REQUIRED"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_SIGHASH_ALL_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-13",
+      "rules": [
+        "C2.4"
+      ],
+      "claim": "An input of A spends the seal.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "spends_output_of_t": 0,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_ISSUANCE_SPENDS_SEAL",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-14",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The output of T that A spends is a key hash and no witness key hash.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_SCRIPT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-15",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "No input of A spends an output of T: T was confirmed 50 blocks earlier, and A is funded by other confirmed coins. The reference subset admits this construction; this profile asks for the linkage always.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 650,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 600,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "parent_height": 640,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-16",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "Two inputs of A spend outputs of T.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "spends_output_of_t": 2,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-17",
+      "rules": [
+        "C4.3"
+      ],
+      "claim": "A is confirmed and T is pending.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_DEPENDENCY_ORDER",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-18",
+      "rules": [
+        "C4.3"
+      ],
+      "claim": "A is confirmed in a block below T.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 699,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_DEPENDENCY_ORDER",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-19",
+      "rules": [
+        "C4.3"
+      ],
+      "claim": "T and A are confirmed in one block, and A stands at the earlier position.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 700,
+        "position": 2,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_DEPENDENCY_ORDER",
+      "valid_neighbour": "graph-02"
+    },
+    {
+      "id": "graph-20",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "A carries no witness.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": false,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_WITNESS_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-21",
+      "rules": [
+        "C4.2",
+        "C4.4"
+      ],
+      "claim": "The second input of A spends an output of a pending transaction: an unconfirmed payment on the same chain. LIP-0008 permits that parent; this profile does not.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-22",
+      "rules": [
+        "C4.2"
+      ],
+      "claim": "The second input of A spends an output of a transaction in A's own block that is not T.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 701,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-23",
+      "rules": [
+        "C3.1"
+      ],
+      "claim": "The linkage input of A spends a script hash that wraps a witness key hash.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "W_NATIVE_P2WPKH_REQUIRED"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_NATIVE_P2WPKH_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-24",
+      "rules": [
+        "C5.1"
+      ],
+      "claim": "T is confirmed and A is pending, at an admission.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_ANCHOR_PENDING",
+      "valid_neighbour": "graph-25"
+    },
+    {
+      "id": "graph-25",
+      "rules": [
+        "C5.1"
+      ],
+      "claim": "The same pair where the check is made for the construction: a pending anchor passes the checks of sections 2 to 4.",
+      "purpose": "construction",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-26",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects: no profile, and an input of T spends a key hash.",
+      "purpose": "admission",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "W_NATIVE_P2WPKH_REQUIRED"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_PROFILE_REQUIRED",
+      "compound": true
+    },
+    {
+      "id": "graph-27",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects in T: an input has a pending parent, and another input has a signature that ends in 81. The funding of all inputs is checked before the form of any.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "W_SIGHASH_ALL_REQUIRED"
+          },
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "compound": true
+    },
+    {
+      "id": "graph-28",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects: an input of T has a pending parent, and A spends the seal. T is checked before A.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "spends_output_of_t": 0,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "compound": true
+    },
+    {
+      "id": "graph-29",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects in A: it spends the seal, and it spends no linkage output.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 0,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_ISSUANCE_SPENDS_SEAL",
+      "compound": true
+    },
+    {
+      "id": "graph-30",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects: the output of T that A spends is a key hash, and A is confirmed below T.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 699,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_SCRIPT",
+      "compound": true
+    },
+    {
+      "id": "graph-31",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects in A: its funding input has a pending parent, and its linkage input has a signature that ends in 81.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "W_SIGHASH_ALL_REQUIRED"
+          },
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "compound": true
+    },
+    {
+      "id": "graph-32",
+      "rules": [
+        "C7.1"
+      ],
+      "claim": "Two defects at an admission: A is pending, and its funding input has a pending parent.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": null,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "compound": true
+    }
+  ]
+}
