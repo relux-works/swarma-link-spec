@@ -215,6 +215,12 @@ profile `/2` is an ordinary valid v3 grant.
 
 ### 3.3. Scope text
 
+A scope text governs an agent's work and never a service's effect. That is
+the rule of LIP-0006 section 7, decided on 2026-11-14, with the co-author's
+agreement pending. This LIP does not yet say how profile `/2` applies the
+rule; the paragraph below describes the text as the draft proposed it
+before that decision.
+
 The scope text is a separate document. Its exact octets hash to
 `scope_text_sha256`, and it travels with the bundle. Text narrows only: like
 the note of LIP-0013, it can never add an action, a repository, a budget or
