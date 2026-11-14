@@ -1129,6 +1129,11 @@ The refusal codes come with the bytes. The order covers the revocable-only
 seal; the endorsement of a single-use seal follows its output profile,
 which is open (section 11.1).
 
+[LIP-0024](LIP-0024-seal-endorsement.md) proposes those bytes and codes for
+the revocable-only seal under the Witness profile on Namecoin, with vectors.
+They are that draft's proposals, and each point stays open until both owners
+accept it.
+
 ### 11.3. The issuer shows that it can spend the seal
 
 A seal that its issuer cannot spend is a grant that nobody can revoke. A

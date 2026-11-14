@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.1.42 — 2026-11-14
+
+Adds Draft LIP-0024, the seal and endorsement profile for Grant v4 on
+Namecoin, with vectors. It gives the registered type
+`swarma-seal-endorsement/1` its members. Every rule of it is the draft's
+proposal, and neither owner has decided one. No rule of another text
+changes, and no v3 byte does.
+
+What it answers. LIP-0008 section 11.2 records Ivan Oparin's decision of
+2026-11-14, with the co-author's agreement pending: the eight members of an
+endorsement by their meaning, and the order of the verifier's five steps.
+It says that the bytes stay open and that the refusal codes come with the
+bytes. LIP-0020 registers the type without a member.
+
+The seal. A revocable-only seal under the Witness profile: an output that
+pays the witness key hash of its own seal key, as LIP-0008 section 11.1
+decides for that profile.
+
+The endorsement. A signed object of LIP-0020 under the issuer's grant key,
+at most 2048 octets, with nine members: `type`, `genesis`, `issuer` with
+the name, the registration and the owner pin, `construction`, `seal`,
+`outpoint`, `seal_public_key`, `script` and `grant`. The reference is the
+identifier of the grant, which exists before any signature; the decision
+allows the grant or the signed preparation.
+
+The order. Parsing first, without any signature check. Then the decided
+steps: the verifier's node supplies the output (`SEAL_OUTPUT`) and its
+script equals the endorsed one (`SEAL_SCRIPT`); the profile is the
+verifier's (`SEAL_PROFILE`) and the script is the script of the endorsed
+key (`SEAL_SCRIPT_KEY`); the signature verifies under the grant key of the
+pinned issuer; the endorsement speaks of this grant (`SEAL_BINDING`). The
+read of the output stands before the signature, which differs from the
+pipeline of a signed object in LIP-0020 W9.1; the LIP states the
+difference. To the one binding that the decision names, the same outpoint,
+the draft adds three: the grant's identifier, its chain and its issuer pin.
+
+Custody. The provisioning and custody of the seal account are open and
+before an owner. The draft proposes five points and nothing beyond them:
+separate seal and funding accounts; a grant key that signs no transaction
+and pays no fee; a seal account that is not `m/84'/7'/0'`; no seal account
+derived from a grant key; and a provisioning sitting and a wrapping of its
+own for each account. No rule of the endorsement and no vector depends on
+them.
+
+Vectors. `vectors/LIP-0024/endorsement-vectors.json` holds 47 vectors over
+15 rules: 6 on the seal script and 41 signed endorsements with a stated
+context, eight of them with two defects for the order. The signatures are
+BIP-340 signatures under published test keys. The grant is given as stated
+facts, because a grant has no members yet. No node was run.
+
+LIP-0008 section 11.2 and LIP-0020 section 3 gain one pointer each.
+
 ## 0.1.41 — 2026-11-14
 
 Adds Draft LIP-0023, a first Witness construction profile for Grant v4 on

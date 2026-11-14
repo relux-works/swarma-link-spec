@@ -253,6 +253,10 @@ The largest size is 1024 octets for the signed form of an assent and 2048
 octets for an issuance preparation. A type without members states its
 largest size with them.
 
+Draft [LIP-0024](LIP-0024-seal-endorsement.md) proposes the members of
+`swarma-seal-endorsement/1`, with its largest size, its codes and its
+vectors. The entry above stands until both owners accept them.
+
 The entries of the grant and of the endorsement name the root case. Who
 signs a child's grant, who endorses the seal of a child and who assents to a
 child's contract are questions of LIP-0014 sections 9.1 and 11.1, and the

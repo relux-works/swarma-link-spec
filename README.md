@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.41
+**Version:** 0.1.42
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.41
+## Draft profiles and design decisions in v0.1.42
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -421,6 +421,26 @@ their names are reasons that the reference laboratory already reports for
 its own subset. Every rule is the draft's proposal, and neither owner has
 decided one. The 54 vectors in [`vectors/LIP-0023/`](vectors/LIP-0023/)
 state octets and facts and read no node; no node was run for the draft.
+
+Version 0.1.42 adds [LIP-0024](lips/LIP-0024-seal-endorsement.md), the
+octets of the seal-key endorsement. LIP-0008 section 11.2 fixes what an
+endorsement states and the order in which a verifier checks it, by a
+decision of Ivan Oparin of 2026-11-14 that awaits the co-author, and leaves
+the bytes and the codes open. The draft proposes the nine members of
+`swarma-seal-endorsement/1`, signed by the issuer's grant key, for a
+revocable-only seal whose script is the witness key hash of its seal key.
+It keeps the decided order: the output on the verifier's own node and its
+script come before the signature, which is the one point where the order
+differs from the pipeline of a signed object in LIP-0020, and the draft
+says so. Five codes are new. The provisioning and custody of the seal
+account are open and before an owner; the draft proposes five points about
+them and nothing more: seal and funding accounts are separate, the grant
+key signs no transaction and pays no fee, the seal account is not the
+account `m/84'/7'/0'`, no seal account is derived from a grant key, and
+each account has a provisioning sitting and a wrapping of its own. Every
+rule is the draft's proposal, and neither owner has decided one. The 47
+vectors in [`vectors/LIP-0024/`](vectors/LIP-0024/) hold signed
+endorsements under published test keys and read no node.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
