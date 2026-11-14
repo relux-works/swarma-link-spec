@@ -1,6 +1,8 @@
 # LIP-0015: Trust-root pin and typed statements
 
-- **Status:** Draft. A proposal; nothing in it is decided.
+- **Status:** Draft. Ivan Oparin accepted its direction as a whole on
+  2026-11-14; the co-author's agreement is pending, and no rule of it is
+  adopted.
 - **Created:** 2026-11-12
 - **Affects:** verification of an agent host's configuration, the signing
   domains of the grant key, bindings of other keys to a name
@@ -30,7 +32,9 @@ This LIP proposes that anchor and what is signed under it:
    device key or a commit-signing key, to the name.
 
 A statement binds; it gives no authority. Nothing here changes a grant
-format, and nothing is implemented.
+format, and nothing is implemented. The pin and the configuration
+statements have a first use that needs nothing else of this LIP: signing
+the profiles and manifests of Curator.
 
 ## Motivation
 
@@ -130,6 +134,11 @@ yields. Being authentic does not make it accepted: a loader accepts it only
 through the steps of section 4. It has no `issuer_key`, no subject kind and
 no opening time; the certificate rules of section 6 do not apply to it.
 
+The first use that Ivan Oparin named with his acceptance of 2026-11-14 is
+the signing of Curator profiles and manifests. Each profile and each
+manifest is one section with a `subject` of its own, and a loader accepts
+it only through the steps of section 4.
+
 ## 4. Verification at load
 
 The loader runs these steps each time it loads a signed section and stops at
@@ -223,6 +232,29 @@ message from a certified device stays data until a grant check admits it
 (LIP-0013 section 3.4). Statements are published in the store of LIP-0016
 and never in a name value.
 
+The three paragraphs that follow record Ivan Oparin's direction of
+2026-11-14; the co-author's agreement is pending.
+
+**Which Matrix kind.** Of the two Matrix kinds, `matrix-cross-signing` is
+preferred. One statement then binds the cross-signing key of an account to
+the name. Matrix ties each device of the account to that key, so a new
+device needs no new statement. A `matrix-device` statement binds one
+device: every new device needs another statement, and every lost device a
+revocation.
+
+**Other transports.** A key of another transport gets a kind of its own:
+the OMEMO identity keys of an XMPP account, a key that signs email, the
+keys of other messengers. Such a kind is proposed in a LIP that states the
+items of [LIP-0018](LIP-0018-extension-guide.md) section 4. This LIP
+defines none of them.
+
+**What a binding gives.** Without one, a receiver knows the sender of a
+transport message only from the transport's server. With one, it checks
+the sending device against a key that the operator of a name certified,
+and it no longer relies on the server for that. The platform book calls
+the first level of assurance A0 and the second A1. The binding goes no
+further: it gives no authority, and a typed action still needs a grant.
+
 ## Alternatives
 
 - **A key compiled into the program:** the same for every installation, and
@@ -281,7 +313,8 @@ Ivan Oparin, as the author of that paper.
 ## Open questions
 
 - Where the high-water mark of step 6 is kept on each platform.
-- The subject members of each certificate kind beyond `matrix-device`.
+- The subject members of each certificate kind beyond `matrix-device`, and
+  the kinds for other transports, which arrive under LIP-0018 section 4.
 - Whether presence is required for a certificate statement or only for a
   configuration statement and a rotation.
 - Adoption, vectors, and the relation of these fixed prefixes to the tagged

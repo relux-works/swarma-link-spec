@@ -1,4 +1,4 @@
-# LIP-0018: Extension guide for contract profiles, limit kinds and action names
+# LIP-0018: Extension guide for contract profiles, limit kinds, action names and certificate kinds
 
 - **Status:** Draft
 - **Created:** 2026-11-14
@@ -9,15 +9,16 @@
 
 ## Summary
 
-Three things in this protocol are meant to grow: the profiles of a
-contract, the kinds of limit that a grant carries, and the names of
-actions. LIP-0008 says that a new limit kind arrives through a LIP of its
-own and that leaf names need their own profiles. It does not say what such
-a LIP has to state. A proposal for a limit that leaves out what happens to
-a reservation after an uncertain outcome cannot be implemented the same way
-by two parties, and nobody notices until their journals disagree.
+Four things in this protocol are meant to grow: the profiles of a contract,
+the kinds of limit that a grant carries, the names of actions, and the kinds
+of key that a certificate statement binds. LIP-0008 says that a new limit
+kind arrives through a LIP of its own and that leaf names need their own
+profiles. It does not say what such a LIP has to state. A proposal for a
+limit that leaves out what happens to a reservation after an uncertain
+outcome cannot be implemented the same way by two parties, and nobody
+notices until their journals disagree.
 
-This guide lists, for each of the three, what a proposal MUST state before
+This guide lists, for each of them, what a proposal MUST state before
 it can be reviewed. The lists record Ivan Oparin's decision of 2026-11-14;
 the co-author's agreement is pending. The guide assigns no identifier and
 no byte, and it changes no rule of an existing profile.
@@ -91,6 +92,22 @@ LIP-0008 section 12.3). A proposal for a leaf states:
 | Limits | The limit kinds that bound the action. |
 | Receipt | What the service's receipt states about the effect. |
 | Refusal codes, vectors and checker, path | As for a limit kind. |
+
+## 4. A certificate subject kind
+
+A certificate statement binds a key of another system to a name (LIP-0015
+section 6). A proposal for a new kind of subject states:
+
+| Item | What the proposal states |
+| --- | --- |
+| Kind | The identifier of the kind, as it stands in `subject_kind`. |
+| Subject | The members of `subject` and their exact bytes: the account or the address in the other system, and the key that is bound. |
+| The key in its own system | What the key signs or decrypts there, and which other keys of that system depend on it. |
+| Use of the binding | What a receiver on that transport checks against the bound key, and what it then no longer takes from the transport's server. |
+| Revocation | That the rules of LIP-0015 section 6 hold unchanged: the statement with the highest `seq` decides, and a later statement ends a binding. A kind adds no rule of its own here. |
+| Vectors and checker, path | As for a limit kind. |
+
+A binding gives no authority under any kind.
 
 ## What the guide leaves out
 
