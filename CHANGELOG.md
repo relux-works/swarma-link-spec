@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.1.30 — 2026-11-14
+
+Two new drafts and one extension record decisions that Ivan Oparin made on
+2026-11-14. The co-author's agreement on each is pending. They state
+semantics without canonical bytes, and nothing of them is implemented.
+
+LIP-0017, contracts. Until now a contract existed only as the hash that a
+grant signs. The LIP makes it an object: one document that two or more
+parties sign, with free text for people and members for machines. Its
+identifier commits to a salt and to a salted hash of each clause, so that a
+party can disclose single clauses. A contract is anchored as LIP-0005
+action `0x07`, and two parties can show their assent on chain by spending
+an output that needs both signatures. Every grant binds a contract, which
+may be minimal, and a contract may exist without any grant. A grant's
+window lies inside its contract's window; profile `swarma-trust-contract/1`
+keeps equality, and no rule of LIP-0013 changes. A framework contract
+covers several grants over time. A contract ends early only through a
+machine rule that names who may declare the end. For v4 and for framework
+contracts a contract can name a seal of its own: its script is the
+termination clause (the issuer alone, either party, both together, or an
+arbiter), every grant under the contract requires it unspent, and its
+spend, with action `0x08` and the hash of the signed termination
+statement, ends them all. Grant v3 does not change. A table of scenarios
+shows rental, trust, services between companies, employment and an
+agreement without a grant.
+
+LIP-0018, an extension guide. It lists what a proposal has to state for a
+contract profile, for a limit kind and for an action leaf name. For a
+limit kind these are the identifier and resource, the unit and integer
+scale, bounds and rounding, period and aggregation, reservation,
+concurrency, uncertain outcomes, replay, denials, the contract mirror,
+defaults, refusal codes, vectors with a checker, and the path of the LIP.
+The guide assigns no identifier and no byte.
+
+LIP-0008 section 2 lists further early limit kinds by meaning: external
+service cost, runtime and concurrency, rate, outbound messages, repository
+writes, storage and egress with host allowlists, name operations, secret
+releases and an owner-confirmation threshold. Coins gain a maximum for one
+spend and for a period and an explicit asset and payment system. An
+allowance of zero of any kind authorizes nothing of that kind.
+
+LIP-0005 lists the actions `0x07` and `0x08` as proposals; the reference
+parser accepts neither. The authority frame of LIP-0013 section 3.4 names
+the framework contract of LIP-0017 as its fifth member. The key registry
+gains entries for the keys of a contract seal and of an assent output.
+
 ## 0.1.28 — 2026-11-14
 
 Three additions record decisions that Ivan Oparin made on 2026-11-14. The
