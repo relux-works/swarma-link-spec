@@ -1056,13 +1056,15 @@ authority merely because a bundle contains them. Wallet-v1 `proof.use_txid`
 remains outside its unsigned-request hash; neither that commitment nor
 LIP-0002's different signed-envelope commitment is redefined here.
 
-Two Draft texts under pending owner decisions concern the invocation. Under
+Two Draft texts concern the invocation. Under
 [LIP-0013](LIP-0013-trust-contract.md) section 3.6 the service that holds
 an agent's key signs an invocation for a run only when every grant on its
-proof path is listed for the origin of that run (J7). Under
+proof path is listed for the origin of that run (J7, decided by Ivan Oparin
+on 2026-11-14, with the co-author's agreement pending). Under
 [LIP-0011](LIP-0011-termination-for-violation.md) section 7 the signed
 invocation is the request of a verdict, and an invocation that travels
-inside an encrypted message binds a salted hash of the content (J8).
+inside an encrypted message binds a salted hash of the content (J8, a
+pending owner decision).
 
 #### 12.2. Proof path, attenuation and budget accounting
 
@@ -1233,7 +1235,8 @@ landlord's signer issues the child on the delegator's signed request
 above is the rule in force. LIP-0014 section 11.1 holds Draft text that
 replaces it for the link below an issue capability: the capability names
 one delegation key, only that key signs children, and it signs nothing
-else. Owner decision pending: J4.
+else, because the messaging key never grants authority. Ivan Oparin decided
+this on 2026-11-14 (J4); the co-author's agreement is pending.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and
@@ -1424,11 +1427,11 @@ change: that verifier keeps refusing.
 - Explicit issuance-capability profile; the v4 bytes of the breadth check
   that LIP-0014 drafts for v3 (section 12.6); structured scope and on-chain
   budget enforcement, which stay proposed; the delegation key that LIP-0014
-  section 11.1 drafts for a re-delegating agent on v4, under a pending owner
-  decision (J4), and its bytes;
-  parent-ID binding, per-link issuance/seal evidence and atomic ancestor/sibling
-  budget accounting, recovery and executor partitions. Depth is at most two
-  signed authority links; exact wire/consent and accounting fixtures remain open.
+  section 11.1 drafts for a re-delegating agent on v4, under a decision that
+  awaits the co-author's agreement (J4), and its bytes; parent-ID binding,
+  per-link issuance/seal evidence and atomic ancestor/sibling budget
+  accounting, recovery and executor partitions. Depth is at most two signed
+  authority links; exact wire/consent and accounting fixtures remain open.
 - Signed metadata envelope, canonical object-ID preimages/signature inclusion,
   strict signature wire representation and cross-version journal bindings.
   The reserved future `policy` kind has no adopted evaluator or syntax.

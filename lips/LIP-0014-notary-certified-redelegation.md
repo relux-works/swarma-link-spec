@@ -61,26 +61,29 @@ re-delegation, of the contract profile and of the attestation, the refusal
 codes and their order, the event kind 8186, the commitment formula of the
 anchor, and the action `0x05`.
 
-### Decisions pending
+### Decisions of 2026-11-13 and 2026-11-14
 
-Five additions to the decisions above wait for the owners' decision. Their
-rules stand in this LIP as Draft text, each in one subsection that is
-marked "owner decision pending" with a label of this table. None of them is
-adopted before the decision, and until then the text in force stays as it
-is.
+Five additions to the decisions above were decided by Ivan Oparin: J3 on
+2026-11-13 and the others on 2026-11-14. The co-author's agreement on each
+is pending. Their rules stand in this LIP, each in one subsection that
+opens with the decision and carries a label of this table. None of them is
+adopted before the co-author agrees, and until then the text in force
+stays as it is.
 
-| Label | Touches | Direction of the Draft text | Until the decision |
+| Label | Touches | The decision | Until the co-author agrees |
 | --- | --- | --- | --- |
-| J1. Rows | D6 | The parent signs one row for each child it permits, with the executor, the grantee, the cap and the certifier of that child. The limit is a number of compartments. Section 9.1. | A pool that the children share, and lists of the agents and grantees a child may name (sections 2 and 9). |
-| J2. Withdrawal for cause | D5 and D9; N6 and N8 of LIP-0012 | Each row names one notary, and only that notary certifies the row. It keeps one succession of seals for the row, and a cause counts only when the notary's signature covers its frame. Section 10.1. | Any named notary certifies, and a withdrawal for cause reaches only the parties that observed its frame (section 10). |
+| J1. Rows | D6 | The parent signs one row for each child it permits, with the executor, the grantee, the cap and the certifier of that child. On v3 the limit is a number of compartments. On v4 each row also pins a coin that the issuance of its child must spend. Section 9.1. | A pool that the children share, and lists of the agents and grantees a child may name (sections 2 and 9). |
+| J2. Withdrawal for cause | D5 and D9; N6 and N8 of LIP-0012 | Each row names one notary, and only that notary certifies the row. It keeps one succession of seals for the row, and a cause counts only when the notary's signature covers its frame. On v3 D5 is narrowed. On v4 each row also names a stop coin of its notary, whose spend ends the row for every verifier. Section 10.1. | Any named notary certifies, and a withdrawal for cause reaches only the parties that observed its frame (section 10). |
 | J3. Notary identity | D3 | The parent pins each notary as LIP-0008 section 3 pins an issuer: by name, registration and owner key, with a signed checkpoint, and the attestation key in force must have been written by the pinned owner. Section 7.1. | A parent binds a notary by name only (section 7). |
-| J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
-| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | A child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. An executor that cannot read refuses a grant with a text, and the owners choose what a text does to an effect. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
+| J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else: the messaging key never grants authority. Section 11.1. v3 does not change. | The parent's recipient key signs the child (LIP-0008 section 12.6). |
+| J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and every executor refuses a landing or a payment under one. What a v4 child does with its parent's text is not decided. Section 3.4. | The notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
 
-Three further decisions are pending in other LIPs: J6, a durable closure for
-an owner-signed change of an issuer's name (LIP-0008 section 5.2); J7,
-signing under a grant for each run (LIP-0013 section 3.6); and J8, the
-signed invocation as the request of a verdict (LIP-0011 section 7).
+Three further decisions stand in other LIPs. J7, signing under a grant for
+each run (LIP-0013 section 3.6), was decided by Ivan Oparin on 2026-11-14
+and awaits the co-author's agreement. J6, a durable closure for an
+owner-signed change of an issuer's name (LIP-0008 section 5.2), and J8, the
+signed invocation as the request of a verdict (LIP-0011 section 7), are
+pending owner decisions.
 
 The decisions are separate, with one dependency: section 10.1 needs the
 rows of section 9.1. Where the Draft text of one decision uses another, it
@@ -89,17 +92,17 @@ rows exist. The delegation signer of section 11.1 identifies its caller
 through LIP-0013 section 3.6 and reads the closure journals of section 10.1
 and of LIP-0008 section 5.2, where those are adopted.
 
-The cases of the pending subsections carry identifiers. In S3-1 the number
+The cases of these subsections carry identifiers. In S3-1 the number
 after S is the number of the decision, so S3-1 is the first case of J3. A
 letter after the case number marks a variant, and K marks a known limit: a
 case that the Draft text admits, and says so.
 
-If J1 and J5 are adopted, a notary adds up no budget across siblings and
-judges no text. It still keeps a record: one child for each row and, under
-J2, one succession of seals for each row and its causes. An attestation
-then gives a second signature by a party that the issuer chose (D8), a seal
-that this party can spend, and a cause that its witnesses remember. D1 is
-not reopened.
+If J1 and J5 are adopted, a notary adds up no budget across siblings and,
+for a child of profile `/2`, judges no text. It still keeps a record: one
+child for each row and, under J2, one succession of seals for each row and
+its causes. An attestation then gives a second signature by a party that the
+issuer chose (D8), a seal that this party can spend, and a cause that its
+witnesses remember. D1 is not reopened.
 
 ## Motivation
 
@@ -149,7 +152,7 @@ attestation for every child removes the classification (D1).
 | Child `C` | A grant whose signed terms bind the `grant_id` of `P` (section 3). |
 | Delegator | The grantee of `P`, the holder of `P.grantee_key`. LIP-0008 section 12.2 requires that each link's audience is the next link's issuer. |
 | Delegatee | The grantee of `C`, the holder of `C.grantee_key`. |
-| Child signer | On v4, the delegator; section 11.1 holds Draft text, under a pending owner decision (J4), that names a delegation key instead. On v3, the landlord's grant key, acting on the delegator's signed request (section 5). |
+| Child signer | On v4, the delegator; section 11.1 holds Draft text, under a decision that awaits the co-author's agreement (J4), that names a delegation key instead. On v3, the landlord's grant key, acting on the delegator's signed request (section 5). |
 | Notary `N` | A party named by `P`'s right of re-delegation whose attestation key signs the statement "child within parent" (LIP-0012). |
 | Link | One signed grant on the authority path. A root grant is link 1 and its child is link 2. A third link refuses (LIP-0008 section 12.2). |
 
@@ -198,10 +201,10 @@ In Goal 1 a right of re-delegation MUST NOT list `spend`, and its `budget` is
 0 (D12). The budget members and the arithmetic of sections 6 and 9 stay in the
 format for a later decision.
 
-Two subsections hold Draft text, under pending owner decisions, that
-changes members of this table. Section 7.1 changes `notaries` and adds
-`checkpoint` (J3). Section 9.1 replaces `agents`, `grantees` and
-`max_children` by rows (J1).
+Two subsections hold Draft text, under decisions that await the co-author's
+agreement, that changes members of this table. Section 7.1 changes
+`notaries` and adds `checkpoint` (J3). Section 9.1 replaces `agents`,
+`grantees` and `max_children` by rows (J1).
 
 ## 3. The contract profile `swarma-trust-contract/2`
 
@@ -277,16 +280,18 @@ that executor. Section 3.4 records the decision of 2026-11-14 on this (J5).
 
 ### 3.4. One text along the path, and what a text does to an effect
 
-Decided by Ivan Oparin on 2026-11-14 (J5), in three parts; the co-author's
+Decided by Ivan Oparin on 2026-11-14 (J5), in four parts; the co-author's
 agreement is pending on each. On v3 a child carries its parent's text
 unchanged. A text governs an agent's work and never a service's effect, so
-an executor refuses an effect under a grant that carries a text. And these
-rules are in force before an executor enters enforcing mode. What a v4
-child does with its parent's text is not decided, and this LIP says nothing
-about it. Until the co-author agrees section 3.3 stands alone: a text
-narrows a grant, the notary judges a child's text against the parent's
-once, at certification, and no step compares an instruction with the text. Take a child whose text
-limits the work to one component of a repository. An instruction that
+an executor refuses an effect under a grant that carries a text. Profile
+`/2` gains no new member, and on v4 the ref, the revision and the payee
+are machine members. And these rules are in force before an executor
+enters enforcing mode. What a v4 child does with its parent's text is not
+decided, and this LIP says nothing about it. Until the co-author agrees
+section 3.3 stands alone: a text narrows a grant, the notary judges a
+child's text against the parent's once, at certification, and no step
+compares an instruction with the text. Take a child whose text limits the
+work to one component of a repository. An instruction that
 concerns another component, within the child's actions and repositories,
 passes every step of section 8 and steps 6e to 6g of LIP-0013. The notary's
 `within` is a judgement as well: no verifier can recompute it.
@@ -410,11 +415,12 @@ change.
 J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3. For roots,
 J5.4, J5.5 and J5.7 are a precondition of enforcing mode for every executor
 that accepts profile `/2`, and the setting `text` is `none` unless the
-executor's owner set `conduct`. An executor that accepted `/2` contracts and entered
-enforcing mode for one-hop grants would otherwise admit a `/2` root with a
-text and act on it with no text rule in force. An executor that accepts
-profile `/1` alone cannot meet a scope text: profile `/1` has no text
-member, and that reader refuses every fifteen-member object (section 3.1).
+executor's owner set `conduct`. An executor that accepted `/2` contracts and
+entered enforcing mode for one-hop grants would otherwise admit a `/2` root
+with a text and act on it with no text rule in force. An executor that
+accepts profile `/1` alone cannot meet a scope text: profile `/1` has no
+text member, and that reader refuses every fifteen-member object (section
+3.1).
 
 What stays open:
 
@@ -457,11 +463,12 @@ rule before enforcing mode, as the paragraph above states it.
 
 For profile `/2` four other designs were set aside. Keeping `within` there
 keeps a value that no verifier can recompute, under which a stolen
-attestation key certifies children that exceed their parents in words. A narrowing clause that the
-child appends needs a judgement of whether the clause narrows, and it puts
-the delegator's text into the executor's scope. A policy language is
-reserved and not adopted (LIP-0008 section 12.4). A qualified evaluator for
-texts does not exist, and "qualified" has no definition yet.
+attestation key certifies children that exceed their parents in words. A
+narrowing clause that the child appends needs a judgement of whether the
+clause narrows, and it puts the delegator's text into the executor's scope.
+A policy language is reserved and not adopted (LIP-0008 section 12.4). A
+qualified evaluator for texts does not exist, and "qualified" has no
+definition yet.
 
 Cases (J5):
 
@@ -497,9 +504,10 @@ mechanical comparison against the presented parent `P`:
 | `ordinal` | `1 <= C.ordinal <= P.delegate.max_children` | `CHILD_ORDINAL` |
 | `scope_text_sha256` | No mechanical rule beyond identity: equal values mean identical text. Different values need the notary's judgement | none |
 
-Two subsections hold Draft text, under pending owner decisions, that
-changes rows of this table. Under section 3.4 the two text hashes must be
-equal (J5). Under section 9.1 a child must fit the row of its ordinal (J1).
+Two subsections hold Draft text, under decisions that await the co-author's
+agreement, that changes rows of this table. Under section 3.4 the two text
+hashes must be equal (J5). Under section 9.1 a child must fit the row of its
+ordinal (J1).
 
 ## 5. The delegation request on v3
 
@@ -584,9 +592,10 @@ The typed-hash plan of LIP-0008 section 8 may replace it before adoption.
 `attestation_id` is the SHA-256 of the compact object
 `{"attestation":…,"signature":…}`.
 
-Two subsections hold Draft text, under pending owner decisions, that
-changes this object. Section 3.4 removes the value `within` of `textual`
-(J5). Section 9.1 removes the members 15 and 16 (J1).
+Two subsections hold Draft text, under decisions that await the co-author's
+agreement, that changes this object. Under section 3.4 the `textual` of a
+child of profile `/2` is `none` or `identical` (J5). Section 9.1 removes
+the members 15 and 16 (J1).
 
 ### 6.2. When the notary signs
 
@@ -644,8 +653,8 @@ as for a grant (LIP-0008 section 9). One seal may be named by one attestation
 or by every attestation of one parent. Spending a seal withdraws every
 attestation that names it.
 
-Section 10.1 holds Draft text, under a pending owner decision (J2), that
-puts the seals of one row into one succession.
+Section 10.1 holds Draft text, under a decision that awaits the co-author's
+agreement (J2), that puts the seals of one row into one succession.
 
 ## 7. Who the notary is
 
@@ -662,13 +671,13 @@ Each notary publishes its attestation key in its own `id/` name, in the
 {"swarma":{"notary":{"attest":"<attestation key>"}}}
 ```
 
-The notary rotates its key by updating that name with its name-owner key. The
-grants that name it are not reissued. Attestations under the old key then
-refuse (section 8, V12), and the notary signs them again under the new key.
-The parent binds the notary by name only. It binds neither the registration
-nor the owner of that name, so the same update is open to whoever holds the
-name later. Section 7.1 holds Draft text that binds both (owner decision
-pending: J3).
+The notary rotates its key by updating that name with its name-owner key.
+The grants that name it are not reissued. Attestations under the old key
+then refuse (section 8, V12), and the notary signs them again under the new
+key. The parent binds the notary by name only. It binds neither the
+registration nor the owner of that name, so the same update is open to
+whoever holds the name later. Section 7.1 holds Draft text that binds both
+(J3; the co-author's agreement is pending).
 
 A name has one `swarma` shape, so a notary name is neither a landlord name nor
 an agent name. An owner who certifies children of their own grants registers
@@ -873,15 +882,15 @@ An unconfirmed anchor and an unavailable node are pending. The executor holds
 and retries under step 8 of LIP-0013; it does not refuse the child as not
 certified.
 
-Draft text under pending owner decisions changes these steps, and each
-subsection says how. Section 3.4 adds the equality of the two text hashes
-to V9 and limits `textual` in V14 (J5). Section 7.1 adds the pins, the
-checkpoint, the walk and the writer to V12 (J3). Section 9.1 puts the range
-of the ordinal first in V8, compares the budget with the row's cap in V9
-and removes V15 with the predecessors of V2 (J1). Section 10.1 compares
-`notary_name` with the row in V12 and adds the row's closure for cause to
-V18 (J2). Section 11.1 gives V7 its v4 counterpart, the child's signature
-under the parent's delegation key (J4).
+Draft text under decisions that await the co-author's agreement changes
+these steps, and each subsection says how. Section 3.4 adds the equality of
+the two text hashes to V9 and limits `textual` in V14 (J5). Section 7.1 adds
+the pins, the checkpoint, the walk and the writer to V12 (J3). Section 9.1
+puts the range of the ordinal first in V8, compares the budget with the
+row's cap in V9 and removes V15 with the predecessors of V2 (J1). Section
+10.1 compares `notary_name` with the row in V12 and adds the row's closure
+for cause to V18 (J2). Section 11.1 gives V7 its v4 counterpart, the child's
+signature under the parent's delegation key (J4).
 
 ### 8.1. Why both are required
 
@@ -892,16 +901,16 @@ only a notary can do. If a verifier took the notary's word for subsets and
 budgets, a stolen attestation key would widen any limit.
 
 The attestation is required in addition, also when `textual` is `none` or
-`identical`, for four reasons. The rule has no branch that a child can use to
-skip certification. Every certified child has a seal that a party outside the
-path can spend. No single verifier sees the siblings of a child; a notary
-sees the children it certified itself and the chain it is shown, and its
-attestations make the pool arithmetic checkable along that chain (section
-9). With more than one named notary, a notary does not see a sibling that
-another notary certified under the same ordinal; section 9.1 states the
-case and holds Draft text for it, under a pending owner decision (J1). A
-named party has recorded both contract hashes, the arithmetic and the tip
-it saw.
+`identical`, for four reasons. The rule has no branch that a child can use
+to skip certification. Every certified child has a seal that a party outside
+the path can spend. No single verifier sees the siblings of a child; a
+notary sees the children it certified itself and the chain it is shown, and
+its attestations make the pool arithmetic checkable along that chain
+(section 9). With more than one named notary, a notary does not see a
+sibling that another notary certified under the same ordinal; section 9.1
+states the case and holds Draft text for it, under a decision that awaits
+the co-author's agreement (J1). A named party has recorded both contract
+hashes, the arithmetic and the tip it saw.
 
 ### 8.2. Where "not certified" is visible
 
@@ -1278,7 +1287,7 @@ executor that observed it journals the child as closed. The delegator requests
 a new child with a new ordinal. These duties reach only a party that
 observed the frame. Another named notary and a verifier that starts later
 have no step that looks for it. Section 10.1 states the case and holds
-Draft text for it, under a pending owner decision (J2).
+Draft text for it, under a decision that awaits the co-author's agreement (J2).
 
 ### 10.1. One certifier for each row, and the withdrawal for cause
 
@@ -1381,11 +1390,12 @@ reported as a breach.
 
 The steps change as follows. V12 compares `notary_name` with the row before
 it reads the name. V18 keeps the seal check and adds that the journal holds
-no closure for cause of this parent and ordinal. On v3 no new read is added; on v4 the verifier also reads the stop coin of
-the row. One seal may still serve every attestation of a parent
-(section 6.4): a successor may serve the rows that its predecessor served,
-and a spend for cause of a shared seal creates no successor for the row it
-closes and may create one for the others.
+no closure for cause of this parent and ordinal. On v3 no new read is added;
+on v4 the verifier also reads the stop coin of the row. One seal may still
+serve every attestation of a parent (section 6.4): a successor may serve the
+rows that its predecessor served, and a spend for cause of a shared seal
+creates no successor for the row it closes and may create one for the
+others.
 
 With these rules D9 reads: one attestation is enough, by the notary that
 the parent names for the child's row. D5 reads on v3: a
@@ -1519,7 +1529,7 @@ for one-hop grants does not include it.
 | Right of re-delegation and parent binding | Contract members of profile `/2`, bound by `contract_sha256` | Signed scope and the issue capability of LIP-0008 section 12.2 |
 | Attestation, anchor and notary seal | This LIP | The same object |
 | Revocation of a parent | One transaction spends the parent's and every child's seal | A closed ancestor refuses its descendants |
-| Agents that sign grants | None | The delegator signs the child with the parent's recipient key (LIP-0008 section 12.6). For a parent issued by name that is the key the name lists at admission, so a child signed with an earlier key refuses (LIP-0008 sections 3.1 and 12.2). Section 11.1 holds Draft text, under a pending owner decision (J4), that replaces this rule with a delegation key named in the parent |
+| Agents that sign grants | None | The delegator signs the child with the parent's recipient key (LIP-0008 section 12.6). For a parent issued by name that is the key the name lists at admission, so a child signed with an earlier key refuses (LIP-0008 sections 3.1 and 12.2). Section 11.1 holds Draft text, under a decision that awaits the co-author's agreement (J4), that replaces this rule with a delegation key named in the parent |
 
 Depth stays at two links (D7). Work below a child's executor is covered by a
 new root grant from the principal.
@@ -1697,25 +1707,27 @@ the channel key signs children:
 - **An unavailable notary** stops new children and new certifications.
   Certified children keep working: admission reads the seal and the anchor,
   not the notary's service. Naming up to four notaries bounds the outage. It
-  also gives the pool more than one ledger: each notary certifies against its
-  own record (section 6.2), and two notaries can each certify a child under
-  one ordinal. Section 9.1 holds Draft text for this case, under a pending
-  owner decision (J1).
+  also gives the pool more than one ledger: each notary certifies against
+  its own record (section 6.2), and two notaries can each certify a child
+  under one ordinal. Section 9.1 holds Draft text for this case, under a
+  decision that awaits the co-author's agreement (J1).
 - **A withdrawal for cause does not reach everyone.** It binds the parties
   that observed its frame. Another named notary can certify the child again,
   and a verifier that starts later admits it. Section 10.1 holds Draft text
-  for this case, under a pending owner decision (J2).
+  for this case, under a decision that awaits the co-author's agreement (J2).
 - **The notary's name can change hands.** After a transfer, or after an
   expiry and a new registration, the holder of a notary's name publishes its
   own attestation key and can certify under every parent that names it.
-  Section 7.1 holds Draft text for this case, under a pending owner decision
-  (J3).
+  Section 7.1 holds Draft text for this case, under a decision that awaits
+  the co-author's agreement (J3).
 - **Scope text binds nobody at admission.** The notary judges the text once.
-  No admission step compares an instruction with it. Section 3.4 holds
-  Draft text for this case, under a pending owner decision (J5).
+  No admission step compares an instruction with it. Section 3.4 holds Draft
+  text for this case, under a decision that awaits the co-author's agreement
+  (J5).
 - **On v4 an agent's messaging key signs its children**, by the rule in
   force. Section 11.1 states what follows from that and holds Draft text,
-  under a pending owner decision (J4), that replaces the rule.
+  under a decision that awaits the co-author's agreement (J4), that replaces
+  the rule.
 - **Self-certification.** V13 refuses a notary key equal to the delegator's
   or the delegatee's key and a notary name equal to an executor's. Different
   keys do not prove different parties; the control is that the issuer, not the
@@ -1764,11 +1776,11 @@ valid neighbour:
 | An agent and a person as notary with the same attestation shape | Refusing because the notary is an agent, or because it is a person, is wrong. |
 
 Sections 3.4, 7.1, 9.1, 10.1 and 11.1 carry the cases of their Draft text,
-which is under pending owner decisions.
+which is under decisions that await the co-author's agreement.
 
 Two further cases are planned as negative cases of a v4 vector set. Under the
-rules in force both are admitted, and the verdict a vector must require
-depends on a pending owner decision:
+rules in force both are admitted. The verdict a vector must require follows
+the decisions of sections 9.1 and 10.1 once the co-author agrees:
 
 | Case | Today | Depends on |
 | --- | --- | --- |
@@ -1783,11 +1795,12 @@ Two independent reviews of the design found five gaps in this LIP: the pool
 across several notaries, a withdrawal for cause that does not reach a new
 verifier, the notary bound by name only, the key an agent signs a child
 with on v4, and scope text that is not enforced. Each now has Draft text
-under a pending owner decision, in the subsection that the table of pending
-decisions names. The first paragraph of each subsection states the gap with
-the case that shows it, and each subsection says what its text closes and
-what stays open. No gap is closed before the owners decide, and none is
-called closed for a property that its subsection lists as open.
+under a decision of Ivan Oparin, in the subsection that the table of
+decisions of 2026-11-13 and 2026-11-14 names. The first paragraph of each
+subsection states the gap with the case that shows it, and each subsection
+says what its text closes and what stays open. No gap is closed before the
+co-author agrees, and none is called closed for a property that its
+subsection lists as open.
 
 ### Other open questions
 

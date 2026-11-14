@@ -444,7 +444,8 @@ controls; each rejected case leaves no binding and no closure:
 - Whether a transfer of `id/<label>` requires the transfer of `d/<label>` in
   the same deployment procedure.
 - Whether a parent pins a notary name by its registration and owner key:
-  LIP-0014 section 7.1 holds Draft text for it; owner decision pending: J3.
+  LIP-0014 section 7.1 holds Draft text for it, which Ivan Oparin accepted
+  on 2026-11-13 (J3); the co-author's agreement is pending.
 - Whether the notary shape needs a member for a second, pending key during a
   rotation.
 - Decision record, normative adoption and public vectors.

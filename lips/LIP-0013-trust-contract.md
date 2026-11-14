@@ -480,18 +480,19 @@ its vectors do not change.
 
 Decided by Ivan Oparin on 2026-11-14 (J7); the co-author's agreement is
 pending. Until the co-author agrees the text in force stands, under which
-nothing limits which run of an agent signs under which grant. A grant is issued to a key, and every run of the agent that holds
-the key can act under it. Worker `W` is the grantee of a grant from
-principal A for an action at A's executor. `W` also admits instructions
-from an orchestrator of another party, B, under a second grant. B's
-orchestrator instructs `W`, and in the course of that work `W` sends A's
-executor an envelope under its own grant. A's executor runs section 3.4,
-every check passes, and in enforcing mode it admits the envelope as an
-instruction on A's authority. B's orchestrator has obtained an action that
-A gave `W` for other work, and A's executor has no input that tells the two
-apart. LIP-0014 gives a relaying agent a child grant that fits the relayed
-work. It does not stop the agent from sending under a wider grant of its
-own, and it does not apply when the agent acts itself.
+nothing limits which run of an agent signs under which grant. A grant is
+issued to a key, and every run of the agent that holds the key can act under
+it. Worker `W` is the grantee of a grant from principal A for an action at
+A's executor. `W` also admits instructions from an orchestrator of another
+party, B, under a second grant. B's orchestrator instructs `W`, and in the
+course of that work `W` sends A's executor an envelope under its own grant.
+A's executor runs section 3.4, every check passes, and in enforcing mode it
+admits the envelope as an instruction on A's authority. B's orchestrator has
+obtained an action that A gave `W` for other work, and A's executor has no
+input that tells the two apart. LIP-0014 gives a relaying agent a child
+grant that fits the relayed work. It does not stop the agent from sending
+under a wider grant of its own, and it does not apply when the agent acts
+itself.
 
 Under this subsection the service that holds an identity's request key, the
 key holder, signs a run's objects only under what its operator listed for

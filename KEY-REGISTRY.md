@@ -32,10 +32,9 @@ of a holder's blobs in LIP-0009.
 3. **The messaging key never grants authority.** A key that carries messages
    signs no grant, on Grant v3 and on v4. Ivan Oparin decided this on
    2026-11-14, together with a separate delegation key for child grants on
-   v4; the co-author's agreement is pending. LIP-0008 section 12.6 and
-   LIP-0014 still state the earlier v4 rule, under which the parent's
-   recipient key signs a child, and take the decision in their next
-   revision.
+   v4; the co-author's agreement is pending. LIP-0014 section 11.1
+   holds the rule. Until the co-author agrees, LIP-0008 section 12.6 states
+   the rule in force, under which the parent's recipient key signs a child.
 4. **An entry has the status of its source.** Each entry names the part
    that defines its key and has the status of that part: the normative v0.1
    profile, an implemented profile that a Draft LIP describes, a Draft
@@ -83,12 +82,12 @@ draft's proposal and wait for the owners' confirmation.
 | Authority key of a person | high | Decision of 2026-11-14, agreement pending |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | medium | LIP-0004, in use in the rental profile |
-| Delegation key, v4 | high | Decision of 2026-11-14, agreement pending |
-| Row coin key, v4 | medium | Decision of 2026-11-14, agreement pending |
-| Child-seal key, v4, optional | medium | Decision of 2026-11-14: a profile option, not in the first version |
+| Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending |
+| Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreement pending |
+| Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
-| Row stop key, v4 | medium | Decision of 2026-11-14, agreement pending |
+| Row stop key, v4 | medium | LIP-0014 section 10.1; decision of 2026-11-14, agreement pending |
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
 | Wallet money keys | high | LIP-0006 and the key map, in use |
 | Moderator key | medium | LIP-0011, Draft |
@@ -283,8 +282,8 @@ below are the keys that play that part.
   map proposes that the key is generated on that host and never leaves it;
   that flow is not decided. No person is present at its signatures. Ivan
   Oparin decided on 2026-11-14 that for an agent's key a gate at the key
-  holder, which checks each run, takes the place of presence; the rule
-  text follows in LIP-0013.
+  holder, which checks each run, takes the place of presence (LIP-0013
+  section 3.6).
 - Signs: the agent's messages; and, where a grant names the key as grantee
   or names the agent as a recipient by name: the kind-8181 consent,
   kind-8185 instruction envelopes, a kind-8186 delegation request, and v4
@@ -316,14 +315,13 @@ below are the keys that play that part.
 ## Re-delegation and the notary
 
 Four of these keys follow Ivan Oparin's decisions of 2026-11-14 for v4, and
-the co-author's agreement on them is pending. LIP-0014 still lists the
-questions they answer as open, or does not name the key at all, and takes
-the rules in its next revision. Each such entry says so in its source
-line.
+the co-author's agreement on them is pending. LIP-0014 holds their rules:
+section 9.1 for rows and the coin of a row, section 10.1 for the stop coin,
+and section 11.1 for the delegation key and the child-seal key.
 
-These entries speak of rows. Under the same decisions a parent grant signs
-one row for each child it permits, and a row fixes the executor, the
-grantee, the cap and the notary of that child.
+These entries speak of rows. A parent grant signs one row for each child it
+permits, and a row fixes the executor, the grantee, the cap and the notary
+of that child.
 
 **Delegation key, v4**
 
@@ -342,9 +340,9 @@ grantee, the cap and the notary of that child.
   the principal signed. A child still needs its attestation.
 - Recovery: a new parent grant with a new key. Until then the principal
   can spend the parent's seal, and the notary can refuse or withdraw.
-- Source: decision of 2026-11-14, agreement pending. A sketch that is not
-  decided derives the key for each parent from the seed of the operator's
-  signer, as seal keys are derived.
+- Source: LIP-0014 section 11.1; decision of 2026-11-14, agreement
+  pending. A sketch that is not decided derives the key for each parent
+  from the seed of the operator's signer, as seal keys are derived.
 
 **Row coin key, v4**
 
@@ -360,9 +358,9 @@ grantee, the cap and the notary of that child.
   can be issued for that row. It issues nothing: a child also needs the
   delegation key.
 - Recovery: a new parent grant; rows are fixed when a parent is issued.
-- Source: decision of 2026-11-14, agreement pending. One child for each row
-  then holds on the active chain and not across forks, which the decision
-  accepts.
+- Source: LIP-0014 section 9.1, rule J1.9; decision of 2026-11-14,
+  agreement pending. One child for each row then holds on the active chain
+  and not across forks, which the decision accepts.
 
 **Child-seal key, v4, optional**
 
@@ -376,9 +374,9 @@ grantee, the cap and the notary of that child.
 - Leak: the thief revokes children of that parent early. It creates no
   authority.
 - Recovery: a new parent grant.
-- Source: decision of 2026-11-14: a profile option, not part of the first
-  v4 version. Without it the operator has no seal to spend for a child that
-  a thief of the delegation key signed.
+- Source: LIP-0014 section 11.1; decision of 2026-11-14: a profile option,
+  not part of the first v4 version. Without it the operator has no seal to
+  spend for a child that a thief of the delegation key signed.
 
 **Notary attestation key**
 
@@ -391,11 +389,13 @@ grantee, the cap and the notary of that child.
 - Signs: attestations of profile `swarma-notary-attestation/1`, under the
   domain `swarma-notary-v1`. No grant.
 - Danger: high.
-- Leak: the thief certifies children that exceed their parents in words.
-  It cannot widen an action set, a repository list, a window or a child's
-  own budget, because every verifier checks those itself. Under the text
-  in force its attestations also carry the sum of the siblings' budgets,
-  which no verifier sees.
+- Leak: the thief certifies children. It cannot widen an action set, a
+  repository list, a window or a child's own budget, because every
+  verifier checks those itself. Under the text in force it can certify a
+  child that exceeds its parent in words, and its attestations carry the
+  sum of the siblings' budgets, which no verifier sees. Under LIP-0014
+  sections 3.4 and 9.1 a child of profile `/2` has no text of its own, and
+  rows replace that sum.
 - Recovery: the notary's name-owner key publishes a new attestation key.
   Every attestation under the old key then refuses, and the notary signs
   again under the new one. No grant is reissued.
@@ -432,8 +432,8 @@ grantee, the cap and the notary of that child.
   authority.
 - Recovery: a new parent grant for the rows that were ended. A notary that
   loses the key, without a leak, can no longer end the row for cause.
-- Source: decision of 2026-11-14 for v4 from its first version, agreement
-  pending.
+- Source: LIP-0014 section 10.1, rule J2.7; decision of 2026-11-14 for v4
+  from its first version, agreement pending.
 
 ## Services
 
@@ -545,10 +545,10 @@ grantee, the cap and the notary of that child.
 
 ## Open points
 
-- Which key of the re-delegating side the coin of a row pays. The
-  delegation key signs child grants and nothing else, so the coin needs
-  another key of that side, or that rule changes. It is fixed with the v4
-  bytes.
+- Which key of the re-delegating side the coin of a row pays (LIP-0014
+  section 9.1). The delegation key signs child grants and nothing else, so
+  the coin needs another key of that side, or that rule changes. It is
+  fixed with the v4 bytes.
 - The key that controls the output of a certificate set head. LIP-0016
   names the output and no key for it.
 - The source of the issuer's key of a v4 single-use seal (LIP-0008 section
