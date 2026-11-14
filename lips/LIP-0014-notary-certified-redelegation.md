@@ -262,9 +262,9 @@ profile `/2` is an ordinary valid v3 grant.
 
 A scope text governs an agent's work and never a service's effect. That is
 the rule of LIP-0006 section 7, decided on 2026-11-14, with the co-author's
-agreement pending. This LIP does not yet say how profile `/2` applies the
-rule; the paragraph below describes the text as the draft proposed it
-before that decision.
+agreement pending. Section 3.4 applies the rule to profile `/2`; the
+paragraph below describes the text as the draft proposed it before that
+decision.
 
 The scope text is a separate document. Its exact octets hash to
 `scope_text_sha256`, and it travels with the bundle. Text narrows only: like
@@ -273,42 +273,49 @@ time. It is meant to restrict what the structured members already allow. A
 wrong judgement about text therefore cannot widen a mechanical limit. No
 step of section 8 and no step of LIP-0013 section 3.4 compares an
 instruction with the text. Whether an executor honours the text is left to
-that executor. Section 3.4 holds Draft text for this, under a pending owner
-decision (J5).
+that executor. Section 3.4 records the decision of 2026-11-14 on this (J5).
 
 ### 3.4. One text along the path, and what a text does to an effect
 
-Owner decision pending: J5. Every rule of this subsection is Draft text.
-Until the decision section 3.3 stands alone: a text narrows a grant, the
-notary judges a child's text against the parent's once, at certification,
-and no step compares an instruction with the text. Take a child whose text
+Decided by Ivan Oparin on 2026-11-14 (J5), in three parts; the co-author's
+agreement is pending on each. On v3 a child carries its parent's text
+unchanged. A text governs an agent's work and never a service's effect, so
+an executor refuses an effect under a grant that carries a text. And these
+rules are in force before an executor enters enforcing mode. What a v4
+child does with its parent's text is not decided, and this LIP says nothing
+about it. Until the co-author agrees section 3.3 stands alone: a text
+narrows a grant, the notary judges a child's text against the parent's
+once, at certification, and no step compares an instruction with the text. Take a child whose text
 limits the work to one component of a repository. An instruction that
 concerns another component, within the child's actions and repositories,
 passes every step of section 8 and steps 6e to 6g of LIP-0013. The notary's
 `within` is a judgement as well: no verifier can recompute it.
 
 The subsection does two things, and they answer different halves of that
-case. A child carries the exact octets of its parent's text, by hash, and
-narrows only members that a machine compares (J5.1 to J5.3, J5.6). A second
-text then does not occur, and the value `within` is deleted. And the
-subsection says what a text does at an executor (J5.4, J5.5, J5.7 to J5.9).
-It does not make words enforceable: equal bytes are not an applied
-restriction.
+case. On v3 a child carries the exact octets of its parent's text, by hash,
+and narrows only members that a machine compares (J5.1 to J5.3, J5.6). A
+second text then does not occur on v3, and the value `within` has no use
+there. And the subsection says what a text does at an executor (J5.4, J5.5,
+J5.7, J5.8). It does not make words enforceable: equal bytes are not an
+applied restriction.
 
 | Property | Closed? | For whom |
 | --- | --- | --- |
-| The child's text is not wider than the parent's | Yes, completely: no second text exists | Every verifier, one that starts later included |
+| The child's text is not wider than the parent's | On v3: yes, completely, because no second text exists. On v4: not decided | Every verifier of a child of profile `/2`, one that starts later included |
 | A grant with a text is never executed by an executor that cannot read | Yes, by J5.4 | Every executor that accepts profile `/2` |
 | No record says that a text was checked | Yes, by J5.5 | Every reader of a record |
-| An effect that lies outside the words is refused | No. This is the half of the case that the instruction for another component shows | Nobody; the owners choose what a text does to an effect |
+| No landing and no payment rests on a reading of words | Yes, by J5.5: an executor refuses `land` and `spend` under a grant with a text | Every executor that accepts profile `/2` |
+| An agent's work lies within the words | Not established at admission. This is the half of the case that the instruction for another component shows | Nobody at admission; an owner, a moderator or an arbiter judges it afterwards |
 
-The rules apply to contracts whose member set carries `scope_text_sha256`:
-profile `/2` and its v4 counterpart. A reader MUST NOT synthesize the member
+The rules apply to contracts of profile `/2`, whose member set carries
+`scope_text_sha256`. A reader MUST NOT synthesize the member
 for a contract of profile `/1`, require it there, or treat `note` as a scope
 text. Nothing is added to a grant or to an attestation. The executor's
 configuration gains the setting `text`, which its owner sets to `none` or
-`conduct`; absent means `none`. With `conduct` the executor is an agent, it
-holds the exact octets, and it is told to treat them as a restriction. The
+`conduct`; absent means `none`. With `conduct` the executor is an agent. Its
+admission gate holds the exact octets and hands them to the agent in the
+authority frame of each admitted instruction (LIP-0013 section 3.4), and
+the agent treats them as a restriction on its work. The
 setting promises that a model considers the text. It does not promise a
 qualified evaluator, and none is defined; a setting for one is reserved, as
 LIP-0008 section 12.4 reserves its policy form. For a contract that carries
@@ -316,44 +323,47 @@ the member, the record of LIP-0013 step 7 gains `scope_text` with the values
 `none` and `present`. For a contract of profile `/1` the record is
 unchanged.
 
-What a text does to an effect is the owners' choice among three rules, and
-J5.5 has one branch for each:
+What a text does to an effect follows one rule, which Ivan Oparin decided
+on 2026-11-14 and which LIP-0006 section 7 states for every service:
 
-| Option | May an automatic effect rest on a model's reading of words? | Cost |
-| --- | --- | --- |
-| (a) | Yes, for every action. An executor that is an agent applies the text. | The effect rests on the agent's reading, which can be wrong and is checked after the fact. The half of the case that concerns enforcement stays open and is reported as open. |
-| (b) | No, for every action. | No predicate over a text exists, so every instruction, review, landing and payment under a grant with a text waits for the owner's confirmation. Grants meant for unattended work carry no text. |
-| (c) | No for `land` and `spend`; yes for `instruct` and `review`. | The owner confirms each landing under a grant that has a text, bound to the exact revision (J5.9). Grants meant for automatic landing carry no text. A review under a text can still feed the gate of a landing under another grant. |
+> Text always governs an agent's work and never a service's effect.
 
-The proposal is (c). It follows exact inheritance to its end: authority that
-a machine acts on sits in members that a machine compares. `land` and
-`spend` are the actions that derive a v3 scope entry and act on a resource
-(LIP-0013 section 2.2). `instruct` and `review` stay conduct, because their
-object is itself words: no predicate over "assign this work" exists to fail
-closed on. Under (c) a principal who wants automatic landings writes the
-limit into `repos` and leaves the text empty, or puts explanation into
-`note`, which carries no authority. A principal who wants words to limit a
-landing gets a person's confirmation and not a model's reading. That matches
-what v4 says of constraints: unknown semantics refuse, and no unimplemented
-policy evaluator may stand in for the checks (LIP-0008 section 12.2).
+`land` and `spend` are the actions that derive a v3 scope entry and end in
+an effect at a resource (LIP-0013 section 2.2). Under a grant that carries
+a text an executor refuses them (J5.5). `instruct` and `review` are an
+agent's work, because their object is itself words: no predicate over
+"assign this work" exists to fail closed on, and the agent applies the
+text to them. A principal who wants an agent to work under a text, and
+also to land or to pay, issues two grants: one with the text, whose
+actions are `instruct` and `review`, and one without a text for the
+landing or the payment, limited by members such as `repos` and
+`spend_budget`. Explanation that should bind nobody goes into `note`,
+which carries no authority. That matches what v4 says of constraints:
+unknown semantics refuse, and no unimplemented policy evaluator may stand
+in for the checks (LIP-0008 section 12.2).
+
+Three other rules were considered and are not taken:
+
+| Rule that is not taken | Why |
+| --- | --- |
+| The agent applies the text to every action, landings and payments included. | An effect then rests on the agent's reading, which can be wrong and is checked only after the fact. |
+| Every action under a grant with a text waits for the owner's confirmation. | No predicate over a text exists, so every instruction and every review would wait for a person, and a grant with a text would be useless for unattended work. |
+| `land` and `spend` under a grant with a text wait for the owner's confirmation, bound to the exact revision or amount. | It keeps a text and an effect in one grant at the price of a confirmation for every effect. The decision separates them into two grants. |
+
+
 
 | # | Rule | Refusal |
 | --- | --- | --- |
-| J5.1 | A child MUST carry its parent's `scope_text_sha256` unchanged: both empty, or both the same value. A child MUST NOT add a text where the parent has none and MUST NOT drop the parent's text. Equality is of octets; a different line ending or Unicode form is a different text. | `CHILD_TEXT_DIFFERS`, at V9, before the attestation is read |
+| J5.1 | A child of profile `/2` MUST carry its parent's `scope_text_sha256` unchanged: both empty, or both the same value. A child MUST NOT add a text where the parent has none and MUST NOT drop the parent's text. Equality is of octets; a different line ending or Unicode form is a different text. | `CHILD_TEXT_DIFFERS`, at V9, before the attestation is read |
 | J5.2 | Every member of a child's contract is handled by exactly one row of the member table below. A member to which a profile assigns no row, and a member whose semantics the verifier does not know, refuses, also when child and parent carry equal bytes (LIP-0008 section 12.2). For each narrowing relation the profile states what the executor compares the member with at the effect. | The code of the member's row |
-| J5.3 | The attestation's `textual` has the values `none` and `identical` only. D1 is unchanged: a child with equal text still needs its attestation. | An attestation that carries `within`: `ATTESTATION_SHAPE` |
+| J5.3 | For a child of profile `/2` the attestation's `textual` is `none` or `identical`, which is what V14 computes from two equal hashes. D1 is unchanged: a child with equal text still needs its attestation. Whether the value `within` stays in the attestation object belongs to the open v4 question. | An attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`, at V14 |
 | J5.4 | An executor whose `text` setting is `none` MUST refuse a grant whose `scope_text_sha256` is not empty, root or child, after step 6d of LIP-0013. An executor whose setting is `conduct` MUST hold the exact octets that hash to that value. | `TEXT_UNSUPPORTED`; without the octets `TEXT_UNAVAILABLE` |
-| J5.5 | Common to every option: at an executor with `conduct` the agent applies the text, at step 9 of LIP-0013, as a restriction on what the structured members allow, and a text never adds. No admission step establishes that an effect lies within a text, and no record, receipt or attestation may report that it did. A confirmation is recorded as the owner's decision and never as a check of the text. The record of step 7 states `scope_text` as `none` or `present`. Then exactly one branch applies, by the owners' choice. | By the branch |
-| J5.5 (a) | Nothing more. Every action under a grant with a text is conduct. | none |
-| J5.5 (c) | For `land` and `spend`, and on v4 for every command that the action profile marks as an effect at a resource, the executor MUST NOT perform the effect automatically under a grant whose text is not empty. It holds the effect until its owner confirms it under J5.9, or it refuses. `instruct` and `review` are conduct. | `TEXT_NEEDS_APPROVAL` |
-| J5.5 (b) | For every action, `instruct` and `review` included, a request under a grant whose text is not empty MUST NOT take effect automatically. An instruction is not given to a run as an instruction, a review verdict is not counted by a landing gate, and an effect at a resource is not performed, until one of two things has happened: the executor evaluated a predicate that a profile defines for that text, and it holds; or the executor's owner confirmed that request under J5.9. Otherwise the request is held or refuses. No predicate is defined in the first version, so under (b) every such request waits for the owner. Parsing, storing and certifying the grant are not blocked. | `TEXT_NEEDS_APPROVAL` |
+| J5.5 | At an executor with `conduct` the agent applies the text to its work, which is `instruct` and `review`, as a restriction on what the structured members allow; a text never adds. The executor MUST refuse a `land` and a `spend` request under a grant whose text is not empty, after step 6e of LIP-0013. On v4 the same holds for every command that the action profile marks as an effect at a resource. An issuer SHOULD NOT list `land` or `spend` in a contract that carries a text, because no executor performs them. No admission step establishes that an agent's work lies within a text, and no record, receipt or attestation may report that it did. The record of step 7 states `scope_text` as `none` or `present`. | A `land` or a `spend` under a grant with a text: `TEXT_UNSUPPORTED` |
 | J5.6 | An inherited text is the root's. Its words refer to the parties and resources of the root grant, which the bundle carries (V2). A reader MUST NOT resolve them against the child's grantee, executor or run. | none; a rule of reading |
 | J5.7 | A restriction that must hold at admission MUST be a structured member. The executor compares that member with the arguments actually passed to the privileged call, resolved immediately before the effect, when step 6 of LIP-0013 runs again. A plan, a title or a description of the arguments is not the arguments. | The code of the member, before the effect |
 | J5.8 | Words of the delegator travel only as the body of an instruction (LIP-0013 section 3.3), which is data until admitted. Explanation that should bind nobody belongs in `note`. An operative text MUST NOT be treated as explanation without a new, signed and consented contract. | none of its own |
-| J5.9 | A confirmation binds one operation and is used once. The owner's command MUST name the `event_id` of the request and the `grant_id` it was admitted under; the action; the resolved target, which is the repository and the ref for `land` and the payee for `spend`; and the content of the effect, which is the exact revision to be landed for `land` and the amount for `spend`. For `instruct` and `review` under (b) the event id fixes the body. Immediately before the effect the executor resolves the actual arguments again (J5.7) and compares them with the confirmation. If the revision, the target, the amount or the payee differs, the confirmation does not apply, and the effect is held again or refuses. A candidate that was rebased, regenerated or amended is another revision and needs its own confirmation. The executor records the use of a confirmation durably before the effect, and a second effect under it refuses. A retry of the same event is not a second use; it falls under the existing rule of one effect per event. A confirmation widens nothing: every structured check of the grant runs as it does without one. The wire form of the command is the deployment's; what it binds is not. | `TEXT_NEEDS_APPROVAL` |
 
-The owner's command of J5.9 is the verified owner command that a2a already
-uses (LIP-0013 section 3.5); the bytes of the confirmation record are open.
+
 
 The member table of J5.2, for a child of profile `/2`:
 
@@ -381,7 +391,10 @@ The fields that a principal may want to narrow map to members as follows:
 | Field | v3 profile `/2` | Relation | v4 |
 | --- | --- | --- | --- |
 | Repository | `repos` | subset | the typed target of the action profile |
-| Branch | none; `land` is the default branch | fixed by the action | a typed argument when a profile defines one |
+| Ref | none; `land` is the default branch | fixed by the action | a machine member of the action profile from its first version |
+| Exact revision to be landed | none | none | a machine member of the action profile from its first version |
+| Payee of a payment | none | none | a machine member of the action profile from its first version |
+| Path inside a repository | none | none | none; it stays words until a rule exists that compares a diff with a path |
 | Action | `actions` within `P.delegate.actions` | subset | exact leaf commands (LIP-0008 section 12.3) |
 | Recipients | the grantee and the agent that the parent allows | listed, or under section 9.1 equal to the row | the permitted targets of a typed limit |
 | Amounts | `spend_budget` | at most | typed limits |
@@ -389,15 +402,15 @@ The fields that a principal may want to narrow map to members as follows:
 
 The steps change as follows. V9 gains one equality, of the two text hashes.
 V14 checks `none` and `identical` against the two hashes. The bundle of V2
-carries one text. Step 6 of LIP-0013 gains the refusals of J5.4 after 6d,
-for contracts that carry the member; step 7 gains `scope_text`; step 9
-gains the branch of J5.5 that the owners choose and the confirmation of
-J5.9. Profile `/1`, its vectors and kind 8185 do not change.
+carries one text. Step 6 of LIP-0013 gains the refusals of J5.4 after 6d
+and the refusal of J5.5 after 6e, for contracts that carry the member;
+step 7 gains `scope_text`. Profile `/1`, its vectors and kind 8185 do not
+change.
 
-J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3 and to the
-verbal terms of a child's contract on v4. For roots, J5.4, J5.5, J5.7 and
-J5.9 are a precondition of enforcing mode for every executor that accepts
-profile `/2`. An executor that accepted `/2` contracts and entered
+J5.1 to J5.3 and J5.6 belong to the draft profile `/2` on v3. For roots,
+J5.4, J5.5 and J5.7 are a precondition of enforcing mode for every executor
+that accepts profile `/2`, and the setting `text` is `none` unless the
+executor's owner set `conduct`. An executor that accepted `/2` contracts and entered
 enforcing mode for one-hop grants would otherwise admit a `/2` root with a
 text and act on it with no text rule in force. An executor that accepts
 profile `/1` alone cannot meet a scope text: profile `/1` has no text
@@ -405,64 +418,64 @@ member, and that reader refuses every fifteen-member object (section 3.1).
 
 What stays open:
 
-- **Whether an effect lies within the words.** Under (a) and (c) a text is
-  applied to `instruct` and `review` by the agent that reads it, and by
-  nobody else; under (a) that holds for every action. That is behavioural
-  trust in the principal's own executor, checked after the fact by an
-  owner, a moderator or an arbiter. Under (b) nothing takes effect on a
-  model's reading alone; whether a confirmed request lies within the words
-  is then the judgement of the person who confirmed, which is not a check
-  either. No summary of this subsection may say that scope text is
-  enforced.
-- **A confirmation is a person's judgement.** It can be wrong. It is
-  independent of the model that proposed the effect.
-- **Reviews feed landing gates.** Under (c) a review stays conduct, also a
-  review given under a grant with a text that lets a landing under another
-  grant, one without a text, pass its gate. Under (c) it is therefore not
-  true that no automatic effect anywhere rests on a model's reading. It is
-  true of the landing and of the payment made under the grant that carries
-  the text. An owner who wants more adds `review` to the confirmed actions.
+- **Whether an agent's work lies within the words.** A text is applied to
+  `instruct` and `review` by the agent that reads it, and by nobody else.
+  That is behavioural trust in the principal's own executor, checked after
+  the fact by an owner, a moderator or an arbiter. No summary of this
+  subsection may say that scope text is enforced.
+- **Reviews feed landing gates.** A review is an agent's work, also a
+  review given under a grant with a text, and such a review can let a
+  landing under another grant, one without a text, pass its gate. It is
+  therefore not true that no effect anywhere follows from a model's
+  reading. It is true that no landing and no payment is performed under a
+  grant that carries a text.
 - **Few narrowing members.** Profile `/2` narrows actions, repositories,
   the budget and the window, and the recipients through the parent's right
-  of re-delegation. A limit on a branch, a path or a payee can be stated
-  only in the root's text until v4 has a typed member for it.
+  of re-delegation. It has no member for a ref, a revision, a payee or a
+  path, and under J5.5 a text cannot carry such a limit for a landing or a
+  payment. On v3 that limit does not exist for an effect. On v4 the ref,
+  the exact revision and the payee are machine members, and a path stays
+  words.
+- **The text of a v4 child.** Whether a v4 child carries its parent's text
+  unchanged, or may add to it, is open. Both owners decide it, and nothing
+  of it is written here.
 - **J5.6 is a rule of reading** and cannot be tested mechanically.
 - **The delegator cannot bind a narrower task in the grant.** It states the
   task in the instruction.
 
-The owners decide four things with this text. The first is exact
-inheritance itself (J5.1 to J5.3). It reverses no decision: R3 of LIP-0008
-section 12.6, N2 of LIP-0012 and the decision that the notary performs the
-textual check stand, and a different text no longer occurs. The second is
-the choice among (a), (b) and (c) above. The third is whether profile `/2`
-gains members for a branch, a path or a payee before it is fixed; the
-proposal is to leave them to the typed arguments of v4, because each needs
-an envelope tag and an effect check that LIP-0013 does not have. The fourth
-is the staging of the root rule before enforcing mode, as the paragraph
-above states it.
+The decision of 2026-11-14 has four parts. The first is exact inheritance
+on v3 (J5.1 to J5.3). It reverses no decision: R3 of LIP-0008 section 12.6,
+N2 of LIP-0012 and the decision that the notary performs the textual check
+stand, and on v3 a different text no longer occurs. The second is the rule
+for effects (J5.5). The third concerns members for a ref, a path and a
+payee. Profile `/2` gains none, because each needs an envelope tag and an
+effect check that LIP-0013 does not have. The ref, the exact revision and
+the payee are machine members of the v4 action profile from its first
+version, and a path inside a repository stays words until a rule exists
+that compares a diff with a path. The fourth is the staging of the root
+rule before enforcing mode, as the paragraph above states it.
 
-Four other designs were set aside. Keeping `within` keeps a value that no
-verifier can recompute, under which a stolen attestation key certifies
-children that exceed their parents in words. A narrowing clause that the
+For profile `/2` four other designs were set aside. Keeping `within` there
+keeps a value that no verifier can recompute, under which a stolen
+attestation key certifies children that exceed their parents in words. A narrowing clause that the
 child appends needs a judgement of whether the clause narrows, and it puts
 the delegator's text into the executor's scope. A policy language is
 reserved and not adopted (LIP-0008 section 12.4). A qualified evaluator for
 texts does not exist, and "qualified" has no definition yet.
 
-Cases (owner decision pending: J5):
+Cases (J5):
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
 | S5-1 | Child and parent with the same non-empty text hash, the exact octets present, `textual` `identical` | A child with another text hash and an attestation that says `within` under the rules in force: `CHILD_TEXT_DIFFERS`, never `CHILD_NOT_CERTIFIED`. Variants that differ only in line endings, in Unicode form or in a final newline, each with its hash recomputed and the grant signed again, refuse the same way. In force this child is admitted with `within`. |
-| S5-2 | Both without text, `textual` `none`; and both with the same text, `identical`; each with a valid attestation | Three separate negatives: a text added under a parent without one, and the parent's text dropped: `CHILD_TEXT_DIFFERS`; an attestation that carries `within`: `ATTESTATION_SHAPE`. A child with equal text and no attestation still refuses as `CHILD_NOT_CERTIFIED`. In force, adding and dropping are admitted with `within`. |
+| S5-2 | Both without text, `textual` `none`; and both with the same text, `identical`; each with a valid attestation | Three separate negatives: a text added under a parent without one, and the parent's text dropped: `CHILD_TEXT_DIFFERS`; an attestation that carries `within` beside equal hashes: `ATTESTATION_BINDING`. A child with equal text and no attestation still refuses as `CHILD_NOT_CERTIFIED`. In force, adding and dropping are admitted with `within`. |
 | S5-3 | An executor with `text` `none` admits a `/2` grant without a text | The same executor refuses a `/2` grant with a text, root or child: `TEXT_UNSUPPORTED`. In force it is admitted. The case covers the executor that cannot read and always runs beside S5-4. |
-| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, under (b) after the owner's confirmation, and the record says `present` | The text says "only changes under docs/"; the instruction asks for a permitted `land` whose actual diff changes `src/auth.c`. Under (c), and under (b), no landing happens without the owner's confirmation: it is held, or refuses as `TEXT_NEEDS_APPROVAL`. Under (a) admission passes, and the vector records that verdict as the open half of the case. Under every option a record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
-| S5-4c | Under (c) and (b): under the grant with the text, a `land` of revision `X`, whose diff touches only `docs/`, is held; the owner confirms it, naming the event, the grant, the repository, the ref and `X`; the landing is performed, once; the record states the owner's decision and `scope_text` `present`. An executor that always holds fails this control | Each a separate negative, with the effect observed: after the confirmation the candidate is replaced by `X'` with another diff: not performed; a confirmation that names another event, another repository or another ref: not performed; the same confirmation presented for a second landing: refused; the request asked again as a new event after the confirmation: not performed under the old confirmation. A record that says the text was checked is wrong in every variant. |
-| S5-4b | Under (b) only: a text-bearing `instruct` that the owner confirmed under J5.9 is given to a run as an instruction; a review that the owner confirmed is counted by the gate | The same `instruct` with no predicate and no confirmation: held, or `TEXT_NEEDS_APPROVAL`, and no run receives it as an instruction. The same for a review verdict: the landing gate does not count it. Under (a) and (c) both are admitted as conduct, and the vector records that verdict. |
+| S5-4 | An executor with `conduct` and the exact octets: the same `land` under a grant without a text is performed; under the grant with the text an `instruct` is admitted, and the record says `present` | The text says "only changes under docs/", and an envelope asks for a `land` under the grant with the text: refused as `TEXT_UNSUPPORTED`, whatever the diff touches, and no landing happens. A `spend` under a grant with a text refuses the same way. A record or receipt that reports the text as checked is wrong. In force the landing is performed. The test observes the effect, not the record. |
+| S5-4a | Two grants of one principal to one grantee at one executor: one with the text and the actions `instruct` and `review`, one without a text and with `land` for the repository. An instruction under the first is admitted with `scope_text` `present`, and a landing under the second is performed | An executor that refuses the grant without a text because another grant of the same principal carries one fails the control. An executor that performs the landing under the grant with the text fails S5-4. |
 | S5-5 | The actual resolved arguments of the privileged call lie inside every structured member | Signed arguments that are narrow and a real call with wider arguments, including a target that changes between check and call: refused before the effect. v4 already requires it (LIP-0008 section 12.2); a test of the signed description alone is not this case. |
 | S5-6 | A narrower action set, repository list and window, one at a time, with the identical text and a valid attestation | Each made wider, one at a time, refuses with its mechanical code and not with a certification code. Budget variants run in the spend profile only. |
 | S5-7 | Members of the member table | Parent and child carry the same member of unknown semantics, not merely an extra JSON key: refused. |
-| S5-8 | Before enforcing mode, the root rule. `text` `none`: a `/2` root without a text is admitted, and a `/1` grant with a `note` is admitted with its record unchanged | `text` `none` and a `/2` root with a text: `TEXT_UNSUPPORTED`. `conduct` with the octets missing or with octets of another hash: `TEXT_UNAVAILABLE`. |
+| S5-8 | Before enforcing mode, the root rule. `text` `none`: a `/2` root without a text is admitted, and a `/1` grant with a `note` is admitted with its record unchanged | `text` `none` and a `/2` root with a text: `TEXT_UNSUPPORTED`. `conduct` with the octets missing or with octets of another hash: `TEXT_UNAVAILABLE`. An executor whose setting is absent behaves as `none`. |
 | S5-9 | A child with the parent's text at another grantee and executor; the bundle carries the root's contract and text | A reader that resolves "you" or "my repository" against the child's parties breaks J5.6. The vector checks that the root's parties are present; the reading itself is reviewed, not computed. |
 
 ## 4. What a child binds
