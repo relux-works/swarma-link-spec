@@ -4,7 +4,7 @@
   "note": "Draft vectors for LIP-0023. No vector reads a node. Keys are the compressed forms of published BIP-340 test keys and belong to nobody. The octets of signatures are placeholders, and no signature in this file verifies. The group graphs states facts and holds no transaction. A vector whose outcome is not ok holds one defect and names a neighbour with the outcome ok that differs from it in that defect; a vector marked compound holds two defects and names none. No verdict of this file records a closure.",
   "fields": {
     "inputs": "spent_script_hex is the script of the output that the input spends; witness_hex lists the items of its witness in their order.",
-    "graphs": "t is the seal transaction and a the anchor. height and position are null for a pending transaction; position is the place of a transaction in its block. carries_witness is false for a transaction without a witness for any input. t.outputs names the kind of each output of t by its index; seal_vout is the index that the grant names. An input of a that has spends_output_of_t spends that output of t; every other input states parent_height, the height of the block that holds the transaction whose output it spends, or null where that transaction is pending. form is the result of C3.1 for the input, as the group inputs decides it. purpose is admission or construction: for construction a pending anchor is no refusal."
+    "graphs": "t is the seal transaction and a the anchor. height and position are null for a pending transaction; position is the place of a transaction in its block. carries_witness is false for a transaction without a witness for any input. t.outputs names each output of t by its index: seal for the output that the grant names, and for every other output the kind of its script. seal_vout is the index that the grant names, and the linkage output is the output at seal_vout plus one. An input of a that has spends_output_of_t spends that output of t; every other input states parent_height, the height of the block that holds the transaction whose output it spends, or null where that transaction is pending. form is the result of C3.1 for the input, as the group inputs decides it. purpose is admission or construction: for construction a pending anchor is no refusal."
   },
   "test_keys": {
     "compressed_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
@@ -37,7 +37,8 @@
       "state": "proposed",
       "vectors": [
         "graph-01",
-        "graph-06"
+        "graph-06",
+        "graph-34"
       ]
     },
     {
@@ -51,13 +52,22 @@
     {
       "rule": "C2.3",
       "section": "2",
-      "title": "exactly one linkage input",
+      "title": "the linkage output after the seal, and exactly one input that spends it",
       "state": "proposed",
       "vectors": [
         "graph-01",
         "graph-14",
         "graph-15",
-        "graph-16"
+        "graph-16",
+        "graph-33",
+        "graph-34",
+        "graph-35",
+        "graph-36",
+        "graph-37",
+        "graph-38",
+        "graph-39",
+        "graph-40",
+        "graph-41"
       ]
     },
     {
@@ -68,6 +78,14 @@
       "vectors": [
         "graph-13"
       ]
+    },
+    {
+      "rule": "C2.5",
+      "section": "2",
+      "title": "the issuer signs only where the linkage output pays its own key",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "No vector holds a key of a linkage output or says who holds it. graph-33 states a third output of another party in words; the facts of the vector are the outputs and the inputs."
     },
     {
       "rule": "C3.1",
@@ -211,7 +229,9 @@
         "graph-29",
         "graph-30",
         "graph-31",
-        "graph-32"
+        "graph-32",
+        "graph-40",
+        "graph-41"
       ]
     }
   ],
@@ -1125,7 +1145,7 @@
       "rules": [
         "C2.3"
       ],
-      "claim": "The output of T that A spends is a key hash and no witness key hash.",
+      "claim": "The output after the seal, which A spends, is a key hash and no witness key hash.",
       "purpose": "admission",
       "profile": "W",
       "seal_vout": 0,
@@ -1211,7 +1231,7 @@
       "rules": [
         "C2.3"
       ],
-      "claim": "Two inputs of A spend outputs of T.",
+      "claim": "Two inputs of A spend outputs of T: the linkage output and the output after it.",
       "purpose": "admission",
       "profile": "W",
       "seal_vout": 0,
@@ -1820,7 +1840,7 @@
       "rules": [
         "C7.1"
       ],
-      "claim": "Two defects: the output of T that A spends is a key hash, and A is confirmed below T.",
+      "claim": "Two defects: the output after the seal is a key hash, and A is confirmed below T.",
       "purpose": "admission",
       "profile": "W",
       "seal_vout": 0,
@@ -1942,6 +1962,399 @@
         ]
       },
       "expect": "W_UNCONFIRMED_NON_LINKAGE_PARENT",
+      "compound": true
+    },
+    {
+      "id": "graph-33",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "T holds the seal, the linkage output and a third output, a witness key hash that pays a key of another party. An anchor with the same frame spends that third output and no other output of T. The holder of the third output signed it; the grant fixes the output after its seal, and this anchor refuses.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 2,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-34",
+      "rules": [
+        "C2.1",
+        "C2.3"
+      ],
+      "claim": "T holds the seals of two grants. Outputs 0 and 1 are the seal and the linkage output of the other grant, output 2 is the seal that this grant names, output 3 its linkage output, output 4 change. A spends output 3.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 2,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "witness key hash",
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 3,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-35",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The same T. A spends output 1, the linkage output of the other grant.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 2,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "witness key hash",
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 1,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-34"
+    },
+    {
+      "id": "graph-36",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The same T. A spends output 4, the change.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 2,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "witness key hash",
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 4,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-34"
+    },
+    {
+      "id": "graph-37",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The seal is the last output of T, so T has no output after it. A spends output 0, a witness key hash.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 1,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "seal"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 0,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_SCRIPT",
+      "valid_neighbour": "graph-01"
+    },
+    {
+      "id": "graph-38",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The seal is output 1 of T, between a change output and its linkage output. A spends output 2.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 1,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "seal",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 2,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "ok"
+    },
+    {
+      "id": "graph-39",
+      "rules": [
+        "C2.3"
+      ],
+      "claim": "The same T. A spends output 0, the output before the seal.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 1,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "witness key hash",
+          "seal",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 0,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
+      "valid_neighbour": "graph-38"
+    },
+    {
+      "id": "graph-40",
+      "rules": [
+        "C2.3",
+        "C7.1"
+      ],
+      "claim": "Two defects: the output after the seal is a key hash, and A spends another output of T, a witness key hash. The linkage output is checked whatever A spends. A checker that reads the script of the output that A spends admits.",
+      "purpose": "admission",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": 700,
+        "position": 3,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": 701,
+        "position": 5,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 2,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_SCRIPT",
+      "compound": true
+    },
+    {
+      "id": "graph-41",
+      "rules": [
+        "C2.3",
+        "C7.1"
+      ],
+      "claim": "Two defects, with both transactions pending and a check for the construction: A spends the third output of T and not the linkage output, and that input has a pending parent which is not the linkage. The inputs from T are checked before the funding.",
+      "purpose": "construction",
+      "profile": "W",
+      "seal_vout": 0,
+      "t": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "outputs": [
+          "seal",
+          "witness key hash",
+          "witness key hash"
+        ],
+        "inputs": [
+          {
+            "parent_height": 650,
+            "form": "ok"
+          }
+        ]
+      },
+      "a": {
+        "height": null,
+        "position": null,
+        "carries_witness": true,
+        "inputs": [
+          {
+            "spends_output_of_t": 2,
+            "form": "ok"
+          },
+          {
+            "parent_height": 660,
+            "form": "ok"
+          }
+        ]
+      },
+      "expect": "W_LINKAGE_REQUIRED",
       "compound": true
     }
   ]

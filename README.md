@@ -412,9 +412,10 @@ Version 0.1.41 adds [LIP-0023](lips/LIP-0023-witness-construction.md), a
 first construction profile for Grant v4: the Witness profile of LIP-0008 on
 Namecoin, in its narrowest useful form. A verifier takes the profile from
 its own authenticated configuration. The anchor of every grant spends the
-linkage output of the seal transaction, so that only the party that built
-the seal transaction can publish the anchor. Every input of the two
-transactions spends a witness key hash with a signature of hash type `01`.
+linkage output, which is the output that follows the seal in the seal
+transaction, so that only the holder of the key of that one output can
+publish the anchor. Every input of the two transactions spends a witness
+key hash with a signature of hash type `01`.
 The linkage output is the one parent that may be unconfirmed, and every
 other input spends an output that is confirmed below its spender. An
 unconfirmed payment output, which LIP-0008 permits, refuses under this
@@ -422,7 +423,7 @@ profile until a proposal says how a verifier authenticates it. An effect
 needs a confirmed anchor. Thirteen refusal codes have an order; twelve of
 their names are reasons that the reference laboratory already reports for
 its own subset. Every rule is the draft's proposal, and neither owner has
-decided one. The 54 vectors in [`vectors/LIP-0023/`](vectors/LIP-0023/)
+decided one. The 63 vectors in [`vectors/LIP-0023/`](vectors/LIP-0023/)
 state octets and facts and read no node; no node was run for the draft.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its

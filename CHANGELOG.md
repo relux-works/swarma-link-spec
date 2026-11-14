@@ -15,10 +15,13 @@ checks still need versioned fixtures.
 
 The profile. A verifier takes the construction profile from its own
 authenticated configuration; a missing value, another value and the Legacy
-profile refuse. The anchor spends exactly one output of the seal
-transaction, the linkage output, and never the seal. That holds for every
+profile refuse. The linkage output of a grant is the output that follows
+its seal in the seal transaction. The anchor spends that output, no other
+output of the seal transaction, and never the seal. That holds for every
 grant, also where the seal transaction was confirmed long before, so that
-only the holder of the linkage key can publish an anchor. Every input of
+only the holder of the key of that one output can publish an anchor; an
+issuer signs a grant only where that output pays a key of its own signer.
+Every input of
 both transactions spends a witness key hash, has an empty unlocking script
 and a witness of two items: a signature that ends in `01` and the
 compressed key that hashes to the spent output. A name output is no such
@@ -37,11 +40,16 @@ Thirteen codes with an order. Twelve of the names are stable reasons of the
 reference laboratory, which implements a linkage-only subset of the Witness
 profile for Grant v3; `W_LINKAGE_REQUIRED` is wider here, because the
 laboratory asks for the linkage only while the seal transaction is pending
-or shares the anchor's block, and `W_ANCHOR_PENDING` is new.
+or shares the anchor's block and takes whichever output of the seal
+transaction the anchor spends; `W_LINKAGE_SCRIPT` reports the script of the
+fixed output; and `W_ANCHOR_PENDING` is new.
 
-Vectors. `vectors/LIP-0023/construction-vectors.json` holds 54 vectors over
-17 rules: 22 on the octets of one input and 32 on stated pairs of
-transactions, ten of them with two defects for the order. No node was run.
+Vectors. `vectors/LIP-0023/construction-vectors.json` holds 63 vectors over
+18 rules: 22 on the octets of one input and 41 on stated pairs of
+transactions, twelve of them with two defects for the order. Nine of the
+pairs test the fixed place of the linkage output, among them a seal
+transaction with an output of another party, one with the seals of two
+grants, and one whose seal is its last output. No node was run.
 
 LIP-0008 section 1.1 gains one pointer.
 
