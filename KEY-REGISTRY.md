@@ -16,8 +16,6 @@ its public half is published, who holds the secret, what it signs, how
 dangerous a leak is, what a thief can do with it, and how its owner
 recovers.
 
-
-
 ## Rules
 
 1. **One entry for every key.** Every key that a part of this specification
@@ -100,7 +98,9 @@ and wait for the owners' confirmation.
 | Wallet money keys | high | LIP-0006 and the key map, in use |
 | Agent-controlled wallet key | high | LIP-0006, security consequences; its provisioning is open |
 | Moderator key | medium | LIP-0011, Draft |
-| Transport keys and slot secrets | low | Key map, in use in the rental profile |
+| Transport keys | low | Key map, in use in the rental profile |
+| Model bearer of a slot | high | Key map, in use in the rental profile |
+| Upstream API secret of the model proxy | high | Key map and LIP-0008 section 2, in use in the rental profile |
 | Keys bound by a certificate statement | low | LIP-0015 section 6, a proposal |
 | Holder's blob decryption keys | low | LIP-0009, a proposal; custody is open |
 | Owner key, v0.1 | medium | Normative v0.1 profile, frozen as historical |
@@ -377,7 +377,6 @@ names it as the holder or as the channel key.
 - Source: LIP-0006 sections 1 to 4, implemented in the wallet service v1
   profile.
 
-
 ## Re-delegation and the notary
 
 Four of these keys follow Ivan Oparin's decisions of 2026-11-14 for v4, and
@@ -554,7 +553,6 @@ of that child.
   refill limits and the revocation of this tier are open.
 - Source: LIP-0006, security consequences and open questions.
 
-
 **Moderator key**
 
 - Owner: the moderator that the contract names: the issuer's own service or
@@ -570,23 +568,66 @@ of that child.
   contract to the contract.
 - Source: LIP-0011, Draft.
 
-**Transport keys and slot secrets**
+**Transport keys**
 
 - Owner: the operator of each endpoint.
-- Published: as pins of TLS leaf certificates between the endpoints.
-- Holder: the endpoints. They hold TLS keys and the keys of mutual TLS
-  between gateway and manager. Two further secrets are shared and sign
-  nothing: the channel secret of a slot, which authenticates channel
-  messages, and the model bearer that the proxy mints for a slot.
-- Signs: transport sessions only.
+- Published: as pins of TLS leaf certificates between the endpoints. The
+  channel secret of a slot is shared by the two ends of that slot's
+  channel and published nowhere.
+- Holder: the endpoints. They hold TLS keys, the keys of mutual TLS between
+  gateway and manager, and the channel secret of each slot.
+- Signs: transport sessions. The channel secret signs nothing; it
+  authenticates the messages of one slot's channel.
 - Danger: low.
-- Leak: the thief impersonates a peer; the grant checks stay separate. A
-  stolen bearer is bounded by the slot's window, its limits and its
-  revocation. The proxy alone holds one more secret, its upstream API
-  secret, and a thief of that secret bypasses the slot limits.
-- Recovery: new certificates and pins. A channel secret ends with its slot,
-  and a new slot gets a new bearer.
+- Leak: the thief impersonates an endpoint to its peer. It gains no model
+  access and no effect, because the grant checks stay separate.
+- Recovery: new certificates and new pins. A channel secret ends with its
+  slot.
 - Source: key map, in use in the rental profile.
+
+**Model bearer of a slot**
+
+- Owner: the operator of the model proxy, which mints the bearer.
+- Published: nowhere. The proxy gives it to the slot.
+- Holder: the slot and the proxy.
+- Signs: nothing. It is a shared secret that the proxy accepts as the
+  slot's right to model access.
+- Danger: high.
+- Leak: whoever holds a copy uses the model access of that slot, from
+  anywhere, inside the slot's window and its limits. The bearer can be
+  passed on, and its bounds do not make its use any less a use of what the
+  slot was given.
+- Recovery: the proxy revokes the binding, and a new slot gets a new
+  bearer. A bearer ends with the window of its slot.
+- Source: key map, in use in the rental profile.
+
+**Upstream API secret of the model proxy**
+
+- Owner: the operator of the model proxy, as the holder of the account at
+  the upstream model service.
+- Published: nowhere.
+- Holder: the proxy alone. A slot never receives it; slots get bearers.
+- Signs: nothing. It authenticates the proxy to the upstream service.
+- Danger: high.
+- Leak: the thief uses the upstream service on the operator's account,
+  outside the window and the limits of every slot and outside the rental
+  accounting. No limit of a grant or of a slot contains it; only the
+  limits of the upstream account do.
+- Recovery: the operator replaces the secret at the upstream service and
+  gives the new one to the proxy. New transport certificates and new
+  bearers do not end the old secret. This specification defines no
+  procedure for the replacement, and when the old secret stops working is
+  a matter of the upstream service.
+- Source: key map; LIP-0008 section 2 names the same bypass.
+
+The three entries above differ in what a thief gains, and a deployment
+that tests them keeps the three apart:
+
+| Stolen | What the thief can do | What contains it |
+| --- | --- | --- |
+| A TLS key of one endpoint, and nothing else | Impersonate that endpoint to its peer | The grant checks, which the key does not touch; new certificates and pins |
+| The bearer of a live slot | Use that slot's model access from anywhere | The slot's window and limits, and the proxy's revocation of the binding |
+| The upstream API secret | Use the upstream service outside every slot | Nothing of this protocol; the upstream account's own limits, and the replacement of the secret there |
 
 ## Keys bound to a name
 
