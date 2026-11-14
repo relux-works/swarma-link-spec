@@ -86,7 +86,7 @@ and wait for the owners' confirmation.
 | Single-use seal key, grantee branch | high | LIP-0002 and LIP-0006; the v4 profile is open |
 | Provider key | medium | Key map, in use in the rental profile |
 | Principal's Nostr key | low; high where a grant names it as grantee | LIP-0004 and LIP-0010, in use on v3 |
-| Authority key of a person | high | Decision of 2026-11-14, agreement pending |
+| Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
@@ -305,11 +305,10 @@ names it as the holder or as the channel key.
   and checks that the spend is seen. Only then is the leak stopped, and a
   new grant goes to a new key. A new grant alone closes nothing: the old
   one admits the old key until its seal is spent or its window ends.
-- Source: Ivan Oparin's decision of 2026-11-14 for grants issued to him;
-  the co-author's agreement is pending. The decision rejects the other
-  reading, an authority key written into the name in place of the Nostr
-  key. The key map still shows the earlier layout and takes the decision
-  in a later revision.
+- Source: key map, decision K6: Ivan Oparin's decision of 2026-11-14 for
+  grants issued to him; the co-author's agreement is pending. The decision
+  rejects the other reading, an authority key written into the name in
+  place of the Nostr key.
 
 **Agent's Nostr key**
 

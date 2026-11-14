@@ -103,6 +103,17 @@ keys he holds:
 No date is set for the qualification that ends the interim. The section
 "Requirements on a key service" below places K5 beside the keyvault path.
 
+Ivan Oparin decided a sixth point on 2026-11-14, for the grants that are
+issued to him; the co-author's agreement is pending:
+
+| Decision | Direction |
+| --- | --- |
+| K6. Authority key of a person | The name keeps the social Nostr key, which carries messages. A separate authority key is named directly in each grant to the person, as a recipient by key, and it signs only with the person present, under Touch ID for each signature. For the interim that key lives in the macOS Keychain, like the grant key under K5. A signer that shows the fields of a kind-8181 consent and of a kind-8185 envelope before it signs is needed for it. |
+
+K6 rejects one reading of the earlier proposal: an authority key written
+into the name in place of the social key. The name's `nostr` member stays a
+messaging address and gives no authority.
+
 Decided by Ivan Oparin on 2026-11-14 (J4, LIP-0014 section 11.1); the
 co-author's agreement is pending. K2 says that the agent controls only its
 Nostr key. A key that signs at the agent's request is used by the agent,
@@ -114,13 +125,15 @@ nothing else. The key is in no name, so K1 is untouched. Until the
 co-author agrees K2 stands as written, and on v3 no agent has such a key in
 any case.
 
-The scope of K2 is open; the owners decide it. A worker agent is an agent
-identity that serves single tasks and that a grant names by key. Whether
-such an identity also has its own `id/` name is not decided. The proposal is
-that names go to the standing roles that the owners register under K3, such
-as keepers, orchestrators and notaries, and that a worker identity stays
-key-only in grants. The alternative gives every worker identity a name, at
-the cost of one registration and its renewals per identity.
+The scope of K2 follows Ivan Oparin's decision of 2026-11-14; the
+co-author's agreement is pending. Permanent roles have names: executors,
+notaries, keepers and public agents. A worker agent, an agent identity that
+serves single tasks and that a grant names by key, may stay key-only and
+have no `id/` name. An agent that moves from a worker to a permanent role
+keeps its key: the name is registered with that key in its value, and the
+grants that name the key stay as they are. The alternative that is not
+taken gives every worker identity a name, at the cost of one registration
+and its renewals per identity.
 
 ## Grant v3: clarifications for names and keys
 
@@ -145,6 +158,7 @@ Where each key is published follows from that:
 | Principal's Nostr key | `nostr.names._` | `nostr`, as a key string or a NIP-05 object | None |
 | Agent's Nostr key | `swarma.agent.nostr` and `nostr.names._`, which must be equal | `nostr` only | The agent's address; a grantee key only where a grant names it |
 | Any further key or pointer of the owner | Nowhere: it refuses the whole value | A member outside `swarma`, which a Link reader ignores | None |
+| Authority key of a person (K6) | Not in a name. Each grant to the person names it as `grantee_key` | The same; on v4 it is the request key of a recipient by key | A grantee key: it uses the authority of the grants that name it |
 | Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only |
 
 **What a name change does to existing grants.** Grant v3 binds no owner key.
@@ -297,11 +311,12 @@ previous section says.
 
 | Purpose | Derivation | Holder | Replaced by |
 | --- | --- | --- | --- |
-| Principal's Nostr key, also the grantee key in Goal 1 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
+| Principal's Nostr key; also the grantee key in Goal 1 for an owner without an authority key of K6 | `m/44'/1237'/0'/0/0` | The owner's key service, with presence before enforcing mode | A new account index, then an update of `nostr` in the name; grants to this key are issued again |
 | Funding | `m/84'/7'/0'` | The owner's key service, with presence | Moving the funds |
 | Name owner | A separate seed; BIP-84 `m/84'/7'/0'`, one fresh address per name | The owner only, never on an agent host | A name update to a new owner address |
 | Grant key, interim (decided, K5) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with every signed field shown first; not exported | A new item, then an update of `swarma.landlord.grant` by the name-owner key, which ends the v3 grants of the old key; the old item is kept until the old seals are spent |
 | Grant key, later target | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display, once its grant-signing purpose is qualified | A new recovery group with new words, then the same update of `swarma.landlord.grant`; the old group keeps the old key until the old seals are spent |
+| Authority key of a person, interim (decided for Ivan Oparin's grants, K6) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with the fields of the consent or the envelope shown first; not exported | The issuers revoke the grants that name the key and issue new ones to a new key |
 | Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
 | Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
 | Delegation key of a re-delegating agent, v4 (decision of 2026-11-14, J4; agreement pending) | Not fixed; a sketch that is not decided derives it for each parent from the seed of the operator's signer. The key is in no name | A signing service of the operator that consented to the parent as its recipient, outside the agent's OS user and outside the service that holds the request or channel key; the service holds no name-owner, seal or funding key (LIP-0014 section 11.1) | A new parent grant |
