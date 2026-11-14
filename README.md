@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.33
+**Version:** 0.1.34
 
 **Date:** 2026-11-14
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.33
+## Draft profiles and design decisions in v0.1.34
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -315,7 +315,7 @@ of the records, one head for one issuer, one anchor for one head, and no
 verified set between a change of the grant key and the first head under
 the new key. The vector set is described and not built.
 
-Version 0.1.32 adds four things at Ivan Oparin's decisions of 2026-11-14,
+Version 0.1.34 adds four things at Ivan Oparin's decisions of 2026-11-14,
 with the co-author's agreement pending.
 [LIP-0019](lips/LIP-0019-retrieval-by-hash.md) proposes how a reader
 obtains an object that a locator names by its hash: a loader that takes

@@ -11,7 +11,10 @@ and nothing said how a reader gets the bytes. The draft proposes a delivery
 profile and its loader: endpoints from the loader's own configuration and
 from an unsigned hint; a fetch by SHA-256 with bounds on size and time and
 without redirects; and a check that the bytes hash to what was asked,
-after which the object is checked exactly like a presented one. Retrieval
+after which the object is checked exactly like a presented one. A grant id
+addresses the canonical signed grant alone; a presentation is not fetched
+but completed by the reader, from the fetched signed grant and an issuance
+locator that it checks as LIP-0004 section 4 does. Retrieval
 adds availability and no authority: a store can make a reader refuse and
 cannot make it accept. The uses are audits, disputes, parent grants and
 certificate sets. LIP-0005 points to the draft.
