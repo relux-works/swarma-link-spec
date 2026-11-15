@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.46
+**Version:** 0.1.47
 
 **Date:** 2026-11-15
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.46
+## Draft profiles and design decisions in v0.1.47
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -482,8 +482,9 @@ seals and funding, whose keys sign that one kind of input; and the accounts
 of an executor's ledger, in which a request under a child debits the own
 account of the child and the row of its parent, and never the parent's own
 account. Every rule is the draft's proposal, and neither owner has decided
-one. The 64 vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) state rows,
-coins and requests as facts, among them a trace of one parent over three
+one. The 64 vectors of `rows-vectors.json` in
+[`vectors/LIP-0026/`](vectors/LIP-0026/) state rows, coins and requests as
+facts, among them a trace of one parent over three
 executors; no node, no signer and no store was run for the draft.
 
 Version 0.1.45 adds [LIP-0027](lips/LIP-0027-row-stop.md), a first profile
@@ -528,6 +529,31 @@ of an output index; a largest integer; and that the key of a row is a valid
 key. The 190 vectors in [`vectors/LIP-0014/`](vectors/LIP-0014/) hold 151
 contracts and 39 pairs of a parent and a child. No checker for them is
 published, and nothing of the profile is implemented.
+
+Version 0.1.47 records four decisions of Ivan Oparin of 2026-11-15 on the rows
+of a v4 parent, as Draft text; the co-author's agreement on each is pending,
+and until then the text in force stays as it is. A parent states its rows in
+groups, a template with ranges of coins and one ordinal across them, so that a
+parent can permit thousands of children (J12;
+[LIP-0026](lips/LIP-0026-rows-and-accounts.md) section 8). A row may name the
+recipient of its child by a class of landlords, each pinned like a notary, and
+the executor then checks that the recipient's name is an agent of such a
+landlord, that a key which the landlord lists holds it, and that such a key
+wrote its value (J10; section 9). The landlord lists those keys in its own name
+value, in a member `holders` (J11; [LIP-0010](lips/LIP-0010-name-value.md)
+section 10). A row inside one owner may have no certifier, and its child then
+needs no attestation; across owners a certifier stays mandatory (J9;
+[LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.3 and
+LIP-0026 section 10). The bounds of a group, the eight refusal codes of a class
+and every rule that the sections mark as the draft's are proposals. Two
+consequences are stated in place: a change of `holders` changes the `swarma`
+member and so ends the v4 grants that the landlord issued before it, and a
+holder that renews a name which was sent to it adopts the value of that name.
+The contract profile `swarma-trust-contract/2` of Grant v3 does not change. The
+33 vectors in [`vectors/LIP-0010/`](vectors/LIP-0010/) hold name values, and 95
+further vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) hold groups,
+templates and admissions. No checker for them is published, and nothing of the
+four decisions is implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

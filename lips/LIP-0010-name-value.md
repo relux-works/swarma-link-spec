@@ -44,6 +44,11 @@ in its own `id/` name ([LIP-0014](LIP-0014-notary-certified-redelegation.md),
 D3). Section 9 is a Draft amendment that proposes the shape for it. The
 shape itself is not decided.
 
+Ivan Oparin decided on 2026-11-15 that a landlord lists, in its own name value,
+the owner keys of the names of its agents and stations (J11). The co-author's
+agreement is pending. Section 10 is a Draft amendment for it, and until the
+co-author agrees section 3 stays as it is.
+
 ## Motivation
 
 The reference reader of the landlord profile compares the complete value with
@@ -140,6 +145,11 @@ fold alias of a defined one, and any two fold-equal members. The byte span of
 
 `swarma.agent.nostr` is not a member of this shape. The agent key is read
 under section 5.
+
+Section 10 holds Draft text, under a decision that awaits the co-author's
+agreement (J11), that gives the landlord binding a second member, `holders`.
+Until then a reader refuses a landlord binding with that member, as it refuses
+every additional member.
 
 ### 4. `nostr`: two forms, one key
 
@@ -368,6 +378,108 @@ The list of a principal's notaries is not a member of the principal's own
 value. It is signed in each parent grant (LIP-0014 section 2). A list in the
 value would be read at check time and not at issuance, and a member added
 to `swarma` refuses under section 3.
+
+### 10. Holders of a landlord (Draft amendment of 2026-11-15)
+
+**Owner decision pending: J11.** Ivan Oparin decided on 2026-11-15 that the
+landlord binding gains a member `holders`, which lists the owner keys of the
+names of the landlord's agents and stations. The co-author's agreement is
+pending, and until then the landlord binding of section 3 has the one member
+`grant`.
+
+A verifier that admits a recipient because of whose agent it is must learn that
+from the chain. An agent's name says which landlord it points to, and anybody
+can register a name that points to any landlord. The landlord therefore says,
+in its own value, which keys hold the names of its agents:
+
+```json
+{"swarma":{"landlord":{"grant":"<grant key>","holders":["<owner key>","<owner key>"]}}}
+```
+
+The decision gives the shape, the meaning of a holder, that an absent or empty
+list admits no name, and that the key has the form of the ownership profile of
+LIP-0021. The order of the list and the refusals of rule 3 are this draft's
+proposal. The numbers of rule 8 are computed from the shape.
+
+1. `landlord` is an object with the member `grant` and, after it, at most
+   one further member, `holders`. The strictness of section 3 applies
+   unchanged to both: a missing `grant`, an additional, duplicate, reordered,
+   `null` or aliased member refuses the value.
+2. `holders` is an array of strings. Each string is an owner pin in the form
+   of [LIP-0021](LIP-0021-name-ownership-and-history.md) O2.1: a compressed
+   secp256k1 public key, written as 66 lowercase hexadecimal characters that
+   begin with `02` or `03`, whose other 64 characters are the x coordinate
+   of a point of the curve.
+3. The pins of one list are different, and they stand in the ascending order
+   of their characters, so that one set of holders has one encoding. A value
+   whose `holders` is no array, holds an element that is no pin, repeats a
+   pin or has its pins in another order refuses, as a `swarma` member that is
+   not the compact encoding of its binding refuses under section 3.
+4. A landlord binding without `holders` and one with an empty array are both
+   valid, and they say the same: the landlord has no holder. No name passes
+   the checks of rule 6 against such a landlord.
+5. A holder is a key that owns names of the landlord's agents and stations:
+   the output of such a name pays the key hash or the witness key hash of the
+   pin (LIP-0021 O3.3). It is a name-owner key of the key registry, and it is
+   a different key by role from the grant key, from the key that owns the
+   landlord name and from every key that `nostr` yields. A reader permits
+   equal keys and never requires or infers equality. The key that owns the
+   landlord name is a holder only when the list names it.
+6. `holders` confers no authority. It issues no grant and signs no request.
+   Only the checks of a landlord class read it
+   ([LIP-0026](LIP-0026-rows-and-accounts.md) sections 9 and 10), and they
+   read the list of the landlord's current value at each admission.
+7. `holders` is part of the `swarma` member, and two texts in force follow
+   from that. A v4 grant lives while the updates of its issuer's name change
+   neither the owner nor the `swarma` member (LIP-0008 section 3), so an
+   update that adds or removes a holder refuses every v4 grant that this
+   landlord issued before the update, until the landlord issues them again.
+   Under LIP-0008 section 5.2 (J6, agreement pending) a verifier that
+   observes such an update records a closure for those grants, and the
+   landlord never writes an earlier `swarma` value again. This amendment
+   changes neither rule.
+8. The value still fits 520 bytes (section 2). A list of `n` holders adds
+   `12 + 69 n` bytes to a landlord value: 13 bytes for `,"holders":[]`, 68
+   for each pin with its quotation marks, and a comma between two pins. A
+   landlord value without `nostr` holds at most five holders, and a sixth
+   never fits.
+
+| Landlord value | Without holders | Most holders | Bytes with them |
+| --- | ---: | ---: | ---: |
+| No `nostr` | 100 | 5 | 457 |
+| Key string | 175 | 4 | 463 |
+| NIP-05 object | 191 | 4 | 479 |
+| NIP-05 object and one relay | 294 | 3 | 513 |
+| NIP-05 object and two relays | 318 | 2 | 468 |
+
+The sizes without holders are those of section 8. The budget plan of section 8,
+a proposal, reserves about 150 bytes for a service declaration. With that
+reservation a landlord value with a NIP-05 object and no relay has room for two
+holders, and one with a relay has room for none.
+
+A reader that does not know `holders` refuses a landlord value that carries it.
+A LIP-0004 reader compares the complete value with the bytes that its own
+builder writes, and a reader of this LIP before this amendment refuses an
+additional member of `landlord`. Every v3 grant of the landlord therefore
+refuses at such a reader for as long as the value carries the list, and no
+closure is recorded. A landlord with live v3 grants adds `holders` only after
+every verifier of those grants reads this shape.
+
+A thief of a holder key owns the names that pay it. It rewrites their values,
+and with them the keys under which those names sign requests. The owner of the
+landlord name answers with one update that removes the pin from `holders`: from
+the block that confirms it no name that the stolen key holds passes rule 6, and
+under rule 7 the landlord's earlier v4 grants refuse as well. The names
+themselves stay with the thief.
+
+[`vectors/LIP-0010/holders-vectors.json`](../vectors/LIP-0010/holders-vectors.json)
+holds 28 landlord values, 9 valid and 19 refused, and the five rows of the
+table above with the value of each. A refused value holds one defect, states
+the rule that refuses it and names a valid neighbour. The expected outcomes
+were stated by hand, computed by one implementation and decided again by a
+second one that shares no code with the first; neither is published here, and
+both come from the author of this text. The vectors bind nothing until both
+owners accept the rules that they follow.
 
 ## Alternatives
 

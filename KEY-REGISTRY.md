@@ -135,6 +135,15 @@ and wait for the owners' confirmation.
   grants again and replaces the pins that name the old one.
 - Source: LIP-0004 section 1, in use on v3; LIP-0008 section 3, Draft.
 
+Draft text that awaits the co-author's agreement (J11; LIP-0010 section 10)
+gives some name-owner keys a second place of publication: a landlord lists in
+`swarma.landlord.holders` the name-owner keys that hold the names of its agents
+and stations. The list adds nothing to what such a key signs. A thief of a
+listed key passes the checks of a landlord class (LIP-0026 section 9) for every
+name that the key holds, until the owner of the landlord name removes the pin
+by one update. The signer of a listed key signs a name operation only for a
+name that it registered itself or that its operator accepted (LIP-0026 R9.11).
+
 **Grant key**
 
 - Owner: the principal whose landlord name publishes it.

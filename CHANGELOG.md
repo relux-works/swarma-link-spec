@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.1.47 — 2026-11-15
+
+Records four decisions of Ivan Oparin of 2026-11-15 on the rows of a v4 parent,
+as Draft text. The co-author's agreement on each is pending, and until then the
+text in force stays as it is. Every LIP stays a Draft, and nothing of the four
+is implemented. No v3 byte changes: the contract profile
+`swarma-trust-contract/2` keeps its member set, each of its rows names a
+notary, and every v3 child is certified.
+
+Groups (J12; LIP-0026 section 8). A parent states its rows as groups: a
+template with the executor, the recipient constraint, the limits of each child
+and a certifier or none, and ranges of coins, each a transaction id, a first
+output index, a count and a script. Each coin is one row, and one ordinal runs
+across groups and ranges. The pool bounds, for each limit key, the sum over the
+groups of the number of rows times the amount of the template. The bounds are
+proposals: at most 16 groups, 16 ranges in a group and 4096 coins in a range,
+and a parent of at most 65536 octets. One standard transaction of Namecoin Core
+holds at most 3223 outputs of this kind, so 10,000 rows need four funding
+transactions. Under groups one key of the row account serves one range.
+
+Landlord class (J10; LIP-0026 section 9). The recipient constraint of a row
+gains a third form: a list of landlords, each pinned by name, registration and
+owner key, with the recent block of the parent as the checkpoint. A child of
+such a row names its recipient by name. The executor checks, in this order,
+that the value of the recipient name is an agent binding of a listed landlord;
+that the landlord is live, unchanged in its owner since the checkpoint and
+without a pending operation; that a holder of the landlord holds the recipient
+name; and that a holder wrote its value. The fourth check answers an attack
+that the text states: anybody can send a name to the address of a holder, with
+a value of its own choice. Eight refusal codes are proposed.
+
+Holders (J11; LIP-0010 section 10). The landlord binding gains a member
+`holders`: the owner keys of the names of the landlord's agents and stations,
+as owner pins in ascending order. An absent or empty list admits no name. A
+landlord value holds at most five holders, and four beside a `nostr` member.
+The list is part of `swarma`, so an update that changes it ends the v4 grants
+that the landlord issued before, under LIP-0008 section 3; a reader that does
+not know the member refuses the value, so a landlord with live v3 grants adds
+it only after its verifiers read the new shape.
+
+No certifier inside one owner (J9; LIP-0014 section 8.3, LIP-0026 section 10).
+A child needs an attestation only where its row names a certifier. A row
+without one is valid only where its recipient is a class of exactly the
+issuer's landlord, or an exact name that passes the checks of a class against
+the issuer's landlord. Across owners a certifier stays mandatory. Such a row
+has no stop coin, and LIP-0027 says so.
+
+What the draft adds without a decision, and marks: the order of the count of
+rows; that the landlord's value was written by its pinned owner; a rule for the
+signer of a holder key, which signs only for names that it registered or that
+its operator accepted, because a holder that renews a name which was sent to it
+adopts its value; the ascending order of `holders`; and the eight codes. Open,
+and listed in LIP-0026: the stop coins of a group, a bound on the landlords of
+a class, whether a change of `holders` should end an issuer's grants, and the
+owner of the delegator in a row without a certifier.
+
+Vectors. `vectors/LIP-0010/holders-vectors.json` holds 28 landlord values and
+the five largest lists. `vectors/LIP-0026/groups-vectors.json` holds 26 parents
+and 12 ordinals, and `vectors/LIP-0026/class-vectors.json` 15 templates and 42
+admissions, among them the gift of a name beside its valid control. A second
+implementation that shares no code with the generator decides all 128 with 0
+mismatches. No checker for them is published.
+
+Other texts: the key registry says where a name-owner key of an agent's name is
+published under J11, and the README and the index of open questions name the
+four decisions.
+
 ## 0.1.46 — 2026-11-15
 
 Gives the contract profile `swarma-trust-contract/2` of LIP-0014 one member set

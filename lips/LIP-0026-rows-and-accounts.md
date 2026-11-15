@@ -7,7 +7,9 @@
   row, how the re-delegating side derives, funds and uses the key of that
   coin, and which accounts of an executor's ledger a request debits
 - **Builds on:** LIP-0014 section 9.1 (J1), LIP-0008 sections 2, 3.1, 4,
-  11.1 and 12.2, LIP-0022 sections 1 and 4, LIP-0023 and LIP-0025
+  11.1 and 12.2, LIP-0022 sections 1 and 4, LIP-0023 and LIP-0025; for
+  sections 8 to 10 also LIP-0010 section 10, LIP-0014 section 8.3 and
+  LIP-0021
 
 ## Summary
 
@@ -41,6 +43,12 @@ This LIP proposes the first profile for rows on v4, on Namecoin:
 
 It defines no octets of a row. The members of a v4 grant do not exist yet,
 and the rows come with them.
+
+Sections 8 to 10 hold Draft text under three decisions of Ivan Oparin of
+2026-11-15 that await the co-author's agreement: a parent states its rows in
+groups (J12), a row may name the recipient of its child by a class of landlords
+(J10), and a row inside one owner may have no certifier (J9). Until the
+co-author agrees, sections 1 to 7 stand as they are.
 
 ## What is decided and what is proposed
 
@@ -86,6 +94,20 @@ and the owners should look at them first:
    roles have two inputs. The script of the coin is a witness key hash
    (R3.1), which follows from LIP-0023, a draft itself.
 
+Three further decisions are Ivan Oparin's of 2026-11-15, and the co-author's
+agreement on each is pending. They are recorded in LIP-0014, "Decisions of
+2026-11-15", and each has one section of this LIP that opens with what the
+decision says and marks what this draft adds.
+
+| Decision | What it says | Section |
+| --- | --- | --- |
+| J12. Groups | A parent states its rows as groups. A group is a template with coin ranges. The template holds the executor, the recipient constraint, the limits of each child, and a certifier or none. A range is a transaction id, a first output index, a count and a script, and each coin of a range is one row. One ordinal runs across groups and ranges | 8 |
+| J10. Landlord class | The recipient constraint of a row has a third form beside a key and a name: a list of landlords, each pinned like a notary. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order, the last of which asks who wrote the value of that name | 9 |
+| J9. No certifier inside one owner | A child needs an attestation only where its row names a certifier. A row without one is valid only where its recipient is limited to the issuer's own landlord. Across owners a certifier stays mandatory | 10 |
+
+The bounds of section 8, the refusal codes of sections 9 and 10, and every rule
+that those sections mark as this draft's are proposals.
+
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
 
@@ -99,6 +121,7 @@ rules through this LIP, under LIP-0001.
 | The row account in a signer | No | The owners' choice of the account, and the custody of v4 accounts, which is open (LIP-0024 section 5) |
 | An executor's ledger on a store | No | A store that is qualified under LIP-0014 J1.4; LIP-0025 proposes its form |
 | The arithmetic of one kind of limit | No | The type profile of that kind (LIP-0008 section 2) |
+| The checks of sections 8 to 10 as functions of stated facts and of the octets of name scripts and name values | Yes | The co-author's agreement to J9, J10, J11 and J12, and the owners' acceptance |
 
 ## Motivation
 
@@ -173,6 +196,12 @@ Section 10.1 of LIP-0014 adds a sixth thing to a v4 row, the stop coin of
 the row's notary (J2.7). This LIP does not treat it;
 [LIP-0027](LIP-0027-row-stop.md) proposes its profile.
 
+Sections 8 to 10 hold Draft text under decisions that await the co-author's
+agreement. Under section 8 (J12) a parent states its rows in groups, and R1.1,
+R1.3 and R1.4 are read as that section says. Under section 9 (J10) the
+recipient of R1.1 has a third form. Under section 10 (J9) the certifier of R1.1
+may be absent.
+
 A parent with a pool of 100 and rows of 60 and 40 is valid, and so is one
 with rows of 60 and 30. Rows of 60 and 60 are not. Two rows may name the
 same executor and the same recipient: each has its own ordinal, its own
@@ -205,6 +234,10 @@ is for the type profile of that kind.
 A child that names the executor of another row of its parent refuses under
 R2.2, also when every other member fits that other row. The ordinal selects
 the row, and nothing in the child selects another one.
+
+Under the Draft text of section 9 (J10, agreement pending) R2.3 has a third
+case: a child of a row whose recipient is a class names its recipient by name,
+and four further checks on the verifier's node follow.
 
 ### 3. The coin of a row
 
@@ -320,6 +353,10 @@ How a v4 account is created, wrapped and recovered is open for the seal
 account (LIP-0024 section 5). The same question holds for the row account,
 and this LIP proposes nothing for it.
 
+Under the Draft text of section 8 (J12, agreement pending) every coin of a
+range has one script, so one index of the row account serves one range, and
+R4.3 is read as R8.9 says.
+
 ### 5. The accounts of an executor's ledger
 
 A request under a child debits two accounts at the child's executor, the
@@ -393,6 +430,10 @@ refused reserves nothing.
 
 None of these refusals records a closure.
 
+Sections 9 and 10 propose eight further codes for the checks of a landlord
+class, with their order (R9.9). They belong to Draft text that awaits the
+co-author's agreement.
+
 ### 7. Vectors
 
 [`vectors/LIP-0026/rows-vectors.json`](../vectors/LIP-0026/rows-vectors.json)
@@ -438,6 +479,320 @@ Both come from the author of this text, so an error of understanding that
 they share is in the vectors. The vectors bind nothing until both owners
 accept the rules that they follow.
 
+### 8. Groups of rows (J12)
+
+**Owner decision pending: J12.** Ivan Oparin decided on 2026-11-15 that a
+parent states its rows as groups. The co-author's agreement is pending, and
+until then a parent states each row by itself, as section 1 says.
+
+A parent that permits 10,000 children states, under section 1, 10,000 rows, and
+most of them differ in nothing but their coin. The owner named 10,000 agents as
+the scale to reach. Under the decision the parent states what such rows share
+once, and states their coins as ranges.
+
+The decision says this. A group is a template with coin ranges. The template
+holds the executor, the recipient constraint, the limits of each child, and a
+certifier or none. A range is a transaction id, a first output index, a count
+and a script. Each coin of a range is one row, and one ordinal runs across
+groups and ranges, so that the ordinal of a child keeps its meaning. For each
+limit key the pool bounds the sum, over the groups, of the count times the
+amount of the template, and a key that no row limits has no pool. Coins are
+distinct, ranges do not overlap, no coin is the seal of the parent, and every
+coin is confirmed at or below the recent block of the parent. A verifier checks
+only the group and the range of its child, on signed octets.
+
+The decision names the numbers of R8.4 as proposed bounds. This draft adds the
+order of the count in R8.3, the witness key hash of R8.2, which follows R3.1,
+and the rules R8.9 and R8.10 for the two signers.
+
+| Rule | Requirement |
+| --- | --- |
+| R8.1 | A parent states its rows as a list of groups. A group has one template and a list of ranges. The template states four things: the executor, as R1.1 states it; the recipient constraint (section 9); the limits of each row of the group, under R1.2; and the certifier of the rows of the group, or that they have none (section 10). |
+| R8.2 | A range states a transaction id, a first output index, a count of at least 1 and a script. Its coins are the outputs of that transaction from the first index on, as many as the count, and the script of each of them is the script of the range. The index of the last coin is at most 4294967295. The script is a witness key hash, as R3.1 asks of a coin. |
+| R8.3 | Each coin of a range is one row, with the template of its group. The rows of a parent are counted group by group in the order of the groups, inside a group range by range in the order of the ranges, and inside a range by ascending output index. The ordinal of a row is its position in that count, from 1. The number of rows of a parent is the sum of the counts of all its ranges. |
+| R8.4 | Proposed bounds: a parent has at least one and at most 16 groups, a group at least one and at most 16 ranges, and a range at most 4096 coins. The largest size of a parent is 65536 octets. |
+| R8.5 | A parent states one pool amount for every limit key that a template limits. For each key, the sum over the groups of the number of rows of the group times the amount of its template for that key is at most the pool, and the sum is an exact integer sum. A key that no template limits has no pool. |
+| R8.6 | No coin belongs to two rows: two ranges of one parent that state the same transaction id have index intervals that do not meet. No coin is the seal of the parent. |
+| R8.7 | A parent that does not meet R8.1 to R8.6, R9.1, R10.1 or R10.2 is refused as a whole, as R1.5 says: it admits no child and no request of its own. |
+| R8.8 | A verifier of a child checks the ordinal of the child against the number of rows (R2.1) and finds the group, the range and the coin of that ordinal from the counts that the parent signs. It reads no fact of a chain for another row. Sections 2 and 3 then apply to the template of that group and to that coin: R3.2 reads the transaction of the range and its output at the index of the coin, with the script of the range. |
+| R8.9 | One index of the row account (R4.1) serves one range: every coin of the range pays the key of that index. The signer records the range durably before it gives out the address, and for each coin its outpoint, the parent and the ordinal as each becomes known. It signs the input of each coin once, under R4.5. An index is not used for a second range. |
+| R8.10 | Before it signs a parent, the signer of the issuer establishes for every coin of every range what R3.2 asks, so that it signs no parent with a row that can never have a child. A verifier does not see this. |
+
+Take a parent with two groups. The first has ranges of three and of two coins,
+the second one range of four. The parent has nine rows. The ordinals 1 to 3 are
+the coins of the first range in the order of their output indices, 4 and 5
+those of the second, and 6 to 9 those of the second group. A child with the
+ordinal 5 is checked against the template of the first group and against the
+second coin of its second range, and a child with the ordinal 10 refuses as
+`CHILD_ORDINAL` before any row is read.
+
+The pool of R8.5 is the pool of R1.3 with the rows of a group counted together.
+Two groups whose templates limit one key to 60 and to 40, with two rows and one
+row, need a pool of at least 160 for that key. A template may state no limit at
+all. Its rows then draw on no pool, and a request under their children that
+consumes a countable resource meets a ceiling of 0 (R5.2).
+
+Under the bounds of R8.4 a parent has at most 256 ranges and at most 1,048,576
+rows, and a verifier finds a row by adding at most 256 counts. The largest size
+of 65536 octets is a number for LIP-0020, which gets it when the grant gets its
+members. No octets of a group are defined here.
+
+The number of coins that one transaction creates has a bound outside this
+profile. Namecoin Core relays a transaction of at most 400,000 weight units. A
+transaction with one witness key hash input and `n` witness key hash outputs
+weighs `322 + 124 n` units from 253 outputs on, so it holds at most 3223
+outputs. One funding transaction of the standard size therefore gives a range
+of at most 3223 coins, or 3222 beside an output for change, and 10,000 rows
+need four such transactions and at least four ranges. The bound of 4096 is
+above what one standard transaction holds.
+
+The rows of a parent are fixed when it is signed. A further coin is a further
+row and needs a new parent, which is an ordinary issuance with its cost on the
+chain. A re-delegating side therefore reserves coins with headroom. A row that
+is never used costs its coin and nothing else.
+
+R8.9 gives up a separation that R4.3 has. With one key for each row, a leaked
+row key can void one row. With one key for a range, the holder of that key can
+spend every coin of the range that no child has spent yet, and void all those
+rows. It still issues nothing: a child needs the delegation key and, where the
+row has a certifier, an attestation.
+
+Three points stay open under this section:
+
+- **The bounds.** The four numbers of R8.4 are proposals, and neither owner
+  has fixed one.
+- **The stop coins of a group.** LIP-0014 section 10.1 (J2.7) and LIP-0027
+  give each row with a certifier a stop coin of its own. The decision on
+  groups names no place for them, and this draft proposes none.
+- **The octets** of a group, of a template and of a range, which come with
+  the members of the grant (LIP-0020).
+
+### 9. The landlord class (J10)
+
+**Owner decision pending: J10.** Ivan Oparin decided on 2026-11-15 that the
+recipient constraint of a row gains a third form beside a key and a name: a
+class of landlords. The co-author's agreement is pending, and until then a
+row names the recipient of its child in one of the two modes of R1.1.
+
+A row that names a key or a name fixes one party at the moment at which the
+parent is signed. A principal that runs a swarm starts agents after that
+moment, and their names do not exist yet when the parent is signed. A class
+says instead whose agent the recipient must be.
+
+The decision says this. A class is a list of landlords, each pinned like a
+notary under LIP-0014 section 7.1: by name, registration and owner key, with a
+checkpoint. A child of such a row names its recipient by name and never by key.
+The executor then checks four things in this order. (a) The current value of
+the recipient name is an agent binding whose landlord is in the list of the
+row. (b) That landlord is live, its registration and its owner are the pinned
+ones, its history from the checkpoint shows no change of owner, a transfer and
+a return included, and it has no pending name operation. (c) The current owner
+of the recipient name is one of the holders that the landlord's current value
+lists (LIP-0010 section 10). (d) The name operation that wrote the current
+value of the recipient name spent a name output that a holder owned. The
+decision asks that the refusal codes be proposed in this draft and named as
+proposals.
+
+Check (d) answers an attack on the first three. Anybody can send the output of
+a name to any address, and the receiver signs nothing. An attacker registers a
+name, writes into its value an agent binding that points to the landlord
+together with a channel key of its own, and sends the output to the address of
+a holder. The value points to the landlord, the landlord is untouched, and the
+current owner of the name is a holder: (a), (b) and (c) pass, and the
+attacker's channel key would sign requests as an agent of that landlord. The
+operation that wrote the value spent an output of the attacker, so (d) refuses.
+A value passes only where a holder wrote it.
+
+This draft adds four things to the decision: that the checkpoint of a class on
+v4 is the recent block of the parent (R9.2); that the current value of the
+landlord, which carries the holders, was written by the pinned owner (the
+fifth step of R9.5), as LIP-0014 J3.4 asks of a notary's value; the eight
+codes and their order; and the rules R9.11 and R9.12 for the two signers.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| R9.1 | The recipient constraint of a template has exactly one of three forms: a request key; a name with its owner key; or a class. A class is a list of at least one landlord. For each landlord it states the exact name, the registration of that name as a transaction id and an output index, and the owner key as an owner pin (LIP-0021 O2.1). No two entries of one class state the same name. | The parent is refused (R8.7) |
+| R9.2 | The checkpoint of a class is the committed recent block of the parent (LIP-0022 section 4). | |
+| R9.3 | A child of a row whose recipient is a class names its recipient in the mode "by name" of LIP-0008 section 3.1: an exact name and the owner key of that name. | A child that names a request key: `CHILD_GRANTEE_NOT_ALLOWED` |
+| R9.4 | Check (a). The current value of the recipient name parses under LIP-0010 as an agent binding, and its `landlord` is, octet for octet, the name of one landlord of the class. That landlord is called `L`. | `CLASS_LANDLORD` |
+| R9.5 | Check (b), in six steps. `L` is live at the tip of the observation (LIP-0021 O5.1). The walk of `L` ends at the pinned registration (O6.1). That registration is confirmed at or below the checkpoint. Every output of `L` from the one that was current at the checkpoint to the current one reads as controlled by the pinned owner key (O3.4, O6.2). The value of the current output of `L` was written by the pinned owner (O4.4). The reading node holds no pending transaction that spends the current output of `L`. | The table below |
+| R9.6 | Check (c). The current value of `L` parses under LIP-0010 section 10, and the current output of the recipient name reads as controlled (O3.4) by one of the holders that it lists. | `CLASS_HOLDER` |
+| R9.7 | Check (d). The value of the current output of the recipient name was written by a holder of `L`: the check of LIP-0021 section 4 gives "written by the owner" for one pin of the list of R9.6. That holder need not be the holder of R9.6. | `CLASS_WRITER` |
+| R9.8 | Where a read of R9.4 to R9.7 proves nothing, the verifier refuses, and the refusal is no evidence about either name. That is so for a node that does not supply a fact (O1.3), an unsupported script (O3.5), an unsupported writer check (O4.4), and a walk that is incomplete or bounded (O6.3). | `CLASS_HISTORY_UNAVAILABLE` |
+| R9.9 | The four checks stand in the order (a), (b), (c), (d), and the six steps of (b) in the order of R9.5. The first step that fails, or that proves nothing, gives the refusal. The checks stand after the proof of the child's recipient by name (LIP-0021 section 7.2) and before the checks of the coin (R6.1). | The first that applies |
+| R9.10 | Every read of the four checks belongs to the observation of the admission (LIP-0022 section 1). The request key of the child is the key that the value of R9.7 yields for the channel (LIP-0008 section 3.1), so that the key which signs a request comes from the value whose writer was checked. | |
+| R9.11 | A holder key signs a name operation only for a name that its signer registered itself, or that its operator accepted by a decision of its own. It does not update or renew a name for the one reason that the output of the name pays its address. | None at a verifier |
+| R9.12 | Before it signs a parent, the signer of the issuer makes the steps of R9.5 for every landlord of every class, so that it signs no parent under which every child of a row refuses. | None at a verifier |
+
+The six steps of check (b) give these refusals:
+
+| Finding | Refusal |
+| --- | --- |
+| `L` has no live output at the tip; the walk ended at another registration; an output of the stretch from the checkpoint reads as another key | `CLASS_LANDLORD_CHANGED` |
+| The pinned registration is confirmed above the checkpoint, so that `L` had no output of that registration at the checkpoint | `CLASS_CHECKPOINT` |
+| The writer check of the current output of `L` gives "written by another" | `CLASS_VALUE_UNAUTHORIZED` |
+| A pending transaction spends the current output of `L` | `CLASS_LANDLORD_PENDING` |
+| Nothing was proved at a step | `CLASS_HISTORY_UNAVAILABLE` |
+
+Check (b) is the rule of a notary's name with two differences. It asks nothing
+about the octets of the `swarma` member, because the list of holders changes
+while the class stands, as a notary's attestation key does (LIP-0014 J3.3). And
+it refuses while a name operation of `L` is pending, because that operation may
+remove the very holder that checks (c) and (d) are about to accept. A transfer
+of `L` to another key and back leaves an output of the stretch that reads as
+another key, and the class refuses `L` from then on.
+
+By the proof of LIP-0021 section 7.2 the current output of the recipient name
+is controlled by the owner key that the child signs. Check (c) therefore asks
+whether that key is a holder. A recipient whose name is held by a key that the
+landlord does not list refuses, also when its value points to the landlord.
+
+Check (d) looks at one operation, the one that created the current output of
+the recipient name. For an update, the name input is the previous output of the
+name; for a registration, it is the output of the reservation (O4.1). The check
+does not trace a value back through the history of the name. A holder that
+registers a name and writes its value passes. A holder that received a name
+passes only after an operation of its own, which may repeat the value
+unchanged.
+
+That last case is the limit of check (d), and R9.11 is the rule for it. A
+holder that updates or renews a name which an attacker sent to it writes the
+attacker's value under its own signature, and (d) then passes. A wallet that
+renews every name whose output pays its addresses does exactly this. No
+verifier can tell such an update from a deliberate one, so the rule binds the
+holder's signer, as R4.5 binds the signer of a row key.
+
+Four further limits hold:
+
+- **A stolen holder key** passes all four checks for every name that it
+  holds, with whatever channel key the thief writes. The owner of the
+  landlord name removes the pin from `holders` by one update (LIP-0010
+  section 10), and from the block that confirms it the names of that key
+  refuse as `CLASS_HOLDER`.
+- **The class says whose agent a recipient is.** It does not say which
+  agent: every name that a holder of a listed landlord holds and wrote fits
+  the row. Which of them receives the child is the delegator's choice, and a
+  second child of the row is excluded by the coin (section 3) and not by the
+  class.
+- **A pending operation of the recipient name** is not read. The value in
+  force is the confirmed one, and a pending change of the channel key takes
+  effect with its block.
+- **The number of landlords of a class** has no bound here. The decision
+  names none, and the largest size of the parent (R8.4) is the only limit.
+
+### 10. Rows without a certifier (J9)
+
+**Owner decision pending: J9.** Ivan Oparin decided on 2026-11-15 that a
+child needs an attestation only where its row names a certifier, and that a
+row may be without one only inside one owner. The co-author's agreement is
+pending, and until then every row names a certifier (R1.1) and every child
+is certified (LIP-0014, D1).
+
+A principal whose own agents hand work to each other pays, under D1, a notary's
+attestation, anchor and seal for every child, although the notary is its own
+and the recipient is its own agent.
+
+The decision says this. The right of re-delegation of the parent decides for
+each row whether a child of it needs an attestation: it does where the row
+names a certifier. The principal signs the parent, so a delegator cannot drop a
+certifier. A row without a certifier is valid only where its recipient
+constraint is limited to the issuer's own landlord: either a class with exactly
+the issuer's landlord, or an exact name that passes the landlord and holder
+checks of section 9 against the issuer's landlord. Across owners a certifier
+stays mandatory, as D8 of LIP-0014 says. The stop coin of LIP-0027 belongs only
+to rows with a certifier.
+
+The owner's practice, which is no rule of this profile: a certifier for rows
+whose children permit effects, such as payments, the use of a model and
+landings, and none for rows whose children permit instructions and reviews.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| R10.1 | A template states the certifier of its rows, which is one of the notaries that the parent pins, or states that its rows have none. A parent whose templates name no certifier need pin no notary. | A certifier that the parent does not pin: the parent is refused (R8.7) |
+| R10.2 | A template without a certifier has one of two recipient constraints. The first is a class with exactly one landlord, whose name, registration and owner key are those that the parent binds for its issuer (LIP-0008 section 3). The second is a name with its owner key. A template without a certifier whose recipient is a request key, a class with two or more landlords, or a class whose one landlord is not the issuer makes the parent refused. | The parent is refused (R8.7) |
+| R10.3 | For a child of a row without a certifier whose recipient is a name, the verifier makes the checks (a), (c) and (d) of section 9 for that name with the issuer of the parent as the landlord `L`, and the last step of check (b). The other steps of (b) are met by the admission of the parent, which judged the issuer's name under LIP-0008 section 3. | The codes of section 9, in the order of R9.9 |
+| R10.4 | A child of a row without a certifier needs no attestation. The verifier makes no check of an attestation for it and reads none that is presented. A child of a row with a certifier is certified as LIP-0014 says. | |
+| R10.5 | A row without a certifier states no stop coin, and no rule of LIP-0027 applies to it. | |
+
+D8 of LIP-0014 speaks of an issuer and a delegator that have one owner and does
+not say how a verifier tells. R10.2 and R10.3 give the recipient of the child a
+test that a verifier makes on its own node: the name is an agent of the
+issuer's landlord, a holder of that landlord holds it, and a holder wrote its
+value. A class with the one landlord of the issuer admits every such name. An
+exact name admits one, and it is checked in the same way, so that a name of
+another owner cannot stand in a row without a certifier.
+
+The issuer's own rule is stricter than check (b). It asks that the `swarma`
+member of the issuer's name is unchanged from the recent block of the parent on
+(LIP-0008 section 3), and `holders` is part of that member. For a row whose
+landlord is the issuer the list of holders is therefore the list at the recent
+block of the parent: an update that changes it refuses the parent and every
+child of it.
+
+Three limits hold:
+
+- **The test is on the recipient of the child.** It does not look at the
+  owner of the delegator, the recipient of the parent. A parent that a
+  principal issues to an agent of another owner may hold a row without a
+  certifier, and that agent then gives children of that row to agents of the
+  principal alone.
+- **Nobody but the issuer ends such a row early.** A row without a certifier
+  has no withdrawal for cause and no stop coin. A child of it ends with its
+  own seal, with the seal of its parent, or with its window.
+- **Grant v3 does not change.** A row of the contract profile
+  `swarma-trust-contract/2` always names its notary (LIP-0014 section 2),
+  and every v3 child is certified.
+
+### 11. Vectors of sections 8 to 10
+
+Two files hold 95 vectors over the 27 rules of sections 8 to 10, and they
+follow Draft text that awaits the co-author's agreement.
+
+| File | Group | Vectors | What a checker does |
+| --- | --- | --- | --- |
+| [`groups-vectors.json`](../vectors/LIP-0026/groups-vectors.json) | `parents` | 10 valid, 16 refused | Section 8 on the stated groups, ranges, limits and pools of a parent; a refused parent states the rule that it breaks |
+| | `ordinals` | 12 | R8.3 and R8.8: the group, the range and the coin of an ordinal, or `CHILD_ORDINAL` |
+| [`class-vectors.json`](../vectors/LIP-0026/class-vectors.json) | `templates` | 6 valid, 9 refused | R9.1, R10.1 and R10.2 on a stated template and the issuer that the parent binds |
+| | `admissions` | 12 passing, 26 refused, 4 compound | Sections 9 and 10 for one child, in the order of R9.9 |
+
+The groups file holds no octets, because a parent has none yet. `group-10` and
+`group-22` hold amounts whose sum is 2 to the power 64: a checker that adds in
+64 bits gets 0 and takes the second for a parent within its pool. `group-07`,
+`group-25` and `group-26` put a range into the transaction of the parent's
+seal, beside the seal, over it and up to it.
+
+An admission of the class file holds octets where they exist: the script of the
+current output of the recipient name with the value inside it, and for each
+input of the operation that created that output the script that it spends and
+its unlocking script or witness. The value of a landlord is the text of a name
+value. The history of a landlord is stated, output by output, as the walks of
+the LIP-0021 vectors are.
+
+`class-25` is the gift. The recipient name points to the landlord, the landlord
+is untouched, a holder holds the name, and the name input of the update that
+wrote the value spends an output of another key. It refuses as `CLASS_WRITER`,
+and its control is `class-01`, where the holder spent its own previous output.
+`class-26` is the same gift by a registration, with `class-03` as its control.
+`class-27` is the limit of R9.11: the holder made an update of its own on the
+gifted name, and the check passes.
+
+`certifier-01` to `certifier-09` are the cases S9-1 to S9-K1 of LIP-0014
+section 8.3 and their neighbours. `certifier-08` is the same exact name in a
+row with a certifier: the checks of a class are not made for it.
+
+The limits of the two files are these. Transaction ids are placeholders, and
+the octets of signatures are placeholders that verify nothing. No vector reads
+a chain or holds an observation, a pending transaction as octets, a request or
+an attestation. The largest size of a parent has no vector. The refusal of a
+parent has no code, so a refused parent states a rule.
+
+No checker for these vectors is in this repository. The expected outcomes were
+stated by hand, computed by one implementation and decided again by a second
+one that shares no code with the first; neither is published here. Both come
+from the author of this text, so an error of understanding that they share is
+in the vectors. The vectors bind nothing until both owners accept the rules
+that they follow.
+
 ## Sources
 
 No node, no signer and no store was run for this LIP.
@@ -449,6 +804,9 @@ No node, no signer and no store was run for this LIP.
 | The row coin key: its owner, what it signs, and that its account and path are not fixed | The key registry, entry "Row coin key, v4" and the open points |
 | A transaction that spends an output which is missing or already spent is invalid | Namecoin Core at the tag `nc28.0`, `src/validation.cpp`, the check that reports `bad-txns-inputs-missingorspent` |
 | The reference laboratory holds none of the codes of J1.2 and J1.3 | A search of the Go files of `swarma-chain-lab` at `b03c6f10fad1be135e780d8b1f556fc46805eb06` |
+| A node relays a transaction of at most 400,000 weight units (section 8) | Namecoin Core at the tag `nc28.0`, `src/policy/policy.h`, the constant `MAX_STANDARD_TX_WEIGHT`. The count of 3223 outputs is computed from the sizes of a witness key hash input and output; no transaction of that size was built |
+| The owner pin, the three readings of a script, the writer check, a live name and the walk (section 9) | LIP-0021 sections 2 to 6 |
+| The list of holders in a landlord value (sections 9 and 10) | LIP-0010 section 10 |
 
 ## Alternatives
 
@@ -510,6 +868,26 @@ No node, no signer and no store was run for this LIP.
   child that widens its row refuses for the widening, also when a notary
   certified it.
 
+The following consequences belong to the Draft text of sections 8 to 10.
+
+- **A class is as strong as the custody of its holder keys.** A holder key
+  admits whatever value it writes into a name that it holds (R9.7). It is a
+  name-owner key, which the key registry asks to keep cold, and a key that
+  registers the names of agents every day is not cold.
+- **A holder that renews a gifted name adopts it.** Check (d) refuses a
+  value that another key wrote, until a holder writes over it. R9.11 is the
+  rule for the holder's signer, and no verifier sees its breach.
+- **A change of the holders ends the landlord's own v4 grants.** The list is
+  part of the `swarma` member that LIP-0008 section 3 binds for an issuer
+  (LIP-0010 section 10). A landlord that adds a holder for a new station
+  refuses every v4 grant that it issued before, and issues them again.
+- **One key holds a whole range.** Under R8.9 a leaked row key voids every
+  unused row of its range, where under R4.3 it voids one row.
+- **A row without a certifier has one signer of children.** The delegation
+  key signs the child, the row's coin shows that the signer of the
+  re-delegating side took part, and nobody else does. Whoever holds both
+  issues one child for each such row, to any agent of the issuer's landlord.
+
 ## Conformance impact
 
 None on normative v0.1 and none on Grant v3: the profile `/2` of LIP-0014
@@ -517,6 +895,10 @@ keeps its rows with four members and its codes. No conformance class is
 added. The cases S1-1 to S1-4 and S1-10 of LIP-0014 get a reading for v4
 from sections 2, 3 and 5; the cases of the store, S1-5, S1-5-ABA and S1-6,
 still run on a real store.
+
+Sections 8 to 10 add nothing to Grant v3 either: a row of profile `/2` names
+its grantee by key and always names its notary. Their two vector files are
+Draft vectors of pending decisions, and they change no vector of section 7.
 
 ## Open questions
 
@@ -540,3 +922,15 @@ still run on a real store.
   attestation.
 - **A run** of the reads of section 3 on nodes, and of section 5 on a store
   that is qualified under LIP-0014 J1.4.
+- **The co-author's agreement** to J9, J10 and J12, on which sections 8 to
+  10 rest, and to J11 in LIP-0010.
+- **The four bounds of R8.4** and a bound on the landlords of a class.
+- **The stop coins of a group** whose template names a certifier (section
+  8).
+- **Whether a change of `holders` should end an issuer's grants.** It does
+  under LIP-0008 section 3, because the list is part of `swarma`. A rule
+  that binds an issuer to its grant key alone, and a list outside the
+  member, are the two other ways.
+- **The owner of the delegator** in a row without a certifier (section 10).
+- **A pending operation of a recipient name** (section 9).
+- **The eight codes of section 9.**
