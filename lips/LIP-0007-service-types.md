@@ -48,6 +48,12 @@ the other rows are semantic candidates, not accepted wire action strings.
 | `names.nmc` | Register and update names; bind permitted names, operation stages, fees and ownership policy. |
 | `repo.git` | Read or push to a repository; bind repository identity, refs and allowed mutations. |
 
+[LIP-0028](LIP-0028-sessions.md) holds Draft text, under a decision of
+2026-11-15 that awaits the co-author's agreement (J13), under which the profile
+of `model.proxy` names three further commands, to open, to extend and to close
+a session, because the client of a model proxy cannot sign its requests. This
+LIP names none of them yet.
+
 Delegated issuance needs a separate type/action profile: no listed action implicitly permits
 issuing grants or passing authority onward.
 

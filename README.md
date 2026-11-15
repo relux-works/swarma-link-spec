@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.47
+**Version:** 0.1.48
 
 **Date:** 2026-11-15
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.47
+## Draft profiles and design decisions in v0.1.48
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -554,6 +554,28 @@ The contract profile `swarma-trust-contract/2` of Grant v3 does not change. The
 further vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) hold groups,
 templates and admissions. No checker for them is published, and nothing of the
 four decisions is implemented.
+
+Version 0.1.48 adds [LIP-0028](lips/LIP-0028-sessions.md), Draft text for a
+decision of Ivan Oparin of 2026-11-15 that awaits the co-author's agreement
+(J13): a service whose client cannot sign its requests admits a session, and
+the model proxy is the first case. The key holder of the recipient signs one
+invocation that opens a session with a slot binding, a window of at most one
+hour and limits within the grant. The service admits it like any invocation and
+returns a bearer token of 32 random octets, which its journal binds to the
+grant, the slot and the window. The LIP states the eight parts of the decision
+first; the rules beyond them are the draft's proposals. Among those: before
+every reservation in a session the service makes the checks of the proof path
+again, in an observation of its own, so a spent seal stops the next request; a
+repeated session-open request returns no token; and the ten refusal codes. A
+token works until the last end of the window that the key holder signed, and
+every signed request sets that end at most 3600 seconds ahead. Three
+consequences are stated in place: the proof path has to allow the commands of a
+session, so the issuer decides whether its authority may be used through a
+bearer; the binding by user id needs a local socket, and how a harness with a
+base URL reaches one is open; and a grant that leaves the key holder's table
+keeps its session for up to an hour. The LIP defines no octets and adds no
+vector, because the invocation has no members yet. Until the co-author agrees,
+a v4 service admits signed invocations alone. Nothing of it is implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

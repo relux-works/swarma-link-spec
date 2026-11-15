@@ -568,6 +568,14 @@ direction, not a property of the current gateway-bound proxy.
 Delegated issuance remains a separate capability and profile under LIP-0006;
 v4 limits do not implicitly authorize issuing another grant.
 
+[LIP-0028](LIP-0028-sessions.md) holds Draft text, under a decision of
+2026-11-15 that awaits the co-author's agreement (J13), for a service whose
+client cannot sign its requests, with the model proxy as the first case. One
+signed invocation of the recipient's key holder opens a session, a bearer token
+stands for it, and the service makes the checks of sections 4 and 12 for the
+proof path itself before every reservation. Until the co-author agrees, a v4
+service admits signed invocations alone.
+
 ### 5.1. Observed issuer spend and durable closure
 
 An executor that observes a **validated issuer-branch spend** of the grant's
@@ -1211,6 +1219,12 @@ invocation is the request of a verdict, and an invocation that travels
 inside an encrypted message binds a salted hash of the content (J8,
 accepted by Ivan Oparin on 2026-11-13, with the co-author's agreement
 pending).
+
+A third Draft text uses the invocation for a client that cannot sign: under
+[LIP-0028](LIP-0028-sessions.md) a signed invocation opens, extends and closes
+a session, and the requests inside the session carry a bearer token and no
+signature (J13, decided by Ivan Oparin on 2026-11-15, with the co-author's
+agreement pending).
 
 #### 12.2. Proof path, attenuation and budget accounting
 

@@ -550,6 +550,16 @@ the consents it signed and of the denials of J7.3 (e).
 
 With every refusal nothing is signed.
 
+[LIP-0028](LIP-0028-sessions.md) holds Draft text, under a decision of
+2026-11-15 that awaits the co-author's agreement (J13), for a run whose harness
+cannot sign. The session-open request of that text is a v4 invocation under
+J7.5, so the key holder signs it under J7.3 (a). The token that the service
+returns is a credential in the sense of J7.8, and section 7 of that LIP says
+how it stays behind the binding of its run. The key holder builds the request
+itself and takes the slot from its own record of the run, one session serves
+one run, and the token works until the last end of the window that the key
+holder signed, at most one hour after its signature.
+
 The origin of a run and the authority frame of section 3.4 name the same
 admission. The frame tells the agent under which grant its instruction
 stands, and the key holder's record tells the gate under which grants the

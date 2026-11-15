@@ -93,13 +93,15 @@ it is.
 | J4. The key that signs a child on v4 | K2 of the key map; LIP-0008 section 12.6 | The parent names one delegation key. On v4 only that key signs children, and it signs nothing else: the messaging key never grants authority. Section 11.1. v3 does not change. | The co-author's agreement is pending. Until then the parent's recipient key signs the child (LIP-0008 section 12.6). |
 | J5. Scope text | R3 of LIP-0008 section 12.6; N2 of LIP-0012 | On v3 a child carries its parent's text unchanged, by hash, and narrows only members that a machine compares. A text governs an agent's work and never an effect: an executor that cannot read refuses a grant with a text, and no executor performs a landing or a payment automatically under one. It refuses such a request, and the owner's confirmation of one operation stays as an exception (J5b). On v4 a re-delegation narrows only typed fields and appends no text; both owners agree on that point. Section 3.4. | The co-author's agreement is pending, except on the point for v4. Until then the notary judges a child's text against the parent's, and no step compares an instruction with the text (section 3.3). |
 
-Three further decisions stand in other LIPs. J7, signing under a grant for
+Four further decisions stand in other LIPs. J7, signing under a grant for
 each run (LIP-0013 section 3.6), was decided by Ivan Oparin on 2026-11-14
 and awaits the co-author's agreement. J6, a durable closure for an
 owner-signed change of an issuer's name (LIP-0008 section 5.2), and J8, the
 signed invocation as the request of a verdict (LIP-0011 section 7), were
 accepted by Ivan Oparin on 2026-11-13 and await the co-author's agreement
-as well.
+as well. J13, sessions for clients that cannot sign
+([LIP-0028](LIP-0028-sessions.md)), was decided by Ivan Oparin on 2026-11-15
+and awaits the co-author's agreement.
 
 The three pending decisions are separate from each other. Section 10.1 builds
 on the rows of section 9.1, which are decided. Where the Draft text of one

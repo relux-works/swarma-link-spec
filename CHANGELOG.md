@@ -1,5 +1,61 @@
 # Changelog
 
+## 0.1.48 — 2026-11-15
+
+Adds Draft LIP-0028, sessions for clients that cannot sign, for a decision of
+Ivan Oparin of 2026-11-15 (J13). The co-author's agreement is pending, and
+until then a v4 service admits signed invocations alone. Every LIP stays a
+Draft, nothing of the LIP is implemented, and no v3 byte changes.
+
+The decision. A service whose client is a third-party program admits a session,
+and the model proxy with the harness of a vendor is the first case. The key
+holder of the recipient checks the origin of the run against its table and
+signs one session-open request under the grant, with the authority path, the
+executor, the slot binding, a window of at most one hour and limits within the
+grant. The service verifies it like any request and returns a bearer token of
+32 random octets, bound in its journal to the grant, the session, the slot
+binding, the end of the window and the limits. The slot binding is the user id
+of the caller on one host and the address of the slot over a network. The token
+stays the same for the run; the key holder extends the window by further signed
+requests, and without one the token expires. The service ends every session of
+a grant when it observes the seal spent. The harness gets a base URL and the
+token.
+
+What the draft adds, and marks. The three requests of a session are signed
+invocations, so the proof path has to allow their commands, and a request with
+a token never asks for one of them. An end lies at most 3600 seconds after the
+service's clock at the admission, an extend request never moves an end back,
+and an end is final. A repeated request opens no session and returns no token;
+the journal holds the SHA-256 of the token; a lost answer is not repeated.
+Before every reservation in a session the service makes the checks of LIP-0008
+sections 4 and 12 for the proof path again, in an observation of its own, and
+requires that the key of the session's last signed request is still the
+recipient's key. A session has accounts of its own beside those of the grant,
+with the ceiling 0 for a limit key that it does not state. A closure of any
+grant on the path ends the session. Six rules bind the key holder, which
+builds the three requests itself and takes the slot from its own record of the
+run. Ten refusal codes are proposed.
+
+Consequences that the text states. A token works until the last end that the
+key holder signed, at most one hour after its signature on its own clock; the
+end is read on the service's clock. Requests in a session are unsigned, so a
+billing dispute has the records of the two parties and nothing else.
+`SO_PEERCRED` works only for a local socket, and the decision gives the harness
+a base URL: how the two meet is open, and the binding by user id cannot be
+built until then. After the operator removes a grant from the key holder's
+table, the key holder can sign no close request under it, and the session ends
+with its window.
+
+No vector is added: the three signed requests are invocations, which have no
+members yet, and the record of a session waits for the entries of a service
+journal. Section 9 of the LIP states twenty cases and two known limits in
+words.
+
+Other texts: pointers in LIP-0007 section 1, LIP-0008 sections 5 and 12.1 and
+LIP-0013 section 3.6; a row for the sessions of a service in LIP-0025 section
+7; the key registry, at the model bearer of a slot; the list of decisions that
+stand outside LIP-0014; the README and the index of open questions.
+
 ## 0.1.47 — 2026-11-15
 
 Records four decisions of Ivan Oparin of 2026-11-15 on the rows of a v4 parent,

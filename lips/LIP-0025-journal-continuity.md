@@ -364,6 +364,7 @@ not go back; what differs is the entries and what a recovery charges.
 | The notary's records of one child for each row and of the succession of its seals | LIP-0014 J1.6 and J2.3 (a) | Not stated yet |
 | Denials of a key holder | LIP-0013 section 3.6 | Not stated yet |
 | The signer's record of a seal index and of the recorded revocation | LIP-0008 sections 11.1 and 11.3 | Not stated yet; custody is open (LIP-0024 section 5) |
+| The sessions of a service and their ends | Draft [LIP-0028](LIP-0028-sessions.md), T3.2 and T5.4, under a decision that awaits the co-author's agreement (J13) | Nothing is charged for a session: the new journal holds no session of the lost one, and every token of the lost journal refuses (T5.8) |
 
 This LIP defines the entries of the first journal alone. The entries of the
 others come with the rules that write them, and each of those rules has to
