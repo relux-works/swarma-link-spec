@@ -49,6 +49,15 @@ the owner keys of the names of its agents and stations (J11). The co-author's
 agreement is pending. Section 10 is a Draft amendment for it, and until the
 co-author agrees section 3 stays as it is.
 
+Ivan Oparin accepted on 2026-11-15 a third member that Link reads, outside
+`swarma`: `swarma-devices`, the hash and the version of an owner's device list
+([LIP-0029](LIP-0029-owner-control.md) section 3.3). The text was written
+optimistically, and the co-author's agreement is pending. The member gives no
+grant authority; only the owner's own executors and key holders read it, and a
+duplicate or fold alias of it refuses the whole value as for `swarma` and
+`nostr`. Until the co-author agrees, sections 1 and 2 stand: a reader skips the
+member as one of the owner's.
+
 ## Motivation
 
 The reference reader of the landlord profile compares the complete value with

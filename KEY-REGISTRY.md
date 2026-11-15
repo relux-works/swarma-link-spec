@@ -86,7 +86,9 @@ and wait for the owners' confirmation.
 | Contract seal keys | medium | LIP-0017 section 6; decision of 2026-11-14, agreement pending |
 | Assent output keys | low | LIP-0017 section 4; decision of 2026-11-14, agreement pending |
 | Principal's Nostr key | low; high where a grant names it as grantee | LIP-0004 and LIP-0010, in use on v3 |
-| Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending |
+| Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending; LIP-0029 removes it in favour of device keys, agreement pending |
+| Device key of an owner | high; critical at ceiling 2 for the owner's own executors | LIP-0029 sections 3, 4 and 6, Draft; decision of 2026-11-15, written optimistically, agreement pending |
+| Device seal key | medium | LIP-0029 section 8, Draft; its script and custody are open |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
@@ -144,6 +146,14 @@ name that the key holds, until the owner of the landlord name removes the pin
 by one update. The signer of a listed key signs a name operation only for a
 name that it registered itself or that its operator accepted (LIP-0026 R9.11).
 
+Draft [LIP-0029](lips/LIP-0029-owner-control.md), written optimistically under
+a decision of 2026-11-15 that awaits the co-author's agreement, gives the
+name-owner key of an owner's name one more meaning: its update writes the
+member `swarma-devices`, the hash and version of the owner's device list, and
+so decides who speaks for the owner at its own executors (O10.1). A thief of
+the key writes a list of its own devices; a v4 grant does not end by that
+update, because the owner and `swarma` stay.
+
 **Grant key**
 
 - Owner: the principal whose landlord name publishes it.
@@ -176,6 +186,13 @@ name that it registered itself or that its operator accepted (LIP-0026 R9.11).
 - Source: LIP-0004 sections 1 to 3, in use on v3; LIP-0008, Draft. The
   detached grants of LIP-0003 kept this key in the agent's name; LIP-0004
   moved it to the landlord name.
+
+Draft [LIP-0029](lips/LIP-0029-owner-control.md), written optimistically under
+a decision of 2026-11-15 that awaits the co-author's agreement, has the grant
+key grant to others only (O10.2): configuration statements are signed by an L2
+device of the owner instead (O7.2), and no statement key is added (O10.5). How
+far the rule reaches into the other statement domains that LIP-0015 and
+LIP-0016 propose for this key is open there.
 
 **Funding key**
 
@@ -355,7 +372,10 @@ names it as the holder or as the channel key.
 - Source: key map, decision K6: Ivan Oparin's decision of 2026-11-14 for
   grants issued to him; the co-author's agreement is pending. The decision
   rejects the other reading, an authority key written into the name in
-  place of the Nostr key.
+  place of the Nostr key. Ivan Oparin accepted on 2026-11-15 that the key
+  leaves the key map in favour of the device keys below
+  ([LIP-0029](lips/LIP-0029-owner-control.md) section 10.1, written
+  optimistically); until the co-author agrees this entry stands.
 
 **Agent's Nostr key**
 
@@ -423,6 +443,53 @@ names it as the holder or as the channel key.
   grants name that key.
 - Source: LIP-0006 sections 1 to 4, implemented in the wallet service v1
   profile.
+
+## Owner control
+
+**Device key of an owner**
+
+- Owner: the owner of a name, a person who directs its own executors and
+  agents.
+- Published: in the owner's device list, in a record with `alg`, `key`,
+  `presence`, `ceiling` and `seal`; the owner's name value pins the hash and
+  version of the list in `swarma-devices` (LIP-0029 sections 3.1 to 3.3).
+- Holder: one device of the owner: a P-256 key in a secure element, such as
+  the Secure Enclave of a phone or a laptop, or a BIP-340 key. The record's
+  presence flag is the owner's claim that the key signs only with a person
+  present; it is not proven.
+- Signs: under Draft LIP-0029, `swarm-envelope/2` owner commands up to the
+  record's ceiling, at the owner's own executors and at the key holders of
+  the owner's agents; at ceiling 2 also the owner's executor policy sections
+  and the fast revocation of another device. No grant, no Nostr event, no
+  seal spend and no name operation. At a foreign executor it signs nothing
+  that counts.
+- Danger: high; critical at ceiling 2 for the owner's own executors, because
+  such a key signs the policy that bounds them.
+- Leak: the thief signs owner commands up to the ceiling at every own
+  executor that has not yet seen the device revoked. At ceiling 2 it sets
+  policy and can revoke the owner's other devices. It cannot add a device,
+  issue a grant or act at a foreign executor.
+- Recovery: another device broadcasts the prepared spend of the device's
+  seal, or signs the L2 revocation; a name update writes a list without the
+  device. Effects admitted before the closure are not undone.
+- Source: [LIP-0029](lips/LIP-0029-owner-control.md), Draft, written
+  optimistically under a decision of Ivan Oparin of 2026-11-15; the
+  co-author's agreement is pending.
+
+**Device seal key**
+
+- Owner: the owner of the device list.
+- Published: nowhere; the seal's outpoint stands in the device record.
+- Holder: open. The other devices of the list hold a prepared spend of the
+  seal (LIP-0029 O8.2), which needs no further signature.
+- Signs: the spend of one device seal, which revokes that device.
+- Danger: medium. A leak, like a copy of the prepared spend, revokes one
+  device and gives nothing else.
+- Leak: the thief revokes the device; the owner adds it again with a new seal
+  through a name update.
+- Recovery: a new list with a new seal for the device.
+- Source: LIP-0029 section 8, Draft; the script of the seal and the custody
+  of its key are open.
 
 ## Re-delegation and the notary
 
@@ -791,4 +858,6 @@ that tests them keeps the three apart:
   agent controls (LIP-0006).
 - The signing domains of the two objects that LIP-0009 proposes for a
   holder's key, and of a provider's closing statement.
+- The script of a device seal and who holds its key once the prepared
+  spend exists (LIP-0029 section 8).
 - The danger levels, which wait for the owners' confirmation.

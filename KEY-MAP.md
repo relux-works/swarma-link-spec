@@ -114,6 +114,15 @@ K6 rejects one reading of the earlier proposal: an authority key written
 into the name in place of the social key. The name's `nostr` member stays a
 messaging address and gives no authority.
 
+Ivan Oparin accepted on 2026-11-15 that K6 leaves this map in favour of device
+keys ([LIP-0029](lips/LIP-0029-owner-control.md), decisions 8 and 12). The
+owner's devices are listed in a device list whose hash and version the
+owner's name pins outside `swarma`; they speak for the owner at the owner's
+own executors and at the key holders of the owner's agents, and the grant key
+grants to others only. The text was written optimistically: the co-author's
+agreement is pending, and until it is given K6 stands as written. Which key a
+grant to the person names at a foreign executor without K6 is open there.
+
 Decided by Ivan Oparin on 2026-11-14 (J4, LIP-0014 section 11.1); the
 co-author's agreement is pending. K2 says that the agent controls only its
 Nostr key. A key that signs at the agent's request is used by the agent,

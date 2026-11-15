@@ -25,6 +25,11 @@ old head has a spent output.
 The first provider is a Git hosting repository with one file per statement.
 Nothing is implemented.
 
+Under Draft [LIP-0029](LIP-0029-owner-control.md), written optimistically
+under a decision of 2026-11-15 that awaits the co-author's agreement, the
+store holds no statement for an owner's own devices: the device list pinned in
+the owner's name replaces it for them.
+
 ## Motivation
 
 Key bindings and configuration statements (LIP-0015) do not fit a name

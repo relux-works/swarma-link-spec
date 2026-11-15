@@ -139,6 +139,14 @@ the signing of Curator profiles and manifests. Each profile and each
 manifest is one section with a `subject` of its own, and a loader accepts
 it only through the steps of section 4.
 
+[LIP-0029](LIP-0029-owner-control.md) holds Draft text, written
+optimistically under a decision of 2026-11-15 that awaits the co-author's
+agreement, under which an executor's policy is such a section, with an
+increasing `seq` that the executor journals, signed by an L2 device of the
+owner's device list and not by the grant key (O7.2). The grant key then
+grants to others only (O10.2). Until the co-author agrees this section stands
+as written.
+
 ## 4. Verification at load
 
 The loader runs these steps each time it loads a signed section and stops at
@@ -260,6 +268,12 @@ a name certified, and it no longer relies on the server for that. A device
 whose chain does not verify stays where it was. The platform book calls
 the first level of assurance A0 and the second A1. The binding goes no
 further: it gives no authority, and a typed action still needs a grant.
+
+Under Draft [LIP-0029](LIP-0029-owner-control.md), written optimistically
+under a decision of 2026-11-15 that awaits the co-author's agreement, an
+owner's own devices need no certificate statement: the device list that the
+owner's name pins lists their keys (section 3 there). The kinds of this
+section stay for the keys of other systems.
 
 ## Alternatives
 

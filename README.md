@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.49
+**Version:** 0.1.50
 
 **Date:** 2026-11-15
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.49
+## Draft profiles and design decisions in v0.1.50
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -603,6 +603,26 @@ v4. D8, J1 and the member `notary` of profile `swarma-trust-contract/2` do not
 change; LIP-0014 section 8.3 states how each is read for a row without a
 certifier. Grant v3 does not change, every v3 child is certified, and nothing
 of J9 is implemented.
+
+Version 0.1.50 adds [LIP-0029](lips/LIP-0029-owner-control.md), Draft text for
+thirteen decisions that Ivan Oparin accepted on 2026-11-15 on owner control
+(R4), written optimistically: the co-author's agreement was not awaited and is
+pending. Only a signed envelope counts; free text directs work, and an effect
+happens only through typed fields that the executor's gate compares with the
+actual arguments. The owner's name value pins, outside `swarma`, the hash and
+version of a device list whose records hold a key, its algorithm (BIP-340 or
+P-256), a claimed presence flag, a level ceiling and a revocation seal. The
+envelope is `swarm-envelope/2` with three typed body kinds, its identifier and
+replay journal exclude the signature, and a launch inherits the level of the
+envelope that started it, so a run started at L0 obtains no effect through its
+agent's own grants. Policy lives in configuration sections signed by an L2
+device; a device is revoked by the spend of its seal and added only by a name
+update. The grant key grants to others only, no statement key is added, and the
+authority key of a person leaves the key map in favour of device keys, which
+closes R5. The LIP lists its conflicts with `swarm-envelope/2`, the platform
+book and curator-spec for the owners, defines no vector, and needs a reviewed
+change of `swarm-envelope/2` before any verifier admits its body kinds. Nothing
+of it is implemented, and until the co-author agrees the texts it revises stand.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

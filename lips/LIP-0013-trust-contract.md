@@ -550,6 +550,15 @@ the consents it signed and of the denials of J7.3 (e).
 
 With every refusal nothing is signed.
 
+[LIP-0029](LIP-0029-owner-control.md) holds Draft text, written
+optimistically under a decision of 2026-11-15 that awaits the co-author's
+agreement, under which the owner's command is a signed owner command of
+`swarm-envelope/2` with a level, L0, L1 or L2. The origin of a run that it
+starts carries that level and keeps it for the runs that come from it, the
+owner's row of J7.2 becomes one row for each level, and for a run whose origin
+has level L0 the key holder signs no object whose action ends in an effect
+(O6.5 to O6.8). Until the co-author agrees J7.1 and J7.2 stand as written.
+
 [LIP-0028](LIP-0028-sessions.md) holds Draft text, under a decision of
 2026-11-15 that awaits the co-author's agreement (J13), for a run whose harness
 cannot sign. The session-open request of that text is a v4 invocation under
@@ -703,6 +712,17 @@ confers nothing: not on Matrix, whose room and sender the envelope binds,
 and not on any other transport that a later profile adds. A binding of a
 transport key to a name (LIP-0015 section 6) tells a receiver whose device
 sent a message, and it is no authority either.
+
+[LIP-0029](LIP-0029-owner-control.md) holds Draft text, written
+optimistically under a decision of 2026-11-15 that awaits the co-author's
+agreement, that revises point 2: only a signed envelope counts, so the owner
+directs its own agent by an owner command signed by a device of the owner's
+device list, and an unsigned message is ignored. The same text moves the
+envelope of section 3.1 into `swarm-envelope/2` as the body kind
+`instruction/1`, and requires the ref and the revision of a landing beside the
+repository. It replaces the authority key of a person, which this section
+names, by the owner's device keys. Until the co-author agrees this section
+stands as written.
 
 ## 4. Vectors and reference checker
 

@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.1.50 — 2026-11-15
+
+Adds Draft LIP-0029, owner control by signed envelopes and a pinned device
+list, for thirteen decisions that Ivan Oparin accepted on 2026-11-15 on
+question R4. The text is written optimistically: the co-author's agreement was
+not awaited and is pending, and until it is given every text that the LIP
+revises stands. Every LIP stays a Draft, nothing of the LIP is implemented,
+and no v3 byte changes.
+
+The decisions. Only a signed envelope counts, and an unsigned message is
+ignored. Free text directs work; an effect happens only through typed fields
+that define it completely, and the executor's gate recomputes the actual
+arguments and compares them before the effect. The owner's client forms the
+fields and shows them. The action registry is the action profiles of LIP-0006
+and LIP-0008, and an unknown class requires L2 or is refused. The owner's name
+value pins the hash and version of a device list outside `swarma`, added only
+after every verifier runs a LIP-0010 reader; the v3 outage while an update is
+pending is accepted. A device record holds a label, the key, its algorithm
+(BIP-340 or P-256, taken from the record), a claimed presence flag, a level
+ceiling and the outpoint of a revocation seal. A device is revoked by the
+spend of its seal, of which the other devices hold a prepared spend, and by an
+L2-signed revocation that executors journal; a name update completes the
+removal. Adding a device needs a new list, a new seal and a name update. Policy
+lives in executor configuration sections with an increasing number, signed by
+an L2 device, and every limit belongs to a named executor. P-256 keys are 33
+bytes of SEC1 and signatures 64 bytes of r and s under a domain tag, and the
+envelope identifier and the replay journal exclude the signature. The one
+envelope format is `swarm-envelope/2` with three body kinds: owner command,
+LIP-0013 instruction and wallet request. Levels L0, L1 and L2; a launch inherits
+the level of the envelope that started it. The grant key grants to others only,
+device keys are the owner at the owner's own executors and agents' key holders,
+there is no statement key, and the authority key of a person leaves the key map
+for device keys, which closes R5. Three honest limits are stated in the text.
+
+What the draft adds, and marks. Member names and orders of the device record
+and the list, the name-value member `swarma-devices`, the type names, tags,
+members and lifetimes of the three body kinds, the rows of the key holder's
+table by level with the refusal `LEVEL_NOT_FOR_RUN`, the carrier of a policy
+section as an L2 owner command, the action `swarma/device/revoke`, the order of
+admission and its refusal codes, and thirteen cases.
+
+Reconciliation. The LIP cites the platform book (chapter 6 §6.6 to §6.8,
+chapter 7 §7.12, chapter 22 §22.5, chapter 24), the Link book (§3.4, §3.7,
+§3.10 to §3.13, §4.9.2 to §4.9.4, §4.9.10, §5.2, §8.9), curator-spec CIP-0011
+revision 6 (R-OPERATOR) and `swarm-envelope/2`, and lists fifteen conflicts for
+the owners without choosing: among them three anchors for the owner's devices,
+BIP-340 device keys against the P-256-only device profile of `swarm-envelope/2`,
+and the closed types of that format, which this repository does not own.
+
+Pointers. The key map records that K6 leaves it once agreed; the key registry
+adds the device key of an owner and the device seal key; LIP-0010, LIP-0013,
+LIP-0015 and LIP-0016 each point to the text that LIP-0029 holds for them.
+No vector is added.
+
 ## 0.1.49 — 2026-11-15
 
 Puts J9 in force: no certifier for a row inside one owner. Ivan Oparin decided
