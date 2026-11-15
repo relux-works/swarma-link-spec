@@ -402,9 +402,11 @@ LIP-0021. The order of the list and the refusals of rule 3 are this draft's
 proposal. The numbers of rule 8 are computed from the shape.
 
 1. `landlord` is an object with the member `grant` and, after it, at most
-   one further member, `holders`. The strictness of section 3 applies
-   unchanged to both: a missing `grant`, an additional, duplicate, reordered,
-   `null` or aliased member refuses the value.
+   one further member, `holders`. The strictness of section 3 applies to
+   both: a missing `grant`, an additional, duplicate, reordered, `null` or
+   aliased member refuses the value. It has one exception, which rule 4
+   states: an empty `holders` is valid, where section 3 refuses an empty
+   member.
 2. `holders` is an array of strings. Each string is an owner pin in the form
    of [LIP-0021](LIP-0021-name-ownership-and-history.md) O2.1: a compressed
    secp256k1 public key, written as 66 lowercase hexadecimal characters that
@@ -417,7 +419,9 @@ proposal. The numbers of rule 8 are computed from the shape.
    not the compact encoding of its binding refuses under section 3.
 4. A landlord binding without `holders` and one with an empty array are both
    valid, and they say the same: the landlord has no holder. No name passes
-   the checks of rule 6 against such a landlord.
+   the checks of rule 6 against such a landlord. The two are different
+   octets of `swarma`, so a landlord that writes the one in the place of the
+   other changes the member, with the consequence of rule 7.
 5. A holder is a key that owns names of the landlord's agents and stations:
    the output of such a name pays the key hash or the witness key hash of the
    pin (LIP-0021 O3.3). It is a name-owner key of the key registry, and it is
@@ -438,11 +442,11 @@ proposal. The numbers of rule 8 are computed from the shape.
    observes such an update records a closure for those grants, and the
    landlord never writes an earlier `swarma` value again. This amendment
    changes neither rule.
-8. The value still fits 520 bytes (section 2). A list of `n` holders adds
-   `12 + 69 n` bytes to a landlord value: 13 bytes for `,"holders":[]`, 68
-   for each pin with its quotation marks, and a comma between two pins. A
-   landlord value without `nostr` holds at most five holders, and a sixth
-   never fits.
+8. The value still fits 520 bytes (section 2). A list of `n` holders, with
+   `n` at least 1, adds `12 + 69 n` bytes to a landlord value: 13 bytes for
+   `,"holders":[]`, 68 for each pin with its quotation marks, and a comma
+   between two pins. An empty list adds the 13 bytes alone. A landlord value
+   without `nostr` holds at most five holders, and a sixth never fits.
 
 | Landlord value | Without holders | Most holders | Bytes with them |
 | --- | ---: | ---: | ---: |
