@@ -551,7 +551,7 @@ member and so ends the v4 grants that the landlord issued before it, and a
 holder that renews a name which was sent to it adopts the value of that name.
 The contract profile `swarma-trust-contract/2` of Grant v3 does not change. The
 33 vectors in [`vectors/LIP-0010/`](vectors/LIP-0010/) hold name values, and
-101 further vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) hold groups,
+103 further vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) hold groups,
 templates and admissions. No checker for them is published, and nothing of the
 four decisions is implemented.
 
