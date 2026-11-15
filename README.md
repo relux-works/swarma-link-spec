@@ -566,16 +566,21 @@ grant, the slot and the window. The LIP states the eight parts of the decision
 first; the rules beyond them are the draft's proposals. Among those: before
 every reservation in a session the service makes the checks of the proof path
 again, in an observation of its own, so a spent seal stops the next request; a
-repeated session-open request returns no token; and the ten refusal codes. A
-token works until the last end of the window that the key holder signed, and
-every signed request sets that end at most 3600 seconds ahead. Three
-consequences are stated in place: the proof path has to allow the commands of a
-session, so the issuer decides whether its authority may be used through a
-bearer; the binding by user id needs a local socket, and how a harness with a
-base URL reaches one is open; and a grant that leaves the key holder's table
-keeps its session for up to an hour. The LIP defines no octets and adds no
-vector, because the invocation has no members yet. Until the co-author agrees,
-a v4 service admits signed invocations alone. Nothing of it is implemented.
+repeated session-open request returns no token, also after the journal of the
+service was started anew; the journal never holds the token; a token travels
+only on a local socket or on a channel that authenticates the service and that
+others cannot read; and the eleven refusal codes. A token works until the last
+end of the window that the key holder signed, and every signed request sets
+that end at most 3600 seconds ahead. Four consequences are stated in place: the
+proof path has to allow the commands of a session, so the issuer decides
+whether its authority may be used through a bearer; every process of a slot can
+read the token, so a session equals a signature on every request only where the
+slot holds runs of one origin; the binding by user id needs a local socket, and
+how a harness with a base URL reaches one is open; and a grant that leaves the
+key holder's table keeps its session for up to an hour. The LIP defines no
+octets and adds no vector, because the invocation has no members yet. Until the
+co-author agrees, a v4 service admits signed invocations alone. Nothing of it
+is implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

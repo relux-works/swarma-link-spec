@@ -664,11 +664,13 @@ Draft text that awaits the co-author's agreement (J13;
 bearer. The service draws 32 random octets after it admitted one signed
 session-open request of the recipient's key holder, binds them in its journal
 to the grant, the session, the slot binding, the end of a window of at most one
-hour and the limits, and keeps the hash of the token and not the token. A copy
-of the token then works only from the user id or the address of the slot, and
-only until the end of the window, which each signed request of the key holder
-sets at most one hour ahead. The service ends every session of a grant when it
-sees the seal of that grant spent.
+hour and the limits, and keeps the hash of the token and never the token. The
+token travels only on a local socket or on a channel that authenticates the
+service and that others cannot read. A copy of it then works only from the user
+id or the address of the slot, and only until the end of the window, which each
+signed request of the key holder sets at most one hour ahead. Every process of
+the slot can read it, so a slot holds runs of one origin. The service ends
+every session of a grant when it sees the seal of that grant spent.
 
 **Upstream API secret of the model proxy**
 

@@ -556,9 +556,10 @@ cannot sign. The session-open request of that text is a v4 invocation under
 J7.5, so the key holder signs it under J7.3 (a). The token that the service
 returns is a credential in the sense of J7.8, and section 7 of that LIP says
 how it stays behind the binding of its run. The key holder builds the request
-itself and takes the slot from its own record of the run, one session serves
-one run, and the token works until the last end of the window that the key
-holder signed, at most one hour after its signature.
+itself and takes the slot from its own record of the run. One session serves
+one run, and a slot holds runs of one origin, because every process of the slot
+can read the token. The token works until the last end of the window that the
+key holder signed, at most one hour after its signature.
 
 The origin of a run and the authority frame of section 3.4 name the same
 admission. The frame tells the agent under which grant its instruction

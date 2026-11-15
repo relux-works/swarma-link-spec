@@ -32,16 +32,17 @@ This LIP proposes the session:
 - a request in a session, and what the service checks before each
   reservation (section 4);
 - the window of a session, its extension and its end (section 5);
-- the slot binding (section 6);
+- the slot binding, and the channels on which a token travels (section 6);
 - the rules for the key holder, which no service sees (section 7);
-- ten refusal codes and their order (section 8), and cases (section 9).
+- eleven refusal codes and their order (section 8), and cases (section 9).
 
 A session has a price, and the text states it where it arises. The token is a
-bearer that every process of the slot's user can use. The requests in a session
-are unsigned, so neither party can show the other which requests were made. And
-a token works until the last end that the key holder signed, which lies up to
-an hour after its last signature. A session is for a client that cannot sign; a
-client that can sign sends signed invocations.
+bearer that every process of the slot's user can use, so a slot has to hold
+runs of one origin. The requests in a session are unsigned, so neither party
+can show the other which requests were made. And a token works until the last
+end that the key holder signed, which lies up to an hour after its last
+signature. A session is for a client that cannot sign; a client that can sign
+sends signed invocations.
 
 The LIP defines no octets. The three signed requests of a session are
 invocations, and the invocation has no members yet (LIP-0020).
@@ -100,12 +101,12 @@ and neither owner has decided one.
    each key once. A session has accounts of its own beside those of the grant,
    and a limit key that the session-open request does not state has the ceiling
    0 (T2.4, T4.6).
-4. A repeated request opens no session and returns no token (T2.6), and the
-   identifier of a session is the identity of the request that opened it
-   (T3.2).
-5. The journal holds the SHA-256 of the token and need not hold the token. The
-   service returns the token once and does not repeat an answer that was lost
-   (T3.2 to T3.5).
+4. A repeated request opens no session and returns no token (T2.6), also after
+   the journal of the service was started anew (T5.8), and the identifier of a
+   session is the identity of the request that opened it (T3.2).
+5. The journal holds the SHA-256 of the token and never the token. The service
+   returns the token once and does not repeat an answer that was lost (T3.2 to
+   T3.5).
 6. Before every reservation in a session the service makes the checks of the
    proof path again, in an observation of its own, and requires that the key of
    the last signed request of the session is still the key of the recipient
@@ -113,10 +114,18 @@ and neither owner has decided one.
 7. An extend request never moves an end back, an end is final, and a close
    request exists (T5.2, T5.4, T5.5).
 8. A closure of any grant on the proof path ends the session, where the
-   decision names the seal of the grant (T5.6). A refusal without a closure
-   ends no session, and a journal that is started anew holds none (T5.7, T5.8).
-9. The rules of section 7 for the key holder, and the ten refusal codes of
-   section 8 with their order.
+   decision names the seal of the grant (T5.6). The session ends where the
+   service records a closure, which LIP-0008 section 5.1 has for a spend that
+   the service validated as the issuer's. A spend that it cannot validate
+   refuses each request while it is visible and ends no session, as every
+   refusal without a closure does (T5.7). A journal that is started anew holds
+   no session (T5.8).
+9. A token, and the answer that carries it, travel only on a local socket or on
+   a channel that authenticates the service and that others cannot read (T6.4).
+10. The rules of section 7 for the key holder. One of them bounds part 8 of the
+    decision: a session equals a signature on every request only where the slot
+    holds runs of one origin (T7.7).
+11. The eleven refusal codes of section 8 with their order.
 
 Nothing of this profile is implemented.
 
@@ -199,7 +208,7 @@ takes immediately before the write (LIP-0022 B1.6).
 | T2.1 | The session-open request is a signed invocation (LIP-0008 section 12.1) whose command is the open command of T1.1. `X` authenticates it under the recipient mode of `G`, as step 2 of LIP-0008 section 4 says. | The refusal of that step |
 | T2.2 | Its arguments state three things: the slot binding (section 6), the end of the window as a time in whole seconds, and the requested limits. Its ordered proof identifiers are the authority path, and its executor is `X` by name and key. | |
 | T2.3 | The end of the window is later than `now`, and at most 3600 seconds later. | `SESSION_WINDOW` |
-| T2.4 | Each requested limit names the key of a limit that `G` states for `X`, and no key is named twice. Its amount is at most the amount of that limit, and at most the ceiling of the operator of `X` for that key where the operator set one (LIP-0008 section 2). | `SESSION_LIMITS` |
+| T2.4 | Each requested limit names the key of a cumulative limit that `G` states for `X`, a limit with an account (LIP-0026 section 5), and no key is named twice. Its amount is at most the amount of that limit, and at most the ceiling of the operator of `X` for that key where the operator set one (LIP-0008 section 2). | `SESSION_LIMITS` |
 | T2.5 | `X` admits the request as it admits any invocation: with every check of LIP-0008 sections 4 and 12, in one healthy observation (LIP-0022 sections 1 to 3). | The refusal of the check that fails |
 | T2.6 | `X` records the identity of a signed request of a session when it admits the request, and it admits no request whose identity its journal holds. One request identity therefore opens at most one session, and a repeated session-open request opens none and gets no token. | `SESSION_REPLAY` |
 | T2.7 | The slot binding has one of the forms of section 6, and `X` checks that form for its callers. | `SESSION_BINDING` |
@@ -214,14 +223,18 @@ T2.6 differs on purpose from the wallet profile, in which a repeated request
 receives its stored receipt once more (LIP-0006 section 4). The answer to a
 session-open request carries a bearer, and whoever repeats a request that it
 saw on its way would receive the token of a session that it did not open. A
-request that `X` refused left no record and can be sent again.
+request that `X` refused left no record and can be sent again. T2.6 reaches as
+far as the journal holds the identities; T5.8 says what holds after a journal
+that was started anew.
 
 T2.4 treats the limits that have an account: a cumulative amount with a key and
-a ceiling (LIP-0026 section 5). LIP-0008 section 2 names further kinds, among
-them a maximum for one request, a rate, and the required confirmation depth,
-which is a minimum. For such a kind the type profile says when a requested
-limit lies within the grant, under one bound that holds for every kind: a
-session never loosens a limit of the path.
+a ceiling (LIP-0026 section 5). For these a smaller amount is the stricter one.
+LIP-0008 section 2 names further kinds, among them a maximum for one request, a
+rate, and the required confirmation depth, which is a minimum and for which a
+smaller amount would be the looser one. A session-open request states no limit
+of such a kind under this profile. For such a kind the type profile says when a
+requested limit lies within the grant, under one bound that holds for every
+kind: a session never loosens a limit of the path.
 
 A session has three times, and none is converted into another. The window of
 T2.3 is a time on the clock of `X`. The `iat` and `exp` of the invocation bound
@@ -236,37 +249,40 @@ clock.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | T3.1 | When `X` admits the request it draws 32 octets from a cryptographically secure random source. They are the token of the session. | |
-| T3.2 | `X` writes the session into its journal: the identifier of the session, which is the identity of the request that opened it; `G` and the proof path; the slot binding; the end of the window; the limits; the key under which `X` authenticated the request; and the SHA-256 of the token. The journal need not hold the token. | A write that fails opens no session and returns no token |
-| T3.3 | `X` returns the token once: in its answer to the request that opened the session, on the connection that carried the request, and only after the write of T3.2 is complete (LIP-0025 M3.2). No later answer carries it. | |
+| T3.2 | `X` writes the session into its journal: the identifier of the session, which is the identity of the request that opened it; `G` and the proof path; the slot binding; the end of the window; the limits; the key under which `X` authenticated the request; and the SHA-256 of the token. The journal does not hold the token, and after the answer of T3.3 `X` keeps the token in no store. | A write that fails opens no session and returns no token |
+| T3.3 | `X` returns the token once: in its answer to the request that opened the session, on the connection that carried the request, and only after the write of T3.2 is complete (LIP-0025 M3.2). That connection is a channel of T6.4. No later answer carries the token. | A session-open request on another channel: `SESSION_CHANNEL` |
 | T3.4 | A token is the token of a session when its SHA-256 is the one that the record of that session holds. | |
 | T3.5 | Where the answer of T3.3 did not reach the key holder, or `X` stopped between the write and the answer, the session stands in the journal and nobody holds its token. `X` does not send the token later. The key holder closes that session (T5.5), or lets its window end, and opens another session with a new request. | |
 
 The decision asks that the token is bound in the journal. The hash of T3.2 is
-this draft's way to bind it: a copy of the journal gives no token that works.
-T3.5 is the rule that LIP-0025 M4.3 leaves to each kind of entry: where a
-restart finds the entry of a session whose answer may not have been sent, the
-answer does not follow.
+this draft's way to bind it. Because the journal never holds the token, a copy
+of the journal gives no token that works. T3.5 is the rule that LIP-0025 M4.3
+leaves to each kind of entry: where a restart finds the entry of a session
+whose answer may not have been sent, the answer does not follow.
 
 ### 4. A request in a session
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| T4.1 | A request in a session carries the token and no signature. `X` finds the session of the token (T3.4). | `SESSION_TOKEN` |
+| T4.1 | A request in a session carries the token and no signature, and it reaches `X` on a channel of T6.4. `X` finds the session of the token (T3.4). | Another channel: `SESSION_CHANNEL`. No session: `SESSION_TOKEN` |
 | T4.2 | The caller meets the slot binding of the session (section 6). | `SESSION_PEER` |
 | T4.3 | The session is live: it has not ended (T5.4), and `now` is earlier than the end of its window. | `SESSION_ENDED` |
 | T4.4 | The request asks for none of the three commands of T1.1 (T1.3). | `SESSION_COMMAND` |
-| T4.5 | Before every reservation `X` makes the checks of LIP-0008 sections 4 and 12 for the proof path of the session and for the action of the request, in a healthy observation of its own (LIP-0022 sections 1 to 3). Step 2 of section 4 has no signature to verify. In its place `X` requires that the key under which it authenticated the last signed request of the session is still the key of step 2: the signed request key of `G`, or, for a recipient by name, the key that the name yields at that moment for the channel of that signed request. `X` reads the tip and its clock again as LIP-0022 B1.6 says, and applies T4.3 with that reading. | The refusal of the check that fails |
-| T4.6 | `X` gives the request an identity of its own, and charges the request as it charges a signed invocation under `G` (LIP-0008 section 12.2; LIP-0026 section 5 proposes the accounts). For each limit key that the request consumes, `X` also debits an account of the session: a cumulative amount with the key `session`, the identifier of the session and that limit key. The ceiling of that account is the limit that the session states for the key, and 0 where the session states none. All debits of one request are reserved in one atomic write of the journal, or none, and of the accounts of one limit key the account of the session comes last. | `SESSION_LIMIT_OVER` for an account of the session; for another account the refusal of that account |
+| T4.5 | Before every reservation `X` makes the checks of LIP-0008 sections 4 and 12 for the proof path of the session and for the action of the request, in a healthy observation of its own (LIP-0022 sections 1 to 3), with two differences. The request has no `iat` and no `exp`: the window of the session (T4.3) stands where section 12.5 asks `iat <= now < exp`. And step 2 of section 4 has no signature to verify. In its place `X` requires that the key under which it authenticated the last signed request of the session is still the key of step 2: the signed request key of `G`, or, for a recipient by name, the key that the name yields at that moment for the channel of that signed request. `X` reads the tip and its clock again as LIP-0022 B1.6 says, and applies T4.3 with that reading. | The refusal of the check that fails |
+| T4.6 | `X` gives the request an identity of its own, and charges the request as it charges a signed invocation under `G` (LIP-0008 section 12.2; LIP-0026 section 5 proposes the accounts). For each limit key that the request consumes, `X` also debits an account of the session: a cumulative amount with the key `session`, the identifier of the session and that limit key. The ceiling of that account is the limit that the session states for the key, and 0 where the session states none. All debits of one request are reserved in one atomic write of the journal, or none, and of the accounts of one limit key the account of the session comes last. The write is one atomic step with two reads of the journal, in this order: the session has no end, and no grant of its proof path has a closure. Where one of them fails, nothing is reserved. | `SESSION_LIMIT_OVER` for an account of the session; for another account the refusal of that account. At the two reads: `SESSION_ENDED` where the session has ended, otherwise the refusal of the closed grant |
 | T4.7 | The checks stand in the order T4.1 to T4.6, and the first that fails gives the refusal. A request that is refused reserves nothing. | |
 
-The six checks serve one property, which is part 8 of the decision written as a
-rule. `X` admits a request in a session only where it would admit, at that
-moment, the same request as an invocation signed under the key of the session's
-last signed request. Three things differ from a signed request. A request in a
-session has no identity that its sender signed, so a request that is sent twice
-is two requests and is charged twice. The window of the session stands where
-the `iat` and `exp` of an invocation stand. And the caller is the slot, which
-`X` checks against the slot binding.
+The six checks serve one property, which is how far a service can make part 8
+of the decision a rule. `X` admits a request in a session only where it would
+admit, at that moment, the same request as an invocation signed under the key
+of the session's last signed request. What `X` cannot see is which run sends
+the request: every run of the slot holds the token. So the equality of part 8
+holds where the slot holds runs of one origin, which T7.7 asks of the key
+holder. Three things differ from a signed request. A request in a session has
+no identity that its sender signed, so a request that is sent twice is two
+requests and is charged twice. The window of the session stands where the `iat`
+and `exp` of an invocation stand. And the caller is the slot, which `X` checks
+against the slot binding.
 
 The decision speaks of the request that opens a session, and T4.5 is this
 draft's rule for the requests that follow it. LIP-0008 section 12.5 asks that
@@ -284,6 +300,11 @@ because LIP-0022 B1.5 takes every fact of one admission from one observation.
 For a model request, which takes seconds, that is little. A type with many
 short requests would feel it, and this LIP gives such a type no cheaper check.
 
+The last sentence of T4.6 is what T5.6 needs where two requests run at once.
+One request may pass its checks, and the observation of the other may then show
+the spend and record the closure. Without the two reads in the atomic step, the
+first would still reserve after the closure.
+
 The limits of a session reserve nothing. They are ceilings beside the accounts
 of `G`: two sessions of one grant may each state the full limit of `G`, and the
 account of `G` bounds what both consume together. A limit key that the session
@@ -295,13 +316,13 @@ where a missing limit refuses and never becomes unlimited access.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | T5.1 | The token is the same from the opening of a session to its end. | |
-| T5.2 | The extend request is a signed invocation with the extend command of T1.1. It names a session by its identifier and states a new end of the window. `X` authenticates it as T2.1 says, admits it as T2.5 and T2.6 say, and applies T2.3 to the new end. The end of the window becomes the later of the end that stands and the new end, and the key of T4.5 becomes the key under which `X` authenticated this request. `X` writes both into its journal before it answers. Nothing else of the session changes. | The refusals of those rules, and of T5.3 |
+| T5.2 | The extend request is a signed invocation with the extend command of T1.1. It names a session by its identifier and states a new end of the window. `X` authenticates it as T2.1 says, admits it as T2.5 and T2.6 say, and applies T2.3 to the new end. The end of the window becomes the later of the end that stands and the new end, and the key of T4.5 becomes the key under which `X` authenticated this request. `X` writes both into its journal before it answers, in one atomic step with the read that the session has no end. Nothing else of the session changes. | The refusals of those rules, and of T5.3 |
 | T5.3 | An extend and a close request name a session that the journal holds for their own proof path and executor. An extend request names a live session (T4.3). | No such session: `SESSION_UNKNOWN`. An extend request for a session that is not live: `SESSION_ENDED` |
 | T5.4 | A session ends with the first of three events: `now` reaches the end of its window; `X` admits a close request for it (T5.5); or `X` records a closure for a grant of its proof path (T5.6). `X` writes the end into its journal when it first finds it. An end is final: from that record on no request reopens the session, and `X` never accepts its token again, whatever its clock reads. | |
 | T5.5 | The close request is a signed invocation with the close command of T1.1 that names a session by its identifier. `X` authenticates it as T2.1 says and admits it as T2.5 and T2.6 say. For a session that has already ended it changes nothing. | The refusals of those rules, and of T5.3 |
 | T5.6 | When `X` records a closure for a grant, it ends every session whose proof path holds that grant, before it admits anything further. The first such closure is that of a validated issuer spend of the seal of the grant, in a block or, as LIP-0008 section 5.1 adds, in the mempool of `X` alone. | |
 | T5.7 | A refusal that records no closure ends no session. A tip that is too old, an observation that is not healthy and a name that cannot be read refuse the request, and the session stays as it is until one of the events of T5.4. | The refusal of the check |
-| T5.8 | A session lives in the journal of `X`, and a restart with an intact journal keeps it: `X` accepts the token as before. While the journal is lost, `X` refuses every act that needs it (LIP-0025 M5.1). A journal that is started anew holds no session of the lost one, and a recovery charges nothing for sessions. | After a new start: `SESSION_TOKEN` |
+| T5.8 | A session lives in the journal of `X`, and a restart with an intact journal keeps it: `X` accepts the token as before. While the journal is lost, `X` refuses every act that needs it (LIP-0025 M5.1). A journal that is started anew (LIP-0025 M5.3) holds no session of the lost one, so every token of the lost journal refuses. It also refuses every open, extend and close request whose `iat` is not later than the `fenced_at` of its recovery entry, because the lost journal could have held the identity of that request (LIP-0025 M5.5). | A token of the lost journal: `SESSION_TOKEN`. A request with such an `iat`: `SESSION_REPLAY` |
 
 No request in a session is admitted 3600 seconds or more, on the clock of `X`,
 after `X` admitted the last request that opened or extended that session. Three
@@ -324,7 +345,26 @@ an end that lies at most one hour after its last signature, and for a shorter
 time where a grant of the path ends earlier. The end is read on the clock of
 `X` and the signature on the clock of the key holder, so a difference between
 the two clocks adds to that hour or takes from it. A clock of `X` that runs
-slow lengthens it in real time, and no rule of this LIP detects that.
+slow lengthens it in real time. LIP-0022 B3.3 bounds how far that clock can
+fall behind while blocks arrive: an observation refuses where the header of the
+tip is more than `S` seconds ahead of the clock, and `S` is proposed as 600
+seconds. No rule of this LIP adds to that.
+
+What T5.8 says of a journal that is started anew closes a replay that T2.6
+alone leaves open. A journal that is started anew holds no identity. A copy of
+a session-open request that the lost journal had admitted would open a second
+session there, with its token for whoever delivered the copy, and the key
+holder would not learn of it. The lost journal admitted a request only at a
+reading of the clock of `X` that was not below the `iat` of the request
+(LIP-0008 section 12.5), and it admitted nothing after the operator fenced its
+writers and read `fenced_at` (LIP-0025 M5.3). So a request that it could have
+admitted has an `iat` that is not later than `fenced_at`, and the new journal
+refuses every such request, as LIP-0025 M6.6 has an issuer treat the consents
+of that time as consumed. The rule rests on a clock of `X` that did not read
+later than `fenced_at` before the loss. After a recovery of `X` a key holder
+signs its requests anew, and the runs whose sessions were lost start again with
+new sessions. A key holder whose clock reads earlier than `fenced_at` is
+refused until it reads later.
 
 An end is final in this draft, which the decision does not say. An extend
 request that `X` receives after the end of the window finds no live session,
@@ -334,7 +374,11 @@ extends well before the end (T7.6). The other way, a session that a late extend
 request reopens, would let a token return that the service has already refused;
 it stands under the alternatives. A close request that `X` refuses, for an
 observation that is not healthy for example, ends nothing. The key holder sends
-it again, and until then the window bounds the session.
+it again, and until then the window bounds the session. An outage of `X`, or of
+the way from the key holder to `X`, that lasts longer than what is left of a
+window ends the session for good in the same way. How long before the end a key
+holder extends is a choice of its deployment that weighs this against the
+number of signed requests; this LIP proposes no number.
 
 T5.6 goes beyond the words of the decision in one point. The decision names the
 seal of the grant. A session under a child also ends when the parent of that
@@ -352,12 +396,15 @@ token of that path refuses as `SESSION_ENDED`.
 | T6.1 | A slot binding has one of two forms. On one host it is the user id of the operating system under which the slot runs. Over a network it is the address of the slot. | A third form: `SESSION_BINDING` (T2.7) |
 | T6.2 | For the first form `X` takes the user id of its caller from the kernel, for the local socket of the connection and before it reads the request: `SO_PEERCRED` on Linux and `LOCAL_PEERCRED` on Darwin, as LIP-0006 section 1 has it. A user id that the caller states is no input. | `SESSION_PEER` |
 | T6.3 | For the second form `X` takes the address of its caller from the connection. An address that the caller states inside a request is no input. | `SESSION_PEER` |
+| T6.4 | A token travels on two kinds of channel alone: the local socket of T6.2, and a channel that authenticates `X` to the caller and that nobody else can read. This holds for a request with a token and for the answer of T3.3. `X` admits a token, and returns one, on no other channel. | `SESSION_CHANNEL` |
 
 The binding says from where a token is accepted. On one host it is as strong as
 the separation of users by the operating system: every process of the slot's
 user meets it. Over a network it is an address and no identity, and it holds as
 far as the network between the slot and the service lets nobody else send from
-that address. The binding concerns the requests that carry the token. A signed
+that address. An address does not tell the users of one host apart, nor the
+hosts behind one translation of addresses: a copy of the token works from each
+of them. The binding concerns the requests that carry the token. A signed
 request of the key holder is authenticated by its signature and comes from the
 key holder, which is another caller than the slot.
 
@@ -370,6 +417,14 @@ that is configured with a URL reaches a local socket. This draft proposes no
 way. A relay inside the slot, which runs under the slot's user, would meet
 T6.2. Until the point is settled the first form of the binding cannot be built.
 
+T6.4 is the rule for the way of the token. Without it a reader on the path
+between the slot and the service obtains a token that works from the address of
+the slot, and a service that is not `X` receives one from a harness that was
+pointed at it. For a harness with a base URL the second kind of channel is TLS,
+with a certificate of `X` that the harness verifies. How the key of that
+channel is bound to the pinned key of the executor is open: LIP-0008 section 4
+leaves the key and the transport of an executor to a profile.
+
 ### 7. The key holder
 
 These are rules for the service that holds the recipient's key. A service
@@ -380,17 +435,28 @@ that admits sessions cannot observe them and refuses nothing for them
 | --- | --- |
 | T7.1 | The key holder signs an open, an extend and a close request for a run under LIP-0013 J7.3 (a): every grant of the proof path is in the `use` list of the origin of that run. |
 | T7.2 | The key holder builds each of the three requests itself, and it signs no invocation with one of the three commands that a caller built. The slot binding that it states is the slot of that run by its own record of the run (LIP-0013 J7.4), and no value that a caller supplies. |
-| T7.3 | It hands the token to the harness of that run and to nobody else, and it writes the token into no log. |
+| T7.3 | It hands the token to the harness of that run and to nobody else, and it writes the token into no log. The base URL that it gives the harness is a URL of `X` on a channel of T6.4, so that the harness sends the token to `X` alone. |
 | T7.4 | One session serves one run. Another run gets a session of its own, also where it has the same origin. |
 | T7.5 | The end of the window that the key holder states lies at most 3600 seconds after its own clock at the signature. |
 | T7.6 | The key holder extends a session only while its run lives, and each time well before the end of the window. When the run ends it sends a close request and extends no further. |
+| T7.7 | A slot holds runs of one origin. The key holder opens a session for a run only where no run of another origin runs under the user id, or at the address, that it states as the slot binding, and while the session lives it starts no run of another origin there. |
 
-T7.1 to T7.4 are how a session meets J7.8 of LIP-0013. The token acts without a
-signature of the key and lies within the run's reach. It stays behind the
-binding of that run all the same: the key holder asked for it under the grants
-of the run's origin, the service accepts it from the slot of that run alone,
-and it stops working at the last end that the key holder signed, at most an
-hour after its last signature (section 5).
+T7.1 to T7.4 and T7.7 are how a session meets J7.8 of LIP-0013. The token acts
+without a signature of the key and lies within the run's reach. J7.8 asks that
+such a credential is out of the run's reach or behind the same binding. The key
+holder asked for the token under the grants of the run's origin, the service
+accepts it from the slot of that run alone, and it stops working at the last
+end that the key holder signed, at most an hour after its last signature
+(section 5).
+
+T7.7 is what makes the slot the same binding. The service binds a session to a
+user id or to an address, and every process there holds the token. LIP-0013
+section 3.6 separates the runs of one identity by their origin: under J7.3 (a)
+a run gets no signature under a grant that the table does not list for its
+origin. Two runs of different origins under one user id would undo that for a
+session. The second run reads the token of the first and is admitted under the
+grant of the first, which the key holder would have refused it as a signature.
+Runs of one origin share their permissions, so they lose nothing to each other.
 
 T7.2 closes a way out of the slot. LIP-0013 J7.5 lets a run ask the key holder
 for a v4 invocation. A captured agent that could choose the slot binding of a
@@ -408,29 +474,32 @@ after the key holder's last signature, and not at once.
 
 | Code | What it reports | Rule |
 | --- | --- | --- |
-| `SESSION_REPLAY` | The identity of an open, an extend or a close request is already in the journal | T2.6 |
+| `SESSION_CHANNEL` | A token, or a session-open request, arrived on a channel that is neither a local socket nor one that authenticates the service and that others cannot read | T3.3, T4.1, T6.4 |
+| `SESSION_REPLAY` | The identity of an open, an extend or a close request is already in the journal, or the journal was started anew and the `iat` of the request is not later than its `fenced_at` | T2.6, T5.8 |
 | `SESSION_BINDING` | The slot binding of a session-open request has a form that the service does not check | T2.7, T6.1 |
 | `SESSION_WINDOW` | The end of the window is not later than `now`, or more than 3600 seconds later | T2.3 |
 | `SESSION_LIMITS` | A requested limit is above the limit of the grant or the ceiling of the operator, names a key that the grant does not limit, or names a key twice | T2.4 |
 | `SESSION_UNKNOWN` | An extend or a close request names no session of its proof path and executor | T5.3 |
 | `SESSION_TOKEN` | The token is the token of no session in the journal | T4.1, T5.8 |
 | `SESSION_PEER` | The caller does not meet the slot binding of the session | T4.2, T6.2, T6.3 |
-| `SESSION_ENDED` | The session has ended, or `now` has reached the end of its window | T4.3, T5.3 |
+| `SESSION_ENDED` | The session has ended, or `now` has reached the end of its window | T4.3, T4.6, T5.3 |
 | `SESSION_COMMAND` | A request with a token asks for a command that opens, extends or closes a session | T1.3, T4.4 |
 | `SESSION_LIMIT_OVER` | A reservation would exceed an account of the session | T4.6 |
 
-T8.1. For a session-open request the checks of the invocation and of its proof
-path come first, with their own refusals (T2.1, T2.5). Then `SESSION_REPLAY`,
-`SESSION_BINDING`, `SESSION_WINDOW` and `SESSION_LIMITS` stand in this order.
+T8.1. For a session-open request `SESSION_CHANNEL` stands first. The checks of
+the invocation and of its proof path follow, with their own refusals (T2.1,
+T2.5). Then `SESSION_REPLAY`, `SESSION_BINDING`, `SESSION_WINDOW` and
+`SESSION_LIMITS` stand in this order.
 
 T8.2. For an extend request the order is: the checks of the invocation and of
 its proof path, `SESSION_REPLAY`, `SESSION_UNKNOWN`, `SESSION_ENDED`,
 `SESSION_WINDOW`. For a close request it is the same without the last two.
 
-T8.3. For a request in a session the order is that of T4.7.
+T8.3. For a request in a session the order is that of T4.7, and within T4.1 the
+channel stands before the token.
 
-T8.4. None of the ten records a closure of a grant. The end of a session is a
-record of the service about its session.
+T8.4. None of the eleven records a closure of a grant. The end of a session is
+a record of the service about its session.
 
 ### 9. Cases
 
@@ -459,8 +528,14 @@ invocation.
 | S13-18 | A recipient by name whose value lists another channel key since the last signed request of the session | The request refuses with the refusal of step 2. After an extend request under the new key the token is admitted again |
 | S13-19 | A close request; then a request with the token | The session ends; `SESSION_ENDED` |
 | S13-20 | A restart with an intact journal; a recovery by starting anew | The token is accepted; `SESSION_TOKEN` |
+| S13-21 | After a recovery by starting anew, a copy of the session-open request of S13-1, whose `iat` is not later than `fenced_at` and whose end is still ahead; a request that the key holder signs after the recovery | `SESSION_REPLAY`, and no token; admitted |
+| S13-22 | The token at another service than `X`; the session-open request of S13-1 at another service | `SESSION_TOKEN`: that journal holds no such session. The refusal of LIP-0008 section 4, step 4: the executor of the request is not that service |
+| S13-23 | A request with the token on a channel that others can read; a session-open request on such a channel | `SESSION_CHANNEL` for both. The second opens no session |
+| S13-24 | Two requests of one session at once: the first has passed its checks when the observation of the second shows the seal of `G` spent | The second refuses with the refusal of the closed grant, and the session ends. The first reserves nothing and refuses as `SESSION_ENDED` |
 | S13-K1 | A known limit. A captured agent with a shell in its slot reads the token | It uses the session for everything that the path allows, as it would with a signature on every request |
 | S13-K2 | A known limit. A copy of the token in another process of the slot's user | Accepted. From another user id it refuses as `SESSION_PEER` |
+| S13-K3 | A known limit. Against T7.7, two runs of different origins run under one user id, and the second reads the token of the first | Accepted under the grant of the first run, inside the window and the limits of its session. The key holder would refuse the second run a signature under that grant (LIP-0013 J7.3 (a)) |
+| S13-K4 | A known limit of the address form. A copy of the token is sent by another user of the slot's host, or from another host behind the same translation of addresses | Accepted: the address is the same |
 
 ## Sources
 
@@ -473,8 +548,8 @@ No service, no key holder and no node was run for this LIP.
 | The peer credentials of a Unix connection at the wallet service, and the stored receipt of a repeated request | LIP-0006 sections 1 and 4 |
 | The sockets for which `SO_PEERCRED` works | `unix(7)` of the Linux man-pages project, release 6.19. No Darwin manual page was read; for `LOCAL_PEERCRED` the draft relies on LIP-0006 section 1 |
 | What the key holder signs for a run, and the credential without a signature | LIP-0013 section 3.6, J7.3, J7.4, J7.5, J7.7 and J7.8 |
-| The observation, the comparison node and the clock | LIP-0022 sections 1 to 3 |
-| The order of a write, the pending entry and the lost journal | LIP-0025 M3.2, M4.3 and M5.1 |
+| The observation, the comparison node, the clock and the age of the tip | LIP-0022 sections 1 to 3, with B2.5, B3.2, B3.3 and B3.6 |
+| The order of a write, the pending entry, the lost journal and its recovery | LIP-0025 M3.2, M4.3, M5.1, M5.3, M5.5 and M6.6 |
 | The accounts that a request debits | LIP-0026 section 5 |
 
 ## Alternatives
@@ -510,16 +585,30 @@ No service, no key holder and no node was run for this LIP.
 - **The token is a bearer.** Whoever holds a copy and meets the slot binding
   uses the session, inside its window and its limits. On one host that is every
   process of the slot's user.
+- **A slot with runs of two origins undoes the separation of runs.** A run
+  reads the token of another run of its user id and is admitted under a grant
+  that the key holder would not sign under for it. T7.7 is a rule for the key
+  holder, and no service sees its breach (S13-K3).
 - **An address is no identity.** Over a network the binding holds as far as
-  nobody else can send from the address of the slot.
+  nobody else can send from the address of the slot. Every user of the slot's
+  host and every host behind the same translation of addresses can (S13-K4).
+- **The way of the token.** T6.4 keeps a token off every channel that others
+  can read. How the key of the channel is bound to the pinned key of the
+  executor is open, so a harness that is pointed at another server gives that
+  server its token; T7.3 puts the base URL into the hands of the key holder.
 - **Up to one hour after the key holder's last signature.** A token works until
   the latest end that the key holder signed (section 5). A difference between
   the clock of the key holder and the clock of the service adds to that hour,
   and so does a clock of the service that runs slow.
 - **A spent seal reaches a session at the next observation.** The service
   observes before every reservation (T4.5), so a request refuses once an
-  observation shows the spend. A request that was reserved before is not
-  undone.
+  observation shows the spend. Until then `X` admits requests in the session,
+  as it admits signed invocations: a spend that its node has not received is
+  invisible to it. LIP-0022 bounds how long a view may stand still: an
+  observation refuses when the tip is 3600 seconds old for an action that moves
+  money or cannot be undone, and 5400 seconds old for another privileged action
+  (B3.5, B3.6), and when a healthy comparison node conflicts (B2.5). A request
+  that was reserved before is not undone.
 - **Requests in a session are not signed.** The journal of the service is the
   one record of them. The recipient cannot show that a request was not its own,
   and the service cannot show that it was. A billing dispute has the records of
@@ -543,6 +632,9 @@ No service, no key holder and no node was run for this LIP.
 - **A journal that goes back revives a session.** A store that is restored to
   an earlier state holds as live a session that was closed after that state.
   The continuity check of LIP-0025 is what tells such a store from the journal.
+- **A journal that is started anew forgets the requests that it admitted.**
+  T5.8 refuses every request that the lost journal could have admitted, by its
+  `iat`. The rule rests on the clock of the service before the loss.
 
 ## Conformance impact
 
@@ -555,8 +647,8 @@ hold.
 ## Open questions
 
 - **The co-author's agreement** to J13, and the owners' acceptance of each
-  rule, first of the nine points that the section "What is decided and what is
-  proposed" lists.
+  rule, first of the eleven points that the section "What is decided and what
+  is proposed" lists.
 - **The three commands** and the action table of `model.proxy` (LIP-0007),
   whether they are commands of each type or of the reserved protocol namespace,
   the members of the invocation (LIP-0020) and the entries of a service journal
@@ -574,7 +666,13 @@ hold.
 - **A bound on the live sessions of one grant.** Each session needs a signed
   request, and nothing else bounds their number.
 - **The interface between the harness and the proxy**: where the token stands
-  in a request, and what a harness is told when the service refuses.
+  in a request, and what a harness is told when the service refuses. By the
+  order of T4.7 an answer that names the code tells a caller outside the
+  binding whether a token is live.
+- **The key of the channel.** How the key that authenticates `X` on the channel
+  of T6.4 is bound to the pinned key of the executor (LIP-0008 section 4).
+- **The lead time of an extension**, and with it how long an outage of the
+  service a session survives (section 5).
 - **An answer that is in progress when a session ends.** The reservation was
   made before the end. Whether the service completes the answer is for the type
   profile.

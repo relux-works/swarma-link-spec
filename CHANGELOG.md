@@ -25,31 +25,41 @@ What the draft adds, and marks. The three requests of a session are signed
 invocations, so the proof path has to allow their commands, and a request with
 a token never asks for one of them. An end lies at most 3600 seconds after the
 service's clock at the admission, an extend request never moves an end back,
-and an end is final. A repeated request opens no session and returns no token;
-the journal holds the SHA-256 of the token; a lost answer is not repeated.
-Before every reservation in a session the service makes the checks of LIP-0008
-sections 4 and 12 for the proof path again, in an observation of its own, and
-requires that the key of the session's last signed request is still the
-recipient's key. A session has accounts of its own beside those of the grant,
-with the ceiling 0 for a limit key that it does not state. A closure of any
-grant on the path ends the session. Six rules bind the key holder, which
-builds the three requests itself and takes the slot from its own record of the
-run. Ten refusal codes are proposed.
+and an end is final. A repeated request opens no session and returns no token,
+and after a journal that was started anew the service refuses every session
+request whose `iat` is not later than the `fenced_at` of the recovery; the
+journal holds the SHA-256 of the token and never the token; a lost answer is
+not repeated. A token, and the answer that carries it, travel only on a local
+socket or on a channel that authenticates the service and that others cannot
+read. Before every reservation in a session the service makes the checks of
+LIP-0008 sections 4 and 12 for the proof path again, in an observation of its
+own, and requires that the key of the session's last signed request is still
+the recipient's key; the reservation is one atomic step with the reads that the
+session has no end and its path no closure. A session has accounts of its own
+beside those of the grant, with the ceiling 0 for a limit key that it does not
+state. A closure of any grant on the path ends the session. Seven rules bind
+the key holder, which builds the three requests itself, takes the slot from its
+own record of the run and keeps runs of one origin in a slot. Eleven refusal
+codes are proposed.
 
 Consequences that the text states. A token works until the last end that the
 key holder signed, at most one hour after its signature on its own clock; the
-end is read on the service's clock. Requests in a session are unsigned, so a
-billing dispute has the records of the two parties and nothing else.
-`SO_PEERCRED` works only for a local socket, and the decision gives the harness
-a base URL: how the two meet is open, and the binding by user id cannot be
-built until then. After the operator removes a grant from the key holder's
+end is read on the service's clock. Every process of a slot can read the token,
+so a session equals a signature on every request only where the slot holds runs
+of one origin; a deployment that mixes origins under one user id lets one run
+use the grant of another. An address does not tell the users of one host apart,
+nor the hosts behind one translation of addresses. Requests in a session are
+unsigned, so a billing dispute has the records of the two parties and nothing
+else. `SO_PEERCRED` works only for a local socket, and the decision gives the
+harness a base URL: how the two meet is open, and the binding by user id cannot
+be built until then. After the operator removes a grant from the key holder's
 table, the key holder can sign no close request under it, and the session ends
 with its window.
 
 No vector is added: the three signed requests are invocations, which have no
 members yet, and the record of a session waits for the entries of a service
-journal. Section 9 of the LIP states twenty cases and two known limits in
-words.
+journal. Section 9 of the LIP states twenty-four cases and four known limits
+in words.
 
 Other texts: pointers in LIP-0007 section 1, LIP-0008 sections 5 and 12.1 and
 LIP-0013 section 3.6; a row for the sessions of a service in LIP-0025 section
