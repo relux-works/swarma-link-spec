@@ -29,7 +29,9 @@ bytes of SEC1 and signatures 64 bytes of r and s under a domain tag, and the
 envelope identifier and the replay journal exclude the signature. The one
 envelope format is `swarm-envelope/2` with three body kinds: owner command,
 LIP-0013 instruction and wallet request. Levels L0, L1 and L2; a launch inherits
-the level of the envelope that started it. The grant key grants to others only,
+the level of the envelope that started it, and at every level that level bounds
+what the run's key holder signs: no effect at L0, and at L1 and L2 only the
+classes and amounts that the executor's policy admits at that level. The grant key grants to others only,
 device keys are the owner at the owner's own executors and agents' key holders,
 there is no statement key, and the authority key of a person leaves the key map
 for device keys, which closes R5. Three honest limits are stated in the text.
@@ -37,9 +39,11 @@ for device keys, which closes R5. Three honest limits are stated in the text.
 What the draft adds, and marks. Member names and orders of the device record
 and the list, the name-value member `swarma-devices`, the type names, tags,
 members and lifetimes of the three body kinds, the rows of the key holder's
-table by level with the refusal `LEVEL_NOT_FOR_RUN`, the carrier of a policy
-section as an L2 owner command, the action `swarma/device/revoke`, the order of
-admission and its refusal codes, and thirteen cases.
+table by level with the refusal `LEVEL_NOT_FOR_RUN`, the key holder's copy of
+each executor's policy section from the owner's L2 device and its checks at every
+level (O6.6 to O6.12), the carrier of a policy section as an L2 owner command,
+the action `swarma/device/revoke`, the order of admission and its refusal codes,
+and fifteen cases.
 
 Reconciliation. The LIP cites the platform book (chapter 6 §6.6 to §6.8,
 chapter 7 §7.12, chapter 22 §22.5, chapter 24), the Link book (§3.4, §3.7,

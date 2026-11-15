@@ -47,7 +47,8 @@ This LIP gives the owner a voice that the receivers check:
 4. One envelope format, `swarm-envelope/2`, with three typed body kinds: the
    owner command, the LIP-0013 instruction and the wallet request (section 5).
 5. Three levels, L0 work, L1 effects within limits and L2, and a launch that
-   inherits the level of the envelope that started it (section 6).
+   inherits the level of the envelope that started it. At every level the
+   inherited level bounds what the run's key holder signs (section 6).
 6. Policy lives in signed executor configuration sections with an increasing
    number, signed by an L2 device, and never in the pinned document
    (section 7).
@@ -104,8 +105,14 @@ has decided one.
 3. The type names `owner-command/1`, `instruction/1` and `wallet-request/1`,
    their tags, their members, the attachment of the list as base64url and
    the lifetimes (section 5).
-4. The rows of the key holder's table for each level, and the refusal
-   `LEVEL_NOT_FOR_RUN` (section 6).
+4. The rows of the key holder's table for each level; that the key holder
+   receives each executor's policy section from the owner's L2 device and
+   checks every object of a run against it at the run's level, a total limit
+   counted at the key holder, and no device key at a key holder; and the
+   refusal `LEVEL_NOT_FOR_RUN` (section 6, O6.6 and O6.9 to O6.12). That the
+   inherited level bounds a run at L1 and L2 as at L0 (O6.7) is decision 11,
+   "a launch inherits the envelope's level", applied at every level; the
+   decision's example names L0 only.
 5. That a policy section reaches an executor as an L2 owner command, so that
    a P-256 device signs envelopes only (section 7).
 6. The action `swarma/device/revoke` of the fast path (section 8.2).
@@ -117,7 +124,7 @@ has decided one.
 | --- | --- | --- |
 | The device list, its hash and the name-value member as bytes | Yes | The co-author's agreement; vectors |
 | The rule set of an executor as a function of stated facts: list, seals, levels, policy, journal | Yes | The same |
-| The rows by level in the key holder's table | Yes, beside J7 | The same, and J7 itself |
+| The rows by level in the key holder's table, its copy of each executor's policy and its checks at every level | Yes, beside J7 | The same, J7 itself, and the members of a policy section (open questions) |
 | The three body kinds as `swarm-envelope/2` records | No | A reviewed change of `swarm-envelope/2` sections 2.1 and 2.4 (section 5.4) |
 | The member in a live name | No | Every verifier of that name on a LIP-0010 reader (section 3.4) |
 | Revocation by seal | No | The script and custody of a device seal (open questions) |
@@ -413,11 +420,11 @@ conflicts with its section 2.4 are listed under "Reconciliation".
 
 ### 6. Levels and the level of a launch
 
-| Level | What it admits | Who signs it |
-| --- | --- | --- |
-| L0 | Work: a run is started or directed; no effect | A device of the current list with `ceiling` 0 or more |
-| L1 | Effects within the limits of the executor's policy (section 7) | A device with `ceiling` 1 or more |
-| L2 | What the policy assigns to L2; a class outside the registry (O2.3); the policy itself (section 7); the fast revocation (section 8.2) | A device with `presence` `true` and `ceiling` 2, or a separated human console |
+| Level | What it admits | Who signs it | What a run started at it may sign (O6.7) |
+| --- | --- | --- | --- |
+| L0 | Work: a run is started or directed; no effect | A device of the current list with `ceiling` 0 or more | No object whose action ends in an effect |
+| L1 | Effects within the limits of the executor's policy (section 7) | A device with `ceiling` 1 or more | Effects of the classes that the policy for the executor assigns to L0 or L1, within its L1 limits |
+| L2 | What the policy assigns to L2; a class outside the registry (O2.3); the policy itself (section 7); the fast revocation (section 8.2) | A device with `presence` `true` and `ceiling` 2, or a separated human console | Effects of every class that the policy for the executor admits, within its L2 limits, and a class outside the registry; never the policy or a revocation (O6.12) |
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
@@ -426,14 +433,24 @@ conflicts with its section 2.4 are listed under "Reconciliation".
 | O6.3 | A separated human console is a console of the executor's host under an OS account of a person, in which no agent has a shell and to whose input no agent's process can write. A console of a host where agents have shells is not L2, and an executor MUST NOT admit L2 from it. | `LEVEL_ABOVE_DEVICE` |
 | O6.4 | An action whose class the executor's policy assigns to a level above the command's `level` refuses. | `LEVEL_TOO_LOW` |
 | O6.5 | A launch inherits the level of the envelope that started it. The origin of a run that an owner command starts is that command's identifier and its `level` (extends LIP-0013 J7.1). A run that a run creates, and a run that is resumed, has the level of the run it comes from. | |
-| O6.6 | The key holder's table has a row for the owner's commands at each level, L0, L1 and L2, in place of the one owner row of J7.2. A run signs only under the grants of the row of its origin's level. | `GRANT_NOT_FOR_RUN` |
-| O6.7 | For a run whose origin has level L0, the key holder MUST refuse to sign any object whose action ends in an effect (LIP-0018 section 3, LIP-0006 section 7), under every grant of the identity: an envelope, a v4 invocation, a consent to a contract whose actions include an effect, and a delegation request for such a parent. An agent started under L0 cannot reach an effect through its own grants. | `LEVEL_NOT_FOR_RUN` |
+| O6.6 | The key holder's table has a row for the owner's commands at each level, L0, L1 and L2, in place of the one owner row of J7.2. A run signs only under the grants of the row of its origin's level. A row selects the grants a run may use; it does not bound what is signed under them, which O6.7 does. | `GRANT_NOT_FOR_RUN` |
+| O6.7 | For a run whose origin has level N, at every level L0, L1 and L2, the key holder MUST refuse to sign an object for the run when an action that the object authorizes (a) ends in an effect (LIP-0018 section 3, LIP-0006 section 7) and N is L0; (b) has a class that the policy for the executor at which the action takes effect assigns to a level above N, or a class outside the registry while N is below L2 (O2.3); or (c) states an amount, a count or another limited quantity above the limit that this policy sets for its class at level N. The rule holds under every grant of the identity, whatever the run's row lists. The objects are those of J7.5: an envelope, a v4 invocation, a consent to a contract, a delegation request and a request to a delegation signer; for a consent and for a request, the actions and the quantities are those that the contract or the parent allows. An agent started at level N cannot reach, through its own grants, an effect that the policy reserves for a level above N or that exceeds its limits at N. | (a), (b) `LEVEL_NOT_FOR_RUN`; (c) `LIMIT_OVER` |
 | O6.8 | The level of a run, like its origin, is kept outside the agent's write authority and never changes. A caller cannot state it. | Nothing is signed |
+| O6.9 | The key holder takes the policy from the owner's devices and from nothing else. An L2 device of the current list sends it each policy section as the owner command of section 7, with `aud` the key holder; the section names the executor that it bounds (O7.4). The key holder runs steps 1 to 12 of section 11 on it, keeps the latest section that it accepted for each named executor, journals that section's `seq` per executor outside the agents' write authority, and refuses a lower one, and an equal `seq` with other octets (O7.3). It never takes policy from an executor, an agent, a run or a caller. | `CONFIG_ROLLBACK` and the refusals of section 11 |
+| O6.10 | Where the key holder holds no accepted section for the executor at which an action takes effect, or the object does not name that executor, it signs no object whose action ends in an effect for a run at any level, as an executor without a section admits none (O7.5). This holds at a foreign executor too: the owner bounds its agents' runs there by a section that names that executor, which only the owner's key holders read and the foreign executor never does (O10.4). | `LEVEL_NOT_FOR_RUN` |
+| O6.11 | Where the policy states a limit as a total over a period, the key holder counts every object that it signed under that limit for runs of that level, for that executor, within the period. It journals the count outside the agents' write authority before it releases the signature. A key holder that cannot show the count signs nothing more under that limit within the period. | `LIMIT_OVER` |
+| O6.12 | No level lets a run sign as the owner. A key holder MUST NOT hold a device key of the owner, so no run, an L2 run included, signs an owner command, and with it no policy section (O7.2) and no revocation (section 8.2). | Nothing is signed |
 
-O6.5 to O6.8 close the gap that the reviewer named. A command at L0 starts
-work; the run that it starts keeps L0 for its whole life and for its children,
-and its key holder signs no effect for it. The LIP-0013 actions `land` and
-`spend` and the wallet `spend` are effects; `instruct` and `review` are work.
+O6.5 to O6.12 close the gap that the reviewer named, at every level. A command
+at level N starts a run that keeps N for its whole life and for its children.
+Its key holder signs, under the agent's own grants, no effect when N is L0;
+when N is L1 or L2 it signs only the classes that the policy for the named
+executor admits at N, within the limits that the policy sets at N. The
+executor does not see a run's level: a v4 invocation carries none, and section
+11 admits owner commands only. The bound is therefore held at the key holder,
+and O6.9 gives the key holder the policy for that. The LIP-0013 actions `land`
+and `spend` and the wallet `spend` are effects; `instruct` and `review` are
+work.
 
 ### 7. Executor policy
 
@@ -449,7 +466,8 @@ The draft proposes that a section reaches the executor as an owner command at
 L2 whose action is `swarma/config` and whose fields are the six members of the
 configuration statement of LIP-0015 section 3, with the section's octets
 attached. The device then signs an envelope, and P-256 stays for envelopes
-only (O4.6). The other reading is in the open questions. Equal `seq` with
+only (O4.6). The same section reaches each key holder of the owner's agents
+in a second command whose `aud` is that key holder (O6.9). The other reading is in the open questions. Equal `seq` with
 other octets refuses as `CONFIG_ROLLBACK`.
 
 ### 8. Revocation of a device
@@ -542,7 +560,8 @@ order and the codes are the draft's proposal.
 
 A refusal at any step leaves no effect and no reservation. A key holder runs
 steps 1 to 11 for an owner command that starts or directs a run, and records
-the command's identifier and level as the run's origin (O6.5).
+the command's identifier and level as the run's origin (O6.5). It runs steps
+1 to 12 for a policy section addressed to it (O6.9).
 
 ### 12. Cases
 
@@ -564,6 +583,8 @@ with S29.
 | S29-11 | An L2 command for a class outside the registry reaches step 12 | The same class at L1: `ACTION_UNKNOWN`. |
 | S29-12 | Bob's executor `Y` admits Alisa's agent under a grant from Bob | An owner command of Alisa's device at `Y`: `NOT_FOR_ME` for an `aud` of `X`; for an `aud` of `Y`, `DEVICE_LIST_MISMATCH`, because `Y` reads the pin of Bob's name. |
 | S29-13 | An L2 command from a console of a human OS account without agent shells | The same command typed at a console of a host where agents have shells: `LEVEL_ABOVE_DEVICE`. |
+| S29-14 | Laptop `M` (no presence, ceiling 1) signs an L1 `instruct` that starts run `R` of agent `A`. The section for `X` that `A`'s key holder accepted assigns `land` to L2 and caps an L1 `spend` at 10000 sat a day. `R` asks for a v4 `spend` invocation of 4000 sat at `X` under `G`, which lists `land` and `spend`: signed | `R` asks for a `land` invocation at `X` under `G`, which its L1 row lists: `LEVEL_NOT_FOR_RUN`. A `spend` of 12000 sat: `LIMIT_OVER`. A third `spend` of 4000 sat on the same day: `LIMIT_OVER` (O6.11). A child run of `R`, or a caller that states L2 for `R`: the same refusals. |
+| S29-15 | Phone `P` (presence, ceiling 2) signs an L2 `instruct`; its run asks for a `land` invocation at `X` under `G`, within the L2 limits of `X`'s section: signed | The same run asks for a `spend` above the L2 limit: `LIMIT_OVER`. A `land` at executor `Z`, for which the key holder holds no section: `LEVEL_NOT_FOR_RUN` (O6.10). A policy section or a `swarma/device/revoke` for the run: nothing is signed (O6.12). A section for `X` with `seq` 6, after 7, sent to the key holder by `P`: `CONFIG_ROLLBACK`. The envelope of `X`'s own section, relayed by `X`: `NOT_FOR_ME`, because its `aud` is `X` (O6.9). |
 
 ## Honest limits
 
@@ -587,13 +608,20 @@ The decision asks that these limits stand in the text and not be hidden.
   what that console reads. O6.3 admits only a console of a separate human
   account.
 - **The gate is local.** O1.4 and O6.7 hold at an honest executor and an
-  honest key holder. No receiver sees that the key holder refused, as
-  LIP-0013 section 3.6 already says of J7.
-- **An L0 run can still instruct.** O6.7 bounds what a run signs under its
-  own grants. An `instruct` envelope that it sends to another agent starts a
-  run whose origin is that instruction's grant (J7.6), and that origin's row
-  decides what the second run may sign. The level does not travel with the
-  instruction (open questions).
+  honest key holder. The level of a run is checked at its key holder alone:
+  a v4 invocation carries no level, so the executor cannot refuse an effect
+  that a dishonest key holder signed beyond it. No receiver sees that the key
+  holder refused, as LIP-0013 section 3.6 already says of J7.
+- **One presence act covers an L2 run.** Presence is given once, for the
+  command that starts the run. Every effect that the run then signs within
+  its L2 row and the L2 limits rests on that act, and no person sees each
+  effect. The owner bounds this by the L2 row and the L2 limits only (open
+  questions).
+- **A run of any level can still instruct.** O6.7 bounds what a run signs
+  under its own grants. An `instruct` envelope that it sends to another agent
+  starts a run whose origin is that instruction's grant (J7.6), and that
+  origin's row decides what the second run may sign. The level does not
+  travel with the instruction (open questions).
 
 ## Rationale
 
@@ -624,6 +652,12 @@ The decision asks that these limits stand in the text and not be hidden.
   already has `swarm-envelope/2`.
 - **The level inherited by the launch.** A level that bounded only the first
   envelope would bound nothing: the run it starts holds the agent's grants.
+  A level that bounded only L0 would leave an L1 run every class and every
+  amount of its grants, L2 classes included.
+- **The policy at the key holder.** The executor does not see the run's
+  level, so only the key holder can compare an object with the policy at that
+  level. It takes the section from the owner's L2 device, as the executor
+  does, and not from the executor, which an agent may share a host with.
 - **The grant key grants only.** A key that grants to others and configures
   the owner's own machines makes one leak do both. A separate statement key
   would add a key and keep the cold key on every change.
@@ -646,7 +680,7 @@ Swarma Envelope instead of restating them. The revisions read are:
 | Ch. 13 §13.4 (`13-doverennosti.md`, lines 68–70) | Actions are added at run time by signed `handler-manifest/1` and `action-namespace/1` records. | Decision 2 makes a new action a LIP section plus code (X2). |
 | curator-spec CIP-0011 revision 6, R-OPERATOR (`cips/CIP-0011-credential-broker-and-agent-users.md`, lines 24–26; §5, lines 126–153; §5.2, lines 136–141) | A presence-gated operator device key in the phone's secure element signs each exact act; the machine verifies against the pinned phone key; password `sudo` from a terminal is the fallback, widening included, with content confirmation; signature domain and bytes are unpublished. | The device class of this LIP. Conflicts: the pin at the machine (X3), the fallback for widening (X11), and the unstated relation between operator acts on one machine and owner commands to executors (X14). |
 | Link book §3.4 "Three keys of a participant and the agent's identity" (`link-book/ru/03-klyuchi.md`, lines 87–115) | Three keys of a participant; the LIP-0004 reader refuses an extra member. | O3.9. Device keys stand beside the three keys (X15). |
-| Link book §3.7 "The agent's key holder" (lines 140–157) | The owner's command is an origin at the key holder, and its row lists the operator's grants. | Revised by O6.5 to O6.8: the origin carries a level. |
+| Link book §3.7 "The agent's key holder" (lines 140–157) | The owner's command is an origin at the key holder, and its row lists the operator's grants. | Revised by O6.5 to O6.12: the origin carries a level, and the level bounds what the run signs. |
 | Link book §3.10 to §3.12 (lines 236–311) | Signed configuration, key statements and their store, signed by the grant key. | Revised by O7.2 and O10.2 (X6, X7). |
 | Link book §3.13 "Devices and recovery" (lines 312–318) | Devices and recovery; no format for a device attestation. | The device record of section 3.1 is that format for the owner's devices. |
 | Link book §4.9.2 "The executor" (`04-doverennost.md`, lines 310–319) | A limit of a grant belongs to a named executor. | O7.4 applies it to the limits of a policy section. |
@@ -705,6 +739,13 @@ conflicts.
 - **A second envelope format for owner commands** beside the instruction and
   the wallet request: rejected by decision 10.
 - **A level that bounds only the first envelope**: the reviewer's main gap.
+- **An L1 bound in the rows alone**: the operator writes the L1 row so that
+  its grants stay within the L1 limits. Not taken: one grant may allow both an
+  L1 and an L2 class, and a row has no limit of its own, so O6.7 checks each
+  object against the policy.
+- **A level in the v4 invocation, checked by the executor**: the invocation
+  has no member for it, and a foreign executor does not hold the owner's
+  policy. Not written; open questions.
 
 ## Security consequences
 
@@ -732,6 +773,14 @@ conflicts.
   identifier again inside its window; the windows of section 5.1 bound that,
   and LIP-0025 states how a journal shows its continuity.
 - **A level does not cross an instruction to another agent** (Honest limits).
+- **A run's level holds at its key holder.** A compromised key holder signs
+  beyond the level, and the executor cannot see it (Honest limits). A key
+  holder that lacks or loses an executor's section signs no effect for that
+  executor (O6.10), so a lost section fails closed.
+- **The key holder's policy comes from the owner's devices only.** A section
+  that an executor or an agent relays is not accepted, and an older one
+  refuses as `CONFIG_ROLLBACK` (O6.9). A stolen L2 device can still widen the
+  limits, as it can at the executor.
 - **The grant key can no longer configure.** A leak of it issues grants and
   spends v3 seals, and changes no policy and no device list.
 
@@ -805,6 +854,17 @@ Swarma Envelope once registered there.
   list under the person's account and signs owner commands like any device.
 - **The level of a stop and of resumption** (X13).
 - **The levels and A0 to A3.** No mapping is decided (X11).
+- **Presence for each L2 effect of a run (decision 11).** Reading (a),
+  written in O6.7: a run started at L2 signs L2 classes within the L2 limits
+  on the presence of its launch. Reading (b): an L2 class is signed only in
+  an owner command, so a run started at L2 signs at most what L1 admits.
+- **A level in the v4 invocation.** Whether the invocation should carry the
+  run's level, so that an own executor checks it as well as the key holder;
+  LIP-0008 has no member for it.
+- **Two counters for one limit.** A total of the policy is counted by the
+  executor for owner commands (section 11, step 12) and by the key holder for
+  runs (O6.11). Whether one total covers both, and how the two counts meet,
+  is open.
 - **A level across an instruction.** An L0 run can send an `instruct`
   envelope to another agent, whose run then has the origin of that grant and
   that origin's row (Honest limits). Whether the level travels with the

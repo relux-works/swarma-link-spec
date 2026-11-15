@@ -614,8 +614,11 @@ version of a device list whose records hold a key, its algorithm (BIP-340 or
 P-256), a claimed presence flag, a level ceiling and a revocation seal. The
 envelope is `swarm-envelope/2` with three typed body kinds, its identifier and
 replay journal exclude the signature, and a launch inherits the level of the
-envelope that started it, so a run started at L0 obtains no effect through its
-agent's own grants. Policy lives in configuration sections signed by an L2
+envelope that started it. At every level that level bounds what the run's key
+holder signs under the agent's own grants: no effect at L0, and at L1 and L2
+only the classes that the executor's policy admits at that level, within its
+limits there; the key holder takes the policy from the owner's L2 device.
+Policy lives in configuration sections signed by an L2
 device; a device is revoked by the spend of its seal and added only by a name
 update. The grant key grants to others only, no statement key is added, and the
 authority key of a person leaves the key map in favour of device keys, which

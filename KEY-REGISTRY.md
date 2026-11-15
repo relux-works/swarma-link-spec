@@ -466,9 +466,12 @@ names it as the holder or as the channel key.
 - Danger: high; critical at ceiling 2 for the owner's own executors, because
   such a key signs the policy that bounds them.
 - Leak: the thief signs owner commands up to the ceiling at every own
-  executor that has not yet seen the device revoked. At ceiling 2 it sets
-  policy and can revoke the owner's other devices. It cannot add a device,
-  issue a grant or act at a foreign executor.
+  executor and own key holder that has not yet seen the device revoked. A run
+  that such a command starts signs, under its agent's own grants, what the
+  executor's policy admits at the command's level and within its limits there
+  (LIP-0029 O6.7), and no more. At ceiling 2 it sets policy and can revoke the
+  owner's other devices. It cannot add a device, issue a grant or act at a
+  foreign executor.
 - Recovery: another device broadcasts the prepared spend of the device's
   seal, or signs the L2 revocation; a name update writes a list without the
   device. Effects admitted before the closure are not undone.

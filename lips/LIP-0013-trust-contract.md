@@ -555,9 +555,12 @@ optimistically under a decision of 2026-11-15 that awaits the co-author's
 agreement, under which the owner's command is a signed owner command of
 `swarm-envelope/2` with a level, L0, L1 or L2. The origin of a run that it
 starts carries that level and keeps it for the runs that come from it, the
-owner's row of J7.2 becomes one row for each level, and for a run whose origin
-has level L0 the key holder signs no object whose action ends in an effect
-(O6.5 to O6.8). Until the co-author agrees J7.1 and J7.2 stand as written.
+owner's row of J7.2 becomes one row for each level, and the level bounds what
+the key holder signs for the run at every level: no object whose action ends in
+an effect at L0, and at L1 and L2 only the classes that the policy of the named
+executor admits at that level, within its limits there, with the policy taken
+from the owner's L2 device (O6.5 to O6.12). Until the co-author agrees J7.1 and
+J7.2 stand as written.
 
 [LIP-0028](LIP-0028-sessions.md) holds Draft text, under a decision of
 2026-11-15 that awaits the co-author's agreement (J13), for a run whose harness
