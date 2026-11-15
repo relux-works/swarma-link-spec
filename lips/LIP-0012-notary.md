@@ -51,6 +51,11 @@ direction of the same day.
 | N9. Anchor | One LIP-0005 frame per attestation (D10). |
 | N10. The notary issues nothing | The notary attests and does not issue. An owner may be the notary of their own grants. |
 
+J9, decided and agreed by both owners on 2026-11-15, narrows D1 and so N5 on
+Grant v4: a v4 child of a row without a certifier needs no attestation, and a
+v4 row may be without one only inside one owner (LIP-0014 section 8.3). Every
+v3 child is certified.
+
 N1 to N10 are the owners' directions. The decisions of 2026-11-12 are stated
 in terms of the separate attestation: they fix its anchor and the effect of
 its withdrawal. Everything else in this LIP and in LIP-0014 is a draft's
@@ -142,7 +147,10 @@ trusted notary identities in the verifier's configuration.
 
 For a child grant the requirement is no longer a choice of the parent: every
 child needs an attestation (N5), and a right of re-delegation that names no
-notary is malformed. LIP-0014 section 2 proposes the member that carries the
+notary is malformed. On v4 the parent decides it for each row, under J9
+(LIP-0014 section 8.3): a row without a certifier is valid only inside one
+owner, and a v4 parent none of whose rows names a certifier need pin no
+notary. LIP-0014 section 2 proposes the member that carries the
 names. For a grant that is not a child, field names and encoding of a
 requirement stay open.
 

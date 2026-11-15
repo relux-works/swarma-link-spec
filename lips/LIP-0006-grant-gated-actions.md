@@ -36,8 +36,9 @@ v1 actions; it has no adopted wire format or implementation claim here.
 Agent-issued child grants are since decided as part of the protocol
 (LIP-0008 section 12.6, 2026-11-11), and every child needs a notary
 attestation ([LIP-0014](LIP-0014-notary-certified-redelegation.md),
-2026-11-12). The signer capability described here still authorizes no
-sub-delegation.
+2026-11-12), except, under J9 of 2026-11-15, a v4 child of a row without a
+certifier inside one owner (LIP-0014 section 8.3). The signer capability
+described here still authorizes no sub-delegation.
 
 ## Motivation
 

@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.48
+**Version:** 0.1.49
 
 **Date:** 2026-11-15
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.48
+## Draft profiles and design decisions in v0.1.49
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -175,7 +175,10 @@ implemented in a product.
 notary-certified re-delegation and records the owners' decisions of 2026-11-12.
 Every child grant is admitted only with a valid notary attestation, and every
 verifier still checks the countable conditions of the child itself: a wider
-child refuses for that reason even when it is certified. The parent's signed
+child refuses for that reason even when it is certified. The one exception is
+J9, decided and agreed by both owners on 2026-11-15: a v4 child of a row
+without a certifier, which a parent may hold only inside one owner, needs no
+attestation (LIP-0014 section 8.3). The parent's signed
 right of re-delegation names one to four notaries, each by its `id/` name, the
 registration of that name and its owner key, and it holds one row for each
 child that the grant permits. Each notary publishes its attestation key in its
@@ -531,10 +534,11 @@ contracts and 39 pairs of a parent and a child. No checker for them is
 published, and nothing of the profile is implemented.
 
 Version 0.1.47 records four decisions of Ivan Oparin of 2026-11-15 on the rows
-of a v4 parent, as Draft text; the co-author's agreement on each is pending,
-and until then the text in force stays as it is. A parent states its rows in
-groups, a template with ranges of coins and one ordinal across them, so that a
-parent can permit thousands of children (J12;
+of a v4 parent, as Draft text. The co-author agreed to J9 on 2026-11-15, and
+version 0.1.49 puts it in force; on the other three the co-author's agreement
+is pending, and until then the text in force stays as it is for them. A parent
+states its rows in groups, a template with ranges of coins and one ordinal
+across them, so that a parent can permit thousands of children (J12;
 [LIP-0026](lips/LIP-0026-rows-and-accounts.md) section 8). A row may name the
 recipient of its child by a class of landlords, each pinned like a notary, and
 the executor then checks that the recipient's name is an agent of such a
@@ -581,6 +585,24 @@ key holder's table keeps its session for up to an hour. The LIP defines no
 octets and adds no vector, because the invocation has no members yet. Until the
 co-author agrees, a v4 service admits signed invocations alone. Nothing of it
 is implemented.
+
+Version 0.1.49 puts J9 in force, decided and agreed by both owners on
+2026-11-15: a child needs an attestation only where its row names a certifier,
+a v4 row without a certifier is valid only where its recipient constraint is
+limited to the issuer's own landlord, across owners a certifier stays
+mandatory, and a row without a certifier states no stop coin
+([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.3, rules
+J9.1 to J9.4; [LIP-0026](lips/LIP-0026-rows-and-accounts.md) section 10). The
+two recipient constraints that J9 admits, a class of exactly the issuer's
+landlord and an exact name that passes the checks of a class against it, rest
+on J10 and J11, which await the co-author's agreement. Until both owners have
+decided J10 and J11 no child of a row without a certifier is admitted, and
+every admitted v4 child is certified. The
+texts that restate D1 (LIP-0006, LIP-0008, LIP-0012) say how J9 narrows it on
+v4. D8, J1 and the member `notary` of profile `swarma-trust-contract/2` do not
+change; LIP-0014 section 8.3 states how each is read for a row without a
+certifier. Grant v3 does not change, every v3 child is certified, and nothing
+of J9 is implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

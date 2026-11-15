@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.1.49 — 2026-11-15
+
+Puts J9 in force: no certifier for a row inside one owner. Ivan Oparin decided
+J9 on 2026-11-15, and the co-author, Alexey Grigorev, agreed on 2026-11-15, so
+J9 is decided and agreed by both owners on 2026-11-15. LIP-0014 and LIP-0026
+stay Drafts, nothing of J9 is implemented, and no v3 byte, no vector outcome
+and no other decision changes.
+
+The rule. LIP-0014 section 8.3 states the decision as four rules in force for a
+v4 parent. J9.1: the right of re-delegation states for each row whether it
+names a certifier, a child of a row that names one is admitted only with a
+valid attestation (D1), and a child of a row without one needs none. J9.2: a
+row without a certifier has a recipient constraint limited to the issuer's own
+landlord, a class with exactly the issuer's landlord or an exact name that
+passes the landlord and holder checks of a class against it; any other such
+row refuses the parent. J9.3: across owners a certifier stays mandatory, as D8
+says. J9.4: a row without a certifier states no stop coin. LIP-0026 section 10
+opens with the same decision; R10.1 and R10.2 now apply to a row, and under
+section 8 to a template, and R1.1 admits a row that states no certifier. R10.3
+and the second sentence of R10.4 stay the draft's proposals, and so do the
+codes of section 9 that R10.3 gives.
+
+What J9 needs from the pending decisions, stated in place. Both recipient
+constraints of J9.2 rest on J10, the class and its checks, and on J11, the list
+`holders`, and the co-author's agreement to both is pending. In the text in
+force a row names a request key or a name with its owner key, and a landlord
+value has no `holders`. A parent may hold a row without a certifier whose
+recipient is an exact name, and that row admits no child: until both owners
+have decided J10 and J11, no child of a row without a certifier is admitted,
+and every admitted v4 child is certified. J12 does not bear on J9.
+
+Interactions, stated and not changed. D8 compares the owner of the issuer with
+the owner of the delegator, and J9.2 tests the recipient of the child; for a
+row without a certifier "across owners" is read for that recipient, the owner
+of the delegator is not tested (case S9-K1), and whether it should be is now
+an open question of LIP-0014 as well. On v4 the certifier that J1.1 fixes for
+an ordinal is a pinned notary or the signed statement that the row has none;
+J1.2 to J1.5, J1.8 and the coin of J1.9 apply to such a row unchanged, and J1.6
+and the notary's record of J1.7 have no subject in it. The member `notary` of
+profile `swarma-trust-contract/2` stays mandatory in every row, a right of
+re-delegation without a notary still refuses as `DELEGATE_NO_NOTARY`, and every
+v3 child is certified.
+
+Other texts follow the decision: LIP-0006, LIP-0008 and LIP-0012, which
+restate D1, say how J9 narrows it on v4; LIP-0027 no longer calls J9 pending;
+the note of `vectors/LIP-0026/class-vectors.json` says that J9 is decided and
+that its vectors rest on the checks of J10 and the holders of J11; the README
+and the index of open questions close J9. No rule of those texts and no
+vector changes.
+
 ## 0.1.48 — 2026-11-15
 
 Adds Draft LIP-0028, sessions for clients that cannot sign, for a decision of

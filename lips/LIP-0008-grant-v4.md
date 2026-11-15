@@ -1453,6 +1453,12 @@ broader" check that this section proposed on 2026-11-11, the decision of
 | (d) The sum of the children's budgets does not exceed the parent's, enforced at spend time, on chain where possible | Decided: a separate signed pool with a partition per child (D6), serialized at issuance and enforced by each executor's journal. No on-chain enforcement is described. |
 | (e) A notary attestation is required for any child whose scope is free text | Decided more broadly: for every child (D1). |
 
+J9, decided and agreed by both owners on 2026-11-15, narrows D1 on v4: a child
+needs an attestation only where its row names a certifier, and a row may be
+without one only where its recipient constraint is limited to the issuer's own
+landlord ([LIP-0014](LIP-0014-notary-certified-redelegation.md) section 8.3).
+The table above is the decision of 2026-11-12 and does not change.
+
 ## Alternatives
 
 Keeping limits only in the contract preserves the existing indirect commitment

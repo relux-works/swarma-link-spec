@@ -39,12 +39,13 @@ This LIP proposes the first profile for the stop coin, on Namecoin:
 It does not define the attestation of a child on v4 or the frame that
 states a cause. Both come with the profile of the attestation.
 
-Under a decision of 2026-11-15 that awaits the co-author's agreement (J9;
-LIP-0014 section 8.3 and LIP-0026 section 10) a v4 row inside one owner may
-have no certifier. Such a row states no stop coin, and no rule of this profile
-applies to it. Under a second decision of that day (J12; LIP-0026 section 8) a
-parent states its rows in groups, and where the stop coins of the rows of a
-group stand is open.
+Under J9, decided and agreed by both owners on 2026-11-15 (LIP-0014 section
+8.3 and LIP-0026 section 10), a v4 row inside one owner may have no certifier.
+Such a row states no stop coin, and no rule of this profile applies to it. No
+child of such a row is admitted before both owners have decided J10 and J11
+(LIP-0014 section 8.3). Under a second decision of that day, which awaits the
+co-author's agreement (J12; LIP-0026 section 8), a parent states its rows in
+groups, and where the stop coins of the rows of a group stand is open.
 
 ## What is decided and what is proposed
 

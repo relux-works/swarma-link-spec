@@ -44,11 +44,16 @@ This LIP proposes the first profile for rows on v4, on Namecoin:
 It defines no octets of a row. The members of a v4 grant do not exist yet,
 and the rows come with them.
 
-Sections 8 to 10 hold Draft text under three decisions of Ivan Oparin of
+Sections 8 and 9 hold Draft text under two decisions of Ivan Oparin of
 2026-11-15 that await the co-author's agreement: a parent states its rows in
-groups (J12), a row may name the recipient of its child by a class of landlords
-(J10), and a row inside one owner may have no certifier (J9). Until the
-co-author agrees, sections 1 to 7 stand as they are.
+groups (J12), and a row may name the recipient of its child by a class of
+landlords (J10). Until the co-author agrees, sections 1 to 7 stand as they are
+for groups and the recipient. Section 10 holds J9, decided and agreed by both
+owners on 2026-11-15: a row inside one owner may have no certifier, so the
+certifier of R1.1 may be absent. J9 admits a child of such a row only through
+the class of section 9 and the holders of LIP-0010 section 10 (J11), so until
+both owners have decided J10 and J11 no child of a row without a certifier is
+admitted.
 
 ## What is decided and what is proposed
 
@@ -68,6 +73,7 @@ LIP-0008 sections 4 and 12.2. This LIP changes none of them.
 | Two cumulative ledgers, the child's and the row's; one request identity is charged once; the row ledger draws on the pool only (J1.3) | The same | Section 5 names the accounts and says which of them a request debits |
 | The coin is confirmed before the parent is signed and pays a separate key of the re-delegating side; the issuance of a child spends it in the transaction that carries the child's commitment; "the code is fixed with the v4 bytes" (J1.9) | The same | Section 3, with two codes |
 | "Who funds the coin, and the account and the path of its key, are not fixed" | LIP-0014 section 9.1; the key registry, open points | Section 4, as a proposal that awaits the owners |
+| A child needs an attestation only where its row names a certifier; a row without one is valid only where its recipient constraint is limited to the issuer's own landlord; across owners a certifier stays mandatory; a row without a certifier has no stop coin (J9, decided and agreed by both owners on 2026-11-15) | LIP-0014 section 8.3, rules J9.1 to J9.4 | Section 10 |
 | Every applicable link is charged once for a request; independent executors need signed partitions and share no remainder | LIP-0008 sections 4 and 12.2 | Section 5 takes the row as the parent's link for a request under a child |
 
 Every rule of this LIP is the draft's proposal, and neither owner has
@@ -94,16 +100,18 @@ and the owners should look at them first:
    roles have two inputs. The script of the coin is a witness key hash
    (R3.1), which follows from LIP-0023, a draft itself.
 
-Three further decisions are Ivan Oparin's of 2026-11-15, and the co-author's
-agreement on each is pending. They are recorded in LIP-0014, "Decisions of
-2026-11-15", and each has one section of this LIP that opens with what the
-decision says and marks what this draft adds.
+Three further decisions are Ivan Oparin's of 2026-11-15. The co-author agreed
+to J9 on the same day, so J9 is decided and agreed by both owners on
+2026-11-15; on J10 and J12 the co-author's agreement is pending. They are
+recorded in LIP-0014, "Decisions of 2026-11-15", and each has one section of
+this LIP that opens with what the decision says and marks what this draft
+adds.
 
 | Decision | What it says | Section |
 | --- | --- | --- |
 | J12. Groups | A parent states its rows as groups. A group is a template with coin ranges. The template holds the executor, the recipient constraint, the limits of each child, and a certifier or none. A range is a transaction id, a first output index, a count and a script, and each coin of a range is one row. One ordinal runs across groups and ranges | 8 |
 | J10. Landlord class | The recipient constraint of a row has a third form beside a key and a name: a list of landlords, each pinned like a notary. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order, the last of which asks who wrote the value of that name | 9 |
-| J9. No certifier inside one owner | A child needs an attestation only where its row names a certifier. A row without one is valid only where its recipient is limited to the issuer's own landlord. Across owners a certifier stays mandatory | 10 |
+| J9. No certifier inside one owner | A child needs an attestation only where its row names a certifier. A row without one is valid only where its recipient is limited to the issuer's own landlord. Across owners a certifier stays mandatory. Decided and agreed by both owners on 2026-11-15 | 10 |
 
 The bounds of section 8, the refusal codes of sections 9 and 10, and every rule
 that those sections mark as this draft's are proposals.
@@ -121,7 +129,7 @@ rules through this LIP, under LIP-0001.
 | The row account in a signer | No | The owners' choice of the account, and the custody of v4 accounts, which is open (LIP-0024 section 5) |
 | An executor's ledger on a store | No | A store that is qualified under LIP-0014 J1.4; LIP-0025 proposes its form |
 | The arithmetic of one kind of limit | No | The type profile of that kind (LIP-0008 section 2) |
-| The checks of sections 8 to 10 as functions of stated facts and of the octets of name scripts and name values | Yes | The co-author's agreement to J9, J10, J11 and J12, and the owners' acceptance |
+| The checks of sections 8 to 10 as functions of stated facts and of the octets of name scripts and name values | Yes | The co-author's agreement to J10, J11 and J12, and the owners' acceptance; section 10 (J9) is decided and admits a row without a certifier only through the checks of section 9 |
 
 ## Motivation
 
@@ -181,7 +189,7 @@ which limits, who certifies the child, and which coin its issuance spends.
 
 | Rule | Requirement |
 | --- | --- |
-| R1.1 | A row states five things: the executor, as a service name with its pinned public key; the recipient of the child, in exactly one of the two modes of LIP-0008 section 3.1; the limits of the row; the certifier, which is one of the notaries that the parent pins; and the coin, as an outpoint and a script. The ordinal of a row is its position among the rows of the parent, counted from 1. |
+| R1.1 | A row states five things: the executor, as a service name with its pinned public key; the recipient of the child, in exactly one of the two modes of LIP-0008 section 3.1; the limits of the row; the certifier, which is one of the notaries that the parent pins, or, under section 10 (J9), the statement that the row has none; and the coin, as an outpoint and a script. The ordinal of a row is its position among the rows of the parent, counted from 1. |
 | R1.2 | A limit has a kind, a resource, a unit and an amount, and a period where its kind has one (LIP-0008 section 2). The key of a limit is all of these but the amount. No two limits of one row have the same key, and no two own limits of one grant have. |
 | R1.3 | A parent states one pool amount for every key that one of its rows limits. For each key, the amounts of the rows do not sum to more than the pool, and the sum is an exact integer sum. |
 | R1.4 | The coins of the rows of one parent are different outpoints, and none of them is the seal of the parent. |
@@ -196,11 +204,12 @@ Section 10.1 of LIP-0014 adds a sixth thing to a v4 row, the stop coin of
 the row's notary (J2.7). This LIP does not treat it;
 [LIP-0027](LIP-0027-row-stop.md) proposes its profile.
 
-Sections 8 to 10 hold Draft text under decisions that await the co-author's
+Sections 8 and 9 hold Draft text under decisions that await the co-author's
 agreement. Under section 8 (J12) a parent states its rows in groups, and R1.1,
 R1.3 and R1.4 are read as that section says. Under section 9 (J10) the
-recipient of R1.1 has a third form. Under section 10 (J9) the certifier of R1.1
-may be absent.
+recipient of R1.1 has a third form. Section 10 holds J9, which both owners
+decided: the certifier of R1.1 may be absent where R10.2 holds, and no child of
+such a row is admitted before J10 and J11 are decided.
 
 A parent with a pool of 100 and rows of 60 and 40 is valid, and so is one
 with rows of 60 and 30. Rows of 60 and 60 are not. Two rows may name the
@@ -693,25 +702,40 @@ Four further limits hold:
 
 ### 10. Rows without a certifier (J9)
 
-**Owner decision pending: J9.** Ivan Oparin decided on 2026-11-15 that a
-child needs an attestation only where its row names a certifier, and that a
-row may be without one only inside one owner. The co-author's agreement is
-pending, and until then every row names a certifier (R1.1) and every child
-is certified (LIP-0014, D1).
+**Decided and agreed by both owners on 2026-11-15: J9.** Ivan Oparin decided
+on 2026-11-15 that a child needs an attestation only where its row names a
+certifier, and that a row may be without one only inside one owner. The
+co-author agreed on 2026-11-15. The decision is text in force; LIP-0014
+section 8.3 states it as the rules J9.1 to J9.4.
 
 A principal whose own agents hand work to each other pays, under D1, a notary's
 attestation, anchor and seal for every child, although the notary is its own
 and the recipient is its own agent.
 
-The decision says this. The right of re-delegation of the parent decides for
-each row whether a child of it needs an attestation: it does where the row
+The decision says this. The right of re-delegation of the parent MUST state
+for each row whether a child of it needs an attestation: it does where the row
 names a certifier. The principal signs the parent, so a delegator cannot drop a
-certifier. A row without a certifier is valid only where its recipient
-constraint is limited to the issuer's own landlord: either a class with exactly
-the issuer's landlord, or an exact name that passes the landlord and holder
-checks of section 9 against the issuer's landlord. Across owners a certifier
-stays mandatory, as D8 of LIP-0014 says. The stop coin of LIP-0027 belongs only
-to rows with a certifier.
+certifier. A row without a certifier MUST have a recipient constraint that is
+limited to the issuer's own landlord: either a class with exactly the issuer's
+landlord, or an exact name that passes the landlord and holder checks of
+section 9 against the issuer's landlord. Across owners a certifier stays
+mandatory, as D8 of LIP-0014 says. The stop coin of LIP-0027 belongs only to
+rows with a certifier.
+
+Both recipient constraints of the decision rest on decisions that await the
+co-author's agreement. The class is the form of section 9 (J10), and the
+landlord and holder checks of an exact name are checks of section 9 that read
+the list `holders` of LIP-0010 section 10 (J11). In the text in force a row
+names its recipient in one of the two modes of R1.1, so a class is no
+recipient of a valid row. The checks that R10.3 makes for an exact name are
+checks of section 9, and check (c) reads a list that no landlord value in force
+carries, since the landlord binding has the one member `grant`. A row without a
+certifier whose recipient is an exact name meets R10.2 and admits no child.
+Until both owners have decided J10 and J11, no child of a row without a
+certifier is therefore admitted, and every child that is admitted is certified
+(LIP-0014 J9.1). Section 8 (J12) does not bear on the
+decision: until it is decided, R10.1 and R10.2 apply to each row, and under it
+to the template of each group.
 
 The owner's practice, which is no rule of this profile: a certifier for rows
 whose children permit effects, such as payments, the use of a model and
@@ -730,11 +754,16 @@ a child of a row without a certifier (R10.4).
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| R10.1 | A template states the certifier of its rows, which is one of the notaries that the parent pins, or states that its rows have none. A parent whose templates name no certifier need pin no notary. | A certifier that the parent does not pin: the parent is refused (R8.7) |
-| R10.2 | A template without a certifier has one of two recipient constraints. The first is a class with exactly one landlord, whose name, registration and owner key are those that the parent binds for its issuer (LIP-0008 section 3). The second is a name with its owner key. A template without a certifier whose recipient is a request key, a class with two or more landlords, or a class whose one landlord is not the issuer makes the parent refused. | The parent is refused (R8.7) |
+| R10.1 | A row states its certifier, which is one of the notaries that the parent pins, or states that it has none. Under section 8 (J12) a template states this for the rows of its group. A parent none of whose rows names a certifier need pin no notary. | A certifier that the parent does not pin: the parent is refused (R1.5; under section 8, R8.7) |
+| R10.2 | A row without a certifier has one of two recipient constraints. The first is a class with exactly one landlord, whose name, registration and owner key are those that the parent binds for its issuer (LIP-0008 section 3). The second is a name with its owner key. A row without a certifier whose recipient is a request key, a class with two or more landlords, or a class whose one landlord is not the issuer makes the parent refused. Under section 8 the same holds for a template without a certifier. | The parent is refused as a whole, as R1.5 says (under section 8, R8.7) |
 | R10.3 | For a child of a row without a certifier whose recipient is a name, the verifier makes the checks (a), (c) and (d) of section 9 for that name with the issuer of the parent as the landlord `L`, and the fifth and the sixth step of check (b): the writer of the current value of `L`, and the pending read. The first four steps of (b) are met by the admission of the parent, which judged the issuer's name under LIP-0008 section 3 with the same registration, owner key and recent block (LIP-0021 section 7.1). | The codes of section 9, in the order of R9.9 |
 | R10.4 | A child of a row without a certifier needs no attestation. The verifier makes no check of an attestation for it and reads none that is presented. A child of a row with a certifier is certified as LIP-0014 says. | |
 | R10.5 | A row without a certifier states no stop coin, and no rule of LIP-0027 applies to it. | |
+
+R10.1, R10.2, the first sentence of R10.4 and R10.5 state the decision on the
+facts of a row. R10.3 and the second sentence of R10.4 are the two additions
+of this draft named above and stay proposals, and so do the codes of section 9
+that R10.3 gives.
 
 D8 of LIP-0014 speaks of an issuer and a delegator that have one owner and does
 not say how a verifier tells. R10.2 and R10.3 give the recipient of the child a
@@ -768,7 +797,9 @@ Three limits hold:
 ### 11. Vectors of sections 8 to 10
 
 Two files hold 103 vectors over the 27 rules of sections 8 to 10, and they
-follow Draft text that awaits the co-author's agreement.
+follow Draft text that awaits the co-author's agreement. The vectors of rows
+without a certifier follow section 10, which both owners decided, through the
+checks of section 9 and the holders of LIP-0010 section 10, which await it.
 
 | File | Group | Vectors | What a checker does |
 | --- | --- | --- | --- |
@@ -920,7 +951,9 @@ No node, no signer and no store was run for this LIP.
   child that widens its row refuses for the widening, also when a notary
   certified it.
 
-The following consequences belong to the Draft text of sections 8 to 10.
+The following consequences belong to sections 8 to 10: to the Draft text of
+sections 8 and 9, and to section 10, which both owners decided, where its rows
+meet the checks of section 9.
 
 - **A class is as strong as the custody of its holder keys.** A holder key
   admits whatever value it writes into a name that it holds (R9.7). It is a
@@ -950,7 +983,9 @@ still run on a real store.
 
 Sections 8 to 10 add nothing to Grant v3 either: a row of profile `/2` names
 its grantee by key and always names its notary. Their two vector files are
-Draft vectors of pending decisions, and they change no vector of section 7.
+Draft vectors: they follow J10, J11 and J12, which are pending, and the
+vectors of section 10 follow J9, which is decided, through the checks of J10.
+They change no vector of section 7.
 
 ## Open questions
 
@@ -974,8 +1009,10 @@ Draft vectors of pending decisions, and they change no vector of section 7.
   attestation.
 - **A run** of the reads of section 3 on nodes, and of section 5 on a store
   that is qualified under LIP-0014 J1.4.
-- **The co-author's agreement** to J9, J10 and J12, on which sections 8 to
-  10 rest, and to J11 in LIP-0010.
+- **The co-author's agreement** to J10 and J12, on which sections 8 and 9
+  rest, and to J11 in LIP-0010. Section 10 (J9) is decided and agreed by both
+  owners on 2026-11-15, and no child of a row without a certifier is
+  admitted before J10 and J11 are decided.
 - **The four bounds of R8.4** and a bound on the landlords of a class.
 - **The stop coins of a group** whose template names a certifier (section
   8).
