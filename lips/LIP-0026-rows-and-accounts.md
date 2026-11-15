@@ -767,7 +767,7 @@ Three limits hold:
 
 ### 11. Vectors of sections 8 to 10
 
-Two files hold 101 vectors over the 27 rules of sections 8 to 10, and they
+Two files hold 103 vectors over the 27 rules of sections 8 to 10, and they
 follow Draft text that awaits the co-author's agreement.
 
 | File | Group | Vectors | What a checker does |
@@ -775,7 +775,7 @@ follow Draft text that awaits the co-author's agreement.
 | [`groups-vectors.json`](../vectors/LIP-0026/groups-vectors.json) | `parents` | 10 valid, 16 refused | Section 8 on the stated groups, ranges, limits and pools of a parent; a refused parent states the rule that it breaks |
 | | `ordinals` | 12 | R8.3 and R8.8: the group, the range and the coin of an ordinal, or `CHILD_ORDINAL` |
 | [`class-vectors.json`](../vectors/LIP-0026/class-vectors.json) | `templates` | 6 valid, 9 refused | R9.1, R10.1 and R10.2 on a stated template and the issuer that the parent binds |
-| | `admissions` | 13 passing, 31 refused, 4 compound | Sections 9 and 10 for one child, in the order of R9.9 |
+| | `admissions` | 13 passing, 33 refused, 4 compound | Sections 9 and 10 for one child, in the order of R9.9 |
 
 The groups file holds no octets, because a parent has none yet. `group-10` and
 `group-22` hold amounts whose sum is 2 to the power 64: a checker that adds in
@@ -800,20 +800,30 @@ and its control is `class-01`, where the holder spent its own previous output.
 `class-27` is the limit of R9.11: the holder made an update of its own on the
 gifted name, and the check passes.
 
-`class-36` and `class-37` hold a class of two landlords, beside their control
-`class-35`. In `class-36` a holder of the second landlord wrote a value that
-points to the first and sent the name to a holder of the first; it refuses as
-`CLASS_WRITER`. In `class-37` a holder of the second landlord holds a name
-whose value points to the first; it refuses as `CLASS_HOLDER`. A checker that
-takes the holders of every landlord of a class together admits both.
+Four refused admissions hold a class of two landlords and bind the holders to
+the landlord that the value names, in both positions of the class. In
+`class-36` and `class-37` the value names the first landlord, and their control
+is `class-35`. In `class-36` a holder of the second landlord wrote the value
+and sent the name to a holder of the first; it refuses as `CLASS_WRITER`. In
+`class-37` a holder of the second landlord holds the name; it refuses as
+`CLASS_HOLDER`. `class-38` and `class-39` are the mirror: the value names the
+second landlord, and their control is `class-05`. In `class-38` a holder of the
+first landlord wrote the value (`CLASS_WRITER`), and in `class-39` a holder of
+the first landlord holds the name (`CLASS_HOLDER`). A checker that takes the
+holders of every landlord of a class together admits all four. One that adds to
+the holders of the named landlord those of the landlords listed before it, or
+those of the issuer's landlord, admits the two mirrors and decides every other
+admission of the file as it stands.
 
-Two admissions end with a code of LIP-0021 and show the place that R9.9 gives
-the checks. In `class-29` the current output of the recipient name has an
-unsupported script, and in `class-34` the child signs another owner key than
-the one that holds the name, while every check of the class would pass. The
-proof of the recipient by name refuses them as `RECIPIENT_NAME_UNAVAILABLE` and
-`RECIPIENT_NAME_NOT_HELD`. The file lists these two codes apart from its own,
-in `codes_of_lip_0021`.
+Two admissions end with a code of LIP-0021. In `class-29` the current output of
+the recipient name has an unsupported script. The proof of the recipient by
+name refuses it as `RECIPIENT_NAME_UNAVAILABLE`, where a checker that made the
+checks of the class first would report a code of the class: this vector shows
+the place that R9.9 gives the checks. In `class-34` the child signs another
+owner key than the one that holds the name, while every check of the class
+would pass. The proof refuses it as `RECIPIENT_NAME_NOT_HELD`, which shows that
+the proof is made and not where it stands. The file lists these two codes apart
+from its own, in `codes_of_lip_0021`.
 
 `certifier-01` to `certifier-09` are the cases S9-1 to S9-K1 of LIP-0014
 section 8.3 and their neighbours. `certifier-08` is the same exact name in a
