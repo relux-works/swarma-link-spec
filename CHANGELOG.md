@@ -34,7 +34,8 @@ a value of its own choice. Eight refusal codes are proposed.
 Holders (J11; LIP-0010 section 10). The landlord binding gains a member
 `holders`: the owner keys of the names of the landlord's agents and stations,
 as owner pins in ascending order. An absent or empty list admits no name. A
-landlord value holds at most five holders, and four beside a `nostr` member.
+landlord value holds at most five holders without a `nostr` member, four with
+a key string or a NIP-05 object, three with one relay and two with two relays.
 The list is part of `swarma`, so an update that changes it ends the v4 grants
 that the landlord issued before, under LIP-0008 section 3; a reader that does
 not know the member refuses the value, so a landlord with live v3 grants adds
@@ -58,9 +59,11 @@ owner of the delegator in a row without a certifier.
 
 Vectors. `vectors/LIP-0010/holders-vectors.json` holds 28 landlord values and
 the five largest lists. `vectors/LIP-0026/groups-vectors.json` holds 26 parents
-and 12 ordinals, and `vectors/LIP-0026/class-vectors.json` 15 templates and 42
-admissions, among them the gift of a name beside its valid control. A second
-implementation that shares no code with the generator decides all 128 with 0
+and 12 ordinals, and `vectors/LIP-0026/class-vectors.json` 15 templates and 48
+admissions, among them the gift of a name beside its valid control, the same
+gift by a holder of a co-listed landlord, and two children that the proof of
+the recipient by name refuses before any check of a class. A second
+implementation that shares no code with the generator decides all 134 with 0
 mismatches. No checker for them is published.
 
 Other texts: the key registry says where a name-owner key of an agent's name is

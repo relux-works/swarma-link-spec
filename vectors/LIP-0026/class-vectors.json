@@ -2,7 +2,7 @@
  "schema": "swarma-link-spec/lip-0026-class-vectors/1",
  "lip": "LIP-0026",
  "sections": "9 and 10",
- "note": "Draft vectors for LIP-0026 sections 9 and 10, the landlord class and rows without a certifier (J10 and J9; the co-author's agreement is pending). The scripts of the recipient name and of the inputs of the operation that created its current output are octets, and so are the name values; the history of a landlord is stated, as in the walks of the LIP-0021 vectors. No vector reads a chain, and no signature in this file verifies: the octets of signatures are placeholders. Every output of this file is taken as confirmed at or above the height from which the chain enforces the witness rules, so that the reading of a witness key hash does not depend on a height (LIP-0021 O3.3). Keys are multiples of the generator of secp256k1 and belong to nobody. A refused admission holds one finding and names a passing neighbour that differs from it in that finding; one marked compound holds two and names none. The eight codes that begin with CLASS are proposals. No verdict of this file records a closure.",
+ "note": "Draft vectors for LIP-0026 sections 9 and 10, the landlord class and rows without a certifier (J10 and J9; the co-author's agreement is pending). The scripts of the recipient name and of the inputs of the operation that created its current output are octets, and so are the name values; the history of a landlord is stated, as in the walks of the LIP-0021 vectors. No vector reads a chain, and no signature in this file verifies: the octets of signatures are placeholders. Every output of this file is taken as confirmed at or above the height from which the chain enforces the witness rules, so that the reading of a witness key hash does not depend on a height (LIP-0021 O3.3). Keys are multiples of the generator of secp256k1 and belong to nobody. A refused admission holds one finding and names a passing neighbour that differs from it in that finding; one marked compound holds two and names none. The transfer and return of class-14 is one event with two facts: an output of the stretch reads as another key, and that key wrote the current value. The eight codes that begin with CLASS are proposals. Two admissions end with a code of LIP-0021, listed in codes_of_lip_0021: the proof of the recipient by name stands before the checks of a class (R9.9), and that code keeps its meaning. No verdict of this file records a closure.",
  "parameters": {
   "expiration_depth": 36000,
   "landlord_name": "id/acme",
@@ -23,9 +23,13 @@
   "CLASS_WRITER",
   "CLASS_HISTORY_UNAVAILABLE"
  ],
+ "codes_of_lip_0021": [
+  "RECIPIENT_NAME_NOT_HELD",
+  "RECIPIENT_NAME_UNAVAILABLE"
+ ],
  "fields": {
   "templates": "issuer is what the parent binds for its issuer; notaries are the names of the notaries that it pins; recipient has exactly one of request_public_key, name with owner_public_key, or class; certifier is a name or null.",
-  "admissions": "row is the template of the child's row. context states the heights of the parent's recent block and of the tip. node.recipient_name gives the script of the current output of the recipient name and the inputs of the operation that created it: for each input the script of the output that it spends, its unlocking script and, where it has one, the items of its witness. node.landlords gives, for a landlord name, its pinned registration, its history from the current output back, its current value and whether a pending transaction spends its current output. An output of a history states its height, its prefix, the reading of its script against the pinned owner key and, for the current one, the outcome of the writer check. expect.attestation says whether the checks of the attestation follow (required) or the attestation is not read."
+  "admissions": "row is the template of the child's row. context states the heights of the parent's recent block and of the tip. node.recipient_name gives the script of the current output of the recipient name and the inputs of the operation that created it: for each input the script of the output that it spends, its unlocking script and, where it has one, the items of its witness. node.landlords gives, for a landlord name, its pinned registration, its history from the current output back, its current value and whether a pending transaction spends its current output. An output of a history states its height, its prefix, the reading of its script against the pinned owner key and the outcome of the writer check for the operation that created it; the fifth step of check (b) reads that of the current output. The writer of an update follows from the output before it, which its name input spends: written by the owner or unsupported after an output of the pinned owner, written by another after an output of another key, unsupported after an unsupported one. child.recipient states the name and the owner key that the child signs; the proof of LIP-0021 section 7.2 reads the current output against that key. expect.attestation says whether the checks of the attestation follow (required) or the attestation is not read."
  },
  "rules": [
   {
@@ -69,7 +73,8 @@
     "class-07",
     "class-08",
     "class-09",
-    "class-10"
+    "class-10",
+    "class-35"
    ]
   },
   {
@@ -84,7 +89,8 @@
     "class-14",
     "class-15",
     "class-16",
-    "class-17"
+    "class-17",
+    "certifier-11"
    ]
   },
   {
@@ -98,7 +104,9 @@
     "class-21",
     "class-22",
     "class-23",
-    "class-24"
+    "class-24",
+    "class-35",
+    "class-37"
    ]
   },
   {
@@ -112,7 +120,9 @@
     "class-04",
     "class-25",
     "class-26",
-    "class-27"
+    "class-27",
+    "class-35",
+    "class-36"
    ]
   },
   {
@@ -122,8 +132,7 @@
    "vectors": [
     "class-18",
     "class-19",
-    "class-28",
-    "class-29"
+    "class-28"
    ]
   },
   {
@@ -132,10 +141,12 @@
    "state": "proposed",
    "vectors": [
     "class-01",
+    "class-29",
     "class-30",
     "class-31",
     "class-32",
-    "class-33"
+    "class-33",
+    "class-34"
    ]
   },
   {
@@ -179,6 +190,7 @@
     "certifier-01",
     "certifier-03",
     "certifier-09",
+    "certifier-11",
     "template-03",
     "template-04",
     "template-10",
@@ -198,7 +210,8 @@
     "certifier-05",
     "certifier-06",
     "certifier-07",
-    "certifier-08"
+    "certifier-08",
+    "certifier-10"
    ]
   },
   {
@@ -1971,7 +1984,7 @@
    "rules": [
     "R9.5"
    ],
-   "claim": "A transfer and a return: between the recent block and the tip one output of the landlord reads as another key, and the current one is the pinned owner's again.",
+   "claim": "A transfer and a return: between the recent block and the tip one output of the landlord reads as another key, and the current one is the pinned owner's again. The other key signed the return, so it also wrote the current value; the fourth step reports before the fifth.",
    "issuer": {
     "name": "id/acme",
     "registration": {
@@ -2031,7 +2044,7 @@
         "height": 750,
         "prefix": "update",
         "reading": "controlled",
-        "writer": "written by the owner"
+        "writer": "written by another"
        },
        {
         "id": "o3",
@@ -2069,7 +2082,7 @@
    "rules": [
     "R9.5"
    ],
-   "claim": "The same change of owner below the recent block: it is outside the stretch, and the class admits.",
+   "claim": "The same change of owner below the recent block: it is outside the stretch, and the class admits. The pinned owner wrote the current value after the return.",
    "issuer": {
     "name": "id/acme",
     "registration": {
@@ -2136,7 +2149,7 @@
         "height": 480,
         "prefix": "update",
         "reading": "controlled",
-        "writer": "written by the owner"
+        "writer": "written by another"
        },
        {
         "id": "o2",
@@ -2167,7 +2180,7 @@
    "rules": [
     "R9.5"
    ],
-   "claim": "The operation that created the landlord's current output spent an output of another key: the pinned owner did not write the value that carries the holders.",
+   "claim": "The landlord's name came to the pinned owner by a transfer below the recent block, and the owner has written no value since. The operation that created the current output spent an output of another key: the pinned owner did not write the value that carries the holders.",
    "issuer": {
     "name": "id/acme",
     "registration": {
@@ -2224,7 +2237,7 @@
       "history": [
        {
         "id": "o3",
-        "height": 700,
+        "height": 450,
         "prefix": "update",
         "reading": "controlled",
         "writer": "written by another"
@@ -2233,7 +2246,7 @@
         "id": "o2",
         "height": 400,
         "prefix": "update",
-        "reading": "controlled",
+        "reading": "another key",
         "writer": "written by the owner"
        },
        {
@@ -2502,7 +2515,7 @@
         "height": 700,
         "prefix": "update",
         "reading": "controlled",
-        "writer": "written by the owner"
+        "writer": "unsupported"
        },
        {
         "id": "o2",
@@ -3358,9 +3371,9 @@
   {
    "id": "class-29",
    "rules": [
-    "R9.8"
+    "R9.9"
    ],
-   "claim": "The current output of the recipient name has a script without a supported address.",
+   "claim": "The current output of the recipient name has a script without a supported address. The proof of the recipient by name refuses it (LIP-0021 O7.2, row 3), and no check of the class is reached.",
    "issuer": {
     "name": "id/acme",
     "registration": {
@@ -3442,7 +3455,7 @@
     }
    },
    "expect": {
-    "outcome": "CLASS_HISTORY_UNAVAILABLE"
+    "outcome": "RECIPIENT_NAME_UNAVAILABLE"
    },
    "passing_neighbour": "class-01"
   },
@@ -3782,7 +3795,7 @@
       "history": [
        {
         "id": "o3",
-        "height": 700,
+        "height": 450,
         "prefix": "update",
         "reading": "controlled",
         "writer": "written by another"
@@ -3791,7 +3804,7 @@
         "id": "o2",
         "height": 400,
         "prefix": "update",
-        "reading": "controlled",
+        "reading": "another key",
         "writer": "written by the owner"
        },
        {
@@ -3811,6 +3824,456 @@
     "outcome": "CLASS_VALUE_UNAUTHORIZED"
    },
    "compound": true
+  },
+  {
+   "id": "class-34",
+   "rules": [
+    "R9.9"
+   ],
+   "claim": "The child signs the owner key of the holder h2, and the holder h1 holds the name and wrote its value. Every check of the class would pass. The proof of the recipient by name refuses first (LIP-0021 O7.2, row 2).",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "class": [
+      {
+       "name": "id/acme",
+       "registration": {
+        "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+        "vout": 0
+       },
+       "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      }
+     ]
+    },
+    "certifier": "id/notary-a"
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012102e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 700,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "RECIPIENT_NAME_NOT_HELD"
+   },
+   "passing_neighbour": "class-01"
+  },
+  {
+   "id": "class-35",
+   "rules": [
+    "R9.4",
+    "R9.6",
+    "R9.7"
+   ],
+   "claim": "A class of two landlords. The recipient points to the first, whose holder h1 holds the name and wrote its value. The control of class-36 and class-37.",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "class": [
+      {
+       "name": "id/acme",
+       "registration": {
+        "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+        "vout": 0
+       },
+       "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      },
+      {
+       "name": "id/other-landlord",
+       "registration": {
+        "txid": "e9e2ae4085b66071f189e9a7b21286811cf848fc7670a6ee5451de2d93e2dd96",
+        "vout": 0
+       },
+       "owner_public_key": "03d01115d548e7561b15c38f004d734633687cf4419620095bc5b0f47070afe85a"
+      }
+     ]
+    },
+    "certifier": "id/notary-a"
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012102e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 700,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     },
+     "id/other-landlord": {
+      "pinned_registration": "reg-L2",
+      "history": [
+       {
+        "id": "p2",
+        "height": 600,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L2",
+        "height": 150,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"03fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "pass",
+    "attestation": "required"
+   }
+  },
+  {
+   "id": "class-36",
+   "rules": [
+    "R9.7"
+   ],
+   "claim": "The gift by a holder of a co-listed landlord. The class lists two landlords. The holder h3 of the second wrote a value that points to the first and sent the name to the holder h1 of the first. The writer is a holder of a landlord of the class, and not of the landlord that the value names.",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "class": [
+      {
+       "name": "id/acme",
+       "registration": {
+        "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+        "vout": 0
+       },
+       "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      },
+      {
+       "name": "id/other-landlord",
+       "registration": {
+        "txid": "e9e2ae4085b66071f189e9a7b21286811cf848fc7670a6ee5451de2d93e2dd96",
+        "vout": 0
+       },
+       "owner_public_key": "03d01115d548e7561b15c38f004d734633687cf4419620095bc5b0f47070afe85a"
+      }
+     ]
+    },
+    "certifier": "id/notary-a"
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a9147fda9cf020c16cacf529c87d8de89bfc70b8c9cb88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 700,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     },
+     "id/other-landlord": {
+      "pinned_registration": "reg-L2",
+      "history": [
+       {
+        "id": "p2",
+        "height": 600,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L2",
+        "height": 150,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"03fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "CLASS_WRITER"
+   },
+   "passing_neighbour": "class-35"
+  },
+  {
+   "id": "class-37",
+   "rules": [
+    "R9.6"
+   ],
+   "claim": "The holder h3 of the second landlord holds a name whose value points to the first, and a holder of the first wrote that value. The key that holds the name is a holder of a landlord of the class, and not of the landlord that the value names.",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "class": [
+      {
+       "name": "id/acme",
+       "registration": {
+        "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+        "vout": 0
+       },
+       "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      },
+      {
+       "name": "id/other-landlord",
+       "registration": {
+        "txid": "e9e2ae4085b66071f189e9a7b21286811cf848fc7670a6ee5451de2d93e2dd96",
+        "vout": 0
+       },
+       "owner_public_key": "03d01115d548e7561b15c38f004d734633687cf4419620095bc5b0f47070afe85a"
+      }
+     ]
+    },
+    "certifier": "id/notary-a"
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "03fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a9147fda9cf020c16cacf529c87d8de89bfc70b8c9cb88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012102e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 700,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     },
+     "id/other-landlord": {
+      "pinned_registration": "reg-L2",
+      "history": [
+       {
+        "id": "p2",
+        "height": 600,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L2",
+        "height": 150,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"03fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "CLASS_HOLDER"
+   },
+   "passing_neighbour": "class-35"
   },
   {
    "id": "certifier-01",
@@ -4587,6 +5050,181 @@
     "outcome": "pass",
     "attestation": "not read"
    }
+  },
+  {
+   "id": "certifier-10",
+   "rules": [
+    "R10.3"
+   ],
+   "claim": "The exact name of a row without a certifier, and the issuer's name came to its owner by a transfer below the recent block: another key wrote the value that carries the holders. The fifth step of check (b) is made for an exact name as well.",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+    },
+    "certifier": null
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012102e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 450,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by another"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "another key",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "CLASS_VALUE_UNAUTHORIZED"
+   },
+   "passing_neighbour": "certifier-03"
+  },
+  {
+   "id": "certifier-11",
+   "rules": [
+    "R9.5",
+    "R10.2"
+   ],
+   "claim": "The same history of the issuer's name under a row without a certifier whose class is the issuer's landlord. The two forms of such a row decide alike.",
+   "issuer": {
+    "name": "id/acme",
+    "registration": {
+     "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+     "vout": 0
+    },
+    "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+   },
+   "context": {
+    "recent_block_height": 500,
+    "tip_height": 800
+   },
+   "row": {
+    "recipient": {
+     "class": [
+      {
+       "name": "id/acme",
+       "registration": {
+        "txid": "ffdd1bbea8fed7dbc0603b4bef118288dc11c5da5752f472dc92ca30da685bda",
+        "vout": 0
+       },
+       "owner_public_key": "02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9"
+      }
+     ]
+    },
+    "certifier": null
+   },
+   "child": {
+    "recipient": {
+     "name": "id/acme-worker-7",
+     "owner_public_key": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+    }
+   },
+   "node": {
+    "recipient_name": {
+     "current_output_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+     "creating_operation": {
+      "operation": "update",
+      "inputs": [
+       {
+        "spent_script_hex": "76a91457526b1a1534d4bde788253281649fc2e91dc70b88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012103f28773c2d975288bc7d1d205c3748651b075fbc6610e58cddeeddf8f19405aa8"
+       },
+       {
+        "spent_script_hex": "531069642f61636d652d776f726b65722d374c867b226e6f737472223a7b226e616d6573223a7b225f223a2234393966646639653839356537313963666436346536376630376433386533323236616137623633363738393439653665343962323431613630653832336534227d7d2c22737761726d61223a7b226167656e74223a7b226c616e646c6f7264223a2269642f61636d65227d7d7d6d7576a914c42e7ef92fdb603af844d064faad95db9bcdfd3d88ac",
+        "unlocking_script_hex": "463044022003450bfae6d507ba1c2580922ac3ef0a14850c9b6288fd685250422972dcab8302205600d856977c588a85d2a0f9a88a9e4fb03e6f555539dbb1766f8ddbd5b505012102e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13"
+       }
+      ]
+     }
+    },
+    "landlords": {
+     "id/acme": {
+      "pinned_registration": "reg-L",
+      "history": [
+       {
+        "id": "o3",
+        "height": 450,
+        "prefix": "update",
+        "reading": "controlled",
+        "writer": "written by another"
+       },
+       {
+        "id": "o2",
+        "height": 400,
+        "prefix": "update",
+        "reading": "another key",
+        "writer": "written by the owner"
+       },
+       {
+        "id": "reg-L",
+        "height": 100,
+        "prefix": "registration",
+        "reading": "controlled",
+        "writer": "written by the owner"
+       }
+      ],
+      "current_value": "{\"swarma\":{\"landlord\":{\"grant\":\"c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5\",\"holders\":[\"022f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4\",\"02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13\"]}}}"
+     }
+    }
+   },
+   "expect": {
+    "outcome": "CLASS_VALUE_UNAUTHORIZED"
+   },
+   "passing_neighbour": "certifier-01"
   }
  ]
 }

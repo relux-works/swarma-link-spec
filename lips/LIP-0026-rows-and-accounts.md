@@ -646,6 +646,17 @@ By the proof of LIP-0021 section 7.2 the current output of the recipient name
 is controlled by the owner key that the child signs. Check (c) therefore asks
 whether that key is a holder. A recipient whose name is held by a key that the
 landlord does not list refuses, also when its value points to the landlord.
+That proof has refusals of its own, and they come first (R9.9). A current
+output that reads as another key than the one that the child signs refuses as
+`RECIPIENT_NAME_NOT_HELD`, and one whose script is unsupported as
+`RECIPIENT_NAME_UNAVAILABLE` (LIP-0021 O7.2). No check of the class is reached
+for such a child, and the two codes keep the meaning that LIP-0021 gives them.
+
+Checks (c) and (d) read one list: the holders of `L`, the landlord that the
+value of the recipient name points to. In a class of several landlords a holder
+of another landlord of the class is no holder for this name. It can neither
+hold the name nor have written its value, so a holder of one listed landlord
+cannot make an agent of another.
 
 Check (d) looks at one operation, the one that created the current output of
 the recipient name. For an update, the name input is the previous output of the
@@ -706,11 +717,22 @@ The owner's practice, which is no rule of this profile: a certifier for rows
 whose children permit effects, such as payments, the use of a model and
 landings, and none for rows whose children permit instructions and reviews.
 
+This draft adds two things to the decision. The first is the split of check (b)
+in R10.3. The four steps that the admission of the parent has made for the
+issuer's name are not made again; the fifth and the sixth are made, so that the
+class of the issuer's landlord and an exact name decide alike on the same
+facts. The fifth is no repetition, because the issuer rule in force does not
+ask who wrote the issuer's value (LIP-0021 section 4.1). Its cost is the one
+that LIP-0021 states there: a landlord whose name another party registered for
+it or transferred to it signs one update before its holders count. The second
+addition is that a verifier does not read an attestation that is presented for
+a child of a row without a certifier (R10.4).
+
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | R10.1 | A template states the certifier of its rows, which is one of the notaries that the parent pins, or states that its rows have none. A parent whose templates name no certifier need pin no notary. | A certifier that the parent does not pin: the parent is refused (R8.7) |
 | R10.2 | A template without a certifier has one of two recipient constraints. The first is a class with exactly one landlord, whose name, registration and owner key are those that the parent binds for its issuer (LIP-0008 section 3). The second is a name with its owner key. A template without a certifier whose recipient is a request key, a class with two or more landlords, or a class whose one landlord is not the issuer makes the parent refused. | The parent is refused (R8.7) |
-| R10.3 | For a child of a row without a certifier whose recipient is a name, the verifier makes the checks (a), (c) and (d) of section 9 for that name with the issuer of the parent as the landlord `L`, and the last step of check (b). The other steps of (b) are met by the admission of the parent, which judged the issuer's name under LIP-0008 section 3. | The codes of section 9, in the order of R9.9 |
+| R10.3 | For a child of a row without a certifier whose recipient is a name, the verifier makes the checks (a), (c) and (d) of section 9 for that name with the issuer of the parent as the landlord `L`, and the fifth and the sixth step of check (b): the writer of the current value of `L`, and the pending read. The first four steps of (b) are met by the admission of the parent, which judged the issuer's name under LIP-0008 section 3 with the same registration, owner key and recent block (LIP-0021 section 7.1). | The codes of section 9, in the order of R9.9 |
 | R10.4 | A child of a row without a certifier needs no attestation. The verifier makes no check of an attestation for it and reads none that is presented. A child of a row with a certifier is certified as LIP-0014 says. | |
 | R10.5 | A row without a certifier states no stop coin, and no rule of LIP-0027 applies to it. | |
 
@@ -745,7 +767,7 @@ Three limits hold:
 
 ### 11. Vectors of sections 8 to 10
 
-Two files hold 95 vectors over the 27 rules of sections 8 to 10, and they
+Two files hold 101 vectors over the 27 rules of sections 8 to 10, and they
 follow Draft text that awaits the co-author's agreement.
 
 | File | Group | Vectors | What a checker does |
@@ -753,7 +775,7 @@ follow Draft text that awaits the co-author's agreement.
 | [`groups-vectors.json`](../vectors/LIP-0026/groups-vectors.json) | `parents` | 10 valid, 16 refused | Section 8 on the stated groups, ranges, limits and pools of a parent; a refused parent states the rule that it breaks |
 | | `ordinals` | 12 | R8.3 and R8.8: the group, the range and the coin of an ordinal, or `CHILD_ORDINAL` |
 | [`class-vectors.json`](../vectors/LIP-0026/class-vectors.json) | `templates` | 6 valid, 9 refused | R9.1, R10.1 and R10.2 on a stated template and the issuer that the parent binds |
-| | `admissions` | 12 passing, 26 refused, 4 compound | Sections 9 and 10 for one child, in the order of R9.9 |
+| | `admissions` | 13 passing, 31 refused, 4 compound | Sections 9 and 10 for one child, in the order of R9.9 |
 
 The groups file holds no octets, because a parent has none yet. `group-10` and
 `group-22` hold amounts whose sum is 2 to the power 64: a checker that adds in
@@ -766,7 +788,9 @@ current output of the recipient name with the value inside it, and for each
 input of the operation that created that output the script that it spends and
 its unlocking script or witness. The value of a landlord is the text of a name
 value. The history of a landlord is stated, output by output, as the walks of
-the LIP-0021 vectors are.
+the LIP-0021 vectors are. The writer of each output is the one that the output
+before it implies, because the name input of an update spends that output
+(LIP-0021 O4.1); no history of the file is one that cannot occur.
 
 `class-25` is the gift. The recipient name points to the landlord, the landlord
 is untouched, a holder holds the name, and the name input of the update that
@@ -776,9 +800,27 @@ and its control is `class-01`, where the holder spent its own previous output.
 `class-27` is the limit of R9.11: the holder made an update of its own on the
 gifted name, and the check passes.
 
+`class-36` and `class-37` hold a class of two landlords, beside their control
+`class-35`. In `class-36` a holder of the second landlord wrote a value that
+points to the first and sent the name to a holder of the first; it refuses as
+`CLASS_WRITER`. In `class-37` a holder of the second landlord holds a name
+whose value points to the first; it refuses as `CLASS_HOLDER`. A checker that
+takes the holders of every landlord of a class together admits both.
+
+Two admissions end with a code of LIP-0021 and show the place that R9.9 gives
+the checks. In `class-29` the current output of the recipient name has an
+unsupported script, and in `class-34` the child signs another owner key than
+the one that holds the name, while every check of the class would pass. The
+proof of the recipient by name refuses them as `RECIPIENT_NAME_UNAVAILABLE` and
+`RECIPIENT_NAME_NOT_HELD`. The file lists these two codes apart from its own,
+in `codes_of_lip_0021`.
+
 `certifier-01` to `certifier-09` are the cases S9-1 to S9-K1 of LIP-0014
 section 8.3 and their neighbours. `certifier-08` is the same exact name in a
-row with a certifier: the checks of a class are not made for it.
+row with a certifier: the checks of a class are not made for it. `certifier-10`
+and `certifier-11` hold one history of the issuer's name, which came to its
+owner by a transfer below the recent block, under the two forms of a row
+without a certifier. Both refuse as `CLASS_VALUE_UNAUTHORIZED`.
 
 The limits of the two files are these. Transaction ids are placeholders, and
 the octets of signatures are placeholders that verify nothing. No vector reads
