@@ -1,0 +1,2771 @@
+{
+  "schema": "swarma-link-spec/lip-0027-vectors/1",
+  "lip": "LIP-0027",
+  "note": "Draft vectors for LIP-0027. No vector reads a node or a mempool: the state of a journal and what a node gives are stated facts. Identifiers of grants, transaction ids, block hashes and scripts are placeholders. A vector of the groups parents, stops and entries whose outcome is not the passing one holds one defect and names a neighbour with the passing outcome that differs from it in that defect; a vector marked compound holds two defects and names none. A trace states the outcome of each step and the journal at its end, and names no neighbour. The journal of a trace is a state and a list of entries; its commitments and its outside record are those of LIP-0025 and are not repeated here.",
+  "codes": [
+    "ROW_CLOSED_FOR_CAUSE",
+    "ROW_STOP_ALIAS",
+    "ROW_STOP"
+  ],
+  "codes_of_other_lips": [
+    "JOURNAL_LOST",
+    "JOURNAL_FENCED",
+    "OBSERVATION_VOID"
+  ],
+  "fields": {
+    "parents": "parent.seal is the seal of the parent. A row states its coin and its stop coin, each as an outpoint and a script.",
+    "stops": "journal is intact, lost or fenced, as the continuity check of LIP-0025 gives it; journal_holds_closure says whether the journal holds a closure of this parent and ordinal. row_stop is the stop coin as the row states it, and child_seal the seal outpoint that the child names. node.stop_transaction is what the verifier's node gives for the transaction of the stop coin's outpoint: null where it knows none; block_height null where it is pending; outputs lists the scripts of its outputs by index. node.unspent says whether the node has that output among its unspent outputs, the mempool included; for an output that the node does not have it is false. node.spent_in says where the node holds the spend, and no rule reads it. writes_closure says whether the verifier writes a closure in this admission.",
+    "entries": "octets and the kind that H3.1 gives them, `no entry`, or `unknown kind`.",
+    "traces": "One verifier over time. Each step is an admission of a child of a parent and an ordinal, with the facts of the group stops and the tip of its observation, or an event: restart, lose journal, start anew. observation void is an observation that LIP-0022 voids; write fails is a closure that cannot be written. Where a step states parent_object, the parent as the group parents states it, section 1 is judged on it first, and a parent that it refuses gives the outcome `parent refused`, which has no code and writes nothing. end.journal states the state of the journal and its entries."
+  },
+  "rules": [
+    {
+      "rule": "H1.1",
+      "section": "1",
+      "title": "a row states its stop coin",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-02"
+      ]
+    },
+    {
+      "rule": "H1.2",
+      "section": "1",
+      "title": "the script of the stop coin",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-03"
+      ]
+    },
+    {
+      "rule": "H1.3",
+      "section": "1",
+      "title": "different outpoints, no coin of a row, not the seal of the parent and not the output after it",
+      "state": "proposed",
+      "vectors": [
+        "parent-01",
+        "parent-04",
+        "parent-05",
+        "parent-06",
+        "parent-07",
+        "parent-08",
+        "parent-10",
+        "parent-09",
+        "parent-12",
+        "parent-11",
+        "parent-13",
+        "parent-14",
+        "trace-10"
+      ]
+    },
+    {
+      "rule": "H1.4",
+      "section": "1",
+      "title": "a parent that is refused as a whole",
+      "state": "proposed",
+      "vectors": [
+        "parent-02",
+        "parent-03",
+        "parent-04",
+        "parent-05",
+        "parent-06",
+        "parent-07",
+        "parent-09",
+        "parent-11",
+        "parent-14",
+        "trace-10"
+      ],
+      "not_covered": "The vectors state `refused` for a parent, and trace-10 holds a child under a refused parent. No vector holds a request of the parent's own."
+    },
+    {
+      "rule": "H2.1",
+      "section": "2",
+      "title": "the journal first",
+      "state": "proposed",
+      "vectors": [
+        "stop-01",
+        "stop-05",
+        "stop-15",
+        "stop-16",
+        "stop-17",
+        "stop-19",
+        "trace-01",
+        "trace-07"
+      ]
+    },
+    {
+      "rule": "H2.2",
+      "section": "2",
+      "title": "neither the seal of the child nor the output after it",
+      "state": "proposed",
+      "vectors": [
+        "stop-12",
+        "stop-13",
+        "stop-14",
+        "stop-18"
+      ]
+    },
+    {
+      "rule": "H2.3",
+      "section": "2",
+      "title": "the coin on the active chain, at or below the parent's recent block",
+      "state": "proposed",
+      "vectors": [
+        "stop-01",
+        "stop-02",
+        "stop-06",
+        "stop-07",
+        "stop-08",
+        "stop-09",
+        "stop-10",
+        "stop-11",
+        "trace-04"
+      ]
+    },
+    {
+      "rule": "H2.4",
+      "section": "2",
+      "title": "unspent in the view, or closed",
+      "state": "proposed",
+      "vectors": [
+        "stop-01",
+        "stop-03",
+        "stop-04",
+        "trace-01",
+        "trace-03"
+      ]
+    },
+    {
+      "rule": "H2.5",
+      "section": "2",
+      "title": "what establishes a spend",
+      "state": "proposed",
+      "vectors": [
+        "trace-09"
+      ]
+    },
+    {
+      "rule": "H2.6",
+      "section": "2",
+      "title": "a missing coin is no spent coin",
+      "state": "proposed",
+      "vectors": [
+        "stop-06",
+        "stop-07",
+        "stop-10",
+        "stop-11",
+        "trace-04"
+      ]
+    },
+    {
+      "rule": "H2.7",
+      "section": "2",
+      "title": "the order and the place of the checks",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "The compound vectors state the order of the checks of this profile. No vector holds a check of an attestation or of its seal beside them."
+    },
+    {
+      "rule": "H3.1",
+      "section": "3",
+      "title": "the entry of a closure",
+      "state": "proposed",
+      "vectors": [
+        "entry-01",
+        "entry-02",
+        "entry-03",
+        "entry-04",
+        "entry-05",
+        "entry-06",
+        "entry-07",
+        "entry-08"
+      ]
+    },
+    {
+      "rule": "H3.2",
+      "section": "3",
+      "title": "one entry for a row",
+      "state": "proposed",
+      "vectors": [
+        "trace-08"
+      ]
+    },
+    {
+      "rule": "H3.3",
+      "section": "3",
+      "title": "a closure that cannot be written",
+      "state": "proposed",
+      "vectors": [
+        "stop-19",
+        "trace-06",
+        "trace-11"
+      ]
+    },
+    {
+      "rule": "H3.4",
+      "section": "3",
+      "title": "a closure is permanent",
+      "state": "proposed",
+      "vectors": [
+        "stop-05",
+        "trace-01",
+        "trace-03"
+      ]
+    },
+    {
+      "rule": "H3.5",
+      "section": "3",
+      "title": "a closure closes one row",
+      "state": "proposed",
+      "vectors": [
+        "trace-05"
+      ]
+    },
+    {
+      "rule": "H3.6",
+      "section": "3",
+      "title": "a lost journal and a newcomer",
+      "state": "proposed",
+      "vectors": [
+        "trace-02",
+        "trace-06",
+        "trace-07",
+        "trace-11"
+      ]
+    },
+    {
+      "rule": "H4.1",
+      "section": "4",
+      "title": "the path of a stop key",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary. No vector holds a key or a path."
+    },
+    {
+      "rule": "H4.2",
+      "section": "4",
+      "title": "one index for one stop coin",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary."
+    },
+    {
+      "rule": "H4.3",
+      "section": "4",
+      "title": "the notary creates the coin before the parent is signed",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary."
+    },
+    {
+      "rule": "H4.4",
+      "section": "4",
+      "title": "the key for the life of the parent",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary."
+    },
+    {
+      "rule": "H4.5",
+      "section": "4",
+      "title": "the fee of the spend",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary. No vector holds a transaction or a fee."
+    },
+    {
+      "rule": "H4.6",
+      "section": "4",
+      "title": "the spend is kept and sent again",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary."
+    },
+    {
+      "rule": "H4.7",
+      "section": "4",
+      "title": "a plain withdrawal leaves the coin alone",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary. No vector holds an attestation."
+    },
+    {
+      "rule": "H4.8",
+      "section": "4",
+      "title": "what a stop key signs",
+      "state": "proposed",
+      "vectors": [],
+      "not_covered": "A rule for the notary."
+    },
+    {
+      "rule": "H5.1",
+      "section": "5",
+      "title": "the order of the refusals",
+      "state": "proposed",
+      "vectors": [
+        "stop-17",
+        "stop-18",
+        "stop-19",
+        "trace-10"
+      ]
+    },
+    {
+      "rule": "H5.2",
+      "section": "5",
+      "title": "what records something",
+      "state": "proposed",
+      "vectors": [
+        "stop-03",
+        "stop-06",
+        "trace-04"
+      ]
+    }
+  ],
+  "parents": [
+    {
+      "id": "parent-01",
+      "rules": [
+        "H1.1",
+        "H1.2",
+        "H1.3"
+      ],
+      "claim": "Two rows, each with its coin and its stop coin. All four outpoints are different, and both stop coins have a witness key hash script.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-02",
+      "rules": [
+        "H1.1",
+        "H1.4"
+      ],
+      "claim": "A row states no stop coin.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-03",
+      "rules": [
+        "H1.2",
+        "H1.4"
+      ],
+      "claim": "The script of a stop coin is a key hash and no witness key hash.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "76a9149ef887942ea0a38897fd9212a0625164fda441bd88ac"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-04",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "Two rows state the same stop coin: a cause for one row would close both.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-05",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The stop coin of a row is the coin of the same row: the issuance of its child would spend it.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-06",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The stop coin of row 1 is the coin of row 2.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-07",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The stop coin of a row is the seal of the parent.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 0,
+              "script_hex": "0014d285f2f032e09ce87cc1a07860fbdad4ec83614e"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-01"
+    },
+    {
+      "id": "parent-08",
+      "rules": [
+        "H1.3"
+      ],
+      "claim": "The stop coins of two rows are two outputs of one transaction: they are different outpoints.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 1,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-09",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The stop coin of a row is the output after the seal of the parent, which is the linkage output that the parent's own anchor spends (LIP-0023 C2.3). Read at a child's admission, that spend would be recorded as a closure for cause.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 1,
+              "script_hex": "0014b4ed627a924803e33533eb44e9265f3818aa0095"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-10"
+    },
+    {
+      "id": "parent-10",
+      "rules": [
+        "H1.3"
+      ],
+      "claim": "The stop coin of a row is the third output of the parent's seal transaction, two after the seal. It is neither the seal nor the output after it, and nothing spends it but its key.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 2,
+              "script_hex": "0014afc026008e733f9c267ac5cba0d60eb81d6ed857"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-11",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The seal of the parent is the output 5 of its transaction, and the stop coin of a row is the output 6, the output after the seal.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 5
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 6,
+              "script_hex": "0014b4ed627a924803e33533eb44e9265f3818aa0095"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-12"
+    },
+    {
+      "id": "parent-12",
+      "rules": [
+        "H1.3"
+      ],
+      "claim": "The seal of the parent is the output 5 of its transaction, and the stop coin of a row is the output 7.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 5
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 7,
+              "script_hex": "001402851c1223e5f134b19cf320db1e8d79823ee896"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-13",
+      "rules": [
+        "H1.3"
+      ],
+      "claim": "The seal of the parent is the output 5 of its transaction, and the stop coin of a row is the output 4, the output before the seal: only the output after the seal is the linkage output.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 5
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 4,
+              "script_hex": "001403f8cff23a2c3b61984e51f7a06ef5460079753a"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+              "vout": 0,
+              "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+            }
+          }
+        ]
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "parent-14",
+      "rules": [
+        "H1.3",
+        "H1.4"
+      ],
+      "claim": "The stop coin of the second row is the output after the seal of the parent: the comparison holds for every row.",
+      "parent": {
+        "id": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+        "seal": {
+          "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+          "vout": 0
+        },
+        "rows": [
+          {
+            "coin": {
+              "txid": "1dc91f2b506107e8fd7495b9b1553b55df88ac144b5abc8422553d1478846c4a",
+              "vout": 0,
+              "script_hex": "0014854393fcd7aadeb1ec930ff78c7d379ba79fa2ba"
+            },
+            "stop": {
+              "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "vout": 0,
+              "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+            }
+          },
+          {
+            "coin": {
+              "txid": "5b44b8c447e6d0ce5a3c2af3475675d46a60ca028cb59463ca92505fb5f65b0f",
+              "vout": 0,
+              "script_hex": "0014733ca942811e702381bb60e51b436a2f0d6ba7cf"
+            },
+            "stop": {
+              "txid": "d9938627b70c170730220c72c41e02d12766a6c3aced3c76168161e3b7a30e21",
+              "vout": 1,
+              "script_hex": "0014b4ed627a924803e33533eb44e9265f3818aa0095"
+            }
+          }
+        ]
+      },
+      "expect": "refused",
+      "valid_neighbour": "parent-10"
+    }
+  ],
+  "stops": [
+    {
+      "id": "stop-01",
+      "rules": [
+        "H2.1",
+        "H2.3",
+        "H2.4"
+      ],
+      "claim": "The stop coin is confirmed at height 650 with the stated script, the parent commits a recent block at height 700, and the output is unspent in the verifier's view.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ok",
+      "writes_closure": false
+    },
+    {
+      "id": "stop-02",
+      "rules": [
+        "H2.3"
+      ],
+      "claim": "The stop coin is confirmed in the parent's recent block itself.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 700,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ok",
+      "writes_closure": false
+    },
+    {
+      "id": "stop-03",
+      "rules": [
+        "H2.4",
+        "H5.2"
+      ],
+      "claim": "The stop coin is on the chain as stated, and a transaction in the verifier's mempool spends it. The row is closed, and the closure is written.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": false,
+        "spent_in": "mempool"
+      },
+      "expect": "ROW_CLOSED_FOR_CAUSE",
+      "writes_closure": true,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-04",
+      "rules": [
+        "H2.4"
+      ],
+      "claim": "The stop coin is on the chain as stated, and a confirmed transaction spends it.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": false,
+        "spent_in": "block"
+      },
+      "expect": "ROW_CLOSED_FOR_CAUSE",
+      "writes_closure": true,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-05",
+      "rules": [
+        "H2.1",
+        "H3.4"
+      ],
+      "claim": "The journal holds a closure of the row, and the node shows the stop coin unspent: the spend left the view. The row stays closed, and nothing new is written.",
+      "journal": "intact",
+      "journal_holds_closure": true,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_CLOSED_FOR_CAUSE",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-06",
+      "rules": [
+        "H2.3",
+        "H2.6",
+        "H5.2"
+      ],
+      "claim": "The node does not know the transaction of the stop coin, so it has no such unspent output. A missing coin is no spent coin: nothing is written.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": null,
+        "unspent": false
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-07",
+      "rules": [
+        "H2.3",
+        "H2.6"
+      ],
+      "claim": "The transaction of the stop coin is pending.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": null,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-08",
+      "rules": [
+        "H2.3"
+      ],
+      "claim": "The stop coin is confirmed one block above the parent's recent block.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 701,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-02"
+    },
+    {
+      "id": "stop-09",
+      "rules": [
+        "H2.3"
+      ],
+      "claim": "The output at the stated index has another script than the row states.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00142fa89c77d6e871e3b8577043ccc385c9d2105d92"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-10",
+      "rules": [
+        "H2.3",
+        "H2.6"
+      ],
+      "claim": "The transaction of the stop coin has no output at the stated index, and the node has no such unspent output.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": []
+        },
+        "unspent": false
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-11",
+      "rules": [
+        "H2.3",
+        "H2.6"
+      ],
+      "claim": "The block that holds the stop coin is not on the active chain of the observation.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": false,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": false
+      },
+      "expect": "ROW_STOP",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-12",
+      "rules": [
+        "H2.2"
+      ],
+      "claim": "The row names the seal of the child as its stop coin.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0,
+        "script_hex": "00146f971481f7de81f51762933007e254bb6e295977"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00146f971481f7de81f51762933007e254bb6e295977",
+            "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac",
+            "001458aa5b6d49db80e93d1b49bb7973b4d46ddd78d9"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_STOP_ALIAS",
+      "writes_closure": false,
+      "valid_neighbour": "stop-14"
+    },
+    {
+      "id": "stop-13",
+      "rules": [
+        "H2.2"
+      ],
+      "claim": "The row names the output after the seal of the child as its stop coin: the child's own anchor spends that output.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 1,
+        "script_hex": "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00146f971481f7de81f51762933007e254bb6e295977",
+            "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac",
+            "001458aa5b6d49db80e93d1b49bb7973b4d46ddd78d9"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ROW_STOP_ALIAS",
+      "writes_closure": false,
+      "valid_neighbour": "stop-14"
+    },
+    {
+      "id": "stop-14",
+      "rules": [
+        "H2.2"
+      ],
+      "claim": "The stop coin is the third output of the child's seal transaction, neither the seal nor the output after it, and it is unspent.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 2,
+        "script_hex": "001458aa5b6d49db80e93d1b49bb7973b4d46ddd78d9"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00146f971481f7de81f51762933007e254bb6e295977",
+            "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac",
+            "001458aa5b6d49db80e93d1b49bb7973b4d46ddd78d9"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "ok",
+      "writes_closure": false
+    },
+    {
+      "id": "stop-15",
+      "rules": [
+        "H2.1"
+      ],
+      "claim": "The verifier's journal of closures is lost.",
+      "journal": "lost",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "JOURNAL_LOST",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-16",
+      "rules": [
+        "H2.1"
+      ],
+      "claim": "The verifier does not hold the write token of its journal.",
+      "journal": "fenced",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": true
+      },
+      "expect": "JOURNAL_FENCED",
+      "writes_closure": false,
+      "valid_neighbour": "stop-01"
+    },
+    {
+      "id": "stop-17",
+      "rules": [
+        "H2.1",
+        "H5.1"
+      ],
+      "claim": "Two findings: the journal holds a closure of the row, and the node does not know the stop coin. The journal is read first.",
+      "journal": "intact",
+      "journal_holds_closure": true,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": null,
+        "unspent": false
+      },
+      "expect": "ROW_CLOSED_FOR_CAUSE",
+      "writes_closure": false,
+      "compound": true
+    },
+    {
+      "id": "stop-18",
+      "rules": [
+        "H2.2",
+        "H5.1"
+      ],
+      "claim": "Two findings: the stop coin is the output after the seal of the child, and it is spent. The comparison on signed octets stands before the reads of the node, and nothing is written.",
+      "journal": "intact",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 1,
+        "script_hex": "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "00146f971481f7de81f51762933007e254bb6e295977",
+            "0014cf59a39608cbd2de3e573a3ed1162a75f67bf3ac"
+          ]
+        },
+        "unspent": false,
+        "spent_in": "block"
+      },
+      "expect": "ROW_STOP_ALIAS",
+      "writes_closure": false,
+      "compound": true
+    },
+    {
+      "id": "stop-19",
+      "rules": [
+        "H2.1",
+        "H3.3",
+        "H5.1"
+      ],
+      "claim": "Two findings: the journal is lost, and the stop coin is spent. Nothing is written to a lost journal.",
+      "journal": "lost",
+      "journal_holds_closure": false,
+      "parent_recent_block_height": 700,
+      "row_stop": {
+        "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+        "vout": 0,
+        "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+      },
+      "child_seal": {
+        "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+        "vout": 0
+      },
+      "node": {
+        "stop_transaction": {
+          "block_height": 650,
+          "on_active_chain": true,
+          "outputs": [
+            "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          ]
+        },
+        "unspent": false,
+        "spent_in": "mempool"
+      },
+      "expect": "JOURNAL_LOST",
+      "writes_closure": false,
+      "compound": true
+    }
+  ],
+  "entries": [
+    {
+      "id": "entry-01",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "The closure of row 1 of a parent, in canonical form.",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0,\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\"}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a302c22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362227d"
+      },
+      "expect": "row-closed/1"
+    },
+    {
+      "id": "entry-02",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "The ordinal 0: a row has an ordinal of 1 or more.",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":0,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0,\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\"}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a302c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a302c22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362227d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-03",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "An entry without its `tip`.",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a307d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-04",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "An entry with a member that the kind does not have.",
+      "octets": {
+        "text": "{\"cause\":\"stated\",\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0,\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\"}",
+        "hex": "7b226361757365223a22737461746564222c22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a302c22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362227d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-05",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "One uppercase character in the identifier of the parent.",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec2A\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0,\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\"}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633241222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a302c22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362227d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-06",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "The members of entry-01 in another order than the canonical one.",
+      "octets": {
+        "text": "{\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\",\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":0}",
+        "hex": "7b22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362222c22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a307d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-07",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "A `stop_vout` above the largest index of an output.",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/1\",\"height\":720,\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\",\"stop_txid\":\"7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf\",\"stop_vout\":4294967296,\"tip\":\"176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b\"}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f31222c22686569676874223a3732302c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230222c2273746f705f74786964223a2237383536656337396165323532363839663635353130366662613831666533313763363633643735663832613733623035623561636538633439663533666466222c2273746f705f766f7574223a343239343936373239362c22746970223a2231373666386639353538653735616230613436646338373231343265363762643439653263363461313762346139316431393637313839393733353134303362227d"
+      },
+      "expect": "no entry",
+      "valid_neighbour": "entry-01"
+    },
+    {
+      "id": "entry-08",
+      "rules": [
+        "H3.1"
+      ],
+      "claim": "An entry of a kind that this profile does not define. For a reader that does not know the kind, the journal is lost (LIP-0025 M1.5).",
+      "octets": {
+        "text": "{\"entry\":\"row-closed/2\",\"ordinal\":1,\"parent\":\"75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20\"}",
+        "hex": "7b22656e747279223a22726f772d636c6f7365642f32222c226f7264696e616c223a312c22706172656e74223a2237356139343563346566643061343839633561343437346536326164313366343635343562643536333738653764306561346561623162316535316165633230227d"
+      },
+      "expect": "unknown kind",
+      "valid_neighbour": "entry-01"
+    }
+  ],
+  "traces": [
+    {
+      "id": "trace-01",
+      "rules": [
+        "H2.1",
+        "H2.4",
+        "H3.4"
+      ],
+      "claim": "A witness. The verifier sees the spend of the stop coin in its mempool and records the closure. The spend is evicted, and the coin is unspent again in its view: the row stays closed. It stays closed after a restart.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "030d8a84f8bc16e9e936d4d2472a01b619da30a41749063eeddc0c318023790f",
+            "height": 722
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "restart",
+          "expect": "restarted"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "1f767beee8e2ecf34161b449a84b303ec3018527cb9680faa8bbf95a175d73a0",
+            "height": 725
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+              "height": 720
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-02",
+      "rules": [
+        "H3.6"
+      ],
+      "claim": "A verifier that starts after the spend left every view. It holds no closure and sees the coin unspent: it admits the child. That is the limit which LIP-0014 accepts for a spend that never reached a verifier's view.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "5aa98814883b0532f903b3ff81b2db479bec2d49cba2c38b77da5cab4461771f",
+            "height": 730
+          },
+          "expect": "ok"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "trace-03",
+      "rules": [
+        "H2.4",
+        "H3.4"
+      ],
+      "claim": "A verifier that starts after the spend was confirmed sees the coin spent and records the closure. A reorganisation then removes the spend, and the coin is unspent in the view: the row stays closed at this verifier.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "block"
+          },
+          "tip": {
+            "hash": "fd85bb8a72405227294b4045b1b31346d66373eea5992ba379e09e7968c6f38f",
+            "height": 740
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "03ebc9448c9d30ffc560856706001994bbb9d2cdabe66f1f1c8e877be347c584",
+            "height": 741
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "fd85bb8a72405227294b4045b1b31346d66373eea5992ba379e09e7968c6f38f",
+              "height": 740
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-04",
+      "rules": [
+        "H2.3",
+        "H2.6",
+        "H5.2"
+      ],
+      "claim": "The stop coin is not on the chain as the row states it: its transaction is pending in one observation and is confirmed above the parent's recent block in the next. The row refuses both times, and the journal stays empty.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": null,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "ce2f47a2876063408a537f450607b08c664abb0a57fc1532fc1aa1157fa5c839",
+            "height": 700
+          },
+          "expect": "ROW_STOP"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 701,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "33731c8dc3151748f7067f3e87748f728d8a1e0c933c288b182b1e73dbdb5d16",
+            "height": 705
+          },
+          "expect": "ROW_STOP"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "trace-05",
+      "rules": [
+        "H3.5"
+      ],
+      "claim": "Two rows of one parent with their own stop coins. The stop coin of row 1 is spent, and row 1 is closed. Row 2 stays admissible, and row 1 stays closed.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 2,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "0302dd9e1c3605f9acb934bdcafec7eba0fae0fec8c5f1694025a619d6274a79",
+            "vout": 0,
+            "script_hex": "00149d20d37714365dadaecc0115ba1ec1348090e935"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "00149d20d37714365dadaecc0115ba1ec1348090e935"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+            "height": 721
+          },
+          "expect": "ok"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "030d8a84f8bc16e9e936d4d2472a01b619da30a41749063eeddc0c318023790f",
+            "height": 722
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+              "height": 720
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-06",
+      "rules": [
+        "H3.3",
+        "H3.6"
+      ],
+      "claim": "The closure cannot be written. The child refuses all the same, and the journal is lost for the verifier: it admits no child of any parent. After its operator has started the journal anew, the coin is still spent in the view, and the closure is written.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "write": "fails",
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "admit",
+          "parent": "87de70d3a949bee106f1f8f1f2ab11c50d53cc3029ad13992494e0a55d511058",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "43039dc85f0f4726d47b9a873eb38ce623d4651937f3d4883c589e9d23697f41",
+            "vout": 0,
+            "script_hex": "0014ec8ecceb273c5dde39ae6ec1fd7fa225bebc9be6"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014ec8ecceb273c5dde39ae6ec1fd7fa225bebc9be6"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+            "height": 721
+          },
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "start anew",
+          "expect": "started anew"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "block"
+          },
+          "tip": {
+            "hash": "1f767beee8e2ecf34161b449a84b303ec3018527cb9680faa8bbf95a175d73a0",
+            "height": 725
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "1f767beee8e2ecf34161b449a84b303ec3018527cb9680faa8bbf95a175d73a0",
+              "height": 725
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-07",
+      "rules": [
+        "H2.1",
+        "H3.6"
+      ],
+      "claim": "A witness loses its journal. It admits nothing until its operator has started the journal anew. The spend has left the view by then, so the verifier, now a newcomer, admits the child and reports no closure.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "lose journal",
+          "expect": "journal gone"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+            "height": 721
+          },
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "start anew",
+          "expect": "started anew"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "5aa98814883b0532f903b3ff81b2db479bec2d49cba2c38b77da5cab4461771f",
+            "height": 730
+          },
+          "expect": "ok"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "trace-08",
+      "rules": [
+        "H3.2"
+      ],
+      "claim": "Two documents of one row are presented while the stop coin is spent. The first admission writes the closure, and the second finds it: a row has one entry.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "block"
+          },
+          "tip": {
+            "hash": "fd85bb8a72405227294b4045b1b31346d66373eea5992ba379e09e7968c6f38f",
+            "height": 740
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "438b1c1aa796dc8d19cbcddbda1f74320473e595159747d25c357fe5fc12fe46",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "block"
+          },
+          "tip": {
+            "hash": "03ebc9448c9d30ffc560856706001994bbb9d2cdabe66f1f1c8e877be347c584",
+            "height": 741
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "fd85bb8a72405227294b4045b1b31346d66373eea5992ba379e09e7968c6f38f",
+              "height": 740
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-09",
+      "rules": [
+        "H2.5"
+      ],
+      "claim": "The tip moved during the reads of an observation that showed the coin spent. The observation is void: nothing is established, and nothing is written. The next observation shows the coin spent, and the closure is written.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "observation": "void",
+          "expect": "OBSERVATION_VOID"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+            "height": 721
+          },
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": [
+            {
+              "entry": "row-closed/1",
+              "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+              "ordinal": 1,
+              "stop_txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+              "stop_vout": 0,
+              "tip": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+              "height": 721
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "trace-10",
+      "rules": [
+        "H1.3",
+        "H1.4",
+        "H5.1"
+      ],
+      "claim": "The row of parent A names as its stop coin the output after A's seal. A's own anchor spent that output when A was issued, as the anchor of every grant does, and the node shows it spent. The verifier refuses the parent as a whole before it reads its journal or its node, and it writes no closure. The row of parent B names the third output of B's seal transaction, which nothing has spent: its child is admitted.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "1c96d98154489e513348cf1dedfd0f8f41b2f02354650020a23be97abc3ca495",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "fa1a59914b54d22455c2c130e2b1b4dec7e151f58c0d7e5d68e8c30a3fab8cc4",
+            "vout": 1,
+            "script_hex": "0014819aeefe5ce452ecaefa52321748505a186a24f7"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014544c94d29e5c3af65eaf76b7b661f11013ac1372",
+                "0014819aeefe5ce452ecaefa52321748505a186a24f7",
+                "0014eac4a80d846f87323ccd4c6f6ef1b2c46d32d5fb"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "block"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "parent_object": {
+            "id": "1c96d98154489e513348cf1dedfd0f8f41b2f02354650020a23be97abc3ca495",
+            "seal": {
+              "txid": "fa1a59914b54d22455c2c130e2b1b4dec7e151f58c0d7e5d68e8c30a3fab8cc4",
+              "vout": 0
+            },
+            "rows": [
+              {
+                "coin": {
+                  "txid": "296fb7c079dd38d766a2a80305cc2feaa51685d40383e0b336be8ad46e703ab7",
+                  "vout": 0,
+                  "script_hex": "0014c10f904a20839c279f02143022c49421fb64c623"
+                },
+                "stop": {
+                  "txid": "fa1a59914b54d22455c2c130e2b1b4dec7e151f58c0d7e5d68e8c30a3fab8cc4",
+                  "vout": 1,
+                  "script_hex": "0014819aeefe5ce452ecaefa52321748505a186a24f7"
+                }
+              }
+            ]
+          },
+          "expect": "parent refused"
+        },
+        {
+          "op": "admit",
+          "parent": "79deeea21891f50de285a422fb1fb696819c6fbf1070bc4e0bb52c7c73f40619",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "9f7200c33f8694b1ba99d1a9086e6042a6f3f3daf602b3941f8a1421415d44a0",
+            "vout": 2,
+            "script_hex": "00147065e913b9954986ea7836fb36a4b0b81aea6380"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "001417b46197564a3a5fff48b396372388875a4d17ef",
+                "00140e6b01ded494f925e524f6b3a771b9f9c894d1ff",
+                "00147065e913b9954986ea7836fb36a4b0b81aea6380"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "232246f4d011ce119d987140837d8024bdf18cf6ded97ba85c1d437f0f1daa16",
+            "height": 721
+          },
+          "parent_object": {
+            "id": "79deeea21891f50de285a422fb1fb696819c6fbf1070bc4e0bb52c7c73f40619",
+            "seal": {
+              "txid": "9f7200c33f8694b1ba99d1a9086e6042a6f3f3daf602b3941f8a1421415d44a0",
+              "vout": 0
+            },
+            "rows": [
+              {
+                "coin": {
+                  "txid": "a71a50c18c714c6036c272ee0f0ea23e1c67d6419f1dba766da2bcf1932df8a0",
+                  "vout": 0,
+                  "script_hex": "00145fa2c77778a0768975175a9ddfa4439e08339986"
+                },
+                "stop": {
+                  "txid": "9f7200c33f8694b1ba99d1a9086e6042a6f3f3daf602b3941f8a1421415d44a0",
+                  "vout": 2,
+                  "script_hex": "00147065e913b9954986ea7836fb36a4b0b81aea6380"
+                }
+              }
+            ]
+          },
+          "expect": "ok"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "trace-11",
+      "rules": [
+        "H3.3",
+        "H3.6"
+      ],
+      "claim": "The closure cannot be written, and the verifier restarts before its operator has acted. Its store and its outside record still agree, because nothing was written, and the journal is lost all the same: it admits no child, also after the spend has left its view. After its operator has started the journal anew, the verifier is a newcomer and admits the child.",
+      "steps": [
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": false,
+            "spent_in": "mempool"
+          },
+          "tip": {
+            "hash": "176f8f9558e75ab0a46dc872142e67bd49e2c64a17b4a91d196718997351403b",
+            "height": 720
+          },
+          "write": "fails",
+          "expect": "ROW_CLOSED_FOR_CAUSE"
+        },
+        {
+          "op": "restart",
+          "expect": "restarted"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "030d8a84f8bc16e9e936d4d2472a01b619da30a41749063eeddc0c318023790f",
+            "height": 722
+          },
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "admit",
+          "parent": "87de70d3a949bee106f1f8f1f2ab11c50d53cc3029ad13992494e0a55d511058",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "43039dc85f0f4726d47b9a873eb38ce623d4651937f3d4883c589e9d23697f41",
+            "vout": 0,
+            "script_hex": "0014ec8ecceb273c5dde39ae6ec1fd7fa225bebc9be6"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014ec8ecceb273c5dde39ae6ec1fd7fa225bebc9be6"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "2202441808150a7463409f3176668254f99abc1ca80332de96a18116fc270c8c",
+            "height": 723
+          },
+          "expect": "JOURNAL_LOST"
+        },
+        {
+          "op": "start anew",
+          "expect": "started anew"
+        },
+        {
+          "op": "admit",
+          "parent": "75a945c4efd0a489c5a4474e62ad13f46545bd56378e7d0ea4eab1b1e51aec20",
+          "ordinal": 1,
+          "parent_recent_block_height": 700,
+          "row_stop": {
+            "txid": "7856ec79ae252689f655106fba81fe317c663d75f82a73b05b5ace8c49f53fdf",
+            "vout": 0,
+            "script_hex": "0014dc74a744ff2efc065d84a728d246567e572784f3"
+          },
+          "child_seal": {
+            "txid": "0ebbcb13cd1ab1779eaa186eb11c3e249826f65c5f296217e148ca4e2e6610d7",
+            "vout": 0
+          },
+          "node": {
+            "stop_transaction": {
+              "block_height": 650,
+              "on_active_chain": true,
+              "outputs": [
+                "0014dc74a744ff2efc065d84a728d246567e572784f3"
+              ]
+            },
+            "unspent": true
+          },
+          "tip": {
+            "hash": "5aa98814883b0532f903b3ff81b2db479bec2d49cba2c38b77da5cab4461771f",
+            "height": 730
+          },
+          "expect": "ok"
+        }
+      ],
+      "end": {
+        "journal": {
+          "state": "intact",
+          "entries": []
+        }
+      }
+    }
+  ]
+}

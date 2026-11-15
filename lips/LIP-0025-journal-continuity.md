@@ -360,7 +360,7 @@ not go back; what differs is the entries and what a recovery charges.
 | Consumed consents of an issuer | LIP-0020 W7.9 | Section 6 of this LIP |
 | The ledger of a row at its executor | LIP-0014 J1.3 and J1.4 | Every row that could have had a record is fully consumed; a row has a first use only where its parent's checkpoint lies above the block boundary (LIP-0014 section 9.1) |
 | Closures of a seal and of an issuer's name at a verifier | LIP-0008 sections 5.1 and 5.2 | The verifier is a newcomer and reports no witness state (J6.9) |
-| A row closed for cause, at a verifier | LIP-0014 section 10.1 (J2.4a) | Not stated yet; LIP-0014 section 9.1 says only that this journal has to tell an empty store from a lost one |
+| A row closed for cause, at a verifier | LIP-0014 section 10.1 (J2.4a) | Not stated in LIP-0014, whose section 9.1 says only that this journal has to tell an empty store from a lost one. Draft [LIP-0027](LIP-0027-row-stop.md) proposes it for a closure by the stop coin: nothing is charged, and the verifier is a newcomer |
 | The notary's records of one child for each row and of the succession of its seals | LIP-0014 J1.6 and J2.3 (a) | Not stated yet |
 | Denials of a key holder | LIP-0013 section 3.6 | Not stated yet |
 | The signer's record of a seal index and of the recorded revocation | LIP-0008 sections 11.1 and 11.3 | Not stated yet; custody is open (LIP-0024 section 5) |

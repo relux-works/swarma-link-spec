@@ -547,7 +547,10 @@ of that child.
 - Recovery: a new parent grant for the rows that were ended. A notary that
   loses the key, without a leak, can no longer end the row for cause.
 - Source: LIP-0014 section 10.1, rule J2.7; decision of 2026-11-14 for v4
-  from its first version, agreement pending.
+  from its first version, agreement pending. Draft
+  [LIP-0027](lips/LIP-0027-row-stop.md) proposes the script of the coin,
+  the account of the key and the form of the spend, and the owners have not
+  decided them.
 
 ## Services
 
