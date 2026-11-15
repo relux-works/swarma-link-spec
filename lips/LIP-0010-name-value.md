@@ -332,9 +332,11 @@ bytes and leaves 226. The plan keeps it that way:
 ### 9. Notary name (Draft amendment of 2026-11-12)
 
 A verifier of a child grant must learn a notary's key from a source that the
-notary alone controls and that the parent grant can name. The parent names
-the notary by `id/` name ([LIP-0014](LIP-0014-notary-certified-redelegation.md)
-section 7), and that name's value carries the key in a third `swarma` shape:
+notary alone controls and that the parent grant can name. The parent names the
+notary by `id/` name and binds the registration and the owner key of that name
+([LIP-0014](LIP-0014-notary-certified-redelegation.md) sections 7 and 7.1; Ivan
+Oparin accepted the binding on 2026-11-13, and the co-author agreed on
+2026-11-15). The value of that name carries the key in a third `swarma` shape:
 
 ```json
 {"swarma":{"notary":{"attest":"<attestation key>"}}}
@@ -443,9 +445,6 @@ controls; each rejected case leaves no binding and no closure:
   closes section 7). No prefix, grammar or migration is defined.
 - Whether a transfer of `id/<label>` requires the transfer of `d/<label>` in
   the same deployment procedure.
-- Whether a parent pins a notary name by its registration and owner key:
-  LIP-0014 section 7.1 holds Draft text for it, which Ivan Oparin accepted
-  on 2026-11-13 (J3); the co-author's agreement is pending.
 - Whether the notary shape needs a member for a second, pending key during a
   rotation.
 - Decision record, normative adoption and public vectors.

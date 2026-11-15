@@ -45,8 +45,8 @@ and the rows come with them.
 ## What is decided and what is proposed
 
 The rows, the two ledgers and the coin of a row are Ivan Oparin's decision
-of 2026-11-14 (J1), recorded as Draft text in LIP-0014 section 9.1; the
-co-author's agreement is pending. A further decision of the same day names
+of 2026-11-14 (J1), recorded in LIP-0014 section 9.1; the co-author agreed
+to it on 2026-11-15. A further decision of the same day names
 the key of the coin: a separate key, derived from the seed of the
 operator's signer in an account of its own, as seal keys are derived. The
 partitions for several executors and the charging of every link are text of

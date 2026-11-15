@@ -264,16 +264,20 @@ Two rules bound this: a requirement may name up to four notaries, any one of
 which is enough (N6), and after a plain withdrawal another named notary can
 certify the same grant (N8).
 
-Naming several notaries, and naming them by name, has limits that LIP-0014
-states with the case that shows each: a notary does not see a sibling that
-another notary certified under the same ordinal; a withdrawal for cause by
-one notary reaches neither another named notary nor a verifier that starts
-later; and a notary's name that changes hands passes on the right to
-certify. LIP-0014 holds Draft text for each, under decisions that await the
-co-author's agreement: its sections 9.1 (J1), 10.1 (J2) and 7.1 (J3). Under
-section 10.1 a parent names one notary for each row, only that notary
-certifies the row, also after a plain withdrawal, and N6 and N8 read
-narrower.
+Naming several notaries has limits that LIP-0014 states with the case that
+shows each: a notary does not see a child that another notary certified under
+the same ordinal, and a withdrawal for cause by one notary reaches neither
+another named notary nor a verifier that starts later. LIP-0014 section 10.1
+holds Draft text for both, under a decision that awaits the co-author's
+agreement (J2): a parent names one notary for each row, only that notary
+certifies the row, also after a plain withdrawal, and N6 and N8 read narrower.
+
+Two further limits are closed by decisions on which both owners agree since
+2026-11-15. The children of a parent share no free pool: the parent signs one
+row for each child, and a second child under one ordinal has to fit the same
+row (LIP-0014 section 9.1, J1). And a notary's name that changes hands passes
+on no right to certify: the parent binds the registration and the owner key of
+the name (LIP-0014 section 7.1, J3).
 
 The notary learns the contents of both contracts. A deployment that cannot
 disclose them to a third party uses issuance by the operator's signer
@@ -303,20 +307,21 @@ controls:
 
 ## Open questions
 
-Closed on 2026-11-12: where the attestation is anchored (N9), how a notary
-is named (N6), durable closure and certification after a withdrawal (N8),
-and who pays (LIP-0014, D11). An attestation of a child is not renewed when
-the parent's contract is replaced; the new parent has new children
-(LIP-0014 section 10).
+Closed on 2026-11-12: where the attestation is anchored (N9), how a notary is
+named (N6), durable closure and certification after a withdrawal (N8), and who
+pays (LIP-0014, D11). An attestation of a child is not renewed when the
+parent's contract is replaced; the new parent has new children (LIP-0014
+section 10).
+
+Closed on 2026-11-15: a parent pins a notary name by its registration and owner
+key, as a v4 grant pins an issuer, for the v3 profile as well. Ivan Oparin
+accepted it on 2026-11-13 (J3), the co-author agreed on 2026-11-15, and
+LIP-0014 section 7.1 holds the rules.
 
 Still open:
 
 - Adoption of the bytes, the signing domain and the statement kinds that
   LIP-0014 proposes for a child grant; statement kinds for other facts.
 - The field that carries a requirement in a grant that is not a child.
-- Whether a parent pins a notary name by its registration and owner key, as
-  a v4 grant pins an issuer: LIP-0014 section 7.1 holds Draft text for it,
-  for the v3 profile as well. Ivan Oparin accepted it on 2026-11-13 (J3);
-  the co-author's agreement is pending.
 - Whether the notary of a child and the moderator of the same contract can
   be one party.

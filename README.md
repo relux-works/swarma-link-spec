@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.44
+**Version:** 0.1.46
 
-**Date:** 2026-11-14
+**Date:** 2026-11-15
 
 **Status:** Draft
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.44
+## Draft profiles and design decisions in v0.1.46
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -172,20 +172,21 @@ reference checker in [`tools/trustcheck`](tools/trustcheck). Nothing of it is
 implemented in a product.
 
 [LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) proposes
-notary-certified re-delegation and records the owners' decisions of
-2026-11-12. Every child grant is admitted only with a valid notary
-attestation, and every verifier still checks the countable conditions of the
-child itself: a wider child refuses for that reason even when it is
-certified. The parent's signed right of re-delegation names one to four
-notaries by `id/` name; each publishes its attestation key in its own name,
-in a `swarma` shape that a Draft amendment of LIP-0010 proposes. The notary
-is neither the delegator nor the delegatee. On Grant v3 the landlord's
+notary-certified re-delegation and records the owners' decisions of 2026-11-12.
+Every child grant is admitted only with a valid notary attestation, and every
+verifier still checks the countable conditions of the child itself: a wider
+child refuses for that reason even when it is certified. The parent's signed
+right of re-delegation names one to four notaries, each by its `id/` name, the
+registration of that name and its owner key, and it holds one row for each
+child that the grant permits. Each notary publishes its attestation key in its
+own name, in a `swarma` shape that a Draft amendment of LIP-0010 proposes. The
+notary is neither the delegator nor the delegatee. On Grant v3 the landlord's
 signer issues the child on a signed request of the parent's grantee, under
-contract profile `swarma-trust-contract/2`, and no v3 byte changes. The
-draft proposes the attestation object, its anchor as LIP-0005 action `0x04`,
-the order of an executor's checks and the refusal codes. It belongs to the
-second phase of Goal 1: after the first proof, in shadow mode first, and no
-part of the first proof. Nothing of it is implemented.
+contract profile `swarma-trust-contract/2`, and no v3 byte changes. The draft
+proposes the attestation object, its anchor as LIP-0005 action `0x04`, the
+order of an executor's checks and the refusal codes. It belongs to the second
+phase of Goal 1: after the first proof, in shadow mode first, and no part of
+the first proof. Nothing of it is implemented.
 
 The [key map](KEY-MAP.md) records four owners' decisions of 2026-11-12: a
 principal has three keys, the name-owner key, the Nostr key and the grant
@@ -225,12 +226,13 @@ An organization identity and release statements for binaries are sketches
 in LIP-0015 and are not proposed.
 
 Two independent reviews of the design found eight gaps, and version 0.1.24
-recorded each as an open question. Each now has Draft text, labelled J1 to
-J8. Ivan Oparin decided them, J3, J6 and J8 on 2026-11-13 and J1, J2, J4, J5
-and J7 on 2026-11-14, and the co-author's agreement on each is pending. One
-point of J5 is agreed by both owners: in the first version of v4 a
-re-delegation narrows only typed fields and appends no text. Nothing of the
-rest is adopted before both owners agree. The rules in force stay beside the
+recorded each as an open question. Each now has text, labelled J1 to J8.
+Ivan Oparin decided them, J3, J6 and J8 on 2026-11-13 and J1, J2, J4, J5
+and J7 on 2026-11-14. The co-author agreed to J1 and J3 on 2026-11-15; on
+the other six the co-author's agreement is pending. One point of J5 is
+agreed by both owners as well: in the first version of v4 a re-delegation
+narrows only typed fields and appends no text. Nothing of the rest is
+adopted before both owners agree. For it the rules in force stay beside the
 Draft text as they are, and no gap is called closed for a property that its
 text lists as open. Five decisions stand in LIP-0014. The parent signs rows
 that fix the executor, the grantee, the cap and the certifier of each child;
@@ -467,9 +469,9 @@ histories, decision tables and twelve traces of the consent journal.
 
 Version 0.1.44 adds [LIP-0026](lips/LIP-0026-rows-and-accounts.md), a first
 profile for the rows of a v4 parent. The rows, their two ledgers and the
-coin of a row are decided in LIP-0014 section 9.1, with the co-author's
-agreement pending; who funds the coin, the account and the path of its key,
-and which counter an executor keeps under which key are open there. The
+coin of a row are decided in LIP-0014 section 9.1; who funds the coin, the
+account and the path of its key, and which counter an executor keeps under
+which key are open there. The
 draft proposes: what a row states, and a pool that bounds the rows for each
 kind of limit; the checks of a child against the row of its ordinal, on
 signed octets alone; a coin with a witness key hash script that is
@@ -483,6 +485,29 @@ account. Every rule is the draft's proposal, and neither owner has decided
 one. The 64 vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) state rows,
 coins and requests as facts, among them a trace of one parent over three
 executors; no node, no signer and no store was run for the draft.
+
+Version 0.1.46 gives the contract profile `swarma-trust-contract/2` of
+[LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) one member set.
+Since version 0.1.31 the LIP had described the right of re-delegation twice:
+with the lists of its first draft, and with the rows and the pins of a notary's
+name that Ivan Oparin decided on 2026-11-14 and 2026-11-13 (J1, J3), as Draft
+text that waited for the co-author. One profile string stood for two sets of
+members. The co-author agreed to both decisions on 2026-11-15, and the first
+set is removed. A right of re-delegation holds `depth`, `actions`, `budget`,
+`slots`, `notaries` and `checkpoint`: one row for each child, with its
+executor, grantee, cap and certifier, and one entry for each notary, with its
+name, the registration of that name and its owner key. The attestation has
+eighteen members; the two that added up a sum over siblings are gone. The
+decisions J2, J4 and J5 still await the co-author and keep their Draft text.
+The names, the bytes and the codes of the profile stay the draft's proposal.
+The revision fixes them for an implementation and states what each of a
+reader's nine rules owns and in which order it reports. Four points of form
+are the draft's choice and belong to no decision: the owner pin of a notary as
+a compressed public key, which is the form that LIP-0021 proposes; the range
+of an output index; a largest integer; and that the key of a row is a valid
+key. The 190 vectors in [`vectors/LIP-0014/`](vectors/LIP-0014/) hold 151
+contracts and 39 pairs of a parent and a child. No checker for them is
+published, and nothing of the profile is implemented.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

@@ -1563,8 +1563,8 @@ saw the change: that verifier keeps refusing.
   5.2 states the case and holds Draft text for it, under a decision that
   awaits the co-author's agreement (J6).
 - Whether the issuer rule of section 3 should also require that the bound
-  owner wrote the `swarma` value in force, as LIP-0014 section 7.1 drafts
-  for a notary's name. No attack on an issuer is claimed: its registration
+  owner wrote the `swarma` value in force, as LIP-0014 section 7.1 requires
+  of a notary's name. No attack on an issuer is claimed: its registration
   and owner are pinned by independently provisioned verifier pins, and the
   root must be independently trusted (sections 3 and 12.2).
 - Exact versioned bytes, signature domain, commitment/consent encoding, name

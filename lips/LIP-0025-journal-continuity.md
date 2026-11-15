@@ -48,8 +48,8 @@ by this text.
 ## What is decided and what is proposed
 
 The contract is decided, and its form is not. LIP-0014 section 9.1 records
-Ivan Oparin's decision of 2026-11-14 on rows (J1), with the co-author's
-agreement pending; its rule J1.4 has the ledger of a row live in a store
+Ivan Oparin's decision of 2026-11-14 on rows (J1), to which the co-author
+agreed on 2026-11-15; its rule J1.4 has the ledger of a row live in a store
 whose continuity is proved against a record outside the store, and it
 states the order of a reservation, the continuity check, the fenced writer
 and the two ways of recovery. The same section says that this is a contract

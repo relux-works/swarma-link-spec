@@ -86,11 +86,11 @@ The table says which open point of LIP-0008 each section answers.
 
 | Type | Its members wait for |
 | --- | --- |
-| `swarma-grant/4` | The encoding of the issuer pin and of an owner key (LIP-0008 section 3), of the recipient modes (section 3.1), of the executor (section 4), of the limits and their kinds (section 2 and LIP-0018), of the window and the recent block (sections 7 and 7.1) and of the seal with its construction profile (sections 1.1, 9 and 11); for a parent and a child, the rows, the delegation key and the issue capability (LIP-0014 sections 9.1 and 11.1, LIP-0008 section 12.2), whose rules await the co-author |
+| `swarma-grant/4` | The encoding of the issuer pin and of an owner key (LIP-0008 section 3), of the recipient modes (section 3.1), of the executor (section 4), of the limits and their kinds (section 2 and LIP-0018), of the window and the recent block (sections 7 and 7.1) and of the seal with its construction profile (sections 1.1, 9 and 11); for a parent and a child, the rows (LIP-0014 section 9.1), and the delegation key and the issue capability (LIP-0014 section 11.1, LIP-0008 section 12.2), whose rules await the co-author |
 | `swarma-invocation/1` | The action table and the types of its arguments (LIP-0007, LIP-0008 sections 12.1 and 12.3), the encoding of the proof path (section 12.2) and the journal key of a request |
 | `swarma-receipt/1` | What a receipt states about an effect, for each action (LIP-0018 section 3) |
 | `swarma-seal-endorsement/1` | The seal profile and the form of a seal key and of its script (LIP-0008 sections 11.1 and 11.2) |
-| `swarma-notary-attestation/2` | The Draft changes of LIP-0014 sections 3.4, 7.1, 9.1 and 10.1 (J5, J3, J1, J2), which await the co-author |
+| `swarma-notary-attestation/2` | The Draft changes of LIP-0014 sections 3.4 and 10.1 (J5, J2), which await the co-author. The changes of its sections 7.1 and 9.1 (J3, J1) are decided by both owners |
 
 Until a type has members, no reader supports it, and a payload of that
 type refuses as `WIRE_TYPE` (W3.1). Nothing in this LIP, and no vector,
@@ -267,15 +267,17 @@ the consent event of section 7.2. It keeps the wire form and the identifier
 of NIP-01, and sections 1 to 6 do not apply to it.
 
 The attestation needs a successor for two reasons. Its identifier and its
-signature follow the fixed-prefix style, which sections 4 to 6 replace for
-the objects of this profile, and new octets take a new version (W3.3). And
-Draft text of LIP-0014 changes its members: section 9.1 removes the members
-`budget` and `prev_attestation_id` (J1), and section 3.4 leaves `none` and
-`identical` as the values of `textual` (J5). Those decisions await the
-co-author's agreement. This LIP gives the successor its identifier and its
-digest and no member; its members, and the commitment of its anchor
-(LIP-0014 section 6.4), come with the proposal that settles those changes.
-`swarma-notary-attestation/1` keeps its octets and its prefix under W3.4.
+signature follow the fixed-prefix style, which sections 4 to 6 replace for the
+objects of this profile, and new octets take a new version (W3.3). And its
+members are not settled for v4: Draft text of LIP-0014 section 3.4 leaves
+`none` and `identical` as the values of `textual` (J5), under a decision that
+awaits the co-author's agreement. The members `budget` and
+`prev_attestation_id` are gone from the attestation since both owners agreed on
+rows (J1; LIP-0014 sections 6.1 and 9.1). This LIP gives the successor its
+identifier and its digest and no member; its members, and the commitment of its
+anchor (LIP-0014 section 6.4), come with the proposal that settles them.
+`swarma-notary-attestation/1` keeps the octets and the prefix that LIP-0014
+gives it, under W3.4.
 
 A type enters the registry, and a registered type gets a new version,
 through a LIP that states its identifier, the key that signs it, its

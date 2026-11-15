@@ -91,7 +91,7 @@ and wait for the owners' confirmation.
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
 | Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending |
-| Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreement pending |
+| Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreed by both owners on 2026-11-15 |
 | Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
@@ -117,7 +117,8 @@ and wait for the owners' confirmation.
   notary's name the notary.
 - Published: not in the name's value. It is the key of the name's output
   script, which the chain shows. A v4 grant pins it for its issuer and for
-  a recipient by name (LIP-0008 sections 3 and 3.1).
+  a recipient by name (LIP-0008 sections 3 and 3.1), and a parent grant
+  pins it for each notary that it names (LIP-0014 sections 2 and 7.1).
 - Holder: the owner alone, in cold custody (LIP-0008 section 11.1). The key
   map proposes a seed of its own for it and never an agent host.
 - Signs: name operations, which are updates, renewals and transfers of the
@@ -416,10 +417,12 @@ names it as the holder or as the channel key.
 
 ## Re-delegation and the notary
 
-Four of these keys follow Ivan Oparin's decisions of 2026-11-14 for v4, and
-the co-author's agreement on them is pending. LIP-0014 holds their rules:
-section 9.1 for rows and the coin of a row, section 10.1 for the stop coin,
-and section 11.1 for the delegation key and the child-seal key.
+Four of these keys follow Ivan Oparin's decisions of 2026-11-14 for v4. The
+co-author agreed to the rows and to the coin of a row on 2026-11-15; on the
+stop coin, the delegation key and the child-seal key the co-author's agreement
+is pending. LIP-0014 holds their rules: section 9.1 for rows and the coin of a
+row, section 10.1 for the stop coin, and section 11.1 for the delegation key
+and the child-seal key.
 
 These entries speak of rows. A parent grant signs one row for each child it
 permits, and a row fixes the executor, the grantee, the cap and the notary
@@ -466,9 +469,9 @@ of that child.
   together with one private key yields every key of the account (LIP-0008
   section 11.1).
 - Recovery: a new parent grant; rows are fixed when a parent is issued.
-- Source: LIP-0014 section 9.1, rule J1.9; decision of 2026-11-14,
-  agreement pending. One child for each row then holds on the active chain
-  and not across forks, which the decision accepts.
+- Source: LIP-0014 section 9.1, rule J1.9; decision of 2026-11-14, agreed
+  by both owners on 2026-11-15. One child for each row then holds on the
+  active chain and not across forks, which the decision accepts.
 
 **Child-seal key, v4, optional**
 
@@ -500,10 +503,10 @@ of that child.
 - Leak: the thief certifies children. It cannot widen an action set, a
   repository list, a window or a child's own budget, because every
   verifier checks those itself. Under the text in force it can certify a
-  child that exceeds its parent in words, and its attestations carry the
-  sum of the siblings' budgets, which no verifier sees. Under LIP-0014
-  sections 3.4 and 9.1 a child of profile `/2` has no text of its own, and
-  rows replace that sum.
+  child that exceeds its parent in words; under LIP-0014 section 3.4, whose
+  decision awaits the co-author, a child of profile `/2` has no text of its
+  own. The sum of the siblings' budgets does not rest on this key: the
+  signed rows of the parent bound it (LIP-0014 section 9.1).
 - Recovery: the notary's name-owner key publishes a new attestation key.
   Every attestation under the old key then refuses, and the notary signs
   again under the new one. No grant is reissued.

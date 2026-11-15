@@ -463,16 +463,16 @@ checks of step 9 bound the effects.
 A refusal is reported as its code only. The executor does not reveal grant
 contents, ledger state or the reason a key was refused beyond the code.
 
-For a contract of profile `/2`, LIP-0014 records decisions of 2026-11-14
-that add to these steps; the co-author's agreement on them is pending. Its
-section 3.4 adds two refusals after 6d for a grant with a scope text, a
-refusal of `land` and `spend` under such a grant after 6e, and a field
-`scope_text` to the record of step 7 (J5). That refusal is the default.
-As an exception it gives way to a hold at step 9 for the owner's
-confirmation of one operation (J5b); what selects the exception is open.
-Its section 9.1 adds a ledger
-for each row to the reservation of step 9 (J1). Profile `/1`, its steps and
-its vectors do not change.
+For a contract of profile `/2`, LIP-0014 adds to these steps. Its section 9.1
+adds a ledger for each row to the reservation of step 9 (J1); Ivan Oparin
+decided the rows on 2026-11-14, and the co-author agreed on 2026-11-15. Its
+section 3.4 records a further decision of 2026-11-14, on which the co-author's
+agreement is pending (J5): two refusals after 6d for a grant with a scope text,
+a refusal of `land` and `spend` under such a grant after 6e, and a field
+`scope_text` in the record of step 7. That refusal is the default. As an
+exception it gives way to a hold at step 9 for the owner's confirmation of one
+operation (J5b); what selects the exception is open. Profile `/1`, its steps
+and its vectors do not change.
 
 ### 3.5. Nonce journal and the time window
 

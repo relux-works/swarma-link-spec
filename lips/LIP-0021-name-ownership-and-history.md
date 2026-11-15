@@ -65,7 +65,7 @@ them.
 | --- | --- |
 | The issuer rule: the registration, the owner key, the unchanged owner and `swarma`, the walk (LIP-0008 section 3) | Ivan Oparin's decision of 2026-11-11. That the stretch starts at the committed recent block is the choice of that draft and needs confirmation; this profile uses that start and confirms nothing |
 | A recipient by key or by name (LIP-0008 section 3.1) | Ivan Oparin's decision of 2026-11-10, as the changelog of version 0.1.13 dates it; the co-author's agreement is pending |
-| The pins, the checkpoint and the writer rule of a notary's name (LIP-0014 section 7.1, J3) | Accepted by Ivan Oparin on 2026-11-13; the co-author's agreement is pending |
+| The pins, the checkpoint and the writer rule of a notary's name (LIP-0014 section 7.1, J3) | Accepted by Ivan Oparin on 2026-11-13; the co-author agreed on 2026-11-15 |
 | The durable closure for a change of the issuer's name that its owner signed (LIP-0008 section 5.2, J6) | Accepted by Ivan Oparin on 2026-11-13; the co-author's agreement is pending |
 | The consent of a recipient by name (LIP-0020 section 7.3, W7.6) | The decided point above; the conditions of W7.6 are the proposal of that draft |
 | The comparison of keys by their x coordinate (LIP-0014 section 11.1, J4.3) | Decided by Ivan Oparin on 2026-11-14; the co-author's agreement is pending |
@@ -75,7 +75,7 @@ The table says which open point each section answers.
 | Open point | Proposed here |
 | --- | --- |
 | LIP-0008 section 3: "Exact key encoding and script coverage remain open", and its open question "Owner-key encoding and supported scripts" | Sections 2 and 3 |
-| LIP-0014 section 7.1: the owner pin "in the encoding that LIP-0008 section 3 will fix", and a first owner-proof profile that "accepts `SIGHASH_ALL` without `ANYONECANPAY` only" | Sections 2 and 4 |
+| LIP-0014 section 7.1: a first owner-proof profile that "accepts `SIGHASH_ALL` without `ANYONECANPAY` only". For the owner pin of a notary entry, LIP-0014 section 2 takes the form of O2.1 into its v3 profile `/2` | Sections 2 and 4 |
 | LIP-0020 section 7.3: the evidence output is controlled "under the ownership profile of LIP-0008 section 3, which is open" | Sections 3, 5 and 6 |
 | LIP-0008, open questions: whether the issuer rule should also require that the bound owner wrote the `swarma` value in force | Section 4.1 states a proposal and leaves the question open |
 | LIP-0008, open questions: "history proofs for a verifier without a full node" | Not proposed. The profile is for a verifier with its own node |
@@ -88,7 +88,7 @@ The table says which open point each section answers.
 | The walk and the verdicts of section 7, as decisions on stated facts | Yes | The same |
 | The reads on a node: the current output of a name and a transaction with the height of its block, all in one observation | No | The observation profile, which is open (LIP-0008 sections 4 and 6), and a run that shows what the pinned build of the node returns |
 | The comparison of the `swarma` member along a stretch | Only as an equality of given octets | A rule that says which octets of a value are its `swarma` member. This profile hands a value to the rule as the octets of its push |
-| The pin as a member of a grant, of a notary entry or of an agent's pointer | No | The members of those objects (LIP-0020; LIP-0014 section 7.1) |
+| The pin as a member of a v4 grant or of an agent's pointer | No | The members of those objects (LIP-0020). A notary entry of the v3 contract profile `/2` has the member, in the form of O2.1 (LIP-0014 section 2) |
 
 ## Motivation
 
@@ -122,10 +122,10 @@ and a limit that one implementation chose is no rule.
 
 - LIP-0008 section 3 says that the exact key encoding and the script
   coverage remain open and that an unsupported or ambiguous proof refuses.
-- LIP-0014 section 7.1 writes the owner pin of a notary in "the encoding
-  that LIP-0008 section 3 will fix" and states one property of the first
-  owner-proof profile: it accepts `SIGHASH_ALL` without `ANYONECANPAY`
-  only.
+- LIP-0014 section 2 writes the owner pin of a notary entry of its v3 profile
+  `/2` as a compressed public key, which is the form of O2.1, and its section
+  7.1 states one property of the first owner-proof profile: it accepts
+  `SIGHASH_ALL` without `ANYONECANPAY` only.
 - LIP-0020 covers signing keys and no other key (W3.6). It leaves the form
   of a key that controls an output to the ownership and seal profiles, and
   its W7.6 reads an evidence output under an ownership profile that it

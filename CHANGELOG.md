@@ -1,5 +1,85 @@
 # Changelog
 
+## 0.1.46 — 2026-11-15
+
+Gives the contract profile `swarma-trust-contract/2` of LIP-0014 one member set
+and adds vectors for it. Both owners have decided the two points that this
+rests on. Ivan Oparin decided the rows on 2026-11-14 (J1) and accepted the pins
+of a notary's name on 2026-11-13 (J3), and the co-author, Alexey Grigorev,
+agreed to both on 2026-11-15. LIP-0014 stays a Draft, and nothing of it is
+implemented. No v3 byte changes, and neither does any rule or vector of profile
+`swarma-trust-contract/1` or the reference checker.
+
+What it answers. Since 0.1.31 LIP-0014 described the right of re-delegation
+twice. Its sections 2 to 9 held the first draft: the lists `agents` and
+`grantees`, the count `max_children`, notaries as bare names, and an
+attestation that added up a pool over siblings. Its sections 7.1 and 9.1 held
+the rows and the pinned notaries as Draft text that waited for the co-author.
+One profile string stood for two sets of members, and an implementation could
+not tell which of them to read.
+
+The one member set. A right of re-delegation is the member `delegate` with
+`depth`, `actions`, `budget`, `slots`, `notaries` and `checkpoint`, in this
+order. A row of `slots` has `executor`, `grantee`, `cap` and `notary`, and the
+ordinal of a child selects its row. An entry of `notaries` has `name`,
+`registration`, with `txid` and `vout`, and `owner`; `checkpoint` is the block
+from which the history of each notary's name is constrained. A grant without
+the right, and every child, carries the one value of depth 0. The contract
+keeps its fifteen members.
+
+What is removed. The members `agents`, `grantees` and `max_children`; notaries
+as bare names; the attestation members `budget` and `prev_attestation_id`, so
+that `swarma-notary-attestation/1` has eighteen members; the verifier's step
+V15 with the code `ATTESTATION_ARITHMETIC`, whose number stays unused so that
+the later steps keep theirs; the predecessor attestations in a bundle; and the
+notary's ledger of a sum. The sections 7.1 and 9.1 keep their numbers, their
+rules J1.1 to J1.9 and J3.1 to J3.9 and their cases, and now hold text that
+both owners decided. An object with the members of the first draft refuses as
+`CONTRACT_DELEGATE`.
+
+What stays pending. The decisions J2, J4 and J5 await the co-author and keep
+their Draft text, and one consequence is said in place: a row names its
+certifier, and the check that an attestation comes from that notary is rule
+J2.2. Until the co-author agrees to it, an attestation by any notary that the
+parent names satisfies step V12.
+
+What the draft fixes without a decision. The names, the order, the bytes and
+the codes of the profile are still the draft's proposal; this revision fixes
+them so that an implementation can be built against one text. Section 3.1 now
+says what each rule of a reader owns. Rule 1 owns the form of the bytes at
+every depth, the fifteen members and the JSON type of each member except
+`delegate`. Rule 9 owns the value of `delegate` as a whole and reports in three
+steps: the six members and their types; then depth 1 without a notary, as
+`DELEGATE_NO_NOTARY`; then every other rule. Rule 8 reads the depth of a child
+only where it is the first member of `delegate` and an integer. Four points of
+form belong to no decision and are named for the owners: the owner pin of a
+notary as a compressed public key in 66 lowercase hexadecimal characters, which
+is the form that Draft LIP-0021 proposes; an output index of at most
+4294967295; a largest integer of 9223372036854775807 in the form of the bytes;
+and that the key of a row is a valid key, as the key of a grantee is. D12 is a
+rule of the reader: a right of re-delegation that lists `spend` refuses as
+`CONTRACT_DELEGATE`.
+
+Two corrections come with the exact rules. A contract that names a parent with
+ordinal 0 refuses as `CONTRACT_PARENT` under rule 8 and never reaches
+`CHILD_ORDINAL`, which earlier text named for it. And step V1 no longer lists
+six of the ten contract codes as if they were all.
+
+Vectors. `vectors/LIP-0014/contract-vectors.json` holds 190 vectors: 151
+contracts, of which 15 are valid, 3 are valid in the spend profile alone and
+133 are refused, and 39 pairs of a parent and a child with the steps that two
+contracts decide. A second implementation that shares no code with the
+generator decides all of them with 0 mismatches, and both give the 36 published
+contracts of profile `/1` their published outcomes. No checker for the new
+vectors is published. They hold no grant, no delegation request and no
+attestation.
+
+Other texts follow the two decisions: LIP-0008, LIP-0010, LIP-0012, LIP-0013,
+LIP-0020, LIP-0021, LIP-0025 and LIP-0026, the key map, the key registry, the
+README and the index of open questions no longer call J1 and J3 pending, and
+LIP-0021 no longer quotes a sentence of LIP-0014 that is gone. No rule of those
+texts changes.
+
 ## 0.1.44 — 2026-11-14
 
 Adds Draft LIP-0026, a first profile for the rows of a v4 parent, their
