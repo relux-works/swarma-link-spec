@@ -490,8 +490,8 @@ co-author's agreement pending, that on v4 the notary of a row ends the row
 for cause by spending a coin that the row names, and that every verifier
 whose node shows the spend refuses the row. It names one code, for the
 spent coin. The draft proposes: a stop coin with a witness key hash script
-for each row, which is no coin of a row, not the seal of the parent, and
-neither the seal of the child nor the output after it; three outcomes that
+for each row, which is no coin of a row, no seal of the parent or of the
+child, and not the output after either seal; three outcomes that
 a verifier keeps apart, the coin unspent, the coin spent and the coin not
 on the chain as the row states it, of which only the second records
 something; the record of a row closed for cause as an entry of a journal of
@@ -500,7 +500,7 @@ permanent at that verifier; a verifier that cannot write the record and
 then admits nothing until its operator has acted; and a stop account of the
 notary whose keys sign one kind of input, with a spend whose fee nobody
 else can take away. Every rule is the draft's proposal, and neither owner
-has decided one. The 44 vectors in [`vectors/LIP-0027/`](vectors/LIP-0027/)
+has decided one. The 52 vectors in [`vectors/LIP-0027/`](vectors/LIP-0027/)
 state facts and octets, among them the traces of a witness and of a
 verifier that starts later; no node and no store was run for the draft.
 

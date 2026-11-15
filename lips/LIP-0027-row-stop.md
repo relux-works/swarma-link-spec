@@ -73,9 +73,10 @@ look at them first:
 3. A closure that cannot be written makes the journal lost for its
    verifier, which then admits nothing until its operator has acted
    (H3.3). LIP-0008 section 5.1 says the same of a seal.
-4. The stop coin is neither the seal of the child nor the output after it
-   (H2.2), and the notary keeps its stop keys in an account of their own
-   (H4.1).
+4. The stop coin is neither a seal nor the output after a seal: not of the
+   parent (H1.3) and not of the child (H2.2). The anchor of a grant spends the
+   output after its seal, and a stop coin there would turn an issuance into a
+   closure. The notary keeps its stop keys in an account of their own (H4.1).
 
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
@@ -147,16 +148,29 @@ is used for nothing else in the parent.
 | --- | --- |
 | H1.1 | A row of a v4 parent states its stop coin, as an outpoint and a script, beside the five things of LIP-0026 R1.1. |
 | H1.2 | The script is a witness key hash: the octets `00 14` and 20 further octets. |
-| H1.3 | The stop coins of the rows of one parent are different outpoints. None of them is the coin of a row of that parent, and none is the seal of the parent. |
-| H1.4 | A parent that does not meet H1.1 to H1.3 is refused as a whole, as LIP-0026 R1.5 says of a row: it admits no child and no request of its own. |
+| H1.3 | The stop coins of the rows of one parent are different outpoints. None of them is the coin of a row of that parent, none is the seal of the parent, and none is the output after that seal in the same transaction, which is the linkage output that the parent's own anchor spends (LIP-0023 C2.3). |
+| H1.4 | A parent that does not meet H1.1 to H1.3 is refused as a whole, as LIP-0026 R1.5 says of a row: it admits no child and no request of its own. A verifier judges H1.1 to H1.3 on the signed octets of the parent before any check of section 2, so that it reads no stop coin and writes no closure under a parent that it refuses. |
 
 One stop coin for each row keeps a cause local. LIP-0014 has a cause close
 the row of the attestation that it concerns and no other, also where
 several rows share a seal (J2.4a), and its case S2-10 has another row of
 the same parent stay admissible "with its own unspent stop coin".
 
-A stop coin that was also the coin of a row would be spent by the issuance
-of that row's child (LIP-0026 R3.3), and the issuance would close a row.
+A stop coin that was also the coin of a row would be spent by the issuance of
+that row's child (LIP-0026 R3.3), and the issuance would close a row.
+
+A stop coin that was the output after the parent's seal would be spent by the
+issuance of the parent itself, because the anchor of every grant spends that
+output (LIP-0023 C2.3). Take a parent whose seal is the output 0 of a
+transaction and whose row names the output 1 as its stop coin. The parent's
+anchor spends the output 1 and leaves the seal alone, as it must. A verifier
+that read this row under section 2 would find the coin on the chain as stated
+and spent, and it would record the issuance of the parent as a closure for
+cause, which nothing lifts. H1.3 excludes the case by a comparison of two
+outpoints that the parent signs: the seal with its index, and the same
+transaction with the index one higher. The comparison asks nothing about who
+holds the key of the linkage output. Another output of the parent's seal
+transaction can be a stop coin; nothing spends it but its key.
 
 ### 2. The stop coin at an admission
 
@@ -200,12 +214,13 @@ coin is read, nothing is recorded, and the row is admitted again when the
 chain holds those blocks again.
 
 H2.2 keeps three states apart that LIP-0014 keeps apart: a child that is
-revoked, an attestation that is withdrawn, and a row that is closed for
-cause. A stop coin that was the seal of the child would turn the revocation
-of that child into the closure of its row. A stop coin that was the output
-after the seal would be spent by the child's own anchor (LIP-0023 C2.3),
-and the issuance would close the row. Another output of the child's seal
-transaction can be a stop coin; nothing spends it but its key.
+revoked, an attestation that is withdrawn, and a row that is closed for cause.
+A stop coin that was the seal of the child would turn the revocation of that
+child into the closure of its row. A stop coin that was the output after the
+seal would be spent by the child's own anchor (LIP-0023 C2.3), and the issuance
+would close the row. Another output of the child's seal transaction can be a
+stop coin; nothing spends it but its key. H1.3 makes the same two comparisons
+with the seal of the parent, for every row and before this section is reached.
 
 The same question exists for the seal that an attestation names. An
 attestation whose seal is the stop coin of its row would make a plain
@@ -228,16 +243,21 @@ one entry for each row, and it admits nothing while it cannot write one.
 | --- | --- |
 | H3.1 | A closure of a row is an entry of the kind `row-closed/1` with exactly the members `entry`; `parent`, the identifier of `P` (LIP-0020 section 6), 64 lowercase hexadecimal characters; `ordinal`, the ordinal of the row, an integer of 1 or more; `stop_txid`, 64 lowercase hexadecimal characters, and `stop_vout`, an integer, the outpoint of the stop coin; `tip`, the hash of the tip of the observation that showed the coin spent, 64 lowercase hexadecimal characters; and `height`, the height of that tip. The integers are in the number form of LIP-0020 section 2, and `stop_vout` is at most 4294967295. |
 | H3.2 | The verifier writes the entry in the order of LIP-0025 section 3. The search for an entry of the same `parent` and `ordinal` and the write are one atomic step of the store: a row has at most one entry. |
-| H3.3 | Where a closure is due and cannot be written, the journal is lost for that verifier (LIP-0025 M5.1): it admits no child of any parent until its operator has restored the journal or started it anew. The child for which the closure was due refuses as `ROW_CLOSED_FOR_CAUSE` all the same. |
+| H3.3 | Where a closure is due and cannot be written, the journal is lost for that verifier (LIP-0025 M5.1): it admits no child of any parent until its operator has restored the journal or started it anew. A restart does not end that state, also where the store and its outside record still agree because nothing was written. The child for which the closure was due refuses as `ROW_CLOSED_FOR_CAUSE` all the same. |
 | H3.4 | A closure survives restart, eviction, replacement, non-confirmation, reorganisation and a rotation of the notary's attestation key. A stop coin that is unspent again in a later view reopens nothing, and deleting an entry is no recovery. |
 | H3.5 | A closure closes one row: the pair of `parent` and `ordinal`. Another row of the same parent is not touched by it. |
 | H3.6 | A verifier whose journal is lost is a newcomer (LIP-0008 J6.9). A recovery by starting anew charges nothing: the new journal holds no closure, the verifier reports none that it does not hold, and it closes a row again when its own view shows the stop coin spent. The journal needs no block boundary. |
 
-H3.3 takes the sentence of LIP-0008 section 5.1 for seals: a failure to
-persist a closure permits no effect and requires a recovery of the journal.
-A verifier that went on after a failed write would hold a closure in memory
-alone, and its next restart would turn a witness into a newcomer without
-anybody having decided so.
+H3.3 takes the sentence of LIP-0008 section 5.1 for seals: a failure to persist
+a closure permits no effect and requires a recovery of the journal. A verifier
+that went on after a failed write would hold a closure in memory alone, and its
+next restart would turn a witness into a newcomer without anybody having
+decided so. A restart that ended the lost state would do the same one step
+later. The continuity check of LIP-0025 compares a store with its outside
+record, and after a write that failed the two still agree, so that check alone
+would call the journal intact. A verifier therefore keeps a durable mark that
+it is lost, outside the journal that could not be written. This profile
+requires that behaviour and defines no such mark, and no store was run for it.
 
 H3.6 completes the table of LIP-0025 section 7 for this journal. Nothing
 can be charged, because the lost journal held refusals and no allowance:
@@ -303,11 +323,14 @@ J2.7).
 | `ROW_STOP_ALIAS` | The stop coin of the row is the seal of the child or the output after it | H2.2 | New |
 | `ROW_STOP` | The stop coin of the row is not on the active chain as the row states it, or is confirmed above the parent's recent block | H2.3, H2.6 | New |
 
-H5.1. The order is that of H2.7: the journal, with the two codes of
-LIP-0025 for a journal that cannot be read or written and then a closure
-that it holds; `ROW_STOP_ALIAS`; `ROW_STOP`; and the spent coin. A refusal
-of LIP-0022 for the observation stands before all of them (LIP-0022 B6.1),
-and so does a refusal of the parent itself.
+H5.1. The order is that of H2.7: the journal, with the two codes of LIP-0025
+for a journal that cannot be read or written and then a closure that it holds;
+`ROW_STOP_ALIAS`; `ROW_STOP`; and the spent coin. A refusal of LIP-0022 for the
+observation stands before all of them (LIP-0022 B6.1), and so does a refusal of
+the parent itself. That includes the refusal of section 1: a parent that H1.4
+refuses reaches no check of this order, and no closure is written under it. The
+refusal of a parent has no code of this profile; LIP-0026 R1.5 leaves that code
+to the members of a grant.
 
 H5.2. `ROW_CLOSED_FOR_CAUSE` is the only one of the three that records
 something. `ROW_STOP_ALIAS` and `ROW_STOP` write nothing and state no
@@ -316,29 +339,41 @@ cause.
 ### 6. Vectors
 
 [`vectors/LIP-0027/stop-vectors.json`](../vectors/LIP-0027/stop-vectors.json)
-holds 44 vectors over the 27 rules of this LIP, as decisions on stated
+holds 52 vectors over the 27 rules of this LIP, as decisions on stated
 facts and on octets.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
-| `parents` | 2 valid, 6 refused | Section 1 on the stated rows of a parent |
+| `parents` | 5 valid, 9 refused | Section 1 on the stated seal and rows of a parent |
 | `stops` | 3 passing, 13 refused, 3 compound | Section 2 on a row's stop coin, the seal that the child names, the state of the journal and what a node gives, with the outcome and whether a closure is written |
 | `entries` | 1 entry of the kind, 6 that are no entry, 1 of an unknown kind | H3.1 on octets |
-| `traces` | 9 traces | Sections 2 and 3 as a state machine: one verifier, its journal, and a list of admissions and of events with the expected outcome of each and the journal at the end |
+| `traces` | 11 traces | Sections 2 and 3 as a state machine: one verifier, its journal, and a list of admissions and of events with the expected outcome of each and the journal at the end |
 
 A vector of the first three groups whose outcome is not the passing one
 holds one defect, states the expected outcome and names a neighbour with
 the passing outcome that differs from it in that defect. A vector marked
 compound holds two defects, states the one that the order reports and names
 no neighbour. A trace states the outcome of each of its steps and names no
-neighbour.
+neighbour. Where a step of a trace states the parent, section 1 is judged
+on it first, and the outcome of a refused parent is written
+`parent refused`, which is no code.
 
 The traces hold the histories of the section "Motivation". In `trace-01` a
-verifier sees the spend in its mempool, the spend is evicted, and the row
-stays closed across a restart. In `trace-02` a verifier that starts after
-the eviction admits the child. In `trace-04` the coin is not on the chain
-as the row states it: the row refuses as `ROW_STOP`, and the journal stays
-empty.
+verifier sees the spend in its mempool, the spend is evicted, and the row stays
+closed across a restart. In `trace-02` a verifier that starts after the
+eviction admits the child. In `trace-04` the coin is not on the chain as the
+row states it: the row refuses as `ROW_STOP`, and the journal stays empty.
+
+Six vectors of the group `parents` are about the seal transaction of the
+parent. `parent-09` names the output after the seal as a stop coin and is
+refused, and `parent-10` names the output two after the seal and is valid.
+`parent-11` to `parent-13` have the seal at index 5: the output 6 is refused,
+and the outputs 7 and 4 are valid. `parent-14` has the output after the seal in
+its second row. In `trace-10` a verifier meets such a parent at the admission
+of a child, while its node shows that output spent by the parent's own anchor:
+it refuses the parent, and its journal stays empty. In `trace-11` a verifier
+restarts after a closure could not be written. It stays lost, also after the
+spend has left its view, until its operator starts the journal anew.
 
 The limits of the file are these. Identifiers, transaction ids, block
 hashes and scripts are placeholders. The journal of a trace is a list of
@@ -441,4 +476,7 @@ nodes and on a real store.
 - **The octets of a row**, with its stop coin, in a v4 grant.
 - **Closures across replicas.** LIP-0008 section 5.1 leaves the propagation
   of a closure between replicas open, and so does this profile.
+- **The mark of a lost journal.** H3.3 has a journal stay lost across a restart
+  after a write that failed, while its store and its outside record still
+  agree. What a verifier keeps durably to know that, and where, is not defined.
 - **A run** of the cases S2-10 and S2-K3 on nodes and on a qualified store.

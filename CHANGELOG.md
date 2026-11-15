@@ -19,8 +19,9 @@ charges is not stated either.
 
 The profile. A row states its stop coin as an outpoint and a script, a
 witness key hash. The stop coins of one parent are different outpoints;
-none is the coin of a row or the seal of the parent, and the stop coin of a
-child's row is neither the seal of that child nor the output after it. At
+none is the coin of a row, the seal of the parent or the output after that
+seal, which the parent's own anchor spends, and the stop coin of a child's
+row is neither the seal of that child nor the output after it. At
 an admission a verifier reads its journal first. It then establishes that
 the coin is on the active chain as stated, at or below the parent's recent
 block, and that it is unspent in its view, the mempool included. A coin
@@ -40,11 +41,12 @@ Three codes: `ROW_CLOSED_FOR_CAUSE`, with its name from LIP-0014, and two
 new ones, `ROW_STOP_ALIAS` and `ROW_STOP`. Only the first records
 something.
 
-Vectors. `vectors/LIP-0027/stop-vectors.json` holds 44 vectors over 27
-rules: 8 parents, 19 admissions, 8 octet strings that are or are not an
-entry, and 9 traces of one verifier and its journal, among them a witness
+Vectors. `vectors/LIP-0027/stop-vectors.json` holds 52 vectors over 27
+rules: 14 parents, 19 admissions, 8 octet strings that are or are not an
+entry, and 11 traces of one verifier and its journal, among them a witness
 across an eviction and a restart, a verifier that starts later, a closure
-that cannot be written and a lost journal.
+that cannot be written, a lost journal, and a parent whose row names the
+output after its own seal, which is refused before anything is recorded.
 
 LIP-0014 section 10.1, LIP-0025 section 7, LIP-0026 section 1 and the entry
 of the row stop key in the key registry gain one pointer each. The pointer
