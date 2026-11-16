@@ -44,14 +44,81 @@ older list. The list is distributed as LIP-0029 section 3.5 has it.
 One name is revoked by the spend of the seal of its entry, on the model of
 the device seal of LIP-0029 section 8: a fresh key, a revocation signed in
 advance, the key destroyed, and the spend kept by the devices of the
-landlord's owner. A verifier that sees the spend journals a closure that no
-rollback lifts; other names stay, those of the same key included; no grant
-ends, one agent's own grant is still ended by that grant's seal, and the
-name stays with its key holder. A listed name passes only while the pinned
-key holds it and wrote its value. A stolen holder key is answered by the
-spend of every entry with that pin. Names may be listed ahead and kept in
-reserve at the cost of their seals. A removed entry and a sealed-off entry
-are set side by side in section 10.8.
+landlord's owner. A verifier that validates the spend on its own node
+journals a closure that no rollback lifts; other names stay, those of the
+same key included; no grant ends, one agent's own grant is still ended by
+that grant's seal, and the name stays with its key holder. A listed name
+passes only while the pinned key holds it and wrote its value. A stolen
+holder key is answered by the spend of every entry with that pin; there is
+no seal of a key. Names may be listed ahead and kept in reserve at the cost
+of their seals, and a reserve name is registered before it is listed. A
+removed entry and a sealed-off entry are set side by side in section 10.8.
+
+An independent second read of the section found the shape sound and sixteen
+defects in the seal layer, the journal rules and the transition. The
+section closes them before the version is released, with the rules H38 to
+H53 and changed rows of the older rules:
+
+- **The seal read (H45 to H48).** A verifier reads, on its own node and
+  against the named tip of the admission, the funding transaction of the
+  seal, its spend state with the mempool included, and its spenders. A
+  seal counts only while its funding output is confirmed in the active
+  chain, at a height that is not above the block of the pin, with a witness
+  key hash script. No verifier can check that the seal's key is fresh or
+  destroyed, and the text says what follows. A validated spend is defined:
+  the octets of the spending transaction, accepted by the verifier's own
+  node and checked by the verifier against the script of the seal.
+- **Three codes where there was one.** `HOLDER_REVOKED` for a journaled
+  closure; the new `HOLDER_SEAL_NOT_LIVE` for a seal that is not on the
+  chain as stated or is not shown unspent without a validated spend, with
+  no closure; `CLASS_HISTORY_UNAVAILABLE` for a read that failed. The order
+  inside step 5 and step 8 is fixed (H53, H48).
+- **The holder journal (H39 to H43).** A landlord in it is its name with
+  its registration. It holds the head, a form mark, the binding of each
+  seal, removal marks and closures; the key of a closure is the seal
+  outpoint. It advances at one point, the take of a verified list. An equal
+  `seq` with another hash refuses. A journal that cannot be written admits
+  nobody; a lost one makes a newcomer, which reports nothing that it does
+  not hold; replicas of one executor share it.
+- **No downgrade (H42).** A verifier that took a pinned list for a landlord
+  never reads the inline form of that landlord again:
+  `HOLDER_FORM_DOWNGRADE`.
+- **One seal, one entry (H38, H49).** A seal outpoint serves one landlord,
+  one name and one key, across lists and landlords:
+  `HOLDER_SEAL_REUSED`. It is no other outpoint of the admission:
+  `HOLDER_SEAL_ALIAS`.
+- **A removed entry does not return after a reorganisation** at a verifier
+  that took the list which dropped it (H41), as section 11 SH5 has it; the
+  first text of this version had it return. Removal alone is no answer to a
+  compromise.
+- **One observation and the read before the effect (H44).** The pin read
+  and the seal read bind to one named tip, and the seal is read again
+  immediately before a reservation or an effect. LIP-0022 B1.2 and B1.5
+  name the holder reads.
+- **The non-witness (H50), with a pointer in LIP-0029 section 8.1.** A
+  verifier that reads only seal states through a gateway refuses on every
+  state but unspent and records no enforcement closure; it may keep an
+  observe-grade record that is never used for enforcement. An enforcement
+  closure needs the spending transaction validated by the reader, every
+  spender and one named tip, and the watcher journal of a deployment is
+  named as the source of that evidence.
+- **Custody and construction (H27, H51, H52).** The prepared spends are
+  kept by the devices with `ceiling` 2 of the device list that the landlord
+  name's own value pins and by a cold copy; a landlord with neither claims
+  no fast revocation. One keeper holds the revocation of the whole list.
+  The prepared spend has the seal as its one input and hash type `01`. Its
+  amount, its fee and a fee-raising output stay open, and until they are
+  closed nobody claims the fast path. Keepers broadcast again, and the
+  landlord completes by a list.
+- **Encoding corners and labels.** The seal object and duplicate members
+  have rule sentences; an escaped spelling of `swarma-holders` gives no
+  list; sections 1 and 2 name the member. H16, H26, H27, H36, H51, H52 and
+  M4 are labelled as rules that no verifier observes. The two secondary
+  paths of the list are stated as not yet implementable.
+- **Cases and vectors.** Cases S10-12 to S10-25 are new. Section 10.11
+  states the facts that an admission vector holds and lists the vectors by
+  rule, compound vectors for the order of codes included. It fixes no
+  octet.
 
 The member of version 0.1.51 stays readable as the inline form (section
 10.9), with its rules 1 to 8 and its vectors unchanged. A value with both
@@ -64,24 +131,38 @@ Marked NEW in the text, for the owners: the member name and the schema
 string; the entry by name with its owner pin and the writer of check (d);
 the bounds; the reading of a duplicate pin under section 11 SH6 instead of
 LIP-0029 O3.5; the presenter as the sender of the list, the well-known path
-and the `d` tag; the codes `HOLDER_PIN_INVALID`, `HOLDER_LIST_INVALID`,
-`HOLDER_LIST_MISMATCH`, `HOLDER_LIST_ROLLBACK` and `HOLDER_REVOKED`; the
-whole of the seal of an entry, and that its closure is of the entry; the
-return of a removed entry after a reorganisation; the reserve; and the
-rules of the transition.
+and the `d` tag; the nine codes `HOLDER_PIN_INVALID`, `HOLDER_LIST_INVALID`,
+`HOLDER_LIST_MISMATCH`, `HOLDER_LIST_ROLLBACK`, `HOLDER_REVOKED`,
+`HOLDER_SEAL_NOT_LIVE`, `HOLDER_SEAL_REUSED`, `HOLDER_SEAL_ALIAS` and
+`HOLDER_FORM_DOWNGRADE`; the whole of the seal of an entry, with its read,
+its single script form, the height bound of its funding and the definition
+of a validated spend; the holder journal, its keys, its one point of
+advance and its failure rules; the form mark; one seal for one entry,
+across landlords; the alias check; the read before the effect; the keepers
+with `ceiling` 2 and the cold floor; the one input and the hash type of the
+prepared spend and the duties to broadcast again and to complete; the
+reserve and its registration before the list; and the rules of the
+transition. Taken by ruling after the second read, and stated as such: the
+closure is of the entry; no seal of a key; the writer of check (d) is the
+entry's own key; both forms give no holder; a removed entry does not return
+after a reorganisation; the non-witness.
 
 LIP-0010 section 11 registers `swarma-holders` as a head member (SH2) and
 counts its bytes. LIP-0008 section 3, LIP-0014 section 8.3, LIP-0026
 sections 9 to 11 with its security consequences and open questions,
-LIP-0029 section 3.3, the key registry, the README and the open-question
-index follow. The key registry gains the entry "Holder seal key". LIP-0026
-R9.6 and R9.7 read the entry of the recipient name; the eight codes of a
-class keep their meaning, and the class vectors, whose landlord values are
-in the inline form, keep their bytes and outcomes.
+LIP-0029 sections 3.3 and 8.1, LIP-0022 B1.2 and B1.5, the key registry,
+the README and the open-question index follow. The key registry gains the
+entry "Holder seal key", whose danger line states the reach of one keeper
+and the open fee. LIP-0026 R9.6 and R9.7 read the entry of the recipient
+name; the eight codes of a class keep their meaning, and the class vectors,
+whose landlord values are in the inline form, keep their bytes and
+outcomes. That last claim rests on a reading of the rules; the existing
+checkers were not run for it.
 
 No vector of the list is published. LIP-0010 section 10.11 states what a
-vector set holds, with its refusal pairs; the length and the hash of the
-example in section 10.2 were computed by one implementation only.
+vector set holds, with the facts of an admission and the vectors by rule;
+the length and the hash of the example in section 10.2 were computed by one
+implementation only, and the octets of that example did not change.
 
 ### The members of the v4 grant
 

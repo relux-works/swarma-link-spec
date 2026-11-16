@@ -692,13 +692,18 @@ It has one entry for each agent or station name: the name, the key that
 holds it and a seal. A change of the list is a name update that ends no v4
 grant, because a grant depends on the owner and on the `swarma` member, which
 no longer holds the holders. The spend of an entry's seal revokes that one
-name at every verifier that sees it, with no name update; it ends no grant,
-and the name stays with its key holder. Names may be listed ahead and kept
-in reserve. A verifier that cannot get the pinned list refuses the child and
-falls back to nothing. The member of version 0.1.51 stays readable as the
-inline form for the transition. The bounds of a list, the owner pin in an
-entry, the six refusal codes and every rule that the section marks NEW are
-this text's choices for the owners. No vector of the list is published, and
+name at every verifier that validates it on its own node, with no name
+update; it ends no grant, and the name stays with its key holder. A seal
+counts only while its funding output is confirmed, a verifier that cannot
+validate the spend refuses without a closure, and until the fee of the
+prepared spend is settled nobody claims the fast path. Names may be listed
+ahead and kept in reserve. A verifier that cannot get the pinned list
+refuses the child and falls back to nothing. The member of version 0.1.51
+stays readable as the inline form for the transition, at a verifier that
+never took a pinned list for that landlord. The bounds of a list, the owner
+pin in an entry, the nine new refusal codes beside four reused ones, and
+every rule that the section marks NEW are this text's choices for the
+owners. No vector of the list is published, and
 no historical vector byte or outcome changes.
 
 Version 0.1.52 records the specification-side reconciliation closures in

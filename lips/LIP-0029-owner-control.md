@@ -445,9 +445,9 @@ LIP. A holder entry names one agent or station name, the key that holds it
 and a seal, and has none of the other members of a device record, because a
 holder signs nothing for the landlord; every
 verifier of a landlord class reads the holders list, where only own
-executors read the device list (O3.7); and the devices of this section hold
-the prepared spends of the holder seals of their owner's landlord name
-(LIP-0010 H27).
+executors read the device list (O3.7); and the devices of this section
+whose record has `ceiling` 2 hold the prepared spends of the holder seals
+of the landlord name whose own value pins their list (LIP-0010 H27).
 
 The member adds 103 bytes while `seq` has one digit, 118 bytes at the largest
 `seq`. The sizes count as in LIP-0010 section 8:
@@ -764,6 +764,25 @@ other octets refuses as `CONFIG_ROLLBACK`.
 | O8.3 | An own executor's node watches the seal of every device of the list that the executor holds. When it sees a spend of a seal, in its mempool or in a block, the executor journals the closure of that device durably, before it admits another envelope. | |
 | O8.4 | After a closure the executor refuses every envelope signed by the key of that device. A rollback cannot restore it: a list of lower `seq` refuses (section 9), a list that names the device names the same spent seal, and a journaled closure is not lifted by a later list, a name update or a reorganisation. | `DEVICE_REVOKED` |
 | O8.5 | A seal outpoint that was spent is never named again by a device record. | `DEVICE_REVOKED` |
+
+O8.3 and O8.4 are the model of the seal of a holder entry (LIP-0010 section
+10.7), and that section states for the holder seal what a durable closure
+needs. By pointer, and with no change to a rule of this LIP: a closure that
+no rollback lifts stands for a verifier that validates the spending
+transaction on its own node (LIP-0010 H28, H29, H47). A verifier that reads
+the chain through a gateway which returns only the state of a seal
+(unspent, unconfirmed, spend pending, not in the confirmed set) is a
+non-witness for closures that begin in the mempool: it refuses on every
+state but unspent and records no enforcement closure. Where it journaled
+the seal as unspent earlier and later sees it absent from the confirmed
+set, it may keep an observe-grade closure, named so and never used for
+enforcement, because it validated no spending transaction and the absence
+can also follow a reorganisation that removed the funding of the seal. An
+enforcement closure needs the octets of the spending transaction, validated
+by the reader against the script of the seal, every spender that the node
+holds, and one named tip; the watcher journal of a deployment is the source
+of that evidence, and neither LIP specifies it (LIP-0010 H50). Whether the
+same reading binds the device seal of this section is not stated here.
 
 #### 8.2. The fast path and its completion
 

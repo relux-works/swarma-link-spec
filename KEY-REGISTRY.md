@@ -150,9 +150,11 @@ member `swarma-holders`, outside `swarma`. The member
 transition only (LIP-0010 section 10.9). The list adds nothing to what such
 a key signs. A thief of a listed key passes the checks of a landlord class
 (LIP-0026 section 9) for every listed name that the key holds, until a
-device of the landlord's owner broadcasts the prepared spend of the seal of
-every entry with that key (LIP-0010 H35), or the owner of the landlord name
-pins a list without those entries. Neither ends a v4 grant of the landlord,
+keeper of the landlord's prepared spends broadcasts the spend of the seal of
+every entry with that key and a verifier validates it (LIP-0010 H35, H47).
+A list without those entries completes that answer and is none by itself:
+a removal holds only at the verifiers that took the list (LIP-0010 H41).
+Neither ends a v4 grant of the landlord,
 and the names stay with the thief. The signer of a listed key signs a name operation only for a name
 that it registered itself or that its operator accepted (LIP-0026 R9.11).
 
@@ -550,21 +552,40 @@ names it as the holder or as the channel key.
 - Owner: the owner of the landlord name whose holders list names the seal.
 - Published: nowhere; the seal's outpoint stands in the holder entry
   (LIP-0010 section 10.1).
-- Holder: nobody. The seal pays a fresh key `k_N`, which signs one
-  revocation `tx_revoke_N` and is then destroyed (LIP-0010 H26). The devices
-  of the landlord's owner hold `tx_revoke_N`, which needs no further
-  signature (H27).
+- Holder: nobody. The seal pays the witness key hash of a fresh key `k_N`,
+  which signs one revocation `tx_revoke_N` and is then destroyed (LIP-0010
+  H26, H51). No verifier can check that the key is fresh, that it was
+  destroyed or that a prepared spend exists (H46). `tx_revoke_N` needs no
+  further signature and is kept in two custodies: by the devices with
+  `ceiling` 2 of the device list that the landlord name's own value pins,
+  and by a cold copy that is no weaker than the custody of the name-owner
+  key. A messenger device and the holder of the name keep none. A landlord
+  with neither custody has no fast revocation and claims none (H27).
 - Signs: the spend of one holder seal, which revokes that entry of the list
   and with it one agent or station name.
-- Danger: medium. A leak, like a copy of the prepared spend, revokes one
-  name and gives nothing else. It ends no grant.
+- Danger: medium for one key, high for one keeper. A leak of one key, like
+  a copy of one prepared spend, revokes one name and gives nothing else,
+  and that only where the spend was made as H51 says: one input, hash type
+  `01`, fixed outputs. With another hash type a copy can redirect the
+  amount of the seal or graft inputs. Each keeper holds the prepared spends
+  of the whole list, so one keeper that is compromised revokes every name
+  of the landlord, up to 1024, at every verifier that validates the spends,
+  and for good there. It ends no grant and moves no name. The amount of a
+  seal, the fee of `tx_revoke_N` and an output that lets a child
+  transaction raise the fee are open: a spend whose fixed fee no longer
+  relays revokes nothing, and until those points are closed nobody claims
+  the fast path (H51).
 - Leak: the thief revokes the entry; that name is no longer admitted through
-  a class of the landlord until the landlord lists it again with a new seal
-  through a name update (H33).
-- Recovery: a new list with a new seal for the name.
+  a class of the landlord, at a verifier that validated the spend, until
+  the landlord lists it again with a new seal through a name update (H33).
+- Recovery: a new list with a new seal for the name; after a keeper is
+  compromised, a new seal for every name and one name update by the cold
+  key.
 - Source: LIP-0010 section 10.7, in force since version 0.1.53 without the
-  co-author's answer, modelled on the device seal of LIP-0029 section 8; the
-  script of the seal and the fee of `tx_revoke_N` are open.
+  co-author's answer, modelled on the device seal of LIP-0029 section 8.
+  The script form, the one input and the hash type are proposals of that
+  section (H46, H51); the amount, the fee and the fee-raising output are
+  open.
 
 ## Re-delegation and the notary
 
@@ -942,6 +963,9 @@ that tests them keeps the three apart:
   holder's key, and of a provider's closing statement.
 - The script of a device seal and who holds its key once the prepared
   spend exists (LIP-0029 section 8).
-- The script of a holder seal, the fee of its prepared spend, and who keeps
-  that spend for a landlord without a device list (LIP-0010 section 10.7).
+- The amount of a holder seal, the fee of its prepared spend and an output
+  that lets a child transaction raise it, without which the fast path is
+  not claimed; and the owners' answer to the script form, the keepers with
+  `ceiling` 2 and the cold floor that LIP-0010 H46, H51 and H27 propose
+  (LIP-0010 section 10.7).
 - The danger levels, which wait for the owners' confirmation.
