@@ -4,15 +4,15 @@
   rule is marked as restating a cited text, as proposed here, or as open.
 - **Created:** 2026-11-16
 - **Affects:** what a v4 grant lets an executor do when the executor is the
-  service of a host that starts and keeps the run of an agent: the actions,
-  the limit kinds, the order of the checks at a start, the events that end a
-  running session, and renewal
-- **Builds on:** LIP-0006 sections 1 and 7, LIP-0007 sections 1 and 2,
-  LIP-0008 sections 2, 2.1, 4, 5, 5.1 to 5.3, 6, 7.1, 11.4 and 12, LIP-0010
-  sections 10 and 11, LIP-0013 section 3.6, LIP-0017 section 8, LIP-0018
-  sections 2 and 3, LIP-0020 sections 6 and 11, LIP-0022 sections 1 to 6,
-  LIP-0025, LIP-0026 sections 1, 2, 5 and 9, LIP-0027 sections 1 to 3,
-  LIP-0028 and LIP-0029 sections 1, 2, 6 to 8 and 11
+  service set of a host that starts the run of an agent: the action texts,
+  the limit kinds, what the executor checks at a start, what it checks while
+  the authority is held, and which events end or suspend the authority
+- **Builds on:** LIP-0006 section 7, LIP-0007 section 1, LIP-0008 sections 2,
+  2.1, 3.1, 4, 5, 5.1, 5.2, 7.1, 11.4 and 12, LIP-0010 section 10, LIP-0013
+  section 3.6, LIP-0014 sections 8 and 11.1, LIP-0017 section 8, LIP-0018
+  sections 2 and 3, LIP-0020 section 11, LIP-0022 sections 1 to 3 and 6,
+  LIP-0025 sections 4, 5 and 7, LIP-0026 sections 2, 3 and 5, LIP-0027
+  sections 2 and 3, LIP-0028 and LIP-0029 sections 1, 2, 6, 8 and 11
 - **Deciders:** both owners
 
 ## Summary
@@ -20,493 +20,535 @@
 A grant of version 4 names an executor, a recipient, a list of action texts
 and a list of limits (LIP-0020 W11.2 to W11.4). No profile defines an action
 text or a limit kind yet: "Which texts name an action is for the action
-registry (LIP-0007; LIP-0008 section 12.3), which is open", and of the limit
-kinds "none exists yet" (LIP-0020 W11.4). Until a profile defines an action,
-a v4 grant has no effect at an executor.
+registry (LIP-0007; LIP-0008 section 12.3), which is open" (W11.4). Until a
+profile defines an action, a v4 grant has no effect at an executor.
 
-This draft proposes the first such profile. Its executor is the service of a
-host that starts the run of an agent and keeps it: the agent is long-lived,
-and a run for one task is the special case in which the session is stopped
-after that task.
+This draft proposes the first such profile. It defines the **authority** of
+an agent session and not the life of a process. It states:
 
-The draft has seven parts:
+1. the executor as a set of three services, and which part writes which
+   journal (section 2);
+2. four action leaves and three limit kinds, each with its full text and the
+   registry section that it would enter (section 3);
+3. one table of the four states of the authority against every event. Each
+   cell has one outcome: the next state, who acts, the durable record that is
+   written before the effect, and the refusal code (section 4);
+4. the rules that hang off single cells of that table: the checks of a start,
+   of a restart, of a renewal and of a stop, the verdict while the authority
+   is held, and a journal that is started anew (section 5);
+5. the refusal codes, among them those that the base lacks (section 6).
 
-1. the terms, and what the profile adds and what it only references
-   (section 1);
-2. three actions and four limit kinds, each marked "proposed here" with the
-   registry section that it would fill, and the grant members that carry
-   them, which are members that LIP-0020 section 11 already has (section 2);
-3. one table of every field that an executor needs to start and to keep a
-   session, with the place of each: the grant, the host's policy, a derived
-   value, the executor's check and its refusal (section 3);
-4. the order of the checks at a start, with the observation of LIP-0022
-   that each rests on (section 4);
-5. the keep check, and the events that end a running session, each with its
-   largest delay or with the delay marked open (section 5);
-6. renewal and expiry, in block heights alone (section 6);
-7. what the profile does not decide (section 7).
+The states of a process (starting, running, down, the restart of a service
+or of its machine, the home, retirement) belong to the station contract of
+the host. This draft names that contract once (AS1.4) and restates nothing
+of it.
 
-The draft adds no member to the grant, changes no other LIP, and defines no
-octets: the three requests are signed invocations, and the invocation has no
+The draft adds no member to the grant, changes no other LIP and defines no
+octets: the requests are signed invocations, and the invocation has no
 members yet (LIP-0020 section 3, type `swarma-invocation/1`). It has no
 vectors. Nothing of it is implemented.
 
 ## What is decided and what is proposed
 
-**Direction of the owner.** Ivan Oparin gave this direction on 2026-11-16, as
+**Direction of one owner.** One owner gave this direction on 2026-11-16, as
 it was relayed to the author of this draft; no record in `decisions/` holds
 it yet, and the co-author's answer is not known:
 
-1. The default agent is long-lived: an orchestrator, a worker, a reviewer.
-   Each runs in an OS account of its own, with an identity of its own and
-   with keys that services hold. The run for one task is a special case.
+1. The default agent is long-lived. Each runs in an OS account of its own,
+   with an identity of its own and with keys that services hold. The run for
+   one task is a special case.
 2. A v4 grant has no clock member. The time of a session and of its renewal
    is counted in block heights.
 
 Point 2 agrees with text that the specification already holds: the window of
-a v4 grant is a pair of heights (LIP-0008 section 7.1; LIP-0020 W11.2), and
-"No clock enters this comparison" (LIP-0008 section 7.1, rule 2). Point 1 is
-the reason for this profile and decides none of its rules.
+a v4 grant is a pair of heights (LIP-0008 section 7.1; LIP-0020 W11.2).
+Point 1 is the reason for this profile and decides none of its rules.
 
-**Marks.** Every rule of this draft carries one of three marks.
+**Marks.** Every rule carries one of three marks. A mark that restates also
+carries the state of its source.
 
 | Mark | Meaning |
 | --- | --- |
-| **Restates** | The rule repeats the cited text and adds nothing. The cited text keeps the state that its own LIP gives it: in force, Draft, or awaiting the co-author. This draft changes no such state. |
-| **Proposed here** | The rule is new in this draft. Neither owner has decided it. |
-| **Open** | The draft states the need and decides nothing. The question has a number in the section "Open questions". |
+| **R** | Restates the cited text and adds nothing. The tag after it is the state of that text: **[F]** in force on its own terms; **[C]** carried or decided by one owner, with the co-author's agreement pending; **[D]** a proposal of a Draft that neither owner has accepted |
+| **P** | Proposed here. Neither owner has decided it |
+| **O** | Open. The question and who decides it are in the section "Open questions" |
 
-**The inputs.** Two lists were weighed for this draft: the list of what the
-dispatching side of a host needs to start and to keep a session, and a
-proposal from the side that checks grants. The action names and the limit
-kinds of section 2 come from that proposal. They are proposals of this draft
-and nothing more. Where the draft does not follow the proposal, it says so in
-place: the limit kind for a model budget (section 2.3, Q5), the form of the
-names (Q3), and the reading of a restart (Q6).
+**States of the cited texts,** as each states it of itself in the base of
+this draft (version 0.1.54):
+
+| Text | Tag | Its own statement |
+| --- | --- | --- |
+| LIP-0008 sections 2, 4, 5.1, 7.1, 12.1 to 12.5 | [F] | Decided text of that LIP. Its executor profile, its registry assignments and its proof encoding are open there |
+| LIP-0008 section 5.2 (J6); LIP-0013 section 3.6 (J7); LIP-0014 J4 and section 11.1; LIP-0028 (J13); LIP-0029 | [C] | Decisions of one owner that await the co-author's agreement |
+| LIP-0020 section 11 | [C] | Its carried decisions bind a reader of `swarma-grant/4` from version 0.1.53 under one owner's order; "Neither owner has reviewed the octets member by member, and no verifier implements them" |
+| LIP-0010 section 10; LIP-0026 sections 2 and 3 (J1.2, J10, J12) | [C] | Carried by LIP-0020 section 11 on the same terms |
+| LIP-0017 section 8; LIP-0022; LIP-0025; LIP-0026 section 5; LIP-0027 | [D] | Proposals of their drafts |
 
 ## What can be built from this LIP
 
 | Part | Can be built now | Waits for |
 | --- | --- | --- |
-| The life of an agent session as a function of stated facts: start, lease, keep check, renewal, end | Yes, as a model | The owners' answers to Q1, Q4, Q6, Q7 and Q8 |
-| The three requests as octets | No | The members of the invocation (LIP-0020), the registry of action texts and a service type (Q2, Q3) |
-| The limits as members of a grant | No | The registry of limit kinds (LIP-0018 section 2; LIP-0020 W11.4) and the texts of `resource` and `unit` (N3) |
-| The checks of the proof path at a start and at a keep check | No | A run of the observation under LIP-0022 and of the reads of LIP-0021, as LIP-0028 states for its own checks |
-| The record of a session as an entry of a journal | No | The entries of a service journal on the form of LIP-0025 |
-| A host service that keeps sessions | No | All of the above, and the station contract (section 7) |
+| The authority of a session as a function of stated facts: the table of section 4 | Yes, as a model | The owners' answers to Q4, Q6, Q8 (b) and Q11 |
+| The requests as octets | No | The members of the invocation and of the receipt (N1) |
+| The limits as members of a grant | Yes for the three keys of section 3.3, as proposed texts | Acceptance of this LIP, which enters them into the registry |
+| The grant checker's verdict | No | A run of the observation under LIP-0022, and the step table of the v4 admission that is in review (section 5.1) |
+| The session journal | No | The entries of a service journal on the form of LIP-0025 |
 
 ## Motivation
 
 The forms that a host has today start one bounded run of an existing worker
-account and are finished with it. A long-lived agent needs more: an identity
-of the session that survives a restart, a lifetime that follows the grant and
-not a local timer, a rule for a restart, a stop when the authority behind the
-session ends, and a claim on capacity that lasts as long as the session.
+account and are finished with it. A long-lived agent needs more: an authority
+that survives a restart of its process, a lifetime that follows the grant and
+not a local timer, and a stop when the authority behind the session ends.
 
-The specification has most of the parts. LIP-0008 section 4 gives the order
-of an admission, section 12 the signed invocation and the proof path,
-section 5.1 the durable closure of a spent seal. LIP-0022 gives the
-observation. LIP-0026 gives rows and accounts, LIP-0027 the stop of a row,
-LIP-0010 section 10 the list of a landlord's agents, LIP-0029 the owner's
-command. LIP-0028 shows, for a bearer token at a model proxy, how an
-admission that happened once is kept honest afterwards: the service makes
-the checks of the proof path again before every reservation (T4.5).
-
+The specification has most of the parts: the order of an admission (LIP-0008
+section 4), the signed invocation and the proof path (section 12), the
+durable closure of a spent seal (section 5.1), the observation (LIP-0022),
+rows and accounts (LIP-0026), the stop of a row (LIP-0027), the list of a
+landlord's agents (LIP-0010 section 10) and the owner's command (LIP-0029).
 What is missing is the profile that says which action a grant names for a
-session, which limits bound it, and how those parts apply to a run that
-lasts for thousands of blocks. LIP-0018 section 3 lists what a proposal for
-an action name has to state, and section 2 what a proposal for a limit kind
-has to state. This draft follows both lists and says where it cannot fill an
-item.
-
-## Current state
-
-- LIP-0020 section 11 gives `swarma-grant/4` its members, as text in force
-  since version 0.1.53 on its own terms. The action registry and the
-  registry of limit kinds are open (W11.4). A section with those registries
-  is in review on another branch and is no part of the base of this draft.
-- LIP-0020 reserves `swarma-invocation/1` and gives it no member. LIP-0008
-  section 12.1 states its logical fields.
-- LIP-0007 section 1 lists `slot.station` as a semantic candidate: "Admit
-  access to a named rental slot/station and end access; bind the renter,
-  resources and rental window." It has no accepted action strings.
-- LIP-0028 defines a session for a client that cannot sign, with a bearer
-  token. Its word "session" means that and nothing else (Draft, J13,
-  agreement pending).
-- LIP-0029 O2.1 names the action profiles of this specification as the typed
-  action registry of an owner command. Its open questions hold "the level of
-  a stop and of resumption".
-- LIP-0017 section 8 has a contract under which the platform starts an agent
-  carry the hash of the agreed configuration manifest, and has the launcher
-  start nothing that does not reproduce that hash (a draft's proposal on
-  decision C9, agreement pending).
+session, which limits bound it, and which events take the authority away
+from a run that lasts for thousands of blocks.
 
 ## Proposal
 
-The final grant of a proof path is called `G`, as in LIP-0028. The executor
-is `X`: the service of one host that starts and keeps sessions. `H` is the
-height of the tip of an observation (LIP-0008 section 7.1, rule 2). The
-recipient of `G` is `A`, the agent.
+`G` is the final grant of a proof path. `H` is the height of the tip of an
+observation (LIP-0008 section 7.1, rule 2). `A` is the recipient of `G`, the
+agent. `E` is the lease end of a session, a block height. The executor is
+`X`; section 2 says what `X` is.
 
 ### 1. Scope and terms
 
-| Rule | Requirement | Mark and source |
+| Rule | Requirement | Mark |
 | --- | --- | --- |
-| AS1.1 | An **agent session** is an activity at run time: `X` keeps one run of one agent alive in one slot on the strength of one admitted start request, across restarts of the process, until the session ends. Its record is an entry in the journal of `X`. | **Proposed here.** "An activity at run time" and "its record is an entry in the journal of the service" are the words of LIP-0028, "Proposal". "Run" is the run of LIP-0013 J7.1. |
-| AS1.2 | An agent session belongs to one final grant with its proof path, to one executor, which is `X`, and to one slot. None of the three changes while the session lives. | **Proposed here**, in the words of LIP-0028 T1.2, which states the same of its session. Q7 asks whether the grant may change. |
-| AS1.3 | The **slot** of an agent session is one OS account of the host of `X`. It is identified by the user id under which the slot runs, the first form of a slot binding in LIP-0028 T6.1. The address form of T6.1 is not used by this profile. | **Proposed here.** The form is LIP-0028 T6.1. |
-| AS1.4 | An agent session has no token and is no session of LIP-0028. Each of its three commands is a signed invocation (LIP-0008 section 12.1), and no request with a bearer asks for one of them. | **Proposed here.** LIP-0028 T1.3 has the same for the three commands of its own session. |
-| AS1.5 | The **lease** of an agent session is the stretch of heights for which the last admitted start or renew request keeps it. Its end is the **lease end** `E`, a block height. The session is **live** while its record has no end. It is **suspended** while it is live and the last keep check of `X` refused without a durable record (section 5). An end is final. | **Proposed here.** "An end is final" is the rule of LIP-0028 T5.4 for its session. |
-| AS1.6 | The **station contract** is the agreement between the operator of a host and the parties that use it, with the host's signed policy. It is named here and is out of this specification. | **Proposed here**, as a name only. |
+| AS1.1 | An **agent session** is the authority under which `X` runs one agent in one slot on the strength of one admitted start request. It belongs to one final grant with its proof path, to one executor and to one slot, and none of the three changes. Its record is an entry of the session journal (section 2). It has no token and is no session of LIP-0028; this draft always writes "agent session" | **P**, in the words of LIP-0028 T1.2 [C] |
+| AS1.2 | The authority of an agent session has one of four **states**. `none`: the session journal holds no record of it. `held`: the record has no end, and the dispatching service holds a sound verdict (section 5.5) for the newest tip that the grant checker reported, with `H < E`. `suspended`: the record has no end, and the dispatching service holds no such verdict; the verdict is unknown or refuses without a durable record. `ended`: the record has an end. An end is final. `suspended` is derived and is not written: a part that restarts holds no verdict, so every authority without an end is suspended until the next verdict | **P**. "An end is final" is LIP-0028 T5.4 [C] |
+| AS1.3 | The **slot** of an agent session is one OS account of the host, identified by the user id under which it runs (the first form of LIP-0028 T6.1 [C]). A session **counts** from the write of its start until its **clearance**: the record of the dispatching service that the slot holds no process of that session. The proof behind a clearance is the station contract's | **P** |
+| AS1.4 | The **station contract** is the agreement between the operator of a host and the parties that use it, with the host's signed policy. It owns the states of a process: starting, running, down, the restart of a service or of its machine, liveness, the home and its export, retirement, and every bound in clock time. It is out of this specification and is named here once | **P**, as a name only |
+| AS1.5 | An executor under this profile reads seals on its own node, as a witness (LIP-0008 section 5.1 [F]), or its conformance claim states that it is a non-witness. At a non-witness every spend of a seal is event 13 of section 4 and never event 12: a revocation there only suspends, and the span of section 3.3 is the delay of every revocation | **P**, after LIP-0010 H50 [C], which has a non-witness record no enforcement closure |
 
-**What this profile adds:** the three action texts and the four limit kinds
-of section 2, as proposals; the logical arguments of the three requests; the
-lease in heights; the order of the checks at a start; the keep check; the
-list of the events that end or suspend a session; the rule of renewal; and
-eight refusal codes (section 8).
+### 2. The executor is a service set
 
-**What this profile only references,** and does not change: the members of a
-grant and their forms (LIP-0020 section 11); the order of an admission
-(LIP-0008 section 4); the signed invocation and the proof path (LIP-0008
-section 12); the observation, the clock and the age of the tip (LIP-0022);
-the durable closures (LIP-0008 sections 5.1 and 5.2); rows and accounts
-(LIP-0026); the stop coin of a row (LIP-0027); the list of a landlord's
-agents and the seal of an entry (LIP-0010 section 10); the owner's command
-(LIP-0029); the gate of the key holder (LIP-0013 section 3.6); the agreed
-configuration (LIP-0017 section 8); and the session of LIP-0028, which the
-harness of an agent may hold at a model proxy while its agent session lives.
+`X` is the service set of one host under one executor name and key
+(LIP-0020 W11.4 [C]). It has three parts. (**P**; a grant checker inside the
+dispatching service is the rejected alternative, see "Alternatives".)
 
-One word has two meanings from here on. "Session" alone, in LIP-0028, is the
-bearer session of a client that cannot sign. This draft always writes "agent
-session". Q3 asks whether the names of the actions should carry that
-difference.
-
-### 2. The actions and the members that carry them
-
-#### 2.1. The grant members
-
-No new member is needed. The table states what each member of LIP-0020
-section 11 means under this profile.
-
-| Member (LIP-0020) | What the cited text says | Its meaning under this profile | Mark |
+| Part | Holds | Writes | Does |
 | --- | --- | --- | --- |
-| `executor` {`name`, `key`} | One executor for the own scope of a grant, a service name with its pinned public key (W11.4). The grant's executor, the invocation's executor and the authenticated service's pinned name and key agree (LIP-0008 section 4) | `X`, the session service of one host. It fixes which host acts. Only `X` starts a session under `G` | **Restates** for the member; the meaning is **proposed here** |
-| `recipient` | By key, or by name with the owner key; in the name mode the request key is read from the name at every admission (W11.3; LIP-0008 section 3.1) | `A`, the agent for which the session runs. Its request key authenticates every request of the session (LIP-0008 section 4, step 2) | **Proposed here**; Q1 holds the other reading |
-| `actions` | A sorted list of texts; a reader compares texts and knows no action; "an executor refuses an action that its profile does not define" (W11.4). Commands match exact leaf identifiers (LIP-0008 section 12.3) | The texts of section 2.2 that the issuer allows. A grant without the start text starts no session, and a grant without the renew text has sessions that end with their first lease | **Restates**; the texts are **proposed here** |
-| `limits` | A list of limits, each with `kind`, `resource`, `unit`, `amount` and an optional `period`; a key without a stated limit has the ceiling 0 (W11.4; LIP-0026 R5.2) | The limits of section 2.3 | **Restates**; the kinds are **proposed here** |
-| `not_before_height`, `not_after_height` | The half-open window in heights; admission requires `not_before_height <= H < not_after_height` (LIP-0008 section 7.1, rules 1 and 2) | The outer lifetime of every session under `G`. No session starts before the first height, and none is live at or after the second (AS5.4) | **Restates** for an admission; the rule for a running session is **proposed here** |
-| `seal` | The seal of the grant; a validated issuer spend closes the grant durably (LIP-0008 SB1 to SB3 and section 5.1) | The stop of every session under `G` by the issuer (section 5) | **Restates** for the closure; the end of a session is **proposed here** |
-| `contract` | The identifier of the one contract that the grant binds (W11.2; LIP-0017 section 5) | The contract carries the hash of the agreed configuration, which is what runs (LIP-0017 section 8, rules 1 and 3) | **Restates** LIP-0017 section 8, a draft's proposal there |
-| `recent_block` | The committed recent block (LIP-0008 section 7; LIP-0022 section 4) | No meaning of its own here | **Restates** |
-| `delegate`; `parent` and `ordinal` of a child | A root grant with `delegate` is a parent; a child names its parent and the ordinal of its row and fits that row in executor, recipient and limits (W11.2, W11.5; LIP-0026 R2.1 to R2.4) | An orchestrator that holds a parent gives each worker a child. The row fixes the host, the worker and the limits of that worker's sessions | **Restates** |
+| The **grant checker**, behind the message origin | The chain view of its own node, the observation, the watch of the mempool, and the executor key | The **closure journal**: the closures of seals and of issuers' names (LIP-0008 sections 5.1, 5.2), rows closed for cause (LIP-0027 section 3), holder closures and removal marks (LIP-0010 section 10) | Reads every signed request and every grant, makes every check that needs a document or the chain, and gives the **verdict** (section 5.5): for a request, and at every new tip for every proof path that the dispatching service names |
+| The **dispatching service** | The slot table of the host and the configuration that it started | The **session journal**: the session records, the identities of admitted requests, the accounts of the starts kind, the ends, the clearances | Consumes the verdict, makes the checks that need its own journal, writes, and only then performs the effect. It verifies no grant and reads no chain |
+| The **key holder** of the recipient | The request key of `A`, the record of each run and its origin, and the table of permissions (LIP-0013 J7.1, J7.2 [C]) | Its own records under LIP-0013 section 3.6 | Binds the run to its origin and signs the requests of sections 3.1 and 3.2. Neither other part can observe its gate (J7.7 [C]) |
 
-The grant states no clock, no path on a host, no secret, no key for messages
-and no interval of liveness. That follows from W11.2: "A grant carries
-nothing beside these members."
+| Rule | Requirement | Mark |
+| --- | --- | --- |
+| AS2.1 | A verdict states the tip hash and `H` of its observation, the identity, the command and the arguments of the request, the ordered proof identifiers, the mode and the channel under which the request was authenticated, the entry of the recipient for a child of a class row, the limits of `G` and of its row, and the **position** of the closure journal at which it was given. The dispatching service takes no fact about a grant from any other source | **P**. "A gateway can deliver data but cannot substitute its prepared binding for that verification" (LIP-0008 section 5 [F]) holds for the set as a whole: the checker is the part that verifies |
+| AS2.2 | The signed invocation is the object that reaches the grant checker. What the checker hands to the dispatching service is an internal form of the set and a matter of the station contract; it carries the content of AS2.1 and replaces nothing of the invocation | **P** |
+| AS2.3 | The grant checker writes a closure into the closure journal before it gives any further verdict, and its next verdict for every proof path that holds the closed link is `closed`. For a validated issuer spend it writes the closure from the spending transaction itself, whether or not an observation is healthy at that moment | First sentence **R** LIP-0008 section 5.1 [F]: "MUST persist permanent closure before any further admission". Second sentence **P** |
+| AS2.4 | The dispatching service answers that an authority is held only after the grant checker confirms, at that moment, that the closure journal holds no record for the proof path beyond the position of the verdict. After its own restart it asks a verdict for every authority without an end before it admits a request | **P**. With two journals this stands where LIP-0028 T4.6 [C] has one atomic step |
+| AS2.5 | Replicas of a part share that part's one journal, and a replica that cannot reach it admits nothing and performs no effect | **R** LIP-0008 section 4 [F]: "Replicas acting as the same executor share one authoritative durable journal"; "If shared state or its serialization mechanism is unavailable, replicas admit no new effect" |
 
-#### 2.2. The actions
+### 3. The actions and the limit kinds
 
-Each row is one proposed leaf with the items of LIP-0018 section 3. The
-names are those of the grant-side proposal. **Registry section that each
-would fill:** the action table of a service type in LIP-0007 section 1,
-under the `swarma/` namespace that LIP-0008 section 12.3 reserves for the
-protocol; they are the texts that LIP-0020 W11.4 expects in `actions`. The
-registry section of LIP-0020 that is in review would list them; it is no part
-of this base, and this draft writes nothing into it.
+#### 3.1. The grant members
 
-| Item (LIP-0018 section 3) | `swarma/session.start` | `swarma/session.renew` | `swarma/session.stop` |
+No new member is needed (**R** LIP-0020 W11.2 [C]: "A grant carries nothing
+beside these members").
+
+| Member | Meaning under this profile | Mark |
+| --- | --- | --- |
+| `executor` | The service set `X` of one host. Only `X` holds an authority under `G` | **P** on W11.4 |
+| `recipient` | `A`, the agent for which the session runs. A row fixes the recipient of its child (LIP-0026 R2.3 [C]), so a grant that named the asking party could not fix the worker | **P**; decided here by W11.3 and R2.3 |
+| `actions` | The leaves of section 3.2 that the issuer allows. A leaf that the list lacks is a right that no issuer gave: commands "match exact leaf identifiers" (LIP-0008 section 12.3 [F]). A grant without the stop leaf has a recipient that cannot end its own session | **R** for the match; **P** for the consequence |
+| `limits` | The three keys of section 3.3 | **P** |
+| `not_before_height`, `not_after_height` | No authority is held outside the window of any link | **R** LIP-0008 sections 7.1 and 12.5 [F] for an admission; **P** for a held authority |
+| `seal` | The stop of every session under the grant by its issuer. This profile admits a grant only where `seal.kind` is `revocable-only`; another kind refuses as `SEAL_PROFILE`, until a profile states what a use-branch spend does to a held authority | The code **R** LIP-0008 SB2 [F]; the restriction **P** |
+| `contract` | Open: P1 of "Open questions". This profile reads no member of the contract except to mirror the limits (section 5.1, check C6) | **O** |
+| `parent`, `ordinal` | The row fixes the executor, the recipient and the limits of a child (LIP-0026 R2.1 to R2.4 [C]) | **R** |
+
+#### 3.2. The leaves
+
+The leaves have the form that LIP-0018 section 3 requires: "in lowercase
+segments separated by slashes" (**R**, with LIP-0008 section 12.3 [F]:
+"Command names MUST use lowercase slash-separated segments"). That text
+settles the separator. The alphabet of a segment is open there; every
+segment here uses the letters `a` to `z` alone. No leaf holds the word
+"session", which is the word of LIP-0028. Each leaf has one signer and one
+list of arguments. (**P** for the exact texts.)
+
+**Registry section that each would enter:** the action table of a service
+type in LIP-0007 section 1, under the `swarma/` namespace of LIP-0008
+section 12.3. They are the texts that LIP-0020 W11.4 expects in `actions`.
+
+| Item (LIP-0018 section 3) | `swarma/station/agent/start` | `swarma/station/agent/restart` | `swarma/station/agent/renew` | `swarma/station/agent/stop` | `swarma/station/agent/halt` |
+| --- | --- | --- | --- | --- | --- |
+| What it asks | Start one agent session | Start the process of a held session again. The leaf exists only under branch (a) of Q6 (**O**) | Move the lease end to a higher height | End the session | End the session, by the owner |
+| Signer | The key holder of `A`, under the recipient mode of `G` | The same | The same | The same | A device of the owner, as a signed owner command (LIP-0029 [C]). It is no request under `G`, needs no text in `actions` and is never listed there |
+| Arguments, as logical fields | `lease_end_height` | `session` | `session`, `lease_end_height` | `session` | The typed fields of the command class: `session` |
+| Subject (LIP-0008 section 12.1) | The executor of `G`, name and key, with the recipient of `G` | The same | The same | The same | Not an invocation |
+| Service type | `slot.station`, the candidate of LIP-0007 section 1, whose row would say "recipient" where it says "renter". That is an amendment of LIP-0007 by a change of its own | The same | The same | The same | The class of an owner command is one exact leaf of the registry (LIP-0029 O2.1 [C]) |
+| Effect or work | **O** (Q4) | **O** (Q4) | **O** (Q4) | **O** (Q4) | **O** (Q4) |
+| Class under LIP-0022 B3.5 | Not stated here. "An action whose profile states no class has the first" (**R** B3.5 [D]) | The same | The same | The same | The level of the command is **O** (Q13) |
+| Limits that bound it | All three of section 3.3; it consumes one unit of the starts kind and nothing else | One unit of the starts kind | The span kind | None | None |
+| Receipt | **O** (N1) | **O** (N1) | **O** (N1) | **O** (N1) | LIP-0029 |
+
+| Rule | Requirement | Mark |
+| --- | --- | --- |
+| AS3.1 | The Subject is constant along the path: a child names the executor and the recipient of its row (LIP-0026 R2.2, R2.3 [C]), and a root grant names its own. The comparison of a child with its parent beyond the row has no v4 code in the base (LIP-0020 section 11.11) | **P**; the last sentence **R** |
+| AS3.2 | **The signer of a start.** The key holder of `A` signs a start for a run that it has bound to an origin: the admitted instruction for `A`, or the owner's command (LIP-0013 J7.1 [C]). The run is the key holder's record and exists before any process: the launcher, which is the dispatching service, has the key holder create the run for that origin, and the start request is the first object that the key holder signs for it, on the channel of that run (J7.4), and only where every grant of the proof path is in the `use` list of that origin (J7.3 (a)). A resumed run "has the origin of the run it comes from" (J7.1), and "After a restart the launcher binds a run again from the stored origin record" (J7.4): those two sentences carry the signature of a restart and of a renewal while no process runs | **R** for the quoted sentences. **P** for the reading that the run precedes its process; it needs no new sentence in LIP-0013, and if its editors reject the reading the first start needs an amendment there (N5) |
+| AS3.3 | Every field of a request is covered by its signature (**R** LIP-0008 section 12.1 [F]). A request states its lease end itself, and `X` shortens none and takes none from a default | **P** |
+
+#### 3.3. The limit kinds
+
+The key of a limit is "all of its members but the amount" (**R** LIP-0020
+W11.4 [C]). The table gives each key in full. None has a `period`: a limit
+with one of the three `kind` texts and another `resource`, another `unit` or
+any `period` has a key that this profile does not define, and a grant that
+states it refuses as `AGENT_SESSION_LIMIT_KEY` (**P**, after LIP-0018
+section 2: a limit that is "missing, unknown or contradictory refuses").
+
+**Registry section that each would enter:** the registry of limit kinds
+that LIP-0020 W11.4 leaves to "the type profile of the kind". The texts are
+**P**.
+
+| Item (LIP-0018 section 2) | Starts | Level | Span |
 | --- | --- | --- | --- |
-| State of the name | **Proposed here** | **Proposed here** | **Proposed here** |
-| What it asks | Start one agent session, or restart the process of a live one (AS4.6) | Move the lease end of a live session to a later height, never past a window (AS6.1) | End a live session in an orderly way |
-| Service type | **Open** (Q2). Smallest proposal: the candidate `slot.station` of LIP-0007 section 1 | The same | The same |
-| Arguments, as logical fields without octets | `lease_end_height`; `configuration`, the hash of the agreed configuration (LIP-0017 section 8); for a restart `session`, the identifier of the live session | `session`; `lease_end_height` | `session` |
-| Effect or work | **Open** (Q4) | **Open** (Q4) | **Open** (Q4) |
-| Limits that bound it | `swarma/session.concurrent`, `swarma/session.starts`, `swarma/session.span` | `swarma/session.span` | None |
-| Class under LIP-0022 B3.5 | Other privileged. **Proposed here** | Other privileged. **Proposed here** | Other privileged. **Proposed here**; Q12 holds the other reading |
-| Receipt | **Open** (N1): the receipt has no members (LIP-0020). It would state the session identifier, `G`, the slot and the lease end | The same, with the new lease end | The same, with the end |
-| Refusal codes | Section 8 | Section 8 | Section 8 |
-| Vectors and checker | None. They come with the members of the invocation | None | None |
+| `kind` | `swarma/station/agent/starts` | `swarma/station/agent/level` | `swarma/station/agent/span` |
+| `resource` | `swarma/station/agent` | `swarma/station/agent` | `swarma/station/agent` |
+| `unit` and scale | `start`; whole starts | `session`; whole sessions | `block`; whole blocks |
+| Bounds and rounding | 1 and above; nothing is rounded | 1 and above | 1 and above |
+| What it is | An **account** of LIP-0026 R5.1 and R5.2 [D], for the whole window | A **level**: a check of this profile and no account. LIP-0026 section 5 does not apply to it | A **maximum of one request**: a check of this profile and no account |
+| What a request consumes | A start, and a restart under Q6 (a), debits 1: the own account of `G`, and under a child also the row account (R5.3, R5.4). This is the only key that a request "consumes" in the sense of R5 | Nothing | Nothing |
+| Arithmetic | Never lowered (R5.1, R5.8). The own account before the row account (R5.6) | Own: the number of sessions under `G` that count (AS1.3), after the start, is at most the amount. Row, under a child: the number of sessions that count under every document that is a child of the same parent and ordinal, after the start, is at most the amount that the row states for this key | `H < lease_end_height <= H + amount`, with the `H` of the verdict of that request. Under a child the child's own amount holds; R2.4 already holds it at or below the row's |
+| Missing limit | The ceiling is 0 (R5.2): `OWN_LIMIT_OVER`, `ROW_CAP_OVER` | Refuses: "Missing required limits ... refuse the affected admission rather than becoming unlimited access" (LIP-0008 section 2 [F]). `AGENT_SESSION_LIMIT_MISSING` | The same |
+| Reservation, uncertainty, denial | Reserved in the atomic write of cell N1. An unknown outcome keeps it (LIP-0008 section 2: "Uncertain effects retain their reservations until reconciled"). A refused request reserves nothing (R6.2) | Counted from the same write. Released by the clearance alone | Nothing is reserved |
+| Replicas | One session journal (AS2.5) | The same | No state |
+| Child and row (LIP-0026 R2.4 [C]) | A smaller amount is stricter | A smaller amount is stricter | A smaller amount is stricter |
+| The pool of a parent (LIP-0020 W11.10, rule 6 [C]) | Bounds the sum of the row accounts | Bounds the sum of the row levels: the most sessions that can count at once under all rows | The rule still asks for the member and its sum. The number bounds nothing under this profile |
+| Contract mirror | By executor, kind, resource, unit and amount (LIP-0008 section 2 [F]); check C6 | The same | The same |
+| Kind of LIP-0008 section 2 | A new kind | "Runtime and concurrency" | "Runtime and concurrency", counted in blocks (section 2.1) |
 
-Every field of the three requests is covered by the request signature, as
-LIP-0008 section 12.1 asks of the arguments of an invocation (**restates**).
-A request states its lease end and its configuration itself; `X` takes
-neither from a default (**proposed here**, after LIP-0029 O1.3: the fields
-"define the effect completely").
+One slot holds one session at a time (cell H1), and a recipient maps to one
+slot, so under a grant that names one recipient at most one session counts,
+whatever the level says. The level bounds a row whose documents name
+several recipients.
 
-The names have a point of form. LIP-0008 section 12.3 asks for "lowercase
-slash-separated segments" and leaves the exact grammar open; LIP-0029
-section 8.2 writes `swarma/device/revoke`. A dot inside a segment is neither
-allowed nor excluded by that text. Q3 holds the question.
+No kind of this profile bounds a model or gateway budget. "A budget belongs
+to that executor" (LIP-0008 section 4 [F]), and a grant has one executor
+(LIP-0020 W11.4 [C]); section 7 says which unit owns that budget.
 
-#### 2.3. The limit kinds
+### 4. The table of the authority
 
-Each row is one proposed kind with the items of LIP-0018 section 2 that this
-draft can state. **Registry section that each would fill:** the registry of
-limit kinds, which "does not exist yet" (LIP-0018, "What the guide leaves
-out"); LIP-0020 W11.4 says that the kinds "come with the type profile of the
-kind (LIP-0008 section 2; LIP-0018 section 2)". The last column names the
-kind of LIP-0008 section 2 that each belongs to.
+Rows are the four states of AS1.2. Columns are the events, 28 of them, in
+seven bands of four. A cell is named by the letter of its state and the
+number of its event. Each cell gives the next state, who acts (C the grant
+checker, D the dispatching service), the durable record that is written
+before any effect, and the code. Every rule of this draft hangs off a cell,
+and nothing outside this section and section 5 restates one. Each cell is
+**P** unless it carries another mark; section 5 holds the marks of the
+checks that a cell names.
 
-| Kind (**proposed here**) | Unit, as a meaning | Period and arithmetic | Reservation, uncertainty, denials | May a child narrow it (LIP-0026 R2.4) | Kind of LIP-0008 section 2 |
-| --- | --- | --- | --- | --- | --- |
-| `swarma/session.concurrent` | Agent sessions | No period. A level and no cumulative amount: the number of sessions under the grant at `X` whose record has no end | Claimed in the atomic write of a start (AS4.5). Released by the journaled end of the session and by nothing else. A restart claims nothing more. A start whose outcome is unknown keeps its claim until it is reconciled (LIP-0008 section 2: "Uncertain effects retain their reservations until reconciled"). A refused request claims nothing | Yes: a smaller amount is the stricter one. Under a child, a start counts against the limit of the child and against the limit of its row | "Runtime and concurrency": "the number of instances or runs that may be active at once" |
-| `swarma/session.starts` | Starts | No period: it holds for the whole window. A cumulative amount with an account of LIP-0026 R5.1 and R5.2; every admitted start request debits 1, a restart included | Reserved in the atomic write of a start. Never lowered (LIP-0026 R5.1, R5.8). One request identity holds one reservation (R5.7). A refused request reserves nothing (R6.2) | Yes. Under a child a start debits the own account of the child and the row account of its parent (R5.4) | None of the named kinds: a new kind, which arrives through a LIP (LIP-0008 section 2) |
-| `swarma/session.span` | Blocks | A maximum for one request and no account: the largest `lease_end_height - H` that one start or renew request may state | Nothing is reserved. A request above it refuses and is not shortened (AS4.4) | Yes: a smaller amount is the stricter one. Under a child the smaller of the child's and the row's holds | "Runtime and concurrency", the running time. This profile counts it in blocks, which LIP-0008 section 2.1 leaves to the type profile |
-| `swarma/gateway.units` | Units of a model or gateway budget | Not stated here | Not stated here | Not stated here | "Model requests", "Model tokens", "Model cost" or "External service cost" |
+For a start request, which names no session, the row is the state of the
+newest session of the slot that the recipient maps to.
 
-Three rules of the cited texts hold for every kind and are **restated**: an
-allowance of zero authorizes nothing, a missing limit refuses and never
-becomes unlimited access (LIP-0008 section 2), and a limit key for which a
-grant or a row states no limit has the ceiling 0 (LIP-0026 R5.2). A grant
-that allows `swarma/session.start` and states no limit of the kind
-`swarma/session.concurrent` therefore starts nothing.
+**Band 1: the requests.** A request is refused with the first check that
+fails, and a refused request writes nothing and changes no state.
 
-The kind `swarma/gateway.units` is in the list because the grant-side
-proposal names it. This draft gives it no arithmetic and recommends against
-it as a limit of this profile (Q5). A budget belongs to its executor
-(LIP-0008 section 4: "A budget belongs to that executor"), and W11.4 gives a
-grant one executor: "a second executor takes a second grant" (LIP-0020
-section 11, opening text). The model
-budget of a session is consumed at the model service, which is another
-executor than `X`. `X` cannot count it, and a limit that its executor cannot
-count bounds nothing.
-
-The texts of `resource` and `unit` of each limit are not proposed. The table
-states the unit as a meaning. N3 holds the need.
-
-The contract mirrors every limit of the grant, and a mismatch refuses
-(LIP-0008 section 2; **restates**). How a contract writes the three kinds is
-open with the contract profile.
-
-### 3. Where each field lives
-
-The rows are the fields of a start (A.1 to A.9) and the nine points of a kept
-session (B.1 to B.9), as the dispatching side lists them. No cell is empty: a
-cell that does not apply says "none" and why.
-
-| Field | (a) Carried by the grant | (b) Carried by the host's signed policy or the station contract (out of this specification) | (c) Derived | (d) The executor's check and its refusal | (e) Status |
-| --- | --- | --- | --- | --- | --- |
-| A.1 Receiver: which host acts | `executor`, name and key (W11.4) | The pin of the key of `X` at its callers and the transport of `X`: the executor profile: "Exact key/transport encoding remains open" (LIP-0008 section 4) | None: the value is read from the grant and compared | The service name and public key of `X` equal the executor of the grant and of the request (LIP-0008 section 4, step 4). Refusal: that of the step, for which the base assigns no v4 code (N2); under a child `CHILD_AGENT_NOT_ALLOWED` (LIP-0026 R2.2) | Defined by LIP-0020 W11.4 and LIP-0008 section 4; the v4 code is open (N2) |
-| A.2 Agent account and its generation | `recipient` names the agent (W11.3). None for the account or its generation: a grant has no path on a host and no member for one (W11.2) | The table of the host that maps a recipient to one managed account at its current generation. The account exists before the start and is not created by it | The account and the generation, from the recipient through that table | The table holds exactly one account for the recipient that step 2 authenticated, at its current generation. Refusal: `AGENT_SESSION_ACCOUNT` | Proposed here (AS4.4); the table is out of this specification |
-| A.3 Who may ask | None: a grant names a recipient and no caller (W11.2) | The table of the key holder with the `use` list of each origin (LIP-0013 J7.2, J7.3 (a)), and the host's rule for local callers | The origin of the run (LIP-0013 J7.1; LIP-0029 O6.5) | `X` authenticates the request under the recipient mode of `G` (LIP-0008 section 4, step 2) and its peer (step 5). It cannot verify the gate of the key holder and treats no flag or label as evidence of it (LIP-0013 J7.7). Refusal: that of step 2 | Restates LIP-0008 section 4 and LIP-0013 J7 (Draft, agreement pending); the reading is open (Q1) |
-| A.4 What runs: the pins of the plan | `contract`: the contract carries the hash of the agreed configuration manifest (LIP-0017 section 8, rule 1). None for a pin in the grant itself: a grant has "no typed constraint of an action beyond its limits" (W11.2) | The catalog of the configurations that the host admits, addressed by content; no path, URL or wildcard | The hash that the launcher recomputes "from what it is about to start" (LIP-0017 section 8, rule 3) | The `configuration` of the request equals the hash that the contract of `G` carries, and the launcher reproduces it; otherwise nothing starts. Refusal: `AGENT_SESSION_PLAN` | Proposed here, on LIP-0017 section 8, which is a draft's proposal. Open: how `X` obtains the contract (N4) |
-| A.5 Local policy, window and bounds | `not_before_height`, `not_after_height` (W11.2). `limits` of the kind `swarma/session.span`. None for a policy identifier or its revision: no member exists (W11.2) | The identifier and revision of the host's policy; the bounds to detect an end and to stop a process; a local ceiling on the lease. A local ceiling lowers and never raises (LIP-0008 section 2: operator configuration "never increases a rental ceiling") | The usable window, which is the intersection of the windows of the links (LIP-0008 section 7.1, rule 4); the lease end `E` from the request | `not_before_height <= H < not_after_height` for every link (section 7.1, rule 2; section 12.5); `H < E`, `E - H` within the span, and `E` at most every `not_after_height`. Refusal: for the window that of LIP-0008 section 4, step 4, with no v4 code in the base (N2); for the lease `AGENT_SESSION_SPAN` | The window is defined by LIP-0008 section 7.1 and LIP-0020 W11.9; the lease and the span are proposed here |
-| A.6 Entry: model, reasoning effort, prompt, timeout | None: a grant has "no text and no hash of a text" and no typed constraint (W11.2) | The strings of the model catalog, the largest size of a prompt and the timeout of an entry | The model selection where the agreed configuration fixes it (A.4); none otherwise | None on the text: `X` decides nothing from a prompt and passes it to the agent unchanged ("Text always governs an agent's work and never a service's effect", LIP-0006 section 7, with its rule 2; LIP-0029 O1.2). Refusal: none of this profile | Restates LIP-0006 section 7 and LIP-0029 O1.2. Open: whether the start request binds a hash of the first text (Q10) |
-| A.7 Identity of the run | None: a grant has "no stated identifier of itself" (W11.2); its identifier is recomputed (LIP-0020 W6.1, W6.3) | The local identifiers of an effect, of an execution and of a controller epoch in the journal of `X` | The session identifier, which is the identity of the request that opened the session (AS4.5); the request identity, which is the nonce field of the invocation (LIP-0008 section 12.1) | The identity of the request is not in the journal of `X`. Refusal: `AGENT_SESSION_REPLAY`. One request identity holds at most one reservation (LIP-0026 R5.7) | Proposed here, on the model of LIP-0028 T2.6 and T3.2. Open: the journal key of a request (LIP-0020, "What can be built") |
-| A.8 Origin of the admission | The proof path: `G`, and for a child its `parent` and `ordinal` (W11.2); `recipient` | The key holder's record of a run and its origin, outside the agent's write authority (LIP-0013 J7.1) | The ordered proof identifiers of the invocation (LIP-0008 section 12.1) | Every link passes its own checks at use (LIP-0008 section 12.2). `X` verifies the grant against its own view of the chain and puts no prepared binding in the place of that verification (LIP-0008 section 5). Refusal: that of the check that fails | Restates LIP-0008 sections 5 and 12 |
-| A.9 Isolation | None: a grant has no member for a slot or an account (W11.2) | One live session for one account; the proof that an account holds no process before it is used again | The slot binding, which is the user id of the account (AS1.3) | The account holds no live session of another recipient, and the process of the agent holds no key or right of an effect (LIP-0029 O1.6). Refusal: `AGENT_SESSION_ACCOUNT` | Proposed here, after LIP-0028 T7.7 and LIP-0029 O1.6; the proof of an empty account is out of this specification |
-| B.1 Session identity | None as a member. The record of the session binds the identifier of `G`, the proof path and the recipient | How the identifier is shown to local tools | The session identifier of A.7. It is the same from the first start to the end, across restarts | A renew, a stop and a restart name a session that the journal holds for their own proof path and executor. Refusal: `AGENT_SESSION_UNKNOWN`. A restart consumes one start of `swarma/session.starts`, no further claim of `swarma/session.concurrent` and no lease | Proposed here, on the model of LIP-0028 T5.3 |
-| B.2 Lifetime | The two heights of the window; `swarma/session.span`; the text `swarma/session.renew` in `actions` | The procedure of a renewal and how many blocks before `E` it is asked | The lease end `E` | At every keep check `H < E` and `H` lies in the window of every link; otherwise the session ends (AS5.4). Refusal of a later request: `AGENT_SESSION_ENDED` | The comparison of heights restates LIP-0008 sections 7.1 and 12.5; the lease and the end are proposed here (section 6) |
-| B.3 Restart | `swarma/session.starts` caps the starts; the text `swarma/session.start` in `actions` | When a restart is asked, how many times, with what backoff, and whether the same account and home are used again | The count of starts, from the accounts of `X` | A restart is a signed start request that names a live session, and `X` makes every check of a start again (AS4.6). Refusal: `OWN_LIMIT_OVER`, `ROW_CAP_OVER` (LIP-0026 R5.6), or that of the check that fails | Proposed here; Q6 holds the restart without a signed request |
-| B.4 Liveness | None: a grant has no interval of liveness and no member for one (W11.2) | What "alive" means, the interval of a heartbeat, and who acts on silence | None: nothing of it follows from the chain or from a grant | None of this profile: silence is no event of section 5. `X` may end a session that it finds dead, as it may end any session (AS5.7), and it journals that end. Refusal: none | Not decided here (section 7) |
-| B.5 Follow-up work | None: the grant of a session authorizes the start and the keeping, and no later instruction. A grant has no key for messages (W11.2) | The channel on which later instructions reach the agent, and its binding to the session | The origin of the run, which never changes (LIP-0013 J7.1) | An instruction is admitted under the grant that it cites, at the gate that admits instructions, and one that was admitted under another grant does not enter the run (LIP-0013 J7.6). The gate hands an instruction to a session only while `X` reports it live and not suspended (AS5.6). Refusal: that of the instruction's own admission | J7.6 restates LIP-0013 (Draft, agreement pending); AS5.6 is proposed here |
-| B.6 Revocation while running | `seal` (LIP-0008 SB1); for a child the stop coin of its row, the `stop` of its range (W11.6). None for the seal of the recipient's entry at its landlord: a grant has "no holder of a landlord" (W11.2) | The bound within which a process is stopped after an end is journaled; whether the deployment reads its node itself or through a gateway that shows only the state of a seal | The outpoints that `X` watches for a live session (AS5.3) | The events of section 5. A durable record that refuses the path ends the session. Refusals: `ROW_CLOSED_FOR_CAUSE` (LIP-0027), `HOLDER_REVOKED` (LIP-0010), the refusal of a closed grant (LIP-0008 section 5.1), `ISSUER_NAME_CLOSED` (section 5.3, EB6) | The closures restate the cited texts; that they end a running session is proposed here |
-| B.7 Lease of a credential and of a gateway | None in this grant. The grant-side proposal names `swarma/gateway.units`; this draft does not adopt it (section 2.3) | How the lease of a model credential and of a gateway token is taken and renewed | None | None: a refusal at another executor is no event of section 5. A harness that lost its bearer cannot read a new one (LIP-0028 section 5), so its process is started again by a restart (B.3) | Open (Q5) |
-| B.8 Home and state | None: a grant has no path on a host (W11.2) | Where the state of a session lives across restarts; the export of the work before a home is removed; the quarantine of an account until it is shown empty | None | None | Not decided here (section 7) |
-| B.9 Capacity | `swarma/session.concurrent` | The ceilings of the operator and how a host claims capacity. An operator's ceiling lowers and never raises (LIP-0008 section 2) | The number of live sessions, from the journal of `X` | The claim is part of the atomic write of a start and lasts until the journaled end. Refusals: `AGENT_SESSION_CONCURRENT` for the limit of the grant or of a row, `AGENT_SESSION_CAPACITY` for a ceiling of the operator. Every end of section 5 releases the claim, and `X` may end a session to take its capacity back (AS5.7) | Proposed here |
-
-### 4. The start
-
-`X` runs the steps in this order and stops at the first refusal. A refused
-request reserves nothing, claims nothing and starts nothing.
-
-| # | Step | Which observation | Refusal | Mark and source |
+| State | 1. Start request | 2. Restart of the process (**O**, Q6) | 3. Renew request | 4. Stop request |
 | --- | --- | --- | --- | --- |
-| 1 | The journal of `X` is intact and can be written | None: before any read of the chain | `JOURNAL_LOST`, `JOURNAL_FENCED` (LIP-0025) | **Proposed here** as a first step, as LIP-0027 H2.1 and LIP-0010 section 10.6, step 0, have it |
-| 2 | The request and every grant of its proof path are read as signed objects: the pipeline of LIP-0020 W9.1, with W11.8 to W11.10 for a grant | None | The code of the pipeline | **Restates** for a grant. **Open** for the invocation, which has no members (N1) |
-| 3 | `X` opens one observation: its reads begin and end with a read of the tip, it asks every comparison node, and it reads its clock after the last read. The observation is on the pinned chain and healthy, the clock holds, and the tip is not too old for the class of the action | The observation of the start, which this step opens (LIP-0022 B1.1, B1.3, B2.5, B3.1 to B3.3, B3.6) | `OBSERVATION_CHAIN`, `OBSERVATION_VOID`, `NODE_UNHEALTHY`, `NODE_DISAGREEMENT`, `OBSERVATION_CLOCK`, `TIP_AGE`, in this order and before every rule of a grant (LIP-0022 B6.1) | **Restates** LIP-0022 (a draft's proposal); the class is that of section 2.2 |
-| 4 | Steps 1 to 4 of LIP-0008 section 4 for every link of the path, the root first, and the checks of section 12: the names and the walk of the issuer's name; the request under the recipient mode; the closure journal; the window against `H`; the committed recent block, before every rule that uses its height (LIP-0022 B6.2); the confirmed issuance; the seal, unspent with the mempool included; the exact action in `actions`; the executor. Then `iat <= now < exp` (section 12.5) | The same observation: every fact of one admission comes from one observation (LIP-0022 B1.5) | The refusal of the check that fails | **Restates** LIP-0008 sections 4, 7.1 and 12 and LIP-0022 B1.5 |
-| 5 | Under a child: the row of its ordinal (LIP-0026 R2.1 to R2.4), the coin of the row (R3.2 to R3.4), the stop coin of the row (LIP-0027 H2.1 to H2.6), the attestation where the row names a certifier (LIP-0014 section 8), and, where the row names its recipient by a class, the checks of the class with the read of the landlord's list and of the seal of the recipient's entry (LIP-0026 section 9; LIP-0010 section 10.6) | The same observation (LIP-0022 B1.5; LIP-0010 H44) | The codes of those sections, in their order | **Restates** |
-| 6 | The request is new, the session that a restart names is live, the account is the recipient's and holds no session of another recipient, the configuration is the one of the contract, and the lease lies within the span and the windows (AS4.2 to AS4.4, AS4.6) | None: the journal and the policy of `X`, and `H` of the observation | `AGENT_SESSION_REPLAY`, `AGENT_SESSION_UNKNOWN`, `AGENT_SESSION_ENDED`, `AGENT_SESSION_ACCOUNT`, `AGENT_SESSION_PLAN`, `AGENT_SESSION_SPAN`, in this order | **Proposed here** |
-| 7 | The ceilings of the operator and the capacity of the host | None | `AGENT_SESSION_CAPACITY` | **Restates** LIP-0008 section 4, step 5, for the ceilings; the code is **proposed here** |
-| 8 | Immediately before the write, `X` reads the tip and its clock again. A tip that is not the tip of the observation voids the admission. With the new reading it applies LIP-0022 section 3 and the window again; for a child of a class row it also makes the reads of LIP-0010 H44 again | The recheck of LIP-0022 B1.6 | `OBSERVATION_VOID`, `OBSERVATION_CLOCK`, `TIP_AGE`; the codes of LIP-0010 H44 | **Restates** LIP-0022 B1.6 and LIP-0008 section 12.5 |
-| 9 | One atomic write of the journal (AS4.5) | None | `OWN_LIMIT_OVER`, `ROW_CAP_OVER` (LIP-0026 R5.6); `AGENT_SESSION_CONCURRENT`; `AGENT_SESSION_ENDED` where a restart finds an end; the refusal of the closed grant where a closure stands | **Proposed here**, on the model of LIP-0028 T4.6 and LIP-0026 R5.6 |
-| 10 | The effect: `X` starts the process in the slot, after the write is complete | None | None: a start that fails or whose outcome is unknown keeps its record and its reservations until it is reconciled | **Restates** LIP-0025 M3.2 for the order and LIP-0008 section 2 for the uncertain effect |
+| `none` | **N1.** Admitted where every check of section 5.1 passes: then `held` to the stated `E`. C gives the verdict; D writes one atomic entry (the session record, the debit of one start, the count of the level); only then D starts the process. Codes: section 5.1 | **N2.** Branch (a): `AGENT_SESSION_UNKNOWN`. Branch (b): cannot occur; D restarts only a session of its journal | **N3.** `AGENT_SESSION_UNKNOWN` | **N4.** `AGENT_SESSION_UNKNOWN` |
+| `held` | **H1.** Refused: `AGENT_SESSION_SLOT`. A slot holds one session that counts, whoever asks and under whichever grant | **H2.** Stays `held`; `E` and the identifier do not change. Branch (a): a signed restart request, admitted by section 5.2; D writes the identity and the debit of one start. Branch (b): D acts without a request and writes a restart entry; nothing is debited. In both, D first stops the earlier process of the session or records the station contract's proof that none runs, and then starts | **H3.** Admitted where section 5.3 passes: stays `held`, to the new `E`. D writes the identity, the new `E` and the channel of this request in one atomic entry. Nothing is debited | **H4.** Admitted where section 5.4 passes: `ended`. D writes the end and the identity; then the process is stopped |
+| `suspended` | **S1.** Refused: `AGENT_SESSION_SLOT` | **S2.** Branch (a): the request runs section 5.2 in full; a verdict that refuses gives its code and changes nothing, and a sound one makes the authority `held` and the cell is H2. Branch (b): D starts no process without a sound verdict; nothing is written | **S3.** The request runs section 5.3 in full. Where it passes: `held` to the new `E`. Where it refuses: its code, and the state stays | **S4.** The request runs section 5.4 in full. Where it passes: `ended`. Where it refuses: its code, and the state stays |
+| `ended` | **E1.** Before the clearance (event 28): `AGENT_SESSION_SLOT`. After it: as N1; the new session has a new identifier | **E2.** Branch (a): `AGENT_SESSION_ENDED`. Branch (b): D starts nothing | **E3.** `AGENT_SESSION_ENDED` | **E4.** `AGENT_SESSION_ENDED`; nothing is written |
 
-| Rule | Requirement | Mark and source |
-| --- | --- | --- |
-| AS4.1 | The start request is a signed invocation (LIP-0008 section 12.1) whose command is the start text. `X` admits it as it admits any invocation, with every check of LIP-0008 sections 4 and 12, in one healthy observation. | **Proposed here**, in the words of LIP-0028 T2.1 and T2.5 for its own request |
-| AS4.2 | `X` records the identity of a start, a renew and a stop request when it admits the request, and it admits no request whose identity its journal holds. | **Proposed here**, after LIP-0028 T2.6. `AGENT_SESSION_REPLAY` |
-| AS4.3 | The `configuration` of a start request equals the hash of the agreed configuration that the contract of `G` carries. `X` starts exactly that configuration. | **Proposed here**; the second sentence restates LIP-0017 section 8, rule 3. `AGENT_SESSION_PLAN` |
-| AS4.4 | The `lease_end_height` of a start request is higher than `H`, at most `H` plus the amount of `swarma/session.span`, and at most the `not_after_height` of every link. Under a child the smaller span of the child and of its row holds. `X` shortens no request: a lease end outside these bounds refuses. | **Proposed here**. `AGENT_SESSION_SPAN` |
-| AS4.5 | The write of step 9 is one atomic step of the journal, or nothing: the reservation of one start in the accounts of `swarma/session.starts`, the own account before the row account (LIP-0026 R5.6); the claim of `swarma/session.concurrent`; and the record of the session with its identifier, `G` and the proof path, the key under which `X` authenticated the request, the account, the configuration and the lease end. The identifier of a session is the identity of the request that opened it. The same step reads that no grant of the proof path has a closure. | **Proposed here**, after LIP-0028 T3.2 and T4.6 |
-| AS4.6 | A restart is a start request that states `session`. The session is live and belongs to the proof path and the executor of the request. `X` makes steps 1 to 10. The write reserves one start, claims nothing further, and changes neither the identifier nor the lease end of the session; the same step reads that the session has no end. | **Proposed here**; Q6 |
-| AS4.7 | A session starts in an account that holds no live session of another recipient, and while it lives `X` starts no session of another recipient there. | **Proposed here**, after LIP-0028 T7.7, which states the same for the key holder and a slot |
+**Band 2.**
 
-The key holder of the recipient signs the three requests. Under LIP-0013
-J7.3 (a) it signs an invocation for a run only where every grant of the proof
-path is in the `use` list of the origin of that run, and a run that is
-resumed has the origin of the run that it comes from (J7.1). A restart
-therefore needs no new origin. `X` cannot observe that gate (J7.7). The start
-of a first run raises a question that J7 does not answer: the key holder
-binds a run to its origin "when the run is created", and here it signs the
-request that creates the run. The draft reads the record of the run as made
-by the key holder before it signs; that reading belongs to LIP-0013 and is
-listed as N5.
+| State | 5. A duplicate or replayed request | 6. A request under a second document of the same row | 7. New tip, sound verdict | 8. No sound verdict: the tip cannot be read, the observation is not healthy, the tip is too old, or no verdict arrived |
+| --- | --- | --- | --- | --- |
+| `none` | **N5.** `AGENT_SESSION_REPLAY`: the identity is in the session journal, or the `iat` of the request is not later than the `fenced_at` of a recovery entry (section 5.6). Nothing is written | **N6.** A start: as N1. The second document has own accounts of its own and shares the row account and the row level with the first (**R** LIP-0026 section 5 [D]: "Two documents of one row have two own accounts and share the row account") | **N7.** No change: there is no authority | **N8.** No change. A start in this state refuses with the code of LIP-0022 [D] |
+| `held` | **H5.** `AGENT_SESSION_REPLAY`. No change | **H6.** A start for the same slot: `AGENT_SESSION_SLOT`; for another slot: N1, where the shared row level decides (`AGENT_SESSION_LEVEL_ROW`). A restart, renew or stop that names this session with the other document: `AGENT_SESSION_UNKNOWN`. The authority does not change and never moves to the other document | **H7.** Stays `held`. D writes nothing | **H8.** `suspended`. Nothing is written; D answers "not held" (AS2.4) |
+| `suspended` | **S5.** As H5 | **S6.** As H6 | **S7.** `held`. D writes nothing | **S8.** Stays `suspended`. **O** (Q8): under branch (a) no clock ends it; under branch (b) D writes an end when the age of the tip reaches the cutoff, and the state is `ended` |
+| `ended` | **E5.** As H5 | **E6.** A start: as E1. A request that names this session with the other document: `AGENT_SESSION_UNKNOWN` | **E7.** No change. From the record of the end no request and no later chain reopens the session | **E8.** No change |
 
-### 5. The kept session
+**Band 3.** A height is taken only from a healthy observation.
 
-A start is admitted once. What keeps the admission honest afterwards is the
-keep check, which is the check of LIP-0028 T4.5 applied to a session that
-makes no reservation of its own.
+| State | 9. Lease end: `H >= E` | 10. Grant window end: `H` at or above the `not_after_height` of a link | 11. Tip below the opening of a window, after a reorganisation | 12. Seal of a link spent, and C validated the issuer's spend |
+| --- | --- | --- | --- | --- |
+| `none` | **N9.** Cannot occur: no lease exists | **N10.** No change. A start refuses: `GRANT_WINDOW`, and `PARENT_NOT_LIVE` for the parent of a child | **N11.** No change. A start refuses: `GRANT_WINDOW` | **N12.** No change in the session journal. C writes the closure (AS2.3). A later start refuses: `GRANT_CLOSED`, and `PARENT_NOT_LIVE` for the parent |
+| `held` | **H9.** `ended`. D writes the end with the tip that showed it | **H10.** Cannot occur apart from H9: `E` is at most the `not_after_height` of every link (D7 of section 5.1), so the same tip has reached `E` | **H11.** `suspended`; nothing is written. `E` stands | **H12.** `ended`, for every session whose proof path holds the closed link, the root included. C writes the closure first; D writes the end before it admits anything |
+| `suspended` | **S9.** `ended`, as H9 | **S10.** As H10 | **S11.** Stays `suspended` | **S12.** `ended`, as H12 |
+| `ended` | **E9.** No change | **E10.** No change | **E11.** No change. A reorganisation undoes no end | **E12.** No change |
 
-| Rule | Requirement | Mark and source |
-| --- | --- | --- |
-| AS5.1 | In a **keep check** `X` makes the checks of LIP-0008 sections 4 and 12 for the proof path of a live session, and of step 5 of section 4 of this draft where they apply, in a healthy observation of its own. No signature is verified. In its place `X` requires that the key under which it authenticated the last signed request of the session is still the key of step 2 of LIP-0008 section 4: the signed request key of `G`, or, for a recipient by name, the key that the name yields at that moment. | **Proposed here**, in the words of LIP-0028 T4.5 |
-| AS5.2 | `X` makes a keep check for a live session at three points: before it admits a renew, a restart or a stop request for it; before it reports the session live to a gate that asks (AS5.6); and at every new tip that its reading node shows. | **Proposed here**. LIP-0022 "fixes no interval between observations, and the question is open" (its section 3) |
-| AS5.3 | While a session is live, the node of `X` watches, with its mempool included, the seal of every grant of the proof path, the stop coin of the row of a child, and, for a child of a class row, the seal of the recipient's entry. When it shows one of them spent, `X` makes a keep check at once. How often the mempool is read is open (Q9). | **Proposed here**, after LIP-0029 O8.3, which has an own executor's node watch the seal of every device of its list |
-| AS5.4 | A session ends with the first of these: a keep check finds `H` at or above the lease end `E`, or outside the window of a link; `X` records a closure or another durable refusal for its proof path (the rows of the table below); `X` admits a stop request for it; `X` admits an owner's command that stops it; or `X` ends it under AS5.7. `X` writes the end into its journal when it first finds it. From that record on no request reopens the session, whatever a later chain shows. | **Proposed here**, after LIP-0028 T5.4 and T5.6. "An effect that was already performed is not undone" by a reorganisation that lowers `H` (LIP-0008 section 7.1), and neither is an end |
-| AS5.5 | A refusal that leaves no durable record ends no session. The session is suspended: `X` admits no renew and no restart for it and reports it as not live to a gate. The next keep check that passes lifts the suspension. | **Proposed here**, after LIP-0028 T5.7. Q8 holds the alternative |
-| AS5.6 | A gate that hands instructions to an agent hands one to a session only while `X` reports that session live and not suspended. | **Proposed here**. The admission of the instruction itself is not changed (LIP-0013 section 3; LIP-0029 section 11) |
-| AS5.7 | `X` may end a session at any time under the policy of its operator, and it journals that end. It never keeps a session beyond an end of AS5.4, and it never moves a lease end without an admitted request. | **Proposed here**. An operator may "refuse service" and never raises a ceiling (LIP-0008 section 2) |
-| AS5.8 | After the end is journaled, `X` stops the process of the session. The time that this takes is a bound of the station contract. It is no grace of authority: from the record of the end on, nothing is admitted for the session. | **Proposed here**. No grace is added to a window, in blocks or in clock time (LIP-0008 sections 7.1 and 12.5) |
+**Band 4.**
 
-**The largest delay.** Four quantities make up every delay of the table.
+| State | 13. Seal of a link shown spent, and C validated no issuer's spend, or C is a non-witness | 14. The list of the landlord's agents changed, and an admission took the list and wrote the removal mark of the recipient's entry | 15. The list changed and C does not hold its octets, or the pin of the entry changed | 16. Row stop: the stop coin of the row is spent, and C wrote the closure |
+| --- | --- | --- | --- | --- |
+| `none` | **N13.** No change. A start refuses with the code of the seal check (LIP-0008 SB2, SB3; LIP-0024) | **N14.** No change. A start refuses: `CLASS_HOLDER` | **N15.** No change. A start refuses: `LIST_UNKNOWN` | **N16.** No change. A start refuses: `ROW_CLOSED_FOR_CAUSE` |
+| `held` | **H13.** `suspended`; nothing is written (**R** LIP-0008 section 5.1 [F]: "refuses admission without asserting that an issuer revocation has been proved") | **H14.** `ended`. C wrote the mark; D writes the end | **H15.** `suspended`. The exit is a renew request that presents the list: its admission takes the list, and the cell is then S3 or event 14 | **H16.** `ended`, for every session whose final grant is a child of that row, under either document. A session under another row is untouched (**R** LIP-0027 H3.5 [D]) |
+| `suspended` | **S13.** Stays `suspended` | **S14.** `ended` | **S15.** Stays `suspended` | **S16.** `ended` |
+| `ended` | **E13.** No change | **E14.** No change | **E15.** No change | **E16.** No change |
 
-| Name | What it is | Bound |
-| --- | --- | --- |
-| `D_node` | The time until the transaction or the block that carries the event reaches the node of `X` | None. "Each act takes effect at a verifier that has validated its transaction, and not at one that has not" (LIP-0008 section 5.3). For a confirmed fact it is the time until the node of `X` has the block |
-| `D_watch` | The time from the node of `X` showing the event to the keep check that reads it | For a fact in a block: none beyond the block itself, because a keep check follows every new tip (AS5.2). For a fact in the mempool alone: **open** (Q9) |
-| `D_stop` | The time from the journaled end to the stopped process | A bound of the station contract, out of this specification (AS5.8) |
-| The lease bound | The blocks from an event that only suspends a session to its end | At most the amount of `swarma/session.span`: a suspended session admits no renew (AS5.5), so it ends at its lease end `E`, which lies at most one span above the height of its last admitted start or renew (AS4.4, AS6.1) |
+A list that still holds the same entry, which is the same landlord, name,
+key and seal (LIP-0010 H39 [C]), is no event (**R** section 10.4: a change
+of the list "does not end the child, and it does not end its parent"). The
+same name under another key or another seal is another entry, and for the
+session it is event 14 or 15. Events 14 and 15 exist only for a child of a
+class row.
 
-The lease bound counts blocks of the node of `X`. While that node receives
-no block, `H` does not advance and no lease end is reached: "While no block
-arrives, `H` does not advance and the window does not close" (LIP-0008
-section 7.1). Q8 holds what a session does in that state.
+**Band 5.**
 
-| Event | The cited rule | What `X` does to a running session (**proposed here**) | Largest delay |
+| State | 17. Another durable closure of a link | 18. Another refusal that leaves no durable record | 19. Owner control: a halt command | 20. Owner control: a start by a command without a grant (**O**, Q11) |
+| --- | --- | --- | --- | --- |
+| `none` | **N17.** No change. A start refuses with the code of the closure | **N18.** No change. A start refuses with the code of the check | **N19.** `AGENT_SESSION_UNKNOWN` | **N20.** Branch (a): cannot occur; a command to `X` starts nothing, the command is the origin of a run at the key holder (LIP-0029 O6.5 [C]), and the start is event 1. Branch (b): an authority that no grant bounds; no column of bands 3 to 5 other than 19 applies to it |
+| `held` | **H17.** `ended`. C wrote the closure; D writes the end | **H18.** `suspended`; nothing is written | **H19.** `ended`. C admits the command under LIP-0029 and gives its code where it refuses; D writes the end with the identifier of the command | **H20.** Branch (a): cannot occur. Branch (b): `AGENT_SESSION_SLOT` |
+| `suspended` | **S17.** `ended` | **S18.** Stays `suspended` | **S19.** `ended`, as H19 | **S20.** As H20 |
+| `ended` | **E17.** No change | **E18.** No change | **E19.** `AGENT_SESSION_ENDED` | **E20.** Branch (a): cannot occur. Branch (b): as E1 |
+
+Event 17 is: the closure of the issuer's name where C holds it
+(`ISSUER_NAME_CLOSED`, LIP-0008 sections 5.2 and 5.3 [C]); and the closure
+of the recipient's entry after a validated spend of its seal
+(`HOLDER_REVOKED`, LIP-0010 section 10.7 [C]). Event 18 is every other
+refusal of a check of the path: the owner of the recipient's name is not the
+signed owner key, which "refuses admission and records no closure" (LIP-0008
+section 3.1 [F]); the channel key of the recipient was removed; the name
+rule of the issuer refuses without a journaled closure; `HOLDER_SEAL_NOT_LIVE`
+(LIP-0010 section 10.6 [C]); `ROW_STOP` and `ROW_COIN` (LIP-0027 H2.6 [D];
+LIP-0026 R3.2 [C]); and a withdrawn attestation (`NOTARY_WITHDRAWN`, LIP-0014
+section 8 [C]), which a successor attestation cures and which therefore ends
+nothing. A later revocation of the device that signed an owner command is no
+event of this table: LIP-0029 O8.4 speaks of envelopes.
+
+**Band 6.**
+
+| State | 21. The operator ends the session under the host's policy | 22. The closure journal is lost | 23. The session journal is lost | 24. The session journal is started anew |
+| --- | --- | --- | --- | --- |
+| `none` | **N21.** Cannot occur: there is nothing to end | **N22.** No change. C gives no verdict and refuses every request: `JOURNAL_LOST`, `JOURNAL_FENCED` (**R** LIP-0008 J6.9 [C]: it "MUST NOT admit before the journal is recovered or its owner has started it anew") | **N23.** D refuses every act that needs the journal: `JOURNAL_LOST`, `JOURNAL_FENCED` (**R** LIP-0025 M5.1 [D]) | **N24.** The new journal charges by section 5.6. A start for a slot without a clearance refuses: `AGENT_SESSION_SLOT`. After the clearance a start under a grant that the journal charges refuses: `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
+| `held` | **H21.** `ended`. D writes the end with the cause. Ending takes authority away and gives none | **H22.** `suspended`, as H8. A closure journal that is restored or started anew gives verdicts again, as a newcomer | **H23.** The state cannot be read. D ends nothing, writes nothing, starts and restarts nothing, and answers "not held". The loss proves nothing about the session: "It never takes a missing entry as a sign that nothing happened" (**R** M5.1). A restored journal (M5.2) gives the recorded state back, suspended until the next verdict | **H24.** The new journal holds no record of the session and asserts nothing about it: neither that it is held nor that it ended. A request that names it refuses, `AGENT_SESSION_REPLAY` or `AGENT_SESSION_UNKNOWN` (section 5.6). Its slot is unusable until a clearance |
+| `suspended` | **S21.** `ended` | **S22.** Stays `suspended` | **S23.** As H23 | **S24.** As H24 |
+| `ended` | **E21.** No change | **E22.** No change | **E23.** As H23 | **E24.** As H24 |
+
+**Band 7.**
+
+| State | 25. The channel key of a recipient by name is replaced under the same owner | 26. The pinned key of `X` no longer equals `executor.key` of `G` | 27. The outcome of a process start is unknown, or the start failed | 28. Clearance: D records that the slot holds no process of the session |
+| --- | --- | --- | --- | --- |
+| `none` | **N25.** No change | **N26.** No change. A start refuses: `GRANT_EXECUTOR` | **N27.** Cannot occur: a process is started only after the write that makes the authority `held` | **N28.** Cannot occur: no session |
+| `held` | **H25.** Stays `held` (**R** LIP-0008 section 4, step 2 [F]: "Same-owner grantee rotation/renewal keeps a grant by name"). The next request is authenticated under the new key | **H26.** `suspended`; nothing is written | **H27.** Stays `held`. D writes an entry "outcome unknown". The debit and the count stay. D does not start another process for the record or in the slot, does not release the slot, and does not take the attempt as absent. The exits are H2, H4, H19 and H21 | **H28.** Cannot occur: D records a clearance only for a session that has ended |
+| `suspended` | **S25.** No change: the replacement is no cause of a suspension and lifts none | **S26.** Stays `suspended` | **S27.** As H27 | **S28.** As H28 |
+| `ended` | **E25.** No change | **E26.** No change | **E27.** Stays `ended`. The slot stays uncleared until event 28 | **E28.** Stays `ended`. D writes the clearance. The slot is free, and the session no longer counts for the level |
+
+### 5. The rules that hang off single cells
+
+#### 5.1. Cell N1: the checks of a start
+
+The grant checker makes the checks C1 to C8 and gives the verdict. The
+dispatching service then makes D1 to D11 in this order (**P**).
+
+The order of C1 to C8 is not this profile's. The profile's checks follow
+the child and row checks of the step table of the v4 admission that is in
+review on another branch, once it lands. Until then each check stands where
+its own cited text puts it, and the table marks **R** only an order that is
+the cited text's own.
+
+| # | Check of the grant checker | Order that the cited text states | Code |
 | --- | --- | --- | --- |
-| The grant expired: `H` reached the `not_after_height` of a link | LIP-0008 section 7.1, rule 2; section 12.5: at `H == not_after_height` "new admission MUST refuse; an expired middle link is sufficient" | Ends the session (AS5.4) | 0 blocks at `X`: the keep check at the first tip of that height. In time, `D_stop` |
-| The lease ran out: `H` reached `E` | AS4.4, AS6.1 (**proposed here**) | Ends the session | The same |
-| The grant was revoked: a validated issuer spend of the seal of `G` or of its parent | LIP-0008 section 5.1: the executor "MUST persist permanent closure before any further admission"; section 12.2: "an invalid or closed ancestor MUST refuse the dependent request" | Records the closure and ends every session whose proof path holds that grant, before it admits anything further, as LIP-0028 T5.6 has it for its sessions | `D_node` + `D_watch` + `D_stop`. `D_node` has no bound |
-| A spend of that seal that `X` cannot validate as the issuer's | LIP-0008 section 5.1: "refuses admission without asserting that an issuer revocation has been proved" | Suspends the session (AS5.5) | The lease bound |
-| The issuer's name was broken by its owner | LIP-0008 section 5.2 (J6, Draft, agreement pending); section 5.3, EB6, `ISSUER_NAME_CLOSED` | Where `X` holds that closure: ends every session under a grant of that issuer. Until J6 is agreed: the name rule refuses without a journaled closure, and the session is suspended | With the closure: `D_node` + `D_watch` + `D_stop`. Without it: the lease bound |
-| The seal of the recipient's entry at its landlord was spent, for a child of a class row | LIP-0010 section 10.6, step 8, and section 10.7: `HOLDER_REVOKED` with a durable closure at a verifier that validated the spend | Ends the session | `D_node` + `D_watch` + `D_stop` |
-| The same seal is not shown unspent and `X` validated no spend, or `X` reads seal states through a gateway | LIP-0010 section 10.6: `HOLDER_SEAL_NOT_LIVE` leaves nothing behind; H50, the non-witness, which "records no enforcement closure" (in the words of LIP-0029 section 8.1, which points to H50) | Suspends the session | The lease bound |
-| The list of the landlord's agents changed and no longer holds the recipient's entry | LIP-0010 H40, point 4, and H41: the take of the list writes a removal mark of the entry, and step 6 then refuses as `CLASS_HOLDER`. Only a confirmed pin counts (section 11, SH3) | Where the keep check took the list and wrote the mark: ends the session. Where `X` does not hold the octets of the pinned list (`LIST_UNKNOWN`): suspends it | With the mark: 0 blocks after the name update confirms at `X`, plus `D_stop`. Without the list: the lease bound |
-| The list changed and still holds the entry | LIP-0010 section 10.4: a change of the list "does not end the child, and it does not end its parent" | Nothing | None: no event |
-| The owner of the recipient's name changed, or another key wrote its value | LIP-0010 H34: the entry "stops admitting from the block of the transfer, with no closure"; LIP-0008 section 4, steps 1 and 2 | Suspends the session | The lease bound |
-| The row was stopped: the stop coin of the row of a child is spent | LIP-0027 H2.4 and H3.4: `ROW_CLOSED_FOR_CAUSE`, written "before any further admission", permanent at that verifier | Ends every session whose final grant is a child of that row. A session under another row of the same parent is untouched (H3.5) | `D_node` + `D_watch` + `D_stop` |
-| The stop coin is not on the active chain as the row states it | LIP-0027 H2.6: `ROW_STOP`; the verifier "writes no closure for it" | Suspends the session | The lease bound |
-| The attestation of a child was withdrawn | LIP-0014 section 8, step V18: `NOTARY_WITHDRAWN` where the notary's seal is spent or the journal holds a withdrawal | Where the journal of `X` holds the withdrawal: ends the session. Otherwise suspends it | With the record: `D_node` + `D_watch` + `D_stop`. Otherwise the lease bound |
-| The owner stops the session by a command | LIP-0029 section 11: an owner command to an own executor, whose class is a leaf of the action registry (O2.1) and whose level the policy assigns (O6.4) | Ends the session named in the fields of the command. The class is the stop text; its level is open in LIP-0029 ("the level of a stop and of resumption") and here (Q11) | From the delivery of the command: `D_stop`. The command depends on no block |
-| A device of the owner was revoked | LIP-0029 O8.4: `X` "refuses every envelope signed by the key of that device". No cited rule speaks of a run that such a device started | **Open** (Q11) | **Open** |
-| The recipient asks for a stop | The stop request of section 2.2 | Ends the session. A stop request that `X` refuses ends nothing | `D_stop` after the admission |
-| The observation of `X` is not healthy, or its tip is too old | LIP-0022 B2.5, B3.6: the verifier refuses, "and nothing is recorded as closed" | Suspends the session (AS5.5) | The lease bound, in blocks that the node of `X` does not receive: **open** (Q8) |
-| The journal of `X` is lost | LIP-0025 M5.1; LIP-0008 J6.9: a verifier whose closure journal is lost "is a newcomer" and "MUST NOT admit before the journal is recovered or its owner has started it anew" | A journal that is started anew holds no session. Every session of the lost journal has ended for `X`, and its process is stopped | `D_stop` after the loss is found |
+| C1 | The request and every grant of the path are read as signed objects: the pipeline of LIP-0020 W9.1, with W11.8 to W11.10 for a grant | These are rules of the signed object and stand before the observation (**P**: LIP-0022 B6.1 puts its codes "before every rule of a grant", which this draft reads as every rule that needs a chain) | The code of the pipeline. **O** for the invocation (N1) |
+| C2 | `seal.kind` of every link is `revocable-only` | None | `SEAL_PROFILE` |
+| C3 | One healthy observation, on the pinned chain, with a clock that holds and a tip that is not too old | **R** LIP-0022 B6.1 [D]: its six codes in their order | `OBSERVATION_CHAIN`, `OBSERVATION_VOID`, `NODE_UNHEALTHY`, `NODE_DISAGREEMENT`, `OBSERVATION_CLOCK`, `TIP_AGE` |
+| C4 | Steps 1 to 4 of LIP-0008 section 4 for every link, and section 12: the names; the request under the recipient mode; the closure journal; the window; the issuance; the seal, unspent with the mempool included; the recent block; the exact leaf in `actions`; the executor and the authenticated pin of the service; `iat <= now < exp` | **R** [F]: the steps 1 to 4 in their numbers. Whether they run link by link is open (O-1 below) | Section 6 |
+| C5 | Under a child: the child within its parent (LIP-0008 sections 12.2, 12.5); the row (LIP-0026 R2.1 to R2.4); the coin (R3.2 to R3.4); the stop coin (LIP-0027 H2); the attestation (LIP-0014 section 8); the class with the list and the entry (LIP-0026 section 9; LIP-0010 section 10.6) | **R**: R2.5 [C] puts the four row checks in their order "after the admission of the parent, and before the check of the child's attestation"; R6.1 orders the three coin checks and leaves their place beside the attestation open; H2.1 [D] reads the closure journal first | The codes of those sections; section 6 for the child within its parent |
+| C6 | The contract that `contract` binds is presented or resolved (LIP-0008 section 12.2), recomputes to that identifier, and mirrors every limit of `G` by executor, kind, resource, unit and amount | None | `GRANT_CONTRACT`, `CONTRACT_LIMIT_MISMATCH` |
+| C7 | Every fact of the verdict comes from the one observation of C3 | **R** LIP-0022 B1.5 [D] | Those of C3 |
+| C8 | Asked by D immediately before its write (D9): the tip is the tip of the verdict, the clock holds, and the closure journal has no record for the path beyond the position of the verdict | **R** LIP-0022 B1.6 [D] for the tip and the clock | `OBSERVATION_VOID`, `OBSERVATION_CLOCK`, `TIP_AGE`; the code of the closure |
 
-One principle orders the table. A session ends when the journal of `X` gains
-a durable record that refuses its path, or when the heights run out. A
-refusal that leaves nothing behind suspends the session, and the lease bound
-then ends it. `X` is a witness in the sense of LIP-0008 section 5.3 for what
-its node validated, and for nothing else.
+Four orders are open rows. Each decides only which code comes first where
+two defects meet, and each is decided by the editors of the step table in
+review, not by the owners.
 
-### 6. Renewal and expiry
-
-Every quantity of this section is a block height. No rule compares a height
-with a clock (LIP-0008 section 12.5: "Heights and clock times are never
-compared with each other"). The `iat` and `exp` of each signed request stay
-in clock time, as LIP-0008 section 7.1 has it for every invocation; they
-bound the admission of that one request and no part of a lease.
-
-| Rule | Requirement | Mark and source |
+| Row | The disagreement | What this draft does until it is decided |
 | --- | --- | --- |
-| AS6.1 | The renew request is a signed invocation with the renew text. It names a live session of its own proof path and executor and states a new `lease_end_height`. `X` admits it as AS4.1 and AS4.2 say, after a keep check, and applies AS4.4 to the new lease end with the `H` of that observation. The lease end becomes the higher of the one that stands and the new one, and the key of AS5.1 becomes the key under which `X` authenticated this request. `X` writes both before it answers, in one atomic step with the read that the session has no end. Nothing else of the session changes. | **Proposed here**, in the words of LIP-0028 T5.2 |
-| AS6.2 | A lease end never lies above the `not_after_height` of a link. A session is therefore never live at the closing height of its grant, however often it is renewed. | **Proposed here**; the bound restates LIP-0008 section 7.1, rules 2 and 4 |
-| AS6.3 | Who may renew a lease: the recipient, through its key holder, under a grant whose `actions` hold the renew text. The key holder renews only while the run lives and its origin still lists every grant of the path. | **Proposed here**; the second sentence restates LIP-0013 J7.3 (a) |
-| AS6.4 | A grant is not extended. A new term is a new grant, with a new seal and a new issuance. Who may issue it: the issuer of a root grant, with the consent that LIP-0020 section 7 asks of the recipient; for a child, the holder of the delegation key of a parent, under a row that admits a new child (LIP-0026 section 2). | **Restates** LIP-0008 section 2.1 ("Each grant ... ends at `not_after_height`") and section 5.3, EB6 ("a stopped grant comes back only as a new grant with a new seal") |
-| AS6.5 | At the closing height of its grant a session ends (AS5.4). A session under a successor grant is a new session, opened by a start request under that grant, with a new identifier. | **Proposed here**, from AS1.2; Q7 holds the alternative |
-| AS6.6 | When the lease end, or the closing height of the grant, comes near, the session's side acts in blocks: the key holder sends the renew request a number of blocks before `E` that the station contract states, and the successor grant is issued so that its anchor is confirmed before the closing height. This draft proposes no number. | **Proposed here** as a duty without a number, as LIP-0028 T7.6 has "well before the end" |
-| AS6.7 | A renew request that reaches `X` at or after the lease end finds no live session and refuses. The process is started again by a new start request, which opens a new session. | **Proposed here**, after LIP-0028 section 5. `AGENT_SESSION_ENDED` |
+| O-1 | LIP-0008 section 4 "for every link" before the row checks, against a table that judges every signed octet of a child before any read of a node | States no order between C4 for a child and C5 |
+| O-2 | The journal first, against the documents first. A malformed request at a lost journal gets another code under each | C reads its closure journal where its cited text puts the read; D reads the session journal at D1, after the verdict |
+| O-3 | The place of an undefined action text and of an undefined limit kind, and of the request's own checks (the leaf in `actions`, `iat <= now < exp`), relative to the checks of a child | States no place; D3 is this profile's own check of its keys |
+| O-4 | The inner order of the atomic write | States it for its own entries: D10 |
 
-Three facts of the cited texts bound the lead of AS6.6. A renew request needs
-a healthy observation at `X` (AS5.1), so an outage of `X` or of its nodes
-that lasts longer than what is left of a lease ends the session. A successor
-grant may open its window before the old one closes, but not below the
-height of its own recent block (LIP-0008 section 7.1, rule 3). And its
-issuance anchor is confirmed above that recent block within `K` blocks,
-proposed as 432 (LIP-0022 B4.3). A window has no exact length in clock time
-(LIP-0008 section 7.1), so a lead that is stated in blocks is the only lead
-that a verifier can check.
+| # | Check of the dispatching service, in this order | Mark | Code |
+| --- | --- | --- | --- |
+| D1 | The session journal is intact and this replica holds its token | **R** LIP-0025 M4.1 [D] | `JOURNAL_LOST`, `JOURNAL_FENCED` |
+| D2 | The identity of the request is not in the journal, and its `iat` is later than the `fenced_at` of every recovery entry. Identities and ended records are kept as long as the journal lives | **P**, after LIP-0028 T2.6 and T5.8 [C] | `AGENT_SESSION_REPLAY` |
+| D3 | No limit of `G` has one of the three `kind` texts with a key that section 3.3 does not define; the level and the span are stated | **P** | `AGENT_SESSION_LIMIT_KEY`, `AGENT_SESSION_LIMIT_MISSING` |
+| D4 | The slot table maps the recipient to exactly one account at its current generation | **P** | `AGENT_SESSION_SLOT` |
+| D5 | The slot holds no session that counts (cells H1, S1, E1), and it is not unusable after a recovery (section 5.6) | **P**. The key holder keeps the stronger duty that it cannot be checked here: "A slot holds runs of one origin" (LIP-0028 T7.7 [C]) | `AGENT_SESSION_SLOT` |
+| D6 | The process of the agent will hold no key or right of an effect | **R** LIP-0029 O1.6 [C]. A deployment duty; no code | None |
+| D7 | `H < lease_end_height <= H + span`, and `lease_end_height` is at most the `not_after_height` of every link | **P** | `AGENT_SESSION_SPAN` |
+| D8 | The ceilings of the operator and the capacity of the host. They lower and never raise | **R** LIP-0008 section 2 [F]: "It never increases a rental ceiling" | `AGENT_SESSION_CAPACITY` |
+| D9 | The recheck C8 | **R** | Those of C8 |
+| D10 | One atomic write, or nothing, with its reads in this order: the slot holds no session that counts; the own level, then the row level; the debit of one start in the own account, then in the row account. It writes the session record: the identifier, which is the identity of the request; the identifier of `G` and the proof identifiers; the Subject; the mode and the channel of the request; the entry of the recipient for a child of a class row; the slot with its account and generation; the configuration that will be started; `E`; the tip and the position of the verdict | **P**; the two accounts and their order **R** LIP-0026 R5.6 [D] | `AGENT_SESSION_SLOT`; `AGENT_SESSION_LEVEL_OWN`, `AGENT_SESSION_LEVEL_ROW`; `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
+| D11 | After the write and before the effect, C confirms once more that the closure journal has no record for the path. Where it has one, D writes the end, starts nothing, and the debit stays (R5.8) | **P** (AS2.4) | The code of the closure |
 
-The cost of AS6.5 is one restart of a long-lived agent at each term of its
-grant. LIP-0008 section 2.1 gives about 13,000 blocks as the term of three
-months.
+The effect follows D11: D starts the process in the slot (**R** LIP-0025
+M3.2 [D] for the order: the effect follows the write). A start whose outcome
+is unknown is cell H27.
 
-### 7. What this profile does not decide
+#### 5.2. Cell H2: a restart (**O**, Q6)
 
-These belong to the station contract, out of this specification. They are
-named here once.
+One form holds under both branches (**P**): the slot, the account with its
+generation and the configuration are those of the session record. A slot
+table that now maps the recipient elsewhere refuses as `AGENT_SESSION_SLOT`,
+and no restart moves a session. The restart changes neither `E` nor the
+identifier. D first stops the earlier process of the session, or records the
+station contract's proof that none runs, and then starts: one session has at
+most one process.
 
-- How many times a process is restarted and with what backoff. The grant
-  caps the starts (`swarma/session.starts`) and decides nothing else of it.
-- What "alive" means, the interval of a heartbeat, and who acts on silence.
-- The layout of a home, where the state of a session lives, the export of
-  the work before a home is removed, and the quarantine of an account.
-- The bounds within which an end is detected and a process is stopped
-  (`D_stop`), and how often the mempool is read (Q9).
-- The table that maps a recipient to an account and its generation, and how
-  an account is created.
-- The channel on which instructions reach an agent, and its binding to a
-  session.
-- The lease of a model credential and of a gateway token.
-- The catalog of models, the largest size of a prompt and the timeout of an
-  entry.
-- How a host claims capacity, and the ceilings of its operator.
-
-### 8. Refusals and their order
-
-All eight codes are **proposed here**. Their prefix differs from the
-`SESSION_` codes of LIP-0028 on purpose.
-
-| Code | What it reports | Rule |
+| | Branch (a): a signed request | Branch (b): no request |
 | --- | --- | --- |
-| `AGENT_SESSION_REPLAY` | The identity of a start, a renew or a stop request is already in the journal | AS4.2 |
-| `AGENT_SESSION_UNKNOWN` | A renew, a stop or a restart names no session of its proof path and executor | AS4.6, AS6.1 |
-| `AGENT_SESSION_ENDED` | The session that a request names has ended | AS4.6, AS5.4, AS6.7 |
-| `AGENT_SESSION_ACCOUNT` | The host maps the recipient to no account at its current generation, or the account holds a live session of another recipient | AS4.7; table rows A.2 and A.9 |
-| `AGENT_SESSION_PLAN` | The configuration of the request is not the one that the contract of the grant carries, or the launcher cannot reproduce it | AS4.3 |
-| `AGENT_SESSION_SPAN` | The lease end is not above `H`, is more than the span above it, or lies above the closing height of a link | AS4.4, AS6.1 |
-| `AGENT_SESSION_CONCURRENT` | A start would exceed the limit `swarma/session.concurrent` of the grant or of its row | AS4.5 |
-| `AGENT_SESSION_CAPACITY` | A ceiling of the operator or the capacity of the host refuses the start | Section 4, step 7 |
+| Who asks | The key holder of `A`, for the resumed run (AS3.2), with the leaf `swarma/station/agent/restart` and the one argument `session`. A request that states a lease end is no request of this leaf | The dispatching service, on its own, in the state `held` alone |
+| Checks | C1 to C8 for the request, with that leaf in `actions`; D1, D2; the session is in the journal for the proof path and executor of the request (`AGENT_SESSION_UNKNOWN`) and has no end (`AGENT_SESSION_ENDED`); the record's slot (`AGENT_SESSION_SLOT`); D8, D9; the atomic write with the debit of one start; D11 | D1; the authority is `held` under AS2.4; the record's slot |
+| Record | The identity of the request, the debit, a restart entry | A restart entry |
+| Cost | The key holder is in the path of every restart: a host cannot bring a crashed session back alone, and a key holder that is down, or an origin that no longer lists the grant, leaves the agent down. The starts kind bounds a loop of restarts | No debit can be made, because "One request identity holds at most one reservation" (LIP-0026 R5.7 [D]) and there is no request. The starts kind then bounds no loop. A host can run again, until `E`, an agent for which its key holder would no longer sign |
 
-AS8.1. For a start request the order is that of the table of section 4. For
-a renew request it is: steps 1 to 5 of that table; `AGENT_SESSION_REPLAY`,
-`AGENT_SESSION_UNKNOWN`, `AGENT_SESSION_ENDED`, `AGENT_SESSION_SPAN`; step 8.
-For a stop request it is the same without `AGENT_SESSION_SPAN`. (**Proposed
-here.**)
+#### 5.3. Cells H3 and S3: a renewal
 
-AS8.2. None of the eight records a closure of a grant. The end of a session
-is a record of `X` about its session, as LIP-0028 T8.4 says of its own
-codes. (**Proposed here.**)
+The renew request is admitted on its own verdict; that verdict is the check
+of the held authority at that tip, and no other check comes first (**P**).
 
-The refusals of LIP-0008 section 4, steps 2 and 4, have no v4 code in the
-base of this draft: an action text that the profile does not define, a
-window that `H` lies outside, an executor that is not `X`. This draft
-assigns none and writes "the refusal of that step" (N2).
-
-### 9. Cases
-
-The cases state outcomes in words, each with a control that is admitted.
-Vectors come with the members of the invocation.
-
-| Case | Setting | Outcome |
+| # | Check, in this order | Code |
 | --- | --- | --- |
-| S30-1 | A valid start request under a grant with `swarma/session.concurrent` 1, `swarma/session.starts` 5 and `swarma/session.span` 144; the lease end is `H` plus 144 | Admitted. The journal holds the session, one start is reserved and one session is claimed |
-| S30-2 | The same with a lease end of `H` plus 145; with a lease end of `H`; with a lease end one above `not_after_height` | `AGENT_SESSION_SPAN` for each. A lease end equal to `not_after_height` within the span is admitted, and the session ends at that height |
-| S30-3 | A grant that allows the start text and states no limit of the kind `swarma/session.concurrent` | `AGENT_SESSION_CONCURRENT`: the ceiling is 0 (LIP-0026 R5.2). With the limit at 1 the start is admitted |
-| S30-4 | A second start under the grant of S30-1 while the first session lives | `AGENT_SESSION_CONCURRENT`. After the first session ended, the second start is admitted |
-| S30-5 | A restart of the session of S30-1, five times | The first four are admitted; the fifth refuses as `OWN_LIMIT_OVER`, because the first start and four restarts filled the account. The session identifier and the lease end are those of S30-1 throughout |
-| S30-6 | A start request whose `configuration` differs from the hash in the contract by one profile | `AGENT_SESSION_PLAN`, and nothing starts. With the hash of the contract the start is admitted |
-| S30-7 | The request of S30-1 once more | `AGENT_SESSION_REPLAY`; no second session |
-| S30-8 | A renew request 100 blocks after the start, with a lease end 144 above the tip | Admitted; the lease end moves. A renew request at the lease end: `AGENT_SESSION_ENDED` |
-| S30-9 | The seal of `G` is spent, and the node of `X` shows the issuer's spend in its mempool. A second session at `X` belongs to another grant | `X` records the closure and ends the session of `G`. A later renew request refuses as `AGENT_SESSION_ENDED`. The second session is untouched |
-| S30-10 | The tip of the node of `X` is too old | The keep check refuses under LIP-0022, and the session is suspended. It ends nothing. A keep check after a new block lifts the suspension |
-| S30-11 | A session under a child of row 3. The stop coin of row 3 is spent; a session under a child of row 4 runs at the same host | The session of row 3 ends (`ROW_CLOSED_FOR_CAUSE`). The session of row 4 stays |
-| S30-12 | A reorganisation lowers `H` below the lease end after `X` journaled the end at `E` | The session stays ended. A new start request under the same grant, while its window is open, is admitted and opens a new session |
-| S30-K1 | A known limit. The issuer spends the seal, and the transaction has not reached the node of `X` | The session runs until the node shows the spend. Nothing bounds that time (LIP-0008 section 5.3) |
-| S30-K2 | A known limit. The node of `X` receives no block | `H` does not advance, and no lease end is reached. The session is suspended and does not end (Q8) |
+| 1 | C1 to C8 for the request, with the renew leaf in `actions`. For a child of a class row the request presents the list where the pin changed | The codes of section 5.1 |
+| 2 | D1, D2 | `JOURNAL_LOST`, `JOURNAL_FENCED`, `AGENT_SESSION_REPLAY` |
+| 3 | The session is in the journal for the proof path and executor of the request | `AGENT_SESSION_UNKNOWN` |
+| 4 | The record has no end, and `H` of the verdict is below the `E` that stands. Where `H >= E`, D writes the end (cell H9) and refuses: the height decides before the request | `AGENT_SESSION_ENDED` |
+| 5 | The new `lease_end_height` is above the `E` that stands, at most `H` plus the span, and at most the `not_after_height` of every link. A renewal never lowers a lease and never leaves it as it is | `AGENT_SESSION_SPAN` |
+| 6 | D9; then one atomic write with the read that the record has no end; then D11 | Those of C8; `AGENT_SESSION_ENDED` |
+
+The authority is held for the heights `H` with `H < E` inside every window.
+The journaled end records the first finding of what the heights already
+decided (**P**).
+
+#### 5.4. Cells H4 and S4: a stop
+
+The checks are those of section 5.3 with the stop leaf and without check 5;
+the write is the end (**P**). A stop is admitted like every invocation:
+"Admission requires two predicates together" (**R** LIP-0008 section 12.5
+[F]), and this profile makes no exception for a request that only takes
+authority away. Where the verdict refuses, the session can still be ended
+by cells 19 and 21. A stop for an ended session refuses (cell E4) and is not
+answered as done, so that a caller reads the state from the code.
+
+#### 5.5. Cells 7 to 18: the verdict while the authority is held
+
+| Rule | Requirement | Mark |
+| --- | --- | --- |
+| AS5.1 | At every new tip of its reading node the grant checker gives, for every proof path of a session without an end, one verdict, with the checks C2 to C5 and C7 for the path. No signature is verified. In the place of step 2 of LIP-0008 section 4 it requires, for a recipient by name, that the owner of the name is the signed owner key and that the name yields a key for the channel of the session's last signed request; for a recipient by key it requires nothing | **P**, after LIP-0028 T4.5 [C]. No request of this profile lacks a signature, so the stored key of T4.5 is not needed, and a replaced key under the same owner changes no verdict (cell H25) |
+| AS5.2 | A verdict takes no list of a landlord and reads no new attestation. It uses the octets that the last signed request of the session presented. A fact that only a presentation can supply gives a refusal without a record (cells H15, H18), and the exit is a renew request that presents it | **P**. The take of a list happens in an admission (LIP-0010 H40 [C]) |
+| AS5.3 | The mapping is one rule. **Sound:** every check passes: `held`. **Ended:** the closure journal holds a durable record that refuses a link of the path (events 12, 14, 16, 17), or a height of a healthy observation is at or above `E` (event 9). **Suspended:** every other verdict, and no verdict | **P** |
+| AS5.4 | The node of the grant checker watches, with its mempool included, the seal of every link of every such path, the stop coin of the row of a child, and for a child of a class row the seal of the recipient's entry. A conformance claim names the interval of the mempool read; this draft states none | **P**, after LIP-0029 O8.3 [C]. LIP-0022 "fixes no interval between observations" |
+
+#### 5.6. Cell 24: a session journal that is started anew
+
+The new journal charges everything that the lost one could have held
+(**R** LIP-0025 M5.5 [D]). For this journal that means (**P**, except where
+marked):
+
+| # | What is charged |
+| --- | --- |
+| 1 | Every row account of the starts kind that could have had a record counts as full (**R** LIP-0026 section 5 [D]). So does every own account. The levels are not charged: item 3 holds every slot. A grant could have had a record unless the height of its recent block, and for a child that of its parent, is at or above the block boundary of the new journal (LIP-0025 M5.4) |
+| 2 | Every start, restart, renew and stop request whose `iat` is not later than the `fenced_at` of the recovery entry refuses as `AGENT_SESSION_REPLAY`, because the lost journal could have held its identity (after LIP-0028 T5.8 [C]). A later request that names a session of the lost journal refuses as `AGENT_SESSION_UNKNOWN` |
+| 3 | Every slot of the slot table as it stood at the fencing is unusable until a clearance of it is recorded in the new journal |
+| 4 | Nothing is recorded as ended. What happens to a process that the lost journal started is the station contract's, and the clearance of item 3 is the one record of it here |
+
+#### 5.7. Cells H9 and H10: the end of a term
+
+| Rule | Requirement | Mark |
+| --- | --- | --- |
+| AS5.5 | A grant is not extended, and a session does not move to another grant (AS1.1). A new term is a new grant and a new session, opened by a start request, with a new identifier. The cost is one start of the agent in each term | **P**. "Each grant ... ends at `not_after_height`" (LIP-0008 section 2.1 [F]); "A slot serves one grant and lives as long as that grant" (LIP-0017 section 8 [D]) |
+| AS5.6 | A row admits one child, ever. Its coin is spent by the anchor of that child (LIP-0026 R3.3 [C]), and the signing service makes one signature, ever, for one place of one parent (LIP-0014 J4.4 (a) [C]). A successor child takes another row or another parent. A place whose signing outcome is unknown is held and gives no successor: "the row is lost to this parent, and the next child takes another row or another parent" (J4.4 (f)). The party that wants a second term therefore holds a spare row or a second parent before the closing height | **R** for the three cited sentences; the last sentence **P** |
+| AS5.7 | A child is signed by the delegation key of its parent, a decision that awaits the co-author's agreement and that LIP-0020 W11.8 carries for the octets of `swarma-grant/4`; LIP-0008 section 12.6 states the signature by the parent's recipient as the rule in force. This draft takes no side and reads neither signature | **R** [C] |
+
+### 6. Refusal codes
+
+Every refusal that the table can produce has a code. The first table holds
+the codes of this profile (**P**). The second holds the refusals of the base
+that have no v4 code there, each proposed as **new**, with the section that
+it would enter; a code with the same meaning that lands first from the text
+in review replaces the proposal.
+
+| Code | What it reports | Cells |
+| --- | --- | --- |
+| `AGENT_SESSION_REPLAY` | The identity of the request is in the session journal, or its `iat` is not later than the fencing of a recovery | Event 5; D2 |
+| `AGENT_SESSION_UNKNOWN` | The request names no session of its proof path and executor | N2, N3, N4, N19, H6, 24 |
+| `AGENT_SESSION_ENDED` | The session that the request names has ended | E2, E3, E4, E19 |
+| `AGENT_SESSION_SLOT` | The recipient maps to no single account at its current generation; the slot holds a session that counts; the slot is unusable after a recovery; or the slot of a restart is not that of the record | H1, S1, E1; D4, D5, D10; section 5.2 |
+| `AGENT_SESSION_LIMIT_KEY` | The grant states a limit with one of the three kind texts and a key that the profile does not define | D3 |
+| `AGENT_SESSION_LIMIT_MISSING` | The grant states no limit of the level key or of the span key | D3 |
+| `AGENT_SESSION_SPAN` | The lease end is not above `H`, or not above the lease end that stands, or more than the span above `H`, or above the closing height of a link | D7; section 5.3 |
+| `AGENT_SESSION_LEVEL_OWN` | A start would put more sessions under the grant than its level | D10 |
+| `AGENT_SESSION_LEVEL_ROW` | A start would put more sessions under the row than its level | D10 |
+| `AGENT_SESSION_CAPACITY` | A ceiling of the operator or the capacity of the host refuses | D8 |
+
+None of them records a closure of a grant (**P**).
+
+| New code | What it reports | Check of the base without a v4 code | Section that it would enter |
+| --- | --- | --- | --- |
+| `REQUEST_AUTH` | The request does not verify under the recipient mode of `G` | LIP-0008 section 4, step 2 | The codes of the v4 admission in LIP-0020 section 11, beside the rule map of section 11.11 |
+| `REQUEST_TIME` | `iat <= now < exp` does not hold | LIP-0008 section 12.5 | The same |
+| `GRANT_CLOSED` | The closure journal holds the closure of a root grant by its issuer's spend | LIP-0008 sections 4, step 4, and 5.1 | The same |
+| `GRANT_WINDOW` | `H` lies outside the window of a root grant | LIP-0008 section 7.1, rule 2 | The same |
+| `GRANT_ACTION_ABSENT` | The command of the request is no entry of `actions` of `G` | LIP-0008 sections 4, step 4, and 12.3 | The same |
+| `GRANT_EXECUTOR` | The executor of the grant, the executor of the request and the authenticated pin of the service do not agree | LIP-0008 section 4 | The same |
+| `GRANT_CONTRACT` | The contract is not presented, or does not recompute to `contract` | LIP-0008 section 12.2 | The same |
+| `CONTRACT_LIMIT_MISMATCH` | The contract does not mirror a limit of the grant | LIP-0008 section 2 | The same |
+| `CHILD_ACTIONS_WIDER`, `CHILD_WINDOW_NOT_NESTED` on v4 | A child lists an action outside `delegate.actions`, or its window is not inside its parent's | LIP-0020 section 11.11, last row: LIP-0014 section 4 names the two for v3, and "Whether v4 takes them is an open question" | LIP-0020 section 11.11 |
+
+An action text that no profile defines and a limit kind that no profile
+defines are refused by W11.4 ("an executor refuses an action that its
+profile does not define"). The table of section 4 produces neither: a
+request with another command is no request of this profile, and a foreign
+key of one of the three kinds is `AGENT_SESSION_LIMIT_KEY`. Their codes come
+with the registry section that is in review.
+
+### 7. What is outside this profile
+
+Each is named once, with the unit that owns it.
+
+| Matter | Owner |
+| --- | --- |
+| The states of a process, liveness, heartbeat, backoff, the home and its export, the proof of an empty account, every bound in clock time, among them the time from a journaled end to a stopped process | The station contract (AS1.4) |
+| **Follow-up work.** The grant of a session authorizes the start and the holding and no instruction. An instruction is admitted under the grant that it cites and enters a run only as LIP-0013 J7.6 says: "An instruction admitted under another grant MUST NOT enter an existing run as an instruction. It creates its own run, with its own channel, or stays data" | LIP-0013 section 3.6 [C] and the gate that admits instructions. This profile adds no rule; the read of AS2.4 is what such a gate may ask |
+| **The model lease.** The budget of a model or of a gateway is the limits of a second grant whose executor is the model service. A failed renewal of a credential there is no event of section 4 and changes no state | LIP-0028 [C], for a client that cannot sign, at the model service |
+| **Isolation of a slot by origin.** "A slot holds runs of one origin", asked of the key holder | LIP-0028 T7.7 [C]. `X` checks what it can observe: one session per slot (D5) |
+| The slot table and how an account is created | The station contract |
+| The mapping of the dispatching service's own closed set of refusals to the codes of section 6 | The implementation of the dispatching service |
+
+### 8. Cases
+
+Each case names its cells and has a control that is admitted. Vectors come
+with the members of the invocation.
+
+| Case | Setting | Outcome | Cells |
+| --- | --- | --- | --- |
+| S30-1 | A valid start; starts 5, level 1, span 144; lease end `H + 144` | Admitted | N1 |
+| S30-2 | The same with `H + 145`; with `H`; with one above `not_after_height` | `AGENT_SESSION_SPAN` each. A lease end equal to `not_after_height` inside the span is admitted | D7 |
+| S30-3 | A grant without the level limit; without the span limit; without the starts limit | `AGENT_SESSION_LIMIT_MISSING` twice; then `OWN_LIMIT_OVER`. With all three the start is admitted | D3, D10 |
+| S30-4 | A limit of the starts kind with a `period` | `AGENT_SESSION_LIMIT_KEY`. Without the period it is admitted | D3 |
+| S30-5 | A second start for the same slot while the first session is held; after its end and before the clearance; after the clearance | `AGENT_SESSION_SLOT` twice; then admitted | H1, E1, E28 |
+| S30-6 | The request of S30-1 once more | `AGENT_SESSION_REPLAY`; no second session | H5 |
+| S30-7 | The process start of S30-1 gives no answer; the caller sends a start with a new identity | `AGENT_SESSION_SLOT`; one debit, one record. After a stop and a clearance a new start is admitted | H27, H1 |
+| S30-8 | A renew 100 blocks after the start with a lease end 144 above the tip; a renew that states the standing lease end; a renew at a tip that has reached `E` | Admitted; `AGENT_SESSION_SPAN`; `AGENT_SESSION_ENDED` with the end written | H3 |
+| S30-9 | The channel key of a recipient by name is replaced under the same owner; then a renew under the new key. Control: the key is removed | The authority stays held and the renew is admitted. With the key removed: suspended | H25, H18 |
+| S30-10 | The issuer spends the seal of the parent of `G`; the checker validates the spend in its mempool while its observation is not healthy. A session under another grant runs | The closure is written, the session ends, a later renew refuses as `AGENT_SESSION_ENDED`. The other session is untouched | H12 |
+| S30-11 | The same spend at a non-witness | Suspended; ended at `E` | H13, S9 |
+| S30-12 | The tip is too old | Suspended; nothing ends. A sound verdict at a new tip lifts it | H8, S7 |
+| S30-13 | A reorganisation lowers `H` below `not_before_height`; later the tip is inside the window again | Suspended; then held | H11, S7 |
+| S30-14 | A reorganisation lowers `H` below `E` after the end was written | The session stays ended | E7 |
+| S30-15 | The stop coin of row 3 is spent; a session under a child of row 4 runs | The session of row 3 ends; that of row 4 stays | H16 |
+| S30-16 | Two documents of one row with a row level of 1 and two recipients: a start under each | The first is admitted; the second refuses as `AGENT_SESSION_LEVEL_ROW` | N6, H6 |
+| S30-17 | A stop for a held session; for the same session again; for an identifier that the journal lacks; for a suspended session whose verdict refuses | Ended; `AGENT_SESSION_ENDED`; `AGENT_SESSION_UNKNOWN`; the code of the verdict, and the session stays | H4, E4, N4, S4 |
+| S30-18 | The landlord's list changes and keeps the entry; changes and the checker lacks its octets; a renew then presents a list without the entry | No event; suspended; ended with the removal mark | H15, H14 |
+| S30-19 | The session journal is lost while a process runs; it is started anew; a start under the old grant for the uncleared slot; the same after a clearance; a start under a grant whose recent block is above the boundary, after the clearance | `JOURNAL_LOST`; then `AGENT_SESSION_SLOT`; `OWN_LIMIT_OVER`; admitted | H23, H24, N24 |
+| S30-20 | A second replica of the dispatching service cannot reach the session journal | It admits nothing: `JOURNAL_FENCED` or `JOURNAL_LOST` | D1 |
+| S30-21 | A child whose `actions` hold the start leaf outside `delegate.actions` of its parent | `CHILD_ACTIONS_WIDER` (proposed for v4). With the leaf in the parent's list it is admitted | C5 |
+| S30-22 | A halt command of the owner for a held session; for an ended one | Ended; `AGENT_SESSION_ENDED` | H19, E19 |
+| S30-K1 | A known limit. The issuer spends the seal, and the transaction has not reached the node of the checker | The authority is held until the node shows the spend. Nothing bounds that time (LIP-0008 section 5.3) | H12 |
+| S30-K2 | A known limit. The node receives no block | Suspended, and under branch (a) of Q8 without an end in time | S8 |
 
 ## Sources
 
@@ -514,199 +556,121 @@ No service, no key holder and no node was run for this draft.
 
 | Statement | Source |
 | --- | --- |
-| The members of a grant, the open registries, the forms of a limit | LIP-0020 section 11, W11.2 to W11.4, W11.6, W11.8 to W11.10 |
-| The order of an admission, the executor, the budget of an executor, the operator's ceilings | LIP-0008 sections 2 and 4 |
-| The closure of a spent seal, the break of an issuer's name, the window of a stop | LIP-0008 sections 5.1, 5.2 and 5.3 |
-| The window in heights, the invocation, the proof path, the time terms, the namespace | LIP-0008 sections 7.1, 12.1, 12.2, 12.3 and 12.5 |
-| The observation, the comparison nodes, the clock, the classes and the order of refusals | LIP-0022 sections 1 to 3 and 6 |
-| Rows, the fit of a child, the accounts | LIP-0026 sections 1, 2 and 5 |
-| The stop coin of a row and its closure | LIP-0027 sections 1 to 3 and 5 |
-| The list of a landlord's agents, the seal of an entry, the take of a list | LIP-0010 sections 10.4, 10.6 and 10.7, and section 11 |
-| The session for a client that cannot sign, whose rules are the model of several rules here | LIP-0028 sections 1 to 8 |
-| The owner's command, the registry, the levels, the device seal | LIP-0029 sections 1, 2, 6, 8 and 11 |
+| The members of a grant, the limit key, the pools, the rule map | LIP-0020 section 11, W11.2 to W11.4, W11.8 to W11.11 |
+| The order of an admission, the executor, the budget, the replicas, the operator's ceilings, the contract mirror | LIP-0008 sections 2 and 4 |
+| The closure of a spent seal; a verifier whose closure journal is lost | LIP-0008 section 5.1; J6.9 |
+| The window, the invocation with its Subject, the proof path, the leaves, the time terms | LIP-0008 sections 7.1, 12.1, 12.2, 12.3, 12.5 |
+| What a proposal for a leaf and for a limit kind states | LIP-0018 sections 2 and 3 |
+| The observation and its codes | LIP-0022 sections 1 to 3 and 6 |
+| The journal check, a lost journal, starting anew | LIP-0025 sections 4, 5 and 7 |
+| Rows, the fit of a child, the coin, the accounts | LIP-0026 sections 2, 3 and 5 |
+| The stop coin of a row | LIP-0027 sections 2 and 3 |
+| The list of a landlord's agents and the entry | LIP-0010 section 10 |
 | The gate of the key holder | LIP-0013 section 3.6, J7.1 to J7.8 |
+| The signer of a child and the reservation ledger | LIP-0014 section 11.1, J4.1, J4.4 (a) to (g) |
+| The session for a client that cannot sign | LIP-0028 |
+| The owner's command | LIP-0029 sections 1, 2, 6, 8 and 11 |
 | The agreed configuration | LIP-0017 section 8 |
-| What a proposal for an action name and for a limit kind states | LIP-0018 sections 2 and 3 |
-| The candidate service types | LIP-0007 section 1 |
-| The fields of a start and the nine points of a kept session; the proposed action names and limit kinds | Two working inputs to this draft, from the dispatching side of a host and from the side that checks grants. Neither is part of this repository |
 
 ## Alternatives
 
-- **The lease in seconds on the clock of the executor,** as LIP-0028 has its
-  window. A lease would have an exact length, and a node without blocks could
-  not hold a session open. The owner's direction excludes a clock for a
-  session and its renewal.
-- **No lease: a session lives for the whole window of its grant.** No renew
-  request would be needed. A session whose keep check is refused without a
-  record would then run to the end of the grant, which is thousands of
-  blocks, and the lease bound of section 5 would not exist.
-- **A bearer for the session,** on the model of LIP-0028. The key holder of
-  an agent can sign, so the price of a bearer buys nothing here.
-- **A new member of the grant for the account, the plan or the model.** It
-  would change the octets of `swarma-grant/4`. The contract already binds the
-  configuration (LIP-0017 section 8), and the account is a fact of one host.
-- **One action for start and restart, and a second count for restarts.** The
-  grant-side proposal has one action and one count, and this draft keeps it:
-  a restart is a start that names a session.
-- **A stop that needs no grant text.** The recipient could then always end
-  its own session. Under LIP-0008 section 12.3 a command matches an exact
-  leaf, and a right that no text names is a right that no issuer gave.
+- **A grant checker inside the dispatching service.** One service and one
+  journal, and the atomic step of LIP-0028 T4.6 as it stands. Rejected: the
+  dispatching service would need a chain view, an observation and a closure
+  journal of its own, a second copy of what stands behind the message
+  origin, and two closure journals on one host can disagree about one seal.
+- **The life of a process in this LIP.** States for starting, running and
+  down, and a rule for the restart of a machine. Rejected by the narrowing:
+  those are facts of one host, and the grant decides none of them.
+- **The lease in seconds,** as LIP-0028 has its window. Excluded by the
+  owner's direction.
+- **No lease.** A suspended session would then run to the end of its grant.
+- **A new member of the grant** for the account, the configuration or the
+  model. It would change the octets of `swarma-grant/4`.
+- **One leaf for start and restart.** One leaf would have two lists of
+  arguments, and a reader of the leaf could not select the list.
+- **A level counted as an account.** An account is never lowered (LIP-0026
+  R5.1), so it would be a second cap on starts and no level.
 
 ## Security consequences
 
-- **A session outlives the facts of its start by up to one span.** A refusal
-  that leaves no record suspends a session and does not end it. The issuer
-  chooses the span, and with it the largest stretch for which a process runs
-  on an admission that can no longer be repeated.
-- **A suspended session still runs.** Its process keeps what it holds: its
-  home, and every credential that works without a signature of its key. It
-  receives no new instruction through a gate that asks `X` (AS5.6), and its
-  key holder is asked for no renewal. What the process does with what it
-  holds is bounded by the other executors and their own checks, and by
-  LIP-0013 J7.8.
-- **No verifier that never saw a spend is bound by it.** A stop by a seal
-  reaches `X` when the transaction reaches its node (S30-K1). The reserve and
-  the rebroadcast of LIP-0008 section 5.3 shorten that time, and nothing
-  closes it.
-- **A node without blocks holds every lease open** (S30-K2). The cutoffs of
-  LIP-0022 refuse new admissions in that state. Whether they also stop a
-  running process is Q8.
-- **The executor is trusted for the end.** `X` journals the end and stops
-  the process. A host that does neither keeps an agent running, and no other
-  party sees it; the other executors still make their own checks at each
-  request of that agent.
-- **A restart is signed, so the key holder is in the path of every restart.**
-  A key holder that is down leaves a crashed agent down. The count of starts
-  bounds a loop of restarts that a faulty or a hostile host asks for.
-- **The requests are replayable only inside their `iat` and `exp`.** AS4.2
-  refuses a repeated identity while the journal holds it. A journal that is
-  started anew forgets them; LIP-0028 T5.8 states the rule that refuses
-  older requests there, and this draft has no such rule yet (N6).
-- **Two words.** A reader who takes an agent session for a session of
-  LIP-0028 expects a token and a window in seconds. The draft writes "agent
-  session" throughout, and the action names do not (Q3).
+- **A revocation is bounded in blocks and not in time.** An end needs a
+  durable record at the grant checker or a height. Every other refusal
+  suspends, and a suspended authority ends at `E`, at most one span above
+  the tip of its last admitted start or renewal. While the node receives no
+  block no height is reached. Whether a clock ever ends a suspended session
+  is Q8.
+- **A suspended session still runs.** Suspension takes the answer "held"
+  away and admits no restart under branch (b). The process keeps its home
+  and every credential that works without a signature (LIP-0013 J7.8).
+- **At a non-witness the span is the delay of every revocation** (AS1.5).
+  An issuer that grants to such a host chooses a small span.
+- **No verifier that never saw a spend is bound by it** (S30-K1).
+- **The executor is trusted for the end.** The set writes the end and stops
+  the process. A host that does neither keeps an agent running; the other
+  executors still make their own checks.
+- **The executor is stricter than a fresh verifier in two places.** A
+  verdict takes no presentation (AS5.2), and a journal that was started anew
+  charges every older grant as used (section 5.6). In both the set refuses
+  where another verifier might admit, and never the reverse.
+- **Between a closure and its delivery** the dispatching service may still
+  hold an older verdict. AS2.4 and D11 close that gap for an answer and for
+  an effect; nothing else is performed on a verdict.
 
 ## Conformance impact
 
 None on normative v0.1, none on Grant v3, and none on the octets of
-`swarma-grant/4`. No conformance class and no vector is added. The three
-requests are invocations, the invocation has no members yet, and the record
-of a session waits for the entries of a service journal. The cases of
-section 9 state the outcomes that vectors will hold.
+`swarma-grant/4`. No conformance class and no vector is added. A
+conformance claim under this profile would state whether the executor is a
+witness (AS1.5) and the interval of its mempool read (AS5.4).
 
 ## Open questions
 
 ### Questions for the owners
 
-Each has its options and a recommendation of this draft. A recommendation
-decides nothing.
+These five and no other. Each has its options, what each costs, and a
+recommendation that decides nothing.
 
-- **Q1. Whom does `recipient` name?** (a) The agent for which the session
-  runs; who may ask is the gate of the key holder (LIP-0013 J7) and no
-  member. (b) The party that asks for the start, with the agent as an
-  argument of the request. Recommendation: (a). Under (b) the grant would
-  bind no agent, and a row could not fix the worker (LIP-0026 R2.3).
-- **Q2. The service type.** LIP-0018 section 3 asks every leaf for its type.
-  (a) The candidate `slot.station` of LIP-0007 section 1 takes the three
-  actions, and its row says "recipient" where it says "renter". (b) A new
-  type with its own row. Recommendation: (a), as the smaller change; it is an
-  amendment of LIP-0007 and no part of this draft.
-- **Q3. The form of the names.** (a) The names of the grant-side proposal,
-  with a dot: `swarma/session.start`. (b) Slashes alone, as LIP-0029 section
-  8.2 writes `swarma/device/revoke`: `swarma/session/start`. (c) As (b), with
-  a segment that tells the agent session from the session of LIP-0028.
-  Recommendation: (c), decided together with the grammar that LIP-0008
-  section 12.3 leaves open. The same choice holds for the limit kinds.
-- **Q4. Effect or work.** LIP-0018 section 3 asks whether a leaf "ends in an
-  effect at a resource or is an agent's work". (a) Effect: `X` is an effect
-  service of LIP-0006 section 7 and refuses a grant whose terms carry a
-  text, and a run at level L0 gets no signature for a start (LIP-0029 O6.7
-  (a)), so an orchestrator at L0 starts no worker. (b) Work: the three
-  commands move no money, land nothing and release no secret; `X` decides
-  from machine members alone and hands a text of the contract to the agent
-  unchanged, as LIP-0017 section 8, rule 4, has the launcher do.
-  Recommendation: (b), with the limits of section 2.3 as the bound.
-- **Q5. The model budget.** (a) A limit `swarma/gateway.units` in the grant
-  of the session, as the grant-side proposal has it. (b) No such limit here:
-  the budget is the limits of a second grant whose executor is the model
-  service (LIP-0008 section 4; LIP-0020 W11.4), and a failed renewal of a
-  credential there is no end of the session. Recommendation: (b).
-- **Q6. The restart.** (a) A signed start request that names the session
-  (AS4.6). (b) `X` restarts a crashed process itself, inside the lease, and
-  debits a start without a request. Recommendation: (a). Under (b) a debit
-  has no request identity, against LIP-0026 R5.7, and a host could run an
-  agent that its key holder no longer signs for.
-- **Q7. A session across two grants.** (a) A session ends with its grant, and
-  the successor grant gets a new session (AS6.5). (b) A renew request under
-  a successor grant with the same executor, recipient and contract rebinds a
-  live session. Recommendation: (a) for the first version: it needs no new
-  check, and it costs one restart in a term.
-- **Q8. A session whose keep check is refused without a record,** a node
-  without blocks included. (a) It is suspended and ends at its lease end
-  (AS5.5). (b) `X` also stops the process when the age of the tip reaches
-  the cutoff of the class, 5400 seconds for a privileged action (LIP-0022
-  B3.6). (c) `X` ends it at the first such refusal. Recommendation: (a), and
-  the owners say whether (b) is added for a node that receives no block,
-  where the lease bound does not run. (b) uses the clock of LIP-0022, which
-  is decided design for an admission (LIP-0008 section 6), and it is the one
-  place where a clock would end a session.
-- **Q9. The delay of the watch.** (a) The specification asks for a keep check
-  at every new tip and leaves the read of the mempool to the station
-  contract, and a conformance claim names its interval. (b) The
-  specification states a largest interval. Recommendation: (a) until a run
-  on a host has measured the read; LIP-0022 leaves the interval between
-  observations open for the same reason.
-- **Q10. The first text.** (a) The start request binds nothing of a prompt.
-  (b) It binds the SHA-256 of the text, as `text_sha256` does in LIP-0029
-  section 5.2, and `X` decides nothing from it. Recommendation: (b): the
-  record of the session then names what the agent was first told.
-- **Q11. The owner and a session.** Three points. Does a session that an
-  owner starts at an own executor need a grant? (a) Yes: the owner's command
-  is the origin of the run at the key holder (LIP-0029 O6.5), the key holder
-  signs the start under a grant, and a command to `X` itself only stops.
-  (b) No: an owner command to `X` starts a session without a grant.
-  Recommendation: (a), with the one-host rule of LIP-0029 ("The chain rules
-  apply inside one host too"). The level of a stop is open in LIP-0029; this
-  draft recommends the lowest level that the policy admits, because a stop
-  takes authority away. And a session whose origin is a command of a device
-  that was later revoked: recommendation, the key holder signs no renew and
-  no restart for such a run, so the session ends at its lease end; `X`
-  cannot see the origin (LIP-0013 J7.7).
-- **Q12. A stop while the observation is refused.** (a) A stop request is
-  admitted like any invocation, and one that is refused ends nothing
-  (LIP-0028 T5.5). (b) A stop request needs its signature alone.
-  Recommendation: (a): for a recipient by name the key of the signature is
-  itself a read of the chain, and the operator may end a session in any case
-  (AS5.7).
+- **Q4. Effect or work.** (a) Effect: `X` is an effect service of LIP-0006
+  section 7 and refuses a grant whose terms carry a text, and a run at
+  level L0 gets no signature for a start (LIP-0029 O6.7 (a)). Cost: an
+  orchestrator at L0 starts no worker. (b) Work. Cost: the start of a
+  process on a host is bounded by the three limits alone and by no level.
+  Until the answer the profile states no class, and the stricter class of
+  LIP-0022 B3.5 holds. Recommendation: (b).
+- **Q6. Does a restart need a signed request?** Section 5.2 has both
+  branches and their cost. (a) Signed: a host cannot bring a crashed session
+  back alone. (b) Unsigned: the starts kind bounds no restart, and a host
+  can run again an agent for which its key holder would no longer sign,
+  until `E`. Recommendation: (a).
+- **Q8 (b). Does a clock ever end a suspended session?** (a) No: cell S8
+  stays, and a stalled node holds a suspended session without an end in
+  time. (b) Yes: the dispatching service ends it when the age of the tip
+  reaches the cutoff of the class (LIP-0022 B3.6). Cost: the one place
+  where a clock ends an authority, against the direction that time is
+  counted in heights; and an outage of the node longer than the cutoff ends
+  every session of the host, each of which then costs a start.
+  Recommendation: (a), with the bound stated as unbounded in time.
+- **Q11. Does a session that an owner starts need a grant?** (a) Yes: cell
+  N20 (a). Cost: an owner starts nothing on a host for which no grant
+  exists. (b) No. Cost: an authority without a window, a seal or a limit,
+  which only a halt command and the operator end. Recommendation: (a);
+  "The chain rules apply inside one host too" (LIP-0029).
+- **Q13. The level of a halt command.** Open in LIP-0029 ("the level of a
+  stop and of resumption"). (a) The lowest level that the policy admits.
+  Cost: every device of the owner can end every session. (b) The level of
+  the command that started the run, or above. Cost: a lost device of that
+  level delays a stop. Recommendation: (a): a halt takes authority away.
 
-### Needs without a member or a value
+### Open, and not the owners'
 
-Each states a need and the smallest proposal. This draft writes no octets
-for any of them.
-
-- **N1. The members of the invocation and of the receipt** (LIP-0020). The
-  arguments of section 2.2 are logical fields. Smallest proposal: three
-  argument lists, as that section names them.
-- **N2. A v4 code for the refusals of LIP-0008 section 4, steps 2 and 4,**
-  among them an action text that no profile defines and a limit of a kind
-  that no profile defines. The registry section that is in review is
-  reported to name such codes; they are not in the base. Smallest proposal:
-  this draft uses the codes of that section once it lands.
-- **N3. The texts of `resource` and `unit`** of the three limit kinds
-  (LIP-0020 W11.4). Smallest proposal: one fixed `resource` text for the
-  profile, and the units "session", "start" and "block" as texts.
-- **N4. How `X` obtains the contract** that `G` binds, to read the hash of
-  the agreed configuration: in the proof bundle (LIP-0008 section 12.2) or by
-  retrieval (LIP-0019). And a contract profile that requires that hash
-  (LIP-0018 section 1; LIP-0017 section 8).
-- **N5. The record of a run that does not exist yet.** LIP-0013 J7.1 binds a
-  run to its origin "when the run is created"; here the key holder signs the
-  request that creates it. Smallest proposal: a sentence in LIP-0013 that the
-  key holder makes the record before it signs a start.
-- **N6. A journal of `X` that is started anew.** Which older requests it
-  refuses (LIP-0028 T5.8 has the rule for its sessions), and what it charges
-  for the accounts of `swarma/session.starts` (LIP-0025 section 7).
-- **N7. Single-use grants.** The profile is written for a grant with limits,
-  as LIP-0028 is.
-- **N8. Limits with a period,** for example starts in a stretch of blocks.
-  The profile has none.
+| Item | The question | Who decides |
+| --- | --- | --- |
+| P1 | **The configuration.** LIP-0017 section 8 has a contract "under which the platform starts an agent in an agreed configuration" carry the hash of one manifest, as a rule of the contract's profile; no profile has that member today. Two things are open: the preimage of the hash over what a host starts, and how the contract profile requires it. This profile decides neither, gives the start request no configuration argument, and has the record keep what was started (D10). **Consequence:** one hash for each contract, with one contract along a path, makes every worker under one orchestrator run the same configuration. **Remedy:** a mapping in the contract profile from a row or a recipient to a hash, and no member of the grant | The LIP that defines the contract profile of a hosted agent (LIP-0017 section 8; LIP-0018 section 1) |
+| O-1 to O-4 | The four orders of section 5.1 | The editors of the step table of the v4 admission, in review |
+| N1 | The members of the invocation and of the receipt; the journal key of a request identity | LIP-0020 |
+| N2 | Acceptance of the new codes of section 6, or their replacement by codes of the text in review | LIP-0020 section 11 |
+| N3 | The alphabet of a segment of a leaf and of a kind text | LIP-0008 section 12.3 |
+| N4 | The amendment of the row `slot.station` | LIP-0007 section 1 |
+| N5 | Whether the reading of AS3.2, that the key holder's run precedes its process, stands | LIP-0013 section 3.6 |
+| N6 | The entries of the session journal and of the closure journal on the form of LIP-0025, and the block boundary of section 5.6 after a reorganisation | LIP-0025 |
