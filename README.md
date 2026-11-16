@@ -980,26 +980,36 @@ and not the life of a process, which belongs to the station contract of the
 host. The executor is the service set of a host: a grant checker with the
 chain view and the closure journals, a dispatching service with the session
 journal and the accounts, and the key holder that binds each run. The
-checker hands the dispatching service a verdict with fixed content, owes the
+checker hands the dispatching service a verdict with fixed content — under
+a restart grant it carries the cited path, whose accounts a restart debits,
+and the session's own path, whose result alone moves its state — owes the
 next one at every tip, at every closure and every 60 seconds, and a verdict
-is current for 120 seconds at most. The draft proposes five action leaves in
+is current for 120 seconds at most from its observation, a stated margin of
+60 seconds over that duty. The three bounds are the draft's own proposed
+numbers. The draft proposes five action leaves in
 slash form, to start, to restart, to renew, to stop and, for the owner, to
 halt a session, and three limit kinds with their full keys: starts, which is
 an account, and a level and a span, which are checks without an account. It
 adds no member to the grant. The authority has five states, none, session
 held, suspended, ended and quarantined, and one table gives for every state
-and each of 35 events the next state, who acts, the record that is written
+and each of 36 events the next state, who acts, the record that is written
 before the effect, and a refusal code of one closed list, or the reason why
 the event cannot occur. An authority ends on a closure of a link or on a
 height, and every other refusal suspends it: a revocation while running is
-bounded in blocks and not in time. The last check before a process is
-started reads the tip, the clock and the journals again, and its failure has
-a cell. A restart is a new run by a signed request; that a host signs it
-alone under a restart grant is proposed and awaits the owner's yes. A lost
-session journal quarantines every slot of the host until the operator's
-clearance. Eleven refusals of the base that have no v4 code are proposed as
+bounded in blocks and not in time, and a checker that can show a validated
+block of the pinned chain at the lease end ends it by height although its
+observation is not healthy. The last check before a process is
+started reads the tip, the clock and the journals again; its failure only
+refuses, ends nothing and consumes no start. A restart is a new run by a
+signed request and orders no run while an earlier run's start outcome is
+unknown; that a host signs it alone under a restart grant is proposed and
+awaits the owner's yes. A lost
+session journal quarantines every slot of the host until the journal is
+restored and every end that fell due during the loss is applied, or the
+journal is started anew and the slot is cleared by the operator. Eleven
+refusals of the base that have no v4 code are proposed as
 new codes. Every rule is marked as restating a cited text with the state of
-that text, as proposed, or as open; six questions are the owners', each with
+that text, as proposed, or as open; seven questions are the owners', each with
 options, costs and a recommendation, and the draft lists what it needs from
 the station contract of the host. It defines no octets and no vectors, and
 nothing of it is implemented.
