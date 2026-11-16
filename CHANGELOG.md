@@ -109,7 +109,9 @@ H53 and changed rows of the older rules:
   name the holder reads.
 - **The non-witness (H50), with a pointer in LIP-0029 section 8.1.** A
   verifier that reads only seal states through a gateway refuses on every
-  state but unspent and records no enforcement closure; it may keep an
+  state but unspent, admits on unspent only when the gateway shows the
+  seal's funding as H46 asks, and records no enforcement closure; it may
+  keep an
   observe-grade record that is never used for enforcement. An enforcement
   closure needs the spending transaction validated by the reader, every
   spender and one named tip, and the watcher journal of a deployment is
@@ -161,6 +163,64 @@ section 10.6; none is a new rule number.
 - **The key registry's summary row** of the holder seal key agrees with
   its entry.
 
+A delta review of record of that text asked for one sentence, and an
+independent delta read of an earlier state of the section named eight
+further points, of which the text had closed part: the two codes for a
+spender that the node cannot name, and a vector of H48 point 6 alone. The
+section closes the rest before the version is released. No rule number is
+new; the rules changed are H28, H40, H43, H44, H48 and H50, with steps 5
+and 8 of section 10.6.
+
+- **The same pin on a new operation after a reorganisation (H40, step 5,
+  case S10-18).** In the branch of H23, point 4, the take is made even
+  where the pin's `seq` and `sha256` equal those of the removed head; it
+  replaces the operation and the block of the head and writes no mark.
+  Without it one reader kept a removed operation as its head and later
+  took a list of a lower `seq`.
+- **A closure that a watcher supplies (H28, by ruling).** Point 2 of H48
+  in step 8, and the read before the effect, consult an enforcement
+  closure that the watcher of the verifier's deployment supplies. It
+  counts only with what H47 requires: the validated spender, the seal's
+  confirmed funding and one named tip. The verifier then journals it; one
+  that lacks any of the three counts for nothing. The watcher journal, the
+  format of such a closure and its transport stay outside the section and
+  open.
+- **The reader behind a gateway (H50, by ruling, case S10-23).** It makes
+  every step of section 10.6 and only cannot write an enforcement closure.
+  It admits only when H46 holds through what the gateway shows, the
+  confirmed funding with its script and its height, and refuses as
+  `CLASS_HISTORY_UNAVAILABLE` where the gateway cannot show it. The earlier
+  point that left those checks optional is withdrawn, and the
+  observe-grade record no longer needs an earlier journaled sighting.
+- **The mark of a lost journal (H43, by ruling, case S10-21).** A journal
+  is created once, with an identity. A verifier that finds none where its
+  configuration says that one existed refuses every class admission of
+  every landlord as `JOURNAL_LOST`, and takes no list, until its operator
+  states a new start. How the state after a failed write is carried across
+  a restart while the journal is still found stays open, as in LIP-0027.
+- **No closure on two refusals (H48, section 10.8, case S10-22).** An
+  admission that ends as `HOLDER_SEAL_ALIAS` or `HOLDER_SEAL_REUSED` reads
+  no seal and writes no closure. The text states this as an accepted
+  divergence and does not move the seal read before those refusals.
+- **The cost of binding at the take (H40).** A take binds every seal of a
+  list, and nothing bounds or prunes the journal; the security
+  consequences say so, and a bound is listed as open. The rule does not
+  change.
+- **The facts of an admission vector (section 10.11).** The fact table
+  gains the outputs and registrations that the alias check compares, the
+  sighting tip and the funding state of a closure that a watcher supplies,
+  the pending operation and the closure at the read before the effect,
+  what a gateway shows of the funding, and a journal that is not found.
+  The table gains a row for the same pin on a new operation, and the rows
+  of H28, H44, H50 and step 0 gain their vectors.
+- **The device seal keeps its own reading (LIP-0029 section 8.1, O9.2).**
+  LIP-0029 states that the conditions of the holder seal do not bind the
+  device seal, how the two readings differ and why, and leaves the
+  alignment open. O9.2 says that "higher" is the condition of a take.
+- **The read before the effect in the observation profile.** LIP-0022 B1.6
+  names the holder reads of a class admission, and case S10-15 separates a
+  void admission without a validated spend from one whose closure stands.
+
 The member of version 0.1.51 stays readable as the inline form (section
 10.9), with its rules 1 to 8 and its vectors unchanged. A value with both
 forms has no holder. A landlord moves by one update that removes the inline
@@ -195,12 +255,19 @@ entry's own key; both forms give no holder; a removed entry does not return
 after a reorganisation; the non-witness. Taken by ruling after the review
 of record: the removal mark at a verifier whose first list was the
 dropping one; the keys of the journal's records, with the binding and the
-removal mark for each landlord and the closure by the bare outpoint.
+removal mark for each landlord and the closure by the bare outpoint. Taken
+by ruling after the independent delta read: the step that consults a
+closure which a watcher supplies and what it must carry; the gateway
+reader that makes every step and admits only on the funding that the
+gateway shows; the mark of a lost journal. This text's choices of the same
+round, for the owners: no closure on an alias or a reused seal as an
+accepted divergence, and the device seal's own reading in LIP-0029.
 
 LIP-0010 section 11 registers `swarma-holders` as a head member (SH2) and
 counts its bytes. LIP-0008 section 3, LIP-0014 section 8.3, LIP-0026
 sections 9 to 11 with its security consequences and open questions,
-LIP-0029 sections 3.3 and 8.1, LIP-0022 B1.2 and B1.5, the key registry,
+LIP-0029 sections 3.3 and 8.1 with O9.2, LIP-0022 B1.2, B1.5 and B1.6, the
+key registry,
 the README and the open-question index follow. The key registry gains the
 entry "Holder seal key", whose danger line states the reach of one keeper
 and the open fee. LIP-0026 R9.6 and R9.7 read the entry of the recipient

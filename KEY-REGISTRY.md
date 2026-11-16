@@ -586,6 +586,17 @@ names it as the holder or as the channel key.
 - Leak: the thief revokes the entry; that name is no longer admitted through
   a class of the landlord, at a verifier that validated the spend, until
   the landlord lists it again with a new seal through a name update (H33).
+  A verifier holds that closure from its own read of the seal or from a
+  closure that its deployment's watcher supplies, which counts only with
+  the validated spender, the seal's confirmed funding and one named tip
+  (H28); an admission that ends at an alias or a reused seal writes none
+  (H48). A verifier behind a gateway of seal states writes none either: it
+  makes every step, and admits only when the gateway shows the seal's
+  confirmed funding with its script and its height (H50). A verifier that
+  finds no holder journal where its configuration says that one existed
+  admits nobody through a class until its operator states a new start
+  (H43). The same pin on another name operation after a reorganisation is
+  taken, so that every verifier keeps a head in the active chain (H40).
 - Recovery: a new list with a new seal for the name; after a keeper is
   compromised, a new seal for every name and one name update by the cold
   key.

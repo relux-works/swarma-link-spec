@@ -772,17 +772,45 @@ no rollback lifts stands for a verifier that validates the spending
 transaction on its own node (LIP-0010 H28, H29, H47). A verifier that reads
 the chain through a gateway which returns only the state of a seal
 (unspent, unconfirmed, spend pending, not in the confirmed set) is a
-non-witness for closures that begin in the mempool: it refuses on every
-state but unspent and records no enforcement closure. Where it journaled
-the seal as unspent earlier and later sees it absent from the confirmed
-set, it may keep an observe-grade closure, named so and never used for
+non-witness for closures that begin in the mempool: it makes every step of
+the admission, refuses on every state but unspent, admits on unspent only
+when the gateway shows the seal's confirmed funding with its script and its
+height, refuses as a failed read where the gateway cannot show it, and
+records no enforcement closure. Where the gateway shows the seal absent
+from the confirmed set, it may keep an observe-grade closure, named so and
+never used for
 enforcement, because it validated no spending transaction and the absence
 can also follow a reorganisation that removed the funding of the seal. An
 enforcement closure needs the octets of the spending transaction, validated
 by the reader against the script of the seal, every spender that the node
 holds, and one named tip; the watcher journal of a deployment is the source
-of that evidence, and neither LIP specifies it (LIP-0010 H50). Whether the
-same reading binds the device seal of this section is not stated here.
+of that evidence, and neither LIP specifies it (LIP-0010 H50). A closure
+that such a watcher supplies is consulted in the seal step of the
+admission and before the effect, and counts only with the validated
+spender, the seal's confirmed funding and one named tip; its format and
+its transport are open (LIP-0010 H28).
+
+**The device seal of this section keeps its own reading.** O8.3 and O8.9
+stand as they are written, and the conditions of LIP-0010 H45 to H48 do not
+bind a device seal. The two readings differ, and the difference is stated
+here so that nobody takes one for the other. O8.3 journals a closure for a
+spend that the executor's node sees, with no definition of a validated
+spend and no condition that the funding of the seal is confirmed; for a
+holder seal the spend of an unconfirmed seal refuses without closure
+(LIP-0010 H47, point 5). O8.9 refuses as `DEVICE_REVOKED` whenever
+`gettxout` does not show the seal unspent, so a device seal that is
+unconfirmed, has another script or was never funded reads as revoked, and
+the code does not tell a defect of the listing from a revocation; for a
+holder seal those are `HOLDER_SEAL_NOT_LIVE` and a failed read is
+`CLASS_HISTORY_UNAVAILABLE`. An executor that is also a verifier of a
+landlord class watches both kinds of seal on one node and keeps two
+meanings of a closure, one for each kind. The reason is one of scope and
+no judgement that the older reading is sound: the amendment that hardened
+the holder seal changes no rule of this LIP, only an owner's own executors
+read a device seal (O3.7), and splitting the device codes to match is a
+change of this LIP that its owners have not decided. That the divergence
+stands until then is this text's choice; whether the device seal takes the
+reading of LIP-0010 H45 to H48, with its codes split to match, is open.
 
 #### 8.2. The fast path and its completion
 
@@ -852,7 +880,7 @@ fast path of section 8.2 and a name update remain.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | O9.1 | Adding a device needs a new device list that holds its record, the device's new seal, and an update of the owner's name signed by the name-owner key that writes the new `swarma-devices` with a higher `seq`. | |
-| O9.2 | An executor takes a list only through the pin in the owner's name value on its own node, in its validated active chain, and only with a `seq` higher than the highest it journaled. An envelope, an attachment or a message never adds a device. | `DEVICE_LIST_ROLLBACK` |
+| O9.2 | An executor takes a list only through the pin in the owner's name value on its own node, in its validated active chain, and only with a `seq` higher than the highest it journaled. "Higher" is the condition of a take alone: a pin that equals the journaled one, in `seq` and in hash, is the list that the executor holds, and it is read at every command with no new take and no refusal. An envelope, an attachment or a message never adds a device. | `DEVICE_LIST_ROLLBACK` |
 | O9.3 | The prepared spend of the new seal MUST reach the other devices under O8.2 before the new device signs anything. | |
 
 Adding is slow and guarded by design; removing is fast. The reviewer's figures
