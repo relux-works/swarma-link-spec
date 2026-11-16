@@ -1627,7 +1627,9 @@ above is the rule in force. LIP-0014 section 11.1 holds Draft text that
 replaces it for the link below an issue capability: the capability names
 one delegation key, only that key signs children, and it signs nothing
 else, because the messaging key never grants authority. Ivan Oparin decided
-this on 2026-11-14 (J4); the co-author's agreement is pending.
+this on 2026-11-14 (J4); the co-author's agreement is pending. For the
+octets of `swarma-grant/4` the rule in force since version 0.1.53 is
+[LIP-0020](LIP-0020-grant-v4-wire-registry.md) W11.8.
 
 R3 is not met by this LIP. Conditions written in words live in the contract
 text and in task scope; section 12.2 compares only known action sets and

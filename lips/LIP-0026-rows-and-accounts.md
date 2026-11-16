@@ -608,7 +608,7 @@ only the group and the range of its child, on signed octets.
 The decision fixes the four largest numbers of R8.4: 16 groups, 16 ranges in a
 group, 4096 coins in a range and 65536 octets. They are decided limits, and
 R8.4 and LIP-0020 W11.6 state them with one status, as bounds of the schema of
-a grant. This draft adds the order of the count in R8.3, the witness key hash
+a grant. LIP-0020 W11.6 says on which record the four numbers rest. This draft adds the order of the count in R8.3, the witness key hash
 of R8.2, which follows R3.1, the smallest count of one group and one range in
 R8.4, and the rules R8.9 and R8.10 for the two signers.
 

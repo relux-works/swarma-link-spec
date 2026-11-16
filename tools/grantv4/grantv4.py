@@ -28,13 +28,17 @@ this code:
   of its seal key;
 - for every vector of `invalid` and of `compound`: the first refusal of
   the pipeline, as a code;
-- for every vector of `undetermined`: nothing that binds it. Section 11
-  carries the rule of such a vector as a proposal of another LIP and does
-  not determine whether a reader judges it. This reader judges every rule
-  of W11.10 and refuses these vectors as GRANT_DELEGATE; the file states
-  `refused` and no code, and `check` accepts any refusal there and
-  compares no code. A reader that does not judge the rule reads the same
-  octets as a well-formed parent.
+- for every vector of `undetermined`: that it passes steps 1 to 8 of the
+  pipeline, and one of two outcomes of step 9 and no other. Such a vector
+  breaks one proposal point of W11.10 and nothing else. A reader that
+  judges the point reports GRANT_DELEGATE (W11.10); a reader that does not
+  judge it reads `ok`. Any other code is a defect of the reader.
+
+This reader judges every rule of W11.10, the proposal points included.
+`check` reads each vector twice, once with the proposal points and once
+without them. For a vector of `undetermined` the first read must give
+GRANT_DELEGATE and the second `ok`; for every other vector the two reads
+must agree, so that no stated outcome depends on a proposal point.
 
 `check` does not hold a refused vector against its valid neighbour: it
 checks that the neighbour is a valid vector, and the statement that the
@@ -57,8 +61,8 @@ GRANT_TYPE = "swarma-grant/4"
 MAX_GRANT = 65536
 MAX_VECTOR = 2 * MAX_GRANT
 MAX_FILE = 16777216
-REFUSED = "refused"
-UNDETERMINED = "not determined by this version"
+UNDETERMINED = "ok or GRANT_DELEGATE"
+OUTCOMES = ["ok", "GRANT_DELEGATE"]
 MAX_DEPTH = 16
 MAX_NUMBER = 9007199254740991
 MAX_INDEX = 4294967295
@@ -692,14 +696,16 @@ def check_shape(g):
         raise Refusal("GRANT_SHAPE")
 
 
-def check_delegate(g):
-    """Every rule of W11.10, the proposal rules included.
+def check_delegate(g, proposals=True):
+    """The rules of W11.10.
 
-    W11.10 marks three points as proposals of other LIPs that a reader need
-    not judge: the witness key hash of a range script, every rule on `stop`
-    in rule 5, and rule 8. This reader judges them and reports them under
-    the same code. The vector file states no code for them (the group
-    `undetermined`), and `check` compares none.
+    W11.10 marks two points as proposals of other LIPs that bind no reader
+    yet: the witness key hash of `script` and of `stop.script` in rule 5,
+    and the placement points of rule 8 (no stop coin is a coin of a row,
+    the seal of the parent or the output after it). With `proposals` this
+    reader judges them and reports them under the same code, as W11.10
+    says a reader that judges them does. Without it the reader judges the
+    rules that W11.10 gives to every reader and nothing else.
     """
     d = g.get("delegate")
     if d is None:
@@ -737,7 +743,9 @@ def check_delegate(g):
                 raise bad
         for rng in group["ranges"]:
             last = rng["first"] + rng["count"] - 1
-            if last > MAX_INDEX or not _is_wkh(rng["script"]):
+            if last > MAX_INDEX:
+                raise bad
+            if proposals and not _is_wkh(rng["script"]):
                 raise bad
             if ("stop" in rng) != ("certifier" in t):
                 raise bad
@@ -745,7 +753,9 @@ def check_delegate(g):
             if "stop" in rng:
                 s = rng["stop"]
                 last = s["first"] + rng["count"] - 1
-                if last > MAX_INDEX or not _is_wkh(s["script"]):
+                if last > MAX_INDEX:
+                    raise bad
+                if proposals and not _is_wkh(s["script"]):
                     raise bad
                 stops.append((s["txid"], s["first"], last))
     # 3. the pools
@@ -763,11 +773,17 @@ def check_delegate(g):
     for i, a in enumerate(coins):
         if _meet(a, seal_run) or any(_meet(a, b) for b in coins[:i]):
             raise bad
-    # 5. the stop coins
-    after_seal = (seal["txid"], seal["vout"] + 1, seal["vout"] + 1)
+    # 5. the stop coins: first the point of every reader, a stop coin of
+    # its own for each row; then the placement points, which are proposals
     for i, a in enumerate(stops):
+        if any(_meet(a, b) for b in stops[:i]):
+            raise bad
+    if not proposals:
+        return
+    after_seal = (seal["txid"], seal["vout"] + 1, seal["vout"] + 1)
+    for a in stops:
         if _meet(a, seal_run) or _meet(a, after_seal) or \
-                any(_meet(a, b) for b in stops[:i]) or any(_meet(a, b) for b in coins):
+                any(_meet(a, b) for b in coins):
             raise bad
 
 
@@ -786,11 +802,13 @@ class Grant:
         self.content_address = sha256(signed_form).hex()
 
 
-def read_grant(signed_form, parent=None, reference=None):
+def read_grant(signed_form, parent=None, reference=None, proposals=True):
     """Returns a Grant or raises the first Refusal of the pipeline.
 
     `parent` is the Grant that the reader already read for a child, or None.
     `reference` is an identifier that another object states for this grant.
+    `proposals` says whether the reader judges the proposal points of
+    W11.10 in step 9; nothing before step 9 depends on it.
     """
     root = parse_document(signed_form, MAX_GRANT)                      # step 1
     if sorted(root.names()) != ["payload", "signature"]:               # step 2
@@ -821,8 +839,16 @@ def read_grant(signed_form, parent=None, reference=None):
     if reference is not None and reference != g.grant_id:              # step 8
         raise Refusal("WIRE_ID")
     check_shape(g.payload)                                             # step 9
-    check_delegate(g.payload)
+    check_delegate(g.payload, proposals)
     return g
+
+
+def _outcome(octets, parent, reference, proposals):
+    """(the Grant or None, `ok` or the code of the first refusal)."""
+    try:
+        return read_grant(octets, parent, reference, proposals), "ok"
+    except Refusal as r:
+        return None, r.code
 
 
 # --------------------------------------------------------------------------
@@ -834,7 +860,11 @@ DERIVED = ("typed_digest", "grant_id", "content_address", "seal_script")
 def verify_file(data):
     """Returns a list of (vector id, 'PASS' or a finding).
 
-    For a vector of `undetermined` no code is compared: any refusal passes.
+    Each vector is read twice: by a reader that judges the proposal points
+    of W11.10 and by one that does not. A vector of `undetermined` must
+    give GRANT_DELEGATE to the first and `ok` to the second, which shows
+    that it passes steps 1 to 8 and breaks a proposal point alone. Every
+    other vector must give both readers its stated outcome.
     """
     out = []
     grants = {}
@@ -862,18 +892,26 @@ def verify_file(data):
             parent = grants.get(context["parent"])
             if parent is None:
                 findings.append("context.parent is no valid vector read before this one")
-        try:
-            g = read_grant(octets, parent, context.get("reference"))
-            got = "ok"
-        except Refusal as r:
-            g, got = None, r.code
+        reference = context.get("reference")
+        g, got = _outcome(octets, parent, reference, True)
+        without = _outcome(octets, parent, reference, False)[1]
         if v["id"] in unfixed_ids:
-            if v["expect"] != REFUSED or v.get("code") != UNDETERMINED:
-                findings.append("an undetermined vector states an outcome or a code")
-            if got == "ok":
-                findings.append("expect a refusal, reader gives ok")
-        elif got != v["expect"]:
-            findings.append("expect %s, reader gives %s" % (v["expect"], got))
+            if v["expect"] != UNDETERMINED or v.get("outcomes") != OUTCOMES or "code" in v:
+                findings.append("an undetermined vector states another outcome than "
+                                "`ok` or GRANT_DELEGATE")
+            if got != "GRANT_DELEGATE":
+                findings.append("a reader that judges the proposal points gives %s, "
+                                "not GRANT_DELEGATE" % got)
+            if without != "ok":
+                findings.append("a reader that judges no proposal point gives %s, "
+                                "not ok: the vector does not pass steps 1 to 8, or "
+                                "breaks another rule" % without)
+        else:
+            if got != v["expect"]:
+                findings.append("expect %s, reader gives %s" % (v["expect"], got))
+            if without != got:
+                findings.append("the outcome depends on a proposal point of W11.10: "
+                                "%s without them" % without)
         if (v["expect"] == "ok") != (v["id"] in valid_ids):
             findings.append("group")
         if g is not None:
@@ -1007,6 +1045,14 @@ def notary_pin():
             "registration": {"txid": TX_NOTARY, "vout": 0}}
 
 
+def further_notary_pin(letter):
+    """A further notary, with a name and a registration of its own."""
+    return {"name": "id/lip0020-notary-%s" % letter, "owner": key("notary-owner"),
+            "registration": {
+                "txid": label_hash("lip-0020 grant-v4 notary %s registration" % letter),
+                "vout": 0}}
+
+
 def landlord_b_pin():
     return {"name": "id/lip0020-landlord-b", "owner": key("landlord-b-owner"),
             "registration": {"txid": TX_LANDLORD_B, "vout": 1}}
@@ -1103,8 +1149,7 @@ def bound_parent():
     of 20, so that a 17th range breaks the count and nothing else."""
     g = base_parent()
     d = g["delegate"]
-    d["notaries"] = [notary_pin()] + [
-        dict(notary_pin(), name="id/lip0020-notary-%s" % c) for c in "bcd"]
+    d["notaries"] = [notary_pin()] + [further_notary_pin(c) for c in "bcd"]
     d["pools"] = [limit(*REQUESTS, "700", HOUR)]
     d["groups"][1]["ranges"] += [plain_range(TX_COINS_B, 10 + j, 1) for j in range(15)]
     d["groups"] += [unlimited_group(100 + i) for i in range(14)]
@@ -1112,8 +1157,14 @@ def bound_parent():
 
 
 # The amount of the wrap vector: five rows of it and four rows of 20 sum to
-# 2^64 + 4, which a sum in 64 bits reads as 4.
+# 2^64 + 4, which a sum in 64 bits reads as 4. Five rows of it alone are
+# 2^64 - 76 and still fit 64 bits: the vector wraps in the addition.
 WRAP_AMOUNT = (2 ** 64 + 4 - 4 * 20) // 5
+
+# The amount of the second wrap vector: five rows of it are 2^64 + 4, so the
+# product itself wraps in 64 bits, to 4. With four rows of 20 a reader that
+# multiplies in 64 bits gets 84 and admits the parent against its pool.
+WRAP_PRODUCT_AMOUNT = (2 ** 64 + 4) // 5
 
 
 def base_child(parent_id):
@@ -1180,10 +1231,12 @@ class Builder:
         self.invalid.append(v)
 
     def unfixed(self, vid, rules, claim, octets, judged, neighbour):
-        """A vector whose rule section 11 carries as a proposal: the file
-        states that a reader which judges the rule refuses, and no code."""
-        v = self._entry(vid, rules, claim, octets, REFUSED, None)
-        v["code"] = UNDETERMINED
+        """A vector that breaks one proposal point of W11.10 and nothing
+        else. It passes steps 1 to 8; step 9 gives `ok` to a reader that
+        does not judge the point and GRANT_DELEGATE to one that does."""
+        v = self._entry(vid, rules, claim, octets, UNDETERMINED, None)
+        v["outcomes"] = list(OUTCOMES)
+        v["steps_1_to_8"] = "pass"
         v["judged"] = judged
         v["valid_neighbour"] = neighbour
         self.undetermined.append(v)
@@ -1439,7 +1492,7 @@ def build():
         signed(parent_with(setp(["delegate", "groups", 1, "ranges"], []))), "WIRE_MEMBER", pv)
     bad(["W11.5"], "Five notaries: the parent of grant-v-11 with one more pin.",
         signed(bound_with(lambda g: g["delegate"]["notaries"].append(
-            dict(notary_pin(), name="id/lip0020-notary-e")))), "WIRE_MEMBER", bv)
+            further_notary_pin("e")))), "WIRE_MEMBER", bv)
     bad(["W11.7"],
         "A class without a landlord: the class of the first template of grant-v-08, "
         "emptied. The template names a certifier.",
@@ -1533,13 +1586,14 @@ def build():
     bad(["W11.10"], "Two pools with one key.",
         signed(parent_with(lambda g: g["delegate"]["pools"].append(
             limit(*REQUESTS, "380", HOUR)))), "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "Two limits of one template with one key.",
+    bad(["W11.10"],
+        "Two limits of one template with one key. The added limit has the amount 0, so "
+        "the rows still sum to the pool of 380 whichever of the two a reader counts.",
         signed(parent_with(lambda g: g["delegate"]["groups"][1]["template"]["limits"].append(
-            limit(*REQUESTS, "1", HOUR)))), "GRANT_DELEGATE", pv)
+            limit(*REQUESTS, "0", HOUR)))), "GRANT_DELEGATE", pv)
 
     def descending_notaries(g):
-        g["delegate"]["notaries"] = [dict(notary_pin(), name="id/lip0020-notary-z"),
-                                     notary_pin()]
+        g["delegate"]["notaries"] = [further_notary_pin("z"), notary_pin()]
     bad(["W11.10"], "Two notaries in descending order of their names.",
         signed(parent_with(descending_notaries)), "GRANT_DELEGATE", pv)
     bad(["W11.10"], "A certifier that is no notary of the parent.",
@@ -1597,37 +1651,65 @@ def build():
     bad(["W1.5"], "An executor name that holds the escape of U+0001.",
         signed(root_with(control)), "WIRE_STRING")
 
-    # ---- refused by a reader that judges a proposal rule; no code -------
+    # ---- refused, one defect, added after the review of record ----------
+    # They stand last, so that no earlier vector of the group changes its id.
+    if 5 * WRAP_PRODUCT_AMOUNT != 2 ** 64 + 4 or WRAP_PRODUCT_AMOUNT > MAX_AMOUNT:
+        raise ValueError("wrap product amount")
+    bad(["W11.10", "W2.4"],
+        "The amount of the first template raised from 60 to %d. Five rows of it are "
+        "2^64 + 4, so the product alone passes 64 bits: a reader that multiplies in 64 "
+        "bits gets 4, adds four rows of 20, and admits the parent at 84 against the pool "
+        "of 380." % WRAP_PRODUCT_AMOUNT,
+        signed(parent_with(setp(t0 + ["limits", 0, "amount"], str(WRAP_PRODUCT_AMOUNT)))),
+        "GRANT_DELEGATE", pv)
+    bad(["W11.6", "W11.10"],
+        "A range of a template with a certifier that states no stop coins: the first range "
+        "of the first group without `stop`. The member may be absent at the member step; "
+        "rule 5 of W11.10 judges its presence.",
+        signed(parent_with(setp(r00 + ["stop"], DROP))), "GRANT_DELEGATE", pv)
+    bad(["W11.6", "W11.10"],
+        "A range of a template without a certifier that states stop coins: the range of "
+        "the second group with a `stop` of its own.",
+        signed(parent_with(setp(r10 + ["stop"], {"txid": TX_STOPS, "first": 100,
+                                                 "script": stop_script()}))),
+        "GRANT_DELEGATE", pv)
+    bad(["W11.10"],
+        "A run of stop coins whose last coin would have the index 4294967296: the stop "
+        "coins of the first range, three of them, with their first coin at 4294967294.",
+        signed(parent_with(setp(r00 + ["stop", "first"], MAX_INDEX - 1))),
+        "GRANT_DELEGATE", pv)
+    bad(["W11.6", "W11.10"],
+        "Two runs of stop coins that share the output 2: the stop coins of the second "
+        "range with their first coin at 2. Two rows would have one stop coin.",
+        signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1, "stop", "first"],
+                                2))), "GRANT_DELEGATE", pv)
+
+    # ---- one proposal point of W11.10 broken: `ok` or GRANT_DELEGATE ----
     u = [0]
 
     def unfixed(claim, octets, judged):
         u[0] += 1
         b.unfixed("grant-u-%02d" % u[0], ["W11.10"], claim, octets, judged, pv)
 
-    presence = ("W11.10 rule 5: a range has `stop` exactly where its template names a "
-                "certifier (LIP-0027 H1.1, LIP-0014 J9.4)")
     script = ("W11.10 rule 5: the script of a range is a witness key hash (LIP-0026 R8.2, "
               "R3.1)")
-    place = ("W11.10 rule 8: no output is a stop coin of two rows, and no stop coin is a "
-             "coin of a row, the seal of the parent or the output after it (LIP-0027 H1.3)")
-    unfixed("A range of a template with a certifier that states no stop coins.",
-            signed(parent_with(setp(r00 + ["stop"], DROP))), presence)
-    unfixed("A range of a template without a certifier that states stop coins.",
-            signed(parent_with(setp(r10 + ["stop"], {"txid": TX_STOPS, "first": 100,
-                                                     "script": stop_script()}))), presence)
+    stop_form = ("W11.10 rule 5: the script of the stop coins of a range is a witness key "
+                 "hash (LIP-0027 H1.2)")
+    place = ("W11.10 rule 8: no stop coin is a coin of a row, the seal of the parent or "
+             "the output after it (LIP-0027 H1.3, LIP-0023 C2.3)")
     unfixed("A range script that pays a key hash and no witness key hash.",
             signed(parent_with(setp(r10 + ["script"], "76a914" + coin_script()[4:] + "88ac"))),
             script)
+    unfixed("A stop script that pays a key hash and no witness key hash: the stop coins of "
+            "the first range.",
+            signed(parent_with(setp(r00 + ["stop", "script"],
+                                    "76a914" + stop_script()[4:] + "88ac"))), stop_form)
     unfixed("Stop coins that are coins of another range: the stop coins of the first range "
             "in the transaction of the coins of the second group.",
             signed(parent_with(setp(r00 + ["stop", "txid"], TX_COINS_B))), place)
     unfixed("Stop coins that begin at the output after the seal of the parent.",
             signed(parent_with(setp(r00 + ["stop"], {"txid": TX_SEAL, "first": 1,
                                                      "script": stop_script()}))), place)
-    unfixed("Two runs of stop coins that share the output 2: the stop coins of the second "
-            "range with their first coin at 2.",
-            signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1, "stop", "first"],
-                                    2))), place)
 
     # ---- compound -------------------------------------------------------
     c = [0]
@@ -1756,8 +1838,8 @@ NOTE = (
     "signed form of a grant; `signed_form_hex` is the vector, and `signed_form`, where it is "
     "given, only shows the same octets. In the groups `valid`, `invalid` and `compound`, "
     "`expect` is `ok` or the first refusal of the pipeline of a signed object (W9.1 with "
-    "W11.8 to W11.10), for a reader that judges the rules that W11.10 marks as judged by "
-    "every reader. A vector with `context.parent` is read with that vector as the parent "
+    "W11.8 to W11.10). That outcome is the same for a reader that judges the proposal "
+    "points of W11.10 and for one that does not. A vector with `context.parent` is read with that vector as the parent "
     "that the reader already read; `context.reference` is an identifier that another object "
     "states for the grant. A refused vector of `invalid` holds one defect and names a valid "
     "neighbour that differs from it in that defect: in one member of the payload, in octets "
@@ -1766,18 +1848,23 @@ NOTE = (
     "together. The vectors of `no_neighbour` name none. Unless its claim says otherwise, the "
     "signature of a refused vector is valid for the octets shown. A vector of `compound` "
     "holds several defects on purpose and has no neighbour; the statement of one defect "
-    "does not cover it. A vector of `undetermined` is a parent that breaks one rule which "
-    "section 11 carries as a proposal of another LIP, named in `judged`, and nothing else. "
-    "Its outcome is `refused`, code not determined by this version: a reader that judges "
-    "the rule refuses the parent, this version fixes no code for that refusal, and a "
-    "checker accepts any refusal and compares no code. This version does not determine "
-    "that a reader judges the rule: one that does not reads the same octets as a "
-    "well-formed parent, and the vector does not bind it. `not_exercised` lists the "
+    "does not cover it. A vector of `undetermined` is a parent that breaks one proposal "
+    "point of W11.10, named in `judged`, and nothing else: the witness key hash form of "
+    "`script` or of `stop.script`, or a placement point of rule 8. Such a point is an "
+    "addition of a draft and binds no reader until it is accepted. The vector passes "
+    "steps 1 to 8 of the pipeline, and `outcomes` lists the two results of step 9: `ok` "
+    "for a reader that does not judge the point, and GRANT_DELEGATE for a reader that "
+    "does (W11.10). A checker refuses every other code. The presence of `stop`, the last "
+    "index of a run of stop coins and a stop coin of its own for each row are no proposal "
+    "points: every reader judges them, and their vectors stand in `invalid`. "
+    "`not_exercised` lists the "
     "refusal codes that section 11 names and no vector of this file exercises, each with "
     "the reason and with the place where it is exercised. The file was computed by one "
     "implementation, tools/grantv4/grantv4.py, whose reader also checked it. An "
     "independent implementation recomputes, from `signed_form_hex` and `context` alone, "
-    "the outcome of every vector of `valid`, `invalid` and `compound`, and for a valid "
+    "the outcome of every vector of `valid`, `invalid` and `compound`, for a vector of "
+    "`undetermined` that it passes steps 1 to 8 and gives one of its two outcomes, and "
+    "for a valid "
     "vector its typed digest, its identifier, its content address, its signature under the "
     "key of the place and the script of its seal key. Keys are public test scalars and "
     "belong to nobody; signatures are made by the default signing algorithm of BIP-340 "
@@ -1789,8 +1876,9 @@ NOTE = (
 NO_NEIGHBOUR = ["grant-i-05"]
 
 # Refusal codes that section 11 names and that no vector of the file holds.
-_ADMISSION = ("The pipeline of W11.8 never reports it. It is a check of an admission, and "
-              "this file states results of the pipeline alone. ")
+_ADMISSION = ("The pipeline of W11.8 never reports it. It is a check of an admission, "
+              "which reads stated facts of a chain beside the octets of grants, and this "
+              "file models no such fact and states results of the pipeline alone. ")
 NOT_EXERCISED = [
     {"code": "CHILD_ORDINAL",
      "why": _ADMISSION + "The pipeline reads an `ordinal` of any value of its form; the "
@@ -1832,9 +1920,14 @@ BASE = {
         "file": "experiments/grant-v4/vectors/vectors.json",
         "uses": ["arithmetic-0", "signature-0-1", "signature-0-3", "memberless-type-0",
                  "the canonical, integer, signature and key cases of its inventory"],
-        "changes": "`memberless-type-0` reads the octets `{\"type\":\"swarma-grant/4\"}` as a "
-                   "signed grant and expects WIRE_TYPE. With members those octets refuse as "
-                   "WIRE_MEMBER, at the signed form (W5.3).",
+        "changes": "`memberless-type-0` expects WIRE_TYPE for a grant that holds `type` "
+                   "alone. With members that expectation no longer holds, and the step "
+                   "depends on how the case presents the octets, which this file does not "
+                   "verify. A payload of `type` alone inside a signed form, as in "
+                   "grant-i-05, now refuses as WIRE_MEMBER at step 4 (W3.2). The bare "
+                   "octets `{\"type\":\"swarma-grant/4\"}` presented as a signed form "
+                   "refuse as WIRE_MEMBER at step 2 (W5.3), as they did before the grant "
+                   "had members.",
     },
 }
 
@@ -1900,7 +1993,7 @@ def main(argv):
             data = json.loads(raw.decode("utf-8"))
             calibrate()
             results = verify_file(data)
-        except (OSError, ValueError, KeyError, TypeError) as e:
+        except (OSError, ValueError, KeyError, TypeError, RecursionError) as e:
             sys.stderr.write("input error: %r\n" % (e,))
             return 2
         failed = 0

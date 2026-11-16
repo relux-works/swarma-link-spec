@@ -1930,7 +1930,8 @@ issue capability. Under that rule an agent that its parent names by name
 signs child grants with the key that also signs its messages. The decision
 states the opposite as a hard rule: the messaging key never grants
 authority. v3 does not change, and until the co-author agrees the rule in
-force stands.
+force stands. For the octets of `swarma-grant/4` the rule in force since
+version 0.1.53 is LIP-0020 W11.8.
 
 By the rule in force the parent's recipient signs the child (LIP-0008
 section 12.6): the grantee key, or for a parent issued by name the key that
