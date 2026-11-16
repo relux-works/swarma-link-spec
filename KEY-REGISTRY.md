@@ -90,7 +90,7 @@ and wait for the owners' confirmation.
 | Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending; LIP-0029 removes it in favour of device keys, agreement pending |
 | Device key of an owner | high; critical at ceiling 2 for the owner's own executors | LIP-0029 sections 3, 4 and 6, Draft; decision of 2026-11-15, written optimistically, agreement pending |
 | Device seal key | medium | LIP-0029 section 8, Draft; destroyed after it signs the revocation (section 8.3, Draft of 2026-11-16); its script is open |
-| Holder seal key | medium | LIP-0010 section 10.7, in force since version 0.1.53 without the co-author's answer; destroyed after it signs the revocation; its script is open |
+| Holder seal key | medium for one key, high for one keeper | LIP-0010 section 10.7, in force since version 0.1.53 without the co-author's answer; destroyed after it signs the revocation; script form proposed (LIP-0010 H46, H51); amount, fee and fee-raising output open |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
@@ -151,9 +151,13 @@ transition only (LIP-0010 section 10.9). The list adds nothing to what such
 a key signs. A thief of a listed key passes the checks of a landlord class
 (LIP-0026 section 9) for every listed name that the key holds, until a
 keeper of the landlord's prepared spends broadcasts the spend of the seal of
-every entry with that key and a verifier validates it (LIP-0010 H35, H47).
+every entry with that key and a verifier validates it (LIP-0010 H35, an
+owner decision of 2026-11-16, and H47). That an entry carries the owner pin
+of its name, and that a current owner other than the pin refuses, is the
+same decision (LIP-0010 H34).
 A list without those entries completes that answer and is none by itself:
-a removal holds only at the verifiers that took the list (LIP-0010 H41).
+a removal holds only at the verifiers that took the list, in whatever
+order they took it (LIP-0010 H40, H41).
 Neither ends a v4 grant of the landlord,
 and the names stay with the thief. The signer of a listed key signs a name operation only for a name
 that it registered itself or that its operator accepted (LIP-0026 R9.11).
@@ -551,7 +555,11 @@ names it as the holder or as the channel key.
 
 - Owner: the owner of the landlord name whose holders list names the seal.
 - Published: nowhere; the seal's outpoint stands in the holder entry
-  (LIP-0010 section 10.1).
+  (LIP-0010 section 10.1). The outpoint is public with the list. Another
+  landlord that copies it into a list of its own gains an entry that this
+  landlord's keepers revoke, and takes nothing from this landlord's entry:
+  a verifier binds a seal for each landlord, and only the closure of a
+  validated spend holds across landlords (LIP-0010 H38, H39, H30).
 - Holder: nobody. The seal pays the witness key hash of a fresh key `k_N`,
   which signs one revocation `tx_revoke_N` and is then destroyed (LIP-0010
   H26, H51). No verifier can check that the key is fresh, that it was
@@ -583,9 +591,9 @@ names it as the holder or as the channel key.
   key.
 - Source: LIP-0010 section 10.7, in force since version 0.1.53 without the
   co-author's answer, modelled on the device seal of LIP-0029 section 8.
-  The script form, the one input and the hash type are proposals of that
-  section (H46, H51); the amount, the fee and the fee-raising output are
-  open.
+  The script form, the anchor of the height bound of the funding, the one
+  input and the hash type are proposals of that section (H46, H51); the
+  amount, the fee and the fee-raising output are open.
 
 ## Re-delegation and the notary
 

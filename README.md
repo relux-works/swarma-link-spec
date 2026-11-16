@@ -700,8 +700,14 @@ prepared spend is settled nobody claims the fast path. Names may be listed
 ahead and kept in reserve. A verifier that cannot get the pinned list
 refuses the child and falls back to nothing. The member of version 0.1.51
 stays readable as the inline form for the transition, at a verifier that
-never took a pinned list for that landlord. The bounds of a list, the owner
-pin in an entry, the nine new refusal codes beside four reused ones, and
+never took a pinned list for that landlord. The entry of agent name, owner
+pin and seal outpoint, the refusal of a current owner other than the pin,
+and the answer to a stolen key by the spend of the seal of every entry with
+that pin are owner decisions of 2026-11-16. A seal is bound for each
+landlord, so a landlord that copies the seal of another landlord's entry
+harms only itself, and a removed entry stays refused after a
+reorganisation at every verifier that took the list which dropped it. The
+bounds of a list, the nine new refusal codes beside four reused ones, and
 every rule that the section marks NEW are this text's choices for the
 owners. No vector of the list is published, and
 no historical vector byte or outcome changes.

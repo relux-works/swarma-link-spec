@@ -63,34 +63,46 @@ H53 and changed rows of the older rules:
   against the named tip of the admission, the funding transaction of the
   seal, its spend state with the mempool included, and its spenders. A
   seal counts only while its funding output is confirmed in the active
-  chain, at a height that is not above the block of the pin, with a witness
-  key hash script. No verifier can check that the seal's key is fresh or
+  chain, at a height that is not above the anchor block of the pin, with a
+  witness key hash script. The anchor block holds the first operation of
+  the run of outputs that carry the current pin; a later operation that
+  carries the same pin does not move it. No verifier can check that the seal's key is fresh or
   destroyed, and the text says what follows. A validated spend is defined:
   the octets of the spending transaction, accepted by the verifier's own
   node and checked by the verifier against the script of the seal.
 - **Three codes where there was one.** `HOLDER_REVOKED` for a journaled
   closure; the new `HOLDER_SEAL_NOT_LIVE` for a seal that is not on the
   chain as stated or is not shown unspent without a validated spend, with
-  no closure; `CLASS_HISTORY_UNAVAILABLE` for a read that failed. The order
-  inside step 5 and step 8 is fixed (H53, H48).
+  no closure; `CLASS_HISTORY_UNAVAILABLE` for a read that failed. A spend
+  that the node shows definitely, with a node that has no means to name
+  the spender, is `HOLDER_SEAL_NOT_LIVE` and no failed read (H45). The
+  order inside step 5 and step 8 is fixed (H53, H48).
 - **The holder journal (H39 to H43).** A landlord in it is its name with
   its registration. It holds the head, a form mark, the binding of each
-  seal, removal marks and closures; the key of a closure is the seal
-  outpoint. It advances at one point, the take of a verified list. An equal
+  seal, removal marks and closures. Each kind has its key: a binding is
+  keyed by the landlord and the seal outpoint, a removal mark by the entry
+  (landlord, name, key and seal), and a closure by the seal outpoint alone,
+  across landlords. It advances at one point, the take of a verified list. An equal
   `seq` with another hash refuses. A journal that cannot be written admits
   nobody; a lost one makes a newcomer, which reports nothing that it does
   not hold; replicas of one executor share it.
 - **No downgrade (H42).** A verifier that took a pinned list for a landlord
   never reads the inline form of that landlord again:
   `HOLDER_FORM_DOWNGRADE`.
-- **One seal, one entry (H38, H49).** A seal outpoint serves one landlord,
-  one name and one key, across lists and landlords:
-  `HOLDER_SEAL_REUSED`. It is no other outpoint of the admission:
-  `HOLDER_SEAL_ALIAS`.
+- **One seal, one entry, within one landlord (H38, H49).** Within one
+  landlord a seal outpoint serves one name and one key, across its lists:
+  `HOLDER_SEAL_REUSED`. The binding of one landlord says nothing about
+  another: a landlord that copies the seal of another landlord's entry
+  gains an entry that the other landlord's keepers revoke and takes nothing
+  from that entry, so the copy harms only the copier. A seal is no other
+  outpoint of the admission: `HOLDER_SEAL_ALIAS`.
 - **A removed entry does not return after a reorganisation** at a verifier
   that took the list which dropped it (H41), as section 11 SH5 has it; the
-  first text of this version had it return. Removal alone is no answer to a
-  compromise.
+  first text of this version had it return. This holds in whatever order
+  the lists were taken: a verifier whose first list for the landlord was
+  the dropping one writes the removal mark when the reorganisation makes it
+  take the older list, or a list of the same `seq` (H40, point 5). Removal
+  alone is no answer to a compromise.
 - **One observation and the read before the effect (H44).** The pin read
   and the seal read bind to one named tip, and the seal is read again
   immediately before a reservation or an effect. LIP-0022 B1.2 and B1.5
@@ -115,10 +127,39 @@ H53 and changed rows of the older rules:
   list; sections 1 and 2 name the member. H16, H26, H27, H36, H51, H52 and
   M4 are labelled as rules that no verifier observes. The two secondary
   paths of the list are stated as not yet implementable.
-- **Cases and vectors.** Cases S10-12 to S10-25 are new. Section 10.11
+- **Cases and vectors.** Cases S10-12 to S10-28 are new. Section 10.11
   states the facts that an admission vector holds and lists the vectors by
   rule, compound vectors for the order of codes included. It fixes no
   octet.
+
+A review of record of the section in that state asked for a revision on
+eight points, and the section closes them before the version is released.
+The rules changed are H38, H39, H40, H41, H45, H46 and H48, with step 6 of
+section 10.6; none is a new rule number.
+
+- **The dropping list as a verifier's first list (H40 point 5, H41, case
+  S10-26).** The removal mark no longer depends on the entry having been
+  bound earlier.
+- **No lever across landlords (H38, H39, case S10-27).** The binding and
+  the removal mark are kept for each landlord, and the closure stays keyed
+  by the bare outpoint. Two landlords that name one outpoint are both
+  admitted while it is unspent, and both refuse as `HOLDER_REVOKED` after a
+  validated spend. The security consequence that described the lever is
+  rewritten.
+- **The removal mark is the mark of an entry** (landlord, name, key and
+  seal), and step 6 tests that identity, so that a seal moved to another
+  name or pin within a landlord refuses as `HOLDER_SEAL_REUSED` at step 8,
+  as cases S10-4 and S10-17 state.
+- **One code for a spender that the node has no means to name:**
+  `HOLDER_SEAL_NOT_LIVE` (H45, H48 points 6 and 8, case S10-13).
+- **One anchor for the height bound of a seal** (H46, case S10-12).
+- **Provenance.** The owner pin in an entry with the refusal of another
+  current owner (H34), and the answer to a stolen key (H35), are owner
+  decisions of 2026-11-16 and are no longer marked NEW or listed as open.
+- **The vector table** gains the vectors of H7 (case S10-28) and of H48
+  point 6 alone, with those of the points above.
+- **The key registry's summary row** of the holder seal key agrees with
+  its entry.
 
 The member of version 0.1.51 stays readable as the inline form (section
 10.9), with its rules 1 to 8 and its vectors unchanged. A value with both
@@ -127,25 +168,34 @@ member and writes the pin; that update is the last to which the old rule 7
 applies, and a landlord that never wrote the inline member moves at no cost
 to its grants.
 
+Decided by the owners on 2026-11-16 and stated as such: the entry of agent
+name, owner pin and seal outpoint; the refusal of a current owner other
+than the pin; the answer to a stolen key by the spend of the seal of every
+entry with that pin.
+
 Marked NEW in the text, for the owners: the member name and the schema
-string; the entry by name with its owner pin and the writer of check (d);
-the bounds; the reading of a duplicate pin under section 11 SH6 instead of
+string; that an entry has no member beside the three; the bounds; the reading of a duplicate pin under section 11 SH6 instead of
 LIP-0029 O3.5; the presenter as the sender of the list, the well-known path
 and the `d` tag; the nine codes `HOLDER_PIN_INVALID`, `HOLDER_LIST_INVALID`,
 `HOLDER_LIST_MISMATCH`, `HOLDER_LIST_ROLLBACK`, `HOLDER_REVOKED`,
 `HOLDER_SEAL_NOT_LIVE`, `HOLDER_SEAL_REUSED`, `HOLDER_SEAL_ALIAS` and
 `HOLDER_FORM_DOWNGRADE`; the whole of the seal of an entry, with its read,
-its single script form, the height bound of its funding and the definition
-of a validated spend; the holder journal, its keys, its one point of
-advance and its failure rules; the form mark; one seal for one entry,
-across landlords; the alias check; the read before the effect; the keepers
+its single script form, the height bound of its funding with its anchor,
+the one code for a spender that the node cannot name and the definition
+of a validated spend; the holder journal, its one point of advance, the
+removal marks of a take of an equal `seq` through the reorganisation
+branch and its failure rules; the form mark; one seal for one entry within
+a landlord; the alias check; the read before the effect; the keepers
 with `ceiling` 2 and the cold floor; the one input and the hash type of the
 prepared spend and the duties to broadcast again and to complete; the
 reserve and its registration before the list; and the rules of the
 transition. Taken by ruling after the second read, and stated as such: the
 closure is of the entry; no seal of a key; the writer of check (d) is the
 entry's own key; both forms give no holder; a removed entry does not return
-after a reorganisation; the non-witness.
+after a reorganisation; the non-witness. Taken by ruling after the review
+of record: the removal mark at a verifier whose first list was the
+dropping one; the keys of the journal's records, with the binding and the
+removal mark for each landlord and the closure by the bare outpoint.
 
 LIP-0010 section 11 registers `swarma-holders` as a head member (SH2) and
 counts its bytes. LIP-0008 section 3, LIP-0014 section 8.3, LIP-0026

@@ -742,7 +742,7 @@ codes and their order; and the rules R9.11 and R9.12 for the two signers.
 | R9.3 | A child of a row whose recipient is a class names its recipient in the mode "by name" of LIP-0008 section 3.1: an exact name and the owner key of that name. | A child that names a request key: `CHILD_GRANTEE_NOT_ALLOWED` |
 | R9.4 | Check (a). The current value of the recipient name parses under LIP-0010 as an agent binding, and its `landlord` is, octet for octet, the name of one landlord of the class. That landlord is called `L`. | `CLASS_LANDLORD` |
 | R9.5 | Check (b), in six steps. `L` is live at the tip of the observation (LIP-0021 O5.1). The walk of `L` ends at the pinned registration (O6.1). That registration is confirmed at or below the checkpoint. Every output of `L` from the one that was current at the checkpoint to the current one reads as controlled by the pinned owner key (O3.4, O6.2). The value of the current output of `L` was written by the pinned owner (O4.4). The reading node holds no pending transaction that spends the current output of `L`. | The table below |
-| R9.6 | Check (c). The current output of the recipient name reads as controlled (O3.4) by a holder of `L`. For a value of `L` that pins a holders list, the verifier makes steps 0 to 8 of LIP-0010 section 10.6: its holder journal, the pin, the rollback check against the journaled head, the list under its hash, the entry that names the recipient name and that no taken list removed, the control of the current output by the key of that entry, and the seal of that entry, which is confirmed on the active chain as LIP-0010 H46 asks, is bound to that entry alone, has no journaled closure and is unspent with the mempool included. The verifier makes the read of the seal again before the effect (LIP-0010 H44). A name that no entry names does not pass, whoever holds it. For a value of `L` in the inline form of version 0.1.51 the holders are the pins of its member `holders`, and every name that one of them controls passes (LIP-0010 section 10.9), unless the verifier ever took a pinned list for `L`: it then reads the inline form of `L` no more (LIP-0010 H42). | `CLASS_HOLDER`; for the journal, the pin, the list, the seal and the form, the codes of LIP-0010 section 10.6. A seal read that proves nothing refuses under R9.8 and is never reported as a revocation |
+| R9.6 | Check (c). The current output of the recipient name reads as controlled (O3.4) by a holder of `L`. For a value of `L` that pins a holders list, the verifier makes steps 0 to 8 of LIP-0010 section 10.6: its holder journal, the pin, the rollback check against the journaled head, the list under its hash, the entry that names the recipient name and that no taken list removed, the control of the current output by the key of that entry, and the seal of that entry, which is confirmed on the active chain not above the anchor block of the pin, as LIP-0010 H46 asks, is bound under `L` to that entry alone, has no journaled closure and is unspent with the mempool included. An entry that a taken list removed stays refused after a reorganisation at every verifier that took that list, also where it was the verifier's first list for `L` (LIP-0010 H40, H41). The binding and the removal mark are kept for `L` alone: an entry of another landlord that names the same seal outpoint does not make this entry refuse, and only a journaled closure of the outpoint, which a validated spend alone writes, refuses every entry that names it (LIP-0010 H38, H39, H30). The verifier makes the read of the seal again before the effect (LIP-0010 H44). A name that no entry names does not pass, whoever holds it. For a value of `L` in the inline form of version 0.1.51 the holders are the pins of its member `holders`, and every name that one of them controls passes (LIP-0010 section 10.9), unless the verifier ever took a pinned list for `L`: it then reads the inline form of `L` no more (LIP-0010 H42). | `CLASS_HOLDER`; for the journal, the pin, the list, the seal and the form, the codes of LIP-0010 section 10.6. A seal read that proves nothing refuses under R9.8 and is never reported as a revocation. A seal that the node shows spent, where the node has no means to name the spender, is a definite answer and refuses as `HOLDER_SEAL_NOT_LIVE`, without closure (LIP-0010 H45) |
 | R9.7 | Check (d). The value of the current output of the recipient name was written by a holder of `L`: the check of LIP-0021 section 4 gives "written by the owner" for the key of the entry of R9.6 (LIP-0010 section 10.6, step 9). In the inline form of version 0.1.51 it gives it for one pin of the member `holders`, and that holder need not be the holder of R9.6. | `CLASS_WRITER` |
 | R9.8 | Where a read of R9.4 to R9.7 proves nothing, the verifier refuses, and the refusal is no evidence about either name. That is so for a node that does not supply a fact (O1.3), an unsupported script (O3.5), an unsupported writer check (O4.4), and a walk that is incomplete or bounded (O6.3). | `CLASS_HISTORY_UNAVAILABLE` |
 | R9.9 | The four checks stand in the order (a), (b), (c), (d), and the six steps of (b) in the order of R9.5. The first step that fails, or that proves nothing, gives the refusal. The checks stand after the proof of the child's recipient by name (LIP-0021 section 7.2) and before the checks of the coin (R6.1). | The first that applies |
@@ -808,7 +808,8 @@ Four further limits hold:
 - **A stolen holder key** passes all four checks for every listed name that
   it holds, with whatever channel key the thief writes. A keeper of the
   landlord's prepared spends broadcasts the spend of the seal of every entry
-  with that key (LIP-0010 section 10.7, H35), and from the moment at which
+  with that key (LIP-0010 section 10.7, H35, an owner decision of
+  2026-11-16), and from the moment at which
   a verifier validates a spend on its own node the name of that entry
   refuses there as `HOLDER_REVOKED`, with no name update. A verifier that
   cannot validate the spend refuses as `HOLDER_SEAL_NOT_LIVE` while its
@@ -816,7 +817,9 @@ Four further limits hold:
   The owner of the landlord name
   completes it with a list that drops the entries, and from the block that
   confirms that update the names refuse as `CLASS_HOLDER` at every verifier
-  that takes that list. Dropping the entries alone is no answer to the
+  that takes that list, and stay refused there after a reorganisation,
+  also where that list was the verifier's first for the landlord (LIP-0010
+  H40, H41). Dropping the entries alone is no answer to the
   theft (LIP-0010 H41). A landlord in the inline
   form of version 0.1.51 has the update alone. Neither act ends a grant,
   and the names stay with the thief; one agent's own grant is ended by that
@@ -1127,8 +1130,16 @@ where its rows meet the checks of section 9.
   rollback lifts; one that reads seal states through a gateway is a
   non-witness and admits the name again after an eviction or a
   reorganisation (LIP-0010 H47, H50). A seal counts only while its funding
-  output is confirmed in the active chain (LIP-0010 H46), and no verifier
-  checks how the landlord made the seal or kept its spend.
+  output is confirmed in the active chain, not above the block of the
+  first operation that carries the current pin (LIP-0010 H46), and no
+  verifier checks how the landlord made the seal or kept its spend.
+- **A landlord of a class has no lever over the entries of another
+  landlord.** A verifier keeps the binding and the removal mark of a seal
+  for each landlord, so a landlord that copies the seal of another
+  landlord's entry into its own list changes nothing for that entry. It
+  gains an entry that the other landlord's keepers revoke: a closure is
+  keyed by the outpoint alone and refuses every entry that names it
+  (LIP-0010 H38, H39, H30).
 - **The guarantees of a class against a revoked or removed name live in
   the verifier's holder journal.** A verifier that cannot write it admits
   nobody through a class, and one that lost it is a newcomer (LIP-0010
