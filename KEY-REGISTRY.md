@@ -89,7 +89,7 @@ and wait for the owners' confirmation.
 | Principal's Nostr key | low; high where a grant names it as grantee | LIP-0004 and LIP-0010, in use on v3 |
 | Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending; LIP-0029 removes it in favour of device keys, agreement pending |
 | Device key of an owner | high; critical at ceiling 2 for the owner's own executors | LIP-0029 sections 3, 4 and 6, Draft; decision of 2026-11-15, written optimistically, agreement pending |
-| Device seal key | medium | LIP-0029 section 8, Draft; its script and custody are open |
+| Device seal key | medium | LIP-0029 section 8, Draft; destroyed after it signs the revocation (section 8.3, Draft of 2026-11-16); its script is open |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
@@ -139,14 +139,15 @@ and wait for the owners' confirmation.
   grants again and replaces the pins that name the old one.
 - Source: LIP-0004 section 1, in use on v3; LIP-0008 section 3, Draft.
 
-Draft text that awaits the co-author's agreement (J11; LIP-0010 section 10)
-gives some name-owner keys a second place of publication: a landlord lists in
-`swarma.landlord.holders` the name-owner keys that hold the names of its agents
-and stations. The list adds nothing to what such a key signs. A thief of a
-listed key passes the checks of a landlord class (LIP-0026 section 9) for every
-name that the key holds, until the owner of the landlord name removes the pin
-by one update. The signer of a listed key signs a name operation only for a
-name that it registered itself or that its operator accepted (LIP-0026 R9.11).
+J11, in force since version 0.1.51 without the co-author's answer (LIP-0010
+section 10), gives some name-owner keys a second place of publication: a
+landlord lists in `swarma.landlord.holders` the name-owner keys that hold the
+names of its agents and stations. The list adds nothing to what such a key
+signs. A thief of a listed key passes the checks of a landlord class (LIP-0026
+section 9) for every name that the key holds, until the owner of the landlord
+name removes the pin by one update. The signer of a listed key signs a name
+operation only for a name that it registered itself or that its operator
+accepted (LIP-0026 R9.11).
 
 Draft [LIP-0029](lips/LIP-0029-owner-control.md), written optimistically under
 a decision of 2026-11-15 that awaits the co-author's agreement, gives the
@@ -479,15 +480,20 @@ names it as the holder or as the channel key.
   `presence`, `ceiling` and `seal`; the owner's name value pins the hash and
   version of the list in `swarma-devices` (LIP-0029 sections 3.1 to 3.3).
 - Holder: one device of the owner: a P-256 key in a secure element, such as
-  the Secure Enclave of a phone or a laptop, or a BIP-340 key. The record's
-  presence flag is the owner's claim that the key signs only with a person
-  present; it is not proven.
+  the Secure Enclave of a phone or a laptop, or a BIP-340 key. Under Draft
+  text of 2026-11-16 (LIP-0029 section 4.1) also the Ed25519 key of a Matrix
+  device, held by the messenger client, with `ceiling` 1 and no presence. The
+  record's presence flag is the owner's claim that the key signs only with a
+  person present; it is not proven.
 - Signs: under Draft LIP-0029, `swarm-envelope/2` owner commands up to the
   record's ceiling, at the owner's own executors and at the key holders of
   the owner's agents; at ceiling 2 also the owner's executor policy sections
   and the fast revocation of another device. No grant, no Nostr event, no
   seal spend and no name operation. At a foreign executor it signs nothing
-  that counts.
+  that counts. A Matrix device key signs no envelope: its device-keys object
+  binds the Olm identity from which its Megolm sessions come, and an
+  end-to-end encrypted event bound to it counts as an L1 owner command
+  (LIP-0029 OM2).
 - Danger: high; critical at ceiling 2 for the owner's own executors, because
   such a key signs the policy that bounds them.
 - Leak: the thief signs owner commands up to the ceiling at every own
@@ -508,16 +514,19 @@ names it as the holder or as the channel key.
 
 - Owner: the owner of the device list.
 - Published: nowhere; the seal's outpoint stands in the device record.
-- Holder: open. The other devices of the list hold a prepared spend of the
-  seal (LIP-0029 O8.2), which needs no further signature.
+- Holder: nobody. Under Draft text of 2026-11-16 (LIP-0029 section 8.3,
+  Figure 1) the seal pays a fresh key `k_D`, which signs one revocation
+  `tx_revoke_D` and is then destroyed. The other devices of the list hold
+  `tx_revoke_D` (LIP-0029 O8.2), which needs no further signature.
 - Signs: the spend of one device seal, which revokes that device.
 - Danger: medium. A leak, like a copy of the prepared spend, revokes one
   device and gives nothing else.
 - Leak: the thief revokes the device; the owner adds it again with a new seal
   through a name update.
 - Recovery: a new list with a new seal for the device.
-- Source: LIP-0029 section 8, Draft; the script of the seal and the custody
-  of its key are open.
+- Source: LIP-0029 section 8, Draft; the custody of its key is Figure 1 of
+  section 8.3, Draft of 2026-11-16, and the script of the seal and the fee of
+  `tx_revoke_D` are open.
 
 ## Re-delegation and the notary
 

@@ -41,11 +41,12 @@ states a cause. Both come with the profile of the attestation.
 
 Under J9, decided and agreed by both owners on 2026-11-15 (LIP-0014 section
 8.3 and LIP-0026 section 10), a v4 row inside one owner may have no certifier.
-Such a row states no stop coin, and no rule of this profile applies to it. No
-child of such a row is admitted before both owners have decided J10 and J11
-(LIP-0014 section 8.3). Under a second decision of that day, which awaits the
-co-author's agreement (J12; LIP-0026 section 8), a parent states its rows in
-groups, and where the stop coins of the rows of a group stand is open.
+Such a row states no stop coin, and no rule of this profile applies to it. A
+child of such a row is admitted through the class and the holders of J10 and
+J11, in force since version 0.1.51 (LIP-0014 section 8.3). Under a second
+decision of that day, in force since the same version without the co-author's
+answer (J12; LIP-0026 section 8), a parent states its rows in groups, and
+where the stop coins of the rows of a group stand is open.
 
 ## What is decided and what is proposed
 

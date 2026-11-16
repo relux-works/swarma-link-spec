@@ -118,7 +118,8 @@ Keys of revocable-only seals are derived under BIP-32 in a dedicated account,
 on Namecoin by the BIP-84 layout in profile W and the BIP-44 layout in
 profile L with coin type 7; the single-use seal keeps two distinct branches
 and its output profile stays open. The verifier checks the typed endorsement
-and needs no path. These remain Draft semantics without bytes, fixtures or
+and needs no path; Draft text of 2026-11-16 moves the seal key into the grant
+and drops the endorsement (LIP-0008 section 11.4). These remain Draft semantics without bytes, fixtures or
 an implementation.
 
 Decisions of 2026-11-11 by Ivan Oparin change three rules of the v4 draft.
@@ -535,8 +536,9 @@ published, and nothing of the profile is implemented.
 
 Version 0.1.47 records four decisions of Ivan Oparin of 2026-11-15 on the rows
 of a v4 parent, as Draft text. The co-author agreed to J9 on 2026-11-15, and
-version 0.1.49 puts it in force; on the other three the co-author's agreement
-is pending, and until then the text in force stays as it is for them. A parent
+version 0.1.49 puts it in force. Version 0.1.51 puts the other three in force,
+on Ivan Oparin's decision of 2026-11-16 not to wait for the co-author, whose
+answer is folded in by amendment. A parent
 states its rows in groups, a template with ranges of coins and one ordinal
 across them, so that a parent can permit thousands of children (J12;
 [LIP-0026](lips/LIP-0026-rows-and-accounts.md) section 8). A row may name the
@@ -595,9 +597,9 @@ mandatory, and a row without a certifier states no stop coin
 J9.1 to J9.4; [LIP-0026](lips/LIP-0026-rows-and-accounts.md) section 10). The
 two recipient constraints that J9 admits, a class of exactly the issuer's
 landlord and an exact name that passes the checks of a class against it, rest
-on J10 and J11, which await the co-author's agreement. Until both owners have
-decided J10 and J11 no child of a row without a certifier is admitted, and
-every admitted v4 child is certified. The
+on J10 and J11. Until version 0.1.51 put J10 and J11 in force, no child of a
+row without a certifier was admitted, and every admitted v4 child was
+certified. The
 texts that restate D1 (LIP-0006, LIP-0008, LIP-0012) say how J9 narrows it on
 v4. D8, J1 and the member `notary` of profile `swarma-trust-contract/2` do not
 change; LIP-0014 section 8.3 states how each is read for a row without a
@@ -627,27 +629,46 @@ book and curator-spec for the owners, defines no vector, and needs a reviewed
 change of `swarm-envelope/2` before any verifier admits its body kinds. Nothing
 of it is implemented, and until the co-author agrees the texts it revises stand.
 
-Version 0.1.51 adds Draft text for five decisions of Ivan Oparin that the lead
-recorded on 2026-11-16, written optimistically: the co-author's agreement is
-pending, and until it is given every text that they revise stands. A v4 grant
-carries its seal key, so the separate seal-key endorsement is shown to be
-redundant and is dropped, pending the spec review's confirmation
-([LIP-0008](lips/LIP-0008-grant-v4.md) section 11.4); and every v4 parent
-names a child-seal key, which is neither the grant key nor the delegation key
-and which every child's seal pays ([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md)
-section 11.2). Every statement set of an owner has its head in the owner's
-name value, and only the last head confirmed in the active chain counts
+Version 0.1.51 adds Draft text for eight decisions of Ivan Oparin of
+2026-11-16, written optimistically: the co-author's agreement is pending, and
+until it is given every text that they revise stands. A v4 grant carries its
+seal key, so the separate seal-key endorsement is redundant, as the spec
+review confirmed, and is dropped; every text that reads it points to
+[LIP-0008](lips/LIP-0008-grant-v4.md) section 11.4. Every v4 parent names a
+child-seal key, which is neither the grant key nor the delegation key and
+which every child's seal pays
+([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 11.2).
+Every statement set of an owner has its head in the owner's name value, and
+only the last head confirmed in the active chain counts, after a
+reorganisation too, while the refusals that a reader journaled stay
 ([LIP-0010](lips/LIP-0010-name-value.md) section 11;
 [LIP-0016](lips/LIP-0016-certificate-store.md) section 3.1). The emergency
 brake on v4 names its stops and their window before confirmation and after a
 reorganisation, and reserves a UTXO of a cold wallet for the fee of an
 emergency name update (LIP-0008 section 5.3). An administrator may overwrite
-the trust-root pin after a stated delay, with notification, and the old key
-can cancel within it ([LIP-0015](lips/LIP-0015-trust-root-and-statements.md)
-section 5.1). The authority frame reaches the agent as a signed envelope from
-the key holder and never as a marker in the text stream
-([LIP-0013](lips/LIP-0013-trust-contract.md) section 3.4). Nothing of it is
-implemented, and no vector is added.
+the trust-root pin after a stated delay, counted from the loader's first
+notice, and the old key can cancel until the pin takes effect; an
+administrator account that rewrites the pin directly is outside the rule
+([LIP-0015](lips/LIP-0015-trust-root-and-statements.md) section 5.1). The
+authority frame reaches the agent as a signed envelope from the key holder
+and never as a marker in the text stream
+([LIP-0013](lips/LIP-0013-trust-contract.md) section 3.4). In
+[LIP-0029](lips/LIP-0029-owner-control.md), Figure 1 shows the device seal in
+the words of the decision (section 8.3); the sender attaches the device list
+to its envelopes, and the owner's domain and a Nostr event are secondary
+paths (section 3.5); and a Matrix device is an ordinary record at L1 without
+presence, whose end-to-end encrypted events count only when bound to its
+session, never when forwarded, restored from backup or sent in plaintext
+(section 4.1).
+
+Version 0.1.51 also puts J10, J11 and J12 in force on Ivan Oparin's decision
+of 2026-11-16 not to wait for the co-author, whose answer is folded in by
+amendment: groups of rows, the landlord class
+([LIP-0026](lips/LIP-0026-rows-and-accounts.md) sections 8 and 9) and the list
+`holders` ([LIP-0010](lips/LIP-0010-name-value.md) section 10). A child of a
+row without a certifier (J9) is therefore admitted through the checks of a
+class, where 0.1.49 admitted none. Nothing of version 0.1.51 is implemented,
+and no vector outcome changes.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

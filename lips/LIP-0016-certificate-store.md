@@ -140,7 +140,7 @@ until it is given sections 2, 3 and 5 stand.
 | --- | --- | --- |
 | CH1 | The head document is the head of section 2 with members 1 to 7 only, in that order, and without a signature. `swarma-certs` pins its `seq` and the SHA-256 of its exact octets (LIP-0010 SH1). The name-owner key, which signs the name update, authenticates it. | |
 | CH2 | No anchor of section 3 is made, and action `0x06` is not used. | |
-| CH3 | In section 5, steps 2, 4 and 5 are replaced by two steps. 2: the confirmed value of `issuer_name` on the reader's own node carries `swarma-certs` (LIP-0010 SH3 and SH6); the fetched head hashes to its `sha256`, its `seq` equals the pinned `seq`, its `issuer_name` and `network` are the name's and the reader's, and `issuer_key` equals the grant key that the name yields. 4: the pinned `seq` is not lower than the highest that the reader journaled for this issuer (SH5). Steps 1, 3, 6 and 7 stay. | 2: `HEAD_PIN`; 4: `HEAD_ROLLBACK` |
+| CH3 | In section 5, steps 2, 4 and 5 are replaced by two steps. 2: the confirmed value of `issuer_name` on the reader's own node carries `swarma-certs` (LIP-0010 SH3 and SH6); the fetched head hashes to its `sha256`, its `seq` equals the pinned `seq`, its `issuer_name` and `network` are the name's and the reader's, and `issuer_key` equals the grant key that the name yields. 4: the head passes LIP-0010 SH5: its `seq` is not lower than the highest that the reader journaled for this issuer, unless a reorganisation removed the name operation that carried that head, and a certificate that the reader journaled as revoked stays revoked. Steps 1, 3, 6 and 7 stay. | 2: `HEAD_PIN`; 4: `HEAD_ROLLBACK` |
 | CH4 | A pending name update gives no head. A record that a new head adds or revokes takes effect at that head's confirmation, at every reader alike. | |
 
 The two consequences that change:
@@ -161,7 +161,9 @@ and says that statements do not go into the name value. The statements still
 do not: only the head does. Its §9.2 puts the head of an organization's state
 into the organization's name value, and its §9.4 says that after a
 reorganisation the state is recomputed and that an urgent revocation goes by
-a separate name update or a seal spend. Section 3.1 follows §9.2 and §9.4;
+a separate name update or a seal spend. Section 3.1 follows §9.2, and
+through LIP-0010 SH5 it follows §9.4: after a reorganisation the last
+confirmed head counts again and a revocation that a reader journaled stays.
 §3.12 is an update for the book once agreed.
 
 The alternative of this LIP, "the head in the issuer's name value", is

@@ -45,9 +45,11 @@ D3). Section 9 is a Draft amendment that proposes the shape for it. The
 shape itself is not decided.
 
 Ivan Oparin decided on 2026-11-15 that a landlord lists, in its own name value,
-the owner keys of the names of its agents and stations (J11). The co-author's
-agreement is pending. Section 10 is a Draft amendment for it, and until the
-co-author agrees section 3 stays as it is.
+the owner keys of the names of its agents and stations (J11). Section 10
+states it, in force since version 0.1.51: on 2026-11-16 Ivan Oparin put it in
+force without waiting for the co-author's agreement, which has not been given,
+and the co-author's answer is folded in by amendment. Section 3 is read with
+section 10 for a landlord binding.
 
 Ivan Oparin accepted on 2026-11-15 a third member that Link reads, outside
 `swarma`: `swarma-devices`, the hash and the version of an owner's device list
@@ -161,10 +163,9 @@ fold alias of a defined one, and any two fold-equal members. The byte span of
 `swarma.agent.nostr` is not a member of this shape. The agent key is read
 under section 5.
 
-Section 10 holds Draft text, under a decision that awaits the co-author's
-agreement (J11), that gives the landlord binding a second member, `holders`.
-Until then a reader refuses a landlord binding with that member, as it refuses
-every additional member.
+Section 10, in force since version 0.1.51 (J11), gives the landlord binding a
+second member, `holders`. A reader admits that member as section 10 says, and
+refuses every other additional member.
 
 ### 4. `nostr`: two forms, one key
 
@@ -394,13 +395,13 @@ value. It is signed in each parent grant (LIP-0014 section 2). A list in the
 value would be read at check time and not at issuance, and a member added
 to `swarma` refuses under section 3.
 
-### 10. Holders of a landlord (Draft amendment of 2026-11-15)
+### 10. Holders of a landlord (amendment of 2026-11-15, in force since 0.1.51)
 
-**Owner decision pending: J11.** Ivan Oparin decided on 2026-11-15 that the
-landlord binding gains a member `holders`, which lists the owner keys of the
-names of the landlord's agents and stations. The co-author's agreement is
-pending, and until then the landlord binding of section 3 has the one member
-`grant`.
+**In force since version 0.1.51: J11.** Ivan Oparin decided on 2026-11-15 that
+the landlord binding gains a member `holders`, which lists the owner keys of
+the names of the landlord's agents and stations. On 2026-11-16 Ivan Oparin
+put the decision in force without waiting for the co-author's agreement, which
+has not been given; the co-author's answer is folded in by amendment.
 
 A verifier that admits a recipient because of whose agent it is must learn that
 from the chain. An agent's name says which landlord it points to, and anybody
@@ -516,14 +517,14 @@ given sections 1 and 2 stand and LIP-0016 keeps its anchor.
 | SH2 | The member names are registered here, each with the LIP that defines its head document: `swarma-devices`, whose head document is the device list (LIP-0029 section 3.2), and `swarma-certs`, whose head document is the head of LIP-0016 section 2. A new set is a section of a LIP that registers its member here. | |
 | SH3 | A reader takes a head only from the owner's name output that is confirmed in the active chain of its own node, after the last confirmed name operation. A pending name operation gives no head: it neither adds, replaces nor removes one until it confirms. | |
 | SH4 | The head document names the owner's `id/` name and the network, and its `seq` equals the pinned `seq`. A document that names another owner or another network, or whose octets do not hash to `sha256`, gives no verified set. | The set's mismatch code |
-| SH5 | A reader journals, outside the agents' write authority, the highest `seq` that it read for each set of each owner. A confirmed head with a lower `seq`, which a reorganisation can bring back, gives no verified set until the active chain again shows a head of at least that `seq`. | The set's rollback code |
+| SH5 | A reader journals, outside the agents' write authority, for each set of each owner: the highest `seq` that it took, the txid of the name operation that carried that head, and every refusal that it took from the set (for `swarma-devices`, a device that a list removed, a spent device seal and a journaled revocation; LIP-0029 section 8). When a reorganisation removes that name operation from the active chain, the reader takes the last head confirmed in the active chain, whatever its `seq`, journals it in place of the removed one, and keeps every journaled refusal: a record that the removed head revoked or removed stays refused, and a record that only the removed head added waits until a head that holds it confirms again. While the operation of the journaled head stays in the active chain, a head with a lower `seq` that a later name operation carries gives no verified set. | The set's rollback code |
 | SH6 | A reader matches a head member by exact name. A duplicate of it, or a member equal to it under Unicode simple case folding that is not that exact name, gives no verified set for that set, and leaves `swarma`, `nostr`, every other set and every grant as they read. | The set's own code |
 | SH7 | A head member gives no grant authority. A Link reader of grants does not read it, and an update that changes only head members changes neither the owner nor `swarma` and ends no v4 grant (LIP-0008 section 3; LIP-0029 O3.7 and O3.8). | |
 | SH8 | The deployment order of LIP-0029 O3.9 and the v3 cost of O3.10 hold for every head member: none is written before every verifier of the name runs a LIP-0010 reader, and every change of a head is a name update. | |
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
-| S11-H1 | Alisa's confirmed value carries `swarma-devices` with `seq` 4, and Bob's executor reads list 4 | A pending update to `seq` 5 that adds device `K`: `K` is unknown until the update confirms (SH3). After `seq` 5 confirmed and a reorganisation back to `seq` 4: no verified list, `DEVICE_LIST_ROLLBACK`, until a head of `seq` 5 or more confirms again (SH5). |
+| S11-H1 | Alisa's confirmed value carries `swarma-devices` with `seq` 4, and Bob's executor reads list 4. List 5 adds device `K` and drops device `M`; after it confirmed, a reorganisation removes its update, and Bob's executor reads list 4 again (SH5) | A pending update to `seq` 5: `K` is unknown until the update confirms (SH3). After the reorganisation: `K` is unknown until a head that names it confirms again, and `M`, which list 5 dropped, stays refused (`DEVICE_REVOKED`). A later name update that writes `seq` 3 while the update of `seq` 5 stays in the active chain: no verified list, `DEVICE_LIST_ROLLBACK`. |
 | S11-H2 | The same value with `swarma-certs`: Bob's store reader verifies Alisa's set | A value with `swarma-devices` twice: no device list, and Alisa's v4 grants and her certificate set still read (SH6). A list whose `owner` is Karl's name, pinned in Alisa's value: no verified list (SH4). |
 
 A set without a verified head is no set: each LIP says what its readers then
@@ -539,10 +540,18 @@ What the rules give and what they cost:
   to the head (LIP-0016 section 5).
 - **A pending head counts for nothing.** A new head counts only from its
   confirmation, and the record that it adds or revokes takes effect then and
-  not before. Between broadcast and confirmation, and again after a
-  reorganisation that removes the update, readers keep the previous head, or
-  refuse under SH5. A stop that must act from the mempool is a seal spend
-  and not a head (LIP-0029 section 8; LIP-0008 sections 5.1 to 5.3).
+  not before. Between broadcast and confirmation readers keep the previous
+  head. A stop that must act from the mempool is a seal spend and not a head
+  (LIP-0029 section 8; LIP-0008 sections 5.1 to 5.3).
+- **After a reorganisation the last confirmed head counts again.** This is
+  the reading of the Link book, §9.4 «Спорные случаи» (line 35 at
+  swarma-docs 34abef2): the state is recomputed, new records wait to be
+  anchored again, and remembered refusals are not forgotten. SH5 states it
+  for every set. The txid in the journal is the draft's way for a reader to
+  tell a reorganisation from a lower `seq` that the owner writes later; only
+  the second refuses. This narrows the version pin of LIP-0029 O9.2, which
+  refused every lower `seq`, and it is put to the owners with the rest of
+  this section.
 - **The name-owner key signs every change of a set.** It is the cold key, and
   each change is a name update with its fee and, on v3, its outage (SH8).
 - **The name value fills.** With the sizes of section 8 and `seq` below 10,

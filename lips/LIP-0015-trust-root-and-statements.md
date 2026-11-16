@@ -204,22 +204,34 @@ with a delay.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | AO1 | An overwrite of the pin that no rotation statement of section 5 carries is pending first. The administrator writes it, with that account's authentication, as a pending pin: the seven members of section 1 followed by `effective_height`, the height of the root's chain from which it takes effect. Until the active chain of the loader's own node reaches `effective_height`, the loader keeps the current pin. | |
-| AO2 | `effective_height` is at least `pinned_at_height` of the pending pin plus the delay `D`. The draft proposes `D` = 1008 blocks, about seven days. A pending pin with a shorter delay is not accepted. | `PIN_PENDING_INVALID` |
-| AO3 | The loader MUST notify the owner when it finds a pending pin, and again at every load while the pin is pending. The notice names the current and the pending `root_name` and `pinned_grant_key`, the SHA-256 of the pending pin and `effective_height`. It goes over a channel that the deployment names and that the agent's OS user can neither write nor suppress, and the loader records each notice outside the agents' write authority. A pending pin takes effect only when the active chain has reached both `effective_height` and the height of the first notice sent plus `D`; without a notice it never takes effect. | |
-| AO4 | Within the delay the currently pinned grant key can cancel. A cancellation is a statement `swarma-root-cancel/1` with the members `schema`, `root_name` and `pending_sha256`, in this order, signed over `SHA-256("swarma-root-cancel-v1" \|\| statement bytes)`. The loader accepts it from any channel, because its signature authenticates it. It then discards the pending pin and records the cancellation. A cancellation that arrives at or after `effective_height` changes nothing. | |
+| AO2 | `effective_height` is at least `pinned_at_height` of the pending pin plus the delay `D`. The draft proposes `D` = 1008 blocks, about seven days. A pending pin with a shorter delay is not accepted. The administrator writes `pinned_at_height`, so this rule alone does not bound the window; AO3 does. | `PIN_PENDING_INVALID` |
+| AO3 | The loader MUST notify the owner when it finds a pending pin, and again at every load while the pin is pending. The notice names the current and the pending `root_name` and `pinned_grant_key`, the SHA-256 of the pending pin and `effective_height`. It goes over a channel that the deployment names and that the agent's OS user can neither write nor suppress, and the loader records each notice outside the agents' write authority. When it first finds the pending pin, the loader records the height `h_first` of the tip of its own node's active chain and the effect height `E` = max(`effective_height`, `h_first` + `D`), and every notice names `E`. A pending pin takes effect only when that active chain reaches `E`; without a notice it never takes effect. A backdated `pinned_at_height` or a loader that finds the pin late therefore shortens nothing: the owner has at least `D` blocks after the first notice. | |
+| AO4 | Until the pending pin takes effect under AO3, the currently pinned grant key can cancel. That is the key that the loader currently accepts for the root: the pinned key, or the `new_grant_key` of the last rotation statement that continues the chain from the pin (section 5). A cancellation is a statement `swarma-root-cancel/1` with the members `schema`, `root_name` and `pending_sha256`, in this order, signed over `SHA-256("swarma-root-cancel-v1" \|\| statement bytes)`. The loader accepts it from any channel, because its signature authenticates it. It then discards the pending pin and records the cancellation. A cancellation that arrives when the active chain has reached `E` changes nothing, because the pin has taken effect. | |
 | AO5 | An overwrite that a rotation statement of section 5, signed by the pinned key, carries takes effect at once, as today. The old key has agreed, and nothing remains to cancel. | |
-| AO6 | The pending pin and the record of notices and cancellations live where the agent's OS user cannot write, like the pin itself (section 1). A process of that user can write neither, nor shorten the delay. | |
+| AO6 | The pending pin and the record of notices, of `h_first` and `E` and of cancellations live where the agent's OS user cannot write, like the pin itself (section 1). A process of that user can write none of them, nor shorten the delay. The administrator account can still write them (see the limits below). | |
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
-| S51-1 | On Alisa's host the administrator writes a pending pin with a delay of 1008 blocks; the loader sends the notice; nobody cancels: the pin takes effect at `effective_height` | The same pin with a delay of 144 blocks: `PIN_PENDING_INVALID`. A pin of which no notice was sent: it never takes effect. Until `effective_height` the loader keeps the current pin. |
-| S51-2 | Alisa's pinned grant key signs `swarma-root-cancel/1` for the pending pin one block before `effective_height`: the pin is discarded and the cancellation recorded | The same cancellation at `effective_height`: nothing changes. A cancellation signed by Karl's key: ignored. An overwrite that a rotation statement of the pinned key carries: in effect at once, with no delay (AO5). |
+| S51-1 | On Alisa's host the administrator writes a pending pin with a delay of 1008 blocks; the loader finds it at once and sends the notice; nobody cancels: the pin takes effect at `E`, which here equals `effective_height` | The same pin with a delay of 144 blocks: `PIN_PENDING_INVALID`. A pin of which no notice was sent: it never takes effect. Until `E` the loader keeps the current pin. A backdated pin, with `pinned_at_height` at the tip minus 1008 and `effective_height` at the tip, found at the tip: `E` is the tip plus 1008, and the loader keeps the current pin until then. |
+| S51-2 | Alisa's pinned grant key signs `swarma-root-cancel/1` for the pending pin one block before `E`: the pin is discarded and the cancellation recorded. For the backdated pin of S51-1, a cancellation one block after the first notice: discarded. For an honest pin that the loader first finds 900 blocks after `pinned_at_height`, because its node was off, a cancellation at `effective_height` plus 2: discarded, because `E` is `h_first` plus 1008 | The same cancellation at `E`: nothing changes. A cancellation signed by Karl's key: ignored. An overwrite that a rotation statement of the pinned key carries: in effect at once, with no delay (AO5). |
 
 What the rules give and what they leave:
 
-- **A replaced administrator account is seen before it counts.** Whoever
-  takes the administrator account can write a pending pin, but not hide it:
-  the owner is told for seven days, and the old key can cancel.
+- **An overwrite through the loader is seen before it counts.** A pending
+  pin cannot be hidden from the loader or take effect early: the owner is
+  told for at least `D` blocks after the first notice, about seven days, and
+  the old key can cancel until the pin takes effect.
+- **The administrator account itself is outside this section.** Section 1
+  makes that account the owner of the pin, and AO6 puts the records beyond
+  the agent's OS user only. An administrator account that rewrites the pin
+  directly writes a current pin with no pending state, no notice and no
+  delay, and the loader cannot tell it from the installed pin. The same
+  account can rewrite `h_first` or the record of notices. Like a replaced
+  loader program (Security consequences), this is outside this proposal.
+  Section 5.1 gives an honest administrator a path that the owner sees, and
+  it bounds a process of the agent's OS user; it does not bound whoever takes
+  the administrator account. Where the pin and the records could live beyond
+  that account is open.
 - **A lost grant key no longer locks a host.** Without the key no rotation
   statement can be signed. The administrator writes a pending pin, and after
   the delay it takes effect, because nobody cancels.
@@ -345,7 +357,8 @@ section stay for the keys of other systems.
 - A replaced loader program is outside this proposal. Signing configuration
   does not protect the program that checks it; that needs programs the
   agent's OS user cannot replace, and platform notarization stays the
-  control for binaries.
+  control for binaries. An administrator account that rewrites the pin or
+  the loader's records directly is outside it too (section 5.1).
 - A node that lies to the loader defeats step 2. The node's RPC credentials
   must be unreadable by the agent's OS user.
 - A stolen grant key signs policy. A short `not_after` and presence per
@@ -392,5 +405,6 @@ Ivan Oparin, as the author of that paper.
   the channel of the notice; whether a cancellation by a grant key that the
   name owner has since replaced counts (the decision says the old key can
   cancel, and the draft proposes an exception); whether an L2 device of
-  LIP-0029 can cancel; the code `PIN_PENDING_INVALID`; and the co-author's
-  agreement.
+  LIP-0029 can cancel; the code `PIN_PENDING_INVALID`; where the pin, the
+  pending pin and the records of AO6 could live beyond the administrator
+  account; and the co-author's agreement.

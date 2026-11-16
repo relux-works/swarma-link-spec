@@ -821,14 +821,20 @@ after it is sent: that block comes within 7 minutes in half of the cases,
 | S53-1 | Alisa's tool builds the break on her confirmed name output with the reserve as its only other input; Bob's verifier sees it in its mempool and closes her grants; a reorganisation removes it, and Bob still refuses | Karl's verifier, started after the break left every mempool and before it confirmed, admits and reports no break; it refuses once the break confirms. A break with a fee input that a hot key can spend: Alisa's tool refuses to build it (EB2). |
 | S53-2 | The break's change pays the cold wallet, and a child from the cold wallet raises the fee of the package | After the reserve was spent, Alisa's tool refuses to issue a v4 grant until a new reserve is confirmed (EB3). A closed grant is never admitted again, whatever the chain later shows (EB6). |
 
-The draft proposes one more point, which no owner has decided. The issuer
+EB1 is the decision's reserve. EB2 to EB6 are the draft's rules for it and
+for the acts of the brake, and no owner has decided them. The draft proposes
+one more point, which no owner has decided either. The issuer
 keeps a break signed in advance: the name-owner key signs it over the
 current confirmed name output and the reserve, with a new grant key, and the
 owner's L2 devices hold it, as they hold the prepared spends of device seals
 (LIP-0029 O8.2). It is signed again after every operation of the name,
 because each spends the output on which it stands. Whoever holds it can stop
 every grant of the issuer and can do nothing else, as with a prepared seal
-spend. Then the brake needs no cold key at hand.
+spend. Then the brake needs no cold key at hand, as long as the fee fixed in
+the prepared break suffices. Raising it under EB4 spends the change to the
+cold wallet and needs that wallet's key, and a child pays for its parent only
+when the parent enters the mempool at its own fee; neither package selection
+nor package relay of Namecoin is measured.
 
 The brake bounds the following and no more:
 
@@ -1107,7 +1113,9 @@ The new design uses a separately derived key for each seal. A typed issuer
 endorsement binds its public key and exact spending script to the exact seal
 outpoint and the grant/profile context. The verifier checks that endorsement
 under its trusted issuer pin before accepting the seal or classifying an issuer
-spend. This is a per-seal script pin, separate from the name-owner key and
+spend. Draft section 11.4 of 2026-11-16 moves the seal public key into the v4
+grant and drops this endorsement; until it is agreed, this paragraph stands.
+This is a per-seal script pin, separate from the name-owner key and
 registration-instance pins. Rotating or re-registering a name cannot substitute
 a new script for an existing seal. Section 11.1 proposes where the key comes
 from. Custody qualification, the recovery procedure and exact endorsement
@@ -1162,8 +1170,10 @@ key stay open.
    with its seal before the first signature that uses the key.
 4. A verifier needs no knowledge of the derivation. It checks the typed
    seal-key endorsement, signed by the grant key, that binds the public key
-   and script to the exact outpoint and grant. The path is an issuer-side
-   rule; a verifier cannot observe it and does not refuse for it.
+   and script to the exact outpoint and grant. Under Draft section 11.4 it
+   reads the key from the grant instead, and no endorsement exists. The path
+   is an issuer-side rule; a verifier cannot observe it and does not refuse
+   for it.
 
 The layout has one known weakness. The seal indices are non-hardened, and
 BIP-32 states that an extended public key together with any non-hardened
@@ -1177,7 +1187,7 @@ are outside the account.
 Hardened seal indices, `…/0'/<i>'`, remove the weakness. They also remove
 public derivation: an extended public key no longer yields the seal keys.
 The watch-only node then imports each seal script one by one, from the
-endorsement or the signer's journal, and a lost journal cannot be rebuilt by
+endorsement (under Draft section 11.4, from the grant) or the signer's journal, and a lost journal cannot be rebuilt by
 scanning from a public key. Non-hardened indices are the default, with the
 extended public key kept as a secret of the operator; Ivan Oparin decided
 this on 2026-11-11, together with the single-key script of the
@@ -1256,7 +1266,8 @@ before issuance; the co-author's agreement is pending.
    it, so the operator can revoke the grant when the signer is down or its
    key is not at hand.
 4. A proof that a verifier can see, for example in the endorsement of
-   section 11.2, is optional and is not defined.
+   section 11.2, is optional and is not defined. Under Draft section 11.4 no
+   endorsement exists to carry one.
 
 Two limits belong to the rule. The recorded transaction fixes its fee when
 it is signed, so whether it still confirms later depends on the fees of
@@ -1270,9 +1281,13 @@ agent's reach.
 Ivan Oparin decided, as recorded by the lead on 2026-11-16, that the separate
 seal-key endorsement of section 11.2 is dropped if it is redundant, and that
 v4 has a child-seal key from its first version (LIP-0014 section 11.1). The
-text is written optimistically: the co-author's agreement is pending, and the
-spec review is asked to confirm the argument below. Until both, section 11.2
-and LIP-0024 stand.
+text is written optimistically: the co-author's agreement is pending. The
+spec review of 2026-11-16 (rev372) confirmed the argument below in substance,
+so the decision's condition holds. Until the co-author agrees, section 11.2,
+LIP-0024 and every text that reads the endorsement stand: section 11, rule 4
+of section 11.1 and its watch-only import, rule 4 of section 11.3, the two
+conformance rows of the endorsement, LIP-0029 O10.2, the key registry and the
+README. Each of them points here.
 
 **The argument.** The endorsement is redundant when every fact that it
 signs is already signed, by the same key, in the grant that it serves. The
@@ -1326,8 +1341,12 @@ classified as the issuer's.
 | SB3 | Only after SB2 and the grant's signature does a verifier classify a validated spend of the output as the issuer's, and close the grant under section 5.1. An output that no accepted grant names as its seal closes nothing when it is spent. | |
 | SB4 | No object `swarma-seal-endorsement/1` is made or read on v4. Once agreed, LIP-0020 removes the type from its registry. LIP-0024 keeps its section 1 (the seal script) and section 5 (custody), and its section 2 and its vectors are withdrawn. | |
 
-Sections 11, 11.1 and 11.3 do not change: one key for each seal, the
-derivation, and the issuer's proof before issuance that it can spend the seal.
+Sections 11, 11.1 and 11.3 keep their substance, and each points here where
+it reads the endorsement: one key for each seal of a grant that is no child,
+the derivation, and the issuer's proof before issuance that it can spend the
+seal. The seal of a child pays its parent's child-seal key instead, one key
+for every child of that parent (LIP-0014 CS2), and the child's grant states
+that key (SB1).
 `SEAL_SCRIPT_KEY` and `SEAL_BINDING` of LIP-0024 have no case left, because
 the script is derived from the grant's key and nothing outside the grant
 speaks of the grant.
@@ -1691,7 +1710,7 @@ post-refusal state. The semantic outline pairs these controls:
 | Exact-unit numeric values within the chosen range or string schema | Overflow, parser rounding, duplicate properties, invalid Unicode and silent number/string conversion refuse; include URL escaping and non-ASCII ordering fixtures. |
 | Valid issuer-branch mempool evidence durably recorded, then restart/replacement | Permanent refusal survives eviction and a competing grantee use-spend. A valid use-branch spend alone must not be mislabeled as issuer closure; transient read/tip errors create no closure. |
 | Evidence reaching both signed confirmation minimum and operator risk floor | Insufficient depth under either floor refuses; applying MIN or silently equating NMC/BTC/LTC depth is wrong. |
-| Typed endorsement for the exact per-seal key/script/outpoint | Different seal, swapped endorsement, untrusted issuer or substituted script refuses; separate valid per-seal keys remain admissible. |
+| Typed endorsement for the exact per-seal key/script/outpoint | Different seal, swapped endorsement, untrusted issuer or substituted script refuses; separate valid per-seal keys remain admissible. Under Draft section 11.4 the vector pairs the seal key of the grant with the script on the node (SB2), and no endorsement is read. |
 | Explicit supported admission profile and its required publication evidence | An unpublished preparation refuses in anchored mode; evidence failure cannot activate no-block-wait mode. |
 
 The additional pre-freeze rules need these paired public vectors. These are
@@ -1724,7 +1743,7 @@ planned assertions, not results from a chain validator or policy evaluator:
 | Height window at or above the committed recent block's height | `not_before_height` below that block's height, a window given in seconds, or a date used as an admission input refuses; a long block gap alone neither closes nor extends the window, and the freshness cutoffs still apply. |
 | Grant by key with no recipient name, its request verified under the signed key with no recipient-name read; grant by name with name and owner key and no request key | Both a request key and a recipient name, neither of them, or a name carried as metadata refuses; a by-key request under another key refuses; requiring a channel lookup for a grant by key is wrong; a v3 `grantee_name` reading is not applied to v4. |
 | Name-mode request signed by the key the name currently yields for the Nostr channel | A former channel key, another `nostr.names` entry, a channel without a profile, or a value that yields no key refuses without closure; an owner-key mismatch refuses even when the channel key matches. |
-| Revocable-only seal on a single-key output of a per-seal key, behind a valid typed endorsement, whatever its derivation path | Reuse of a seal index by the signer, a seal paid to the grant key in v4, or an endorsement that names another key, script or outpoint refuses; the verifier never requires path knowledge. |
+| Revocable-only seal on a single-key output of a per-seal key, behind a valid typed endorsement, whatever its derivation path | Reuse of a seal index by the signer, a seal paid to the grant key in v4, or an endorsement that names another key, script or outpoint refuses; the verifier never requires path knowledge. Under Draft section 11.4 the seal key is the one the grant states, and a child's seal pays its parent's child-seal key (LIP-0014 CS2). |
 | Single-use seal whose script has distinct issuer and grantee branches: use by the grantee's own key, and a validated issuer closure | A single-key output offered as a single-use seal, one shared key for both branches, or a caller's branch label in place of script evidence refuses. |
 | Preserved v3 and wallet-v1 IDs, domains and their separate single-use commitments | Applying successor ID/request rules to historical bytes refuses substitution; legacy evidence and replay outcomes remain unchanged. |
 
@@ -1753,9 +1772,10 @@ saw the change: that verifier keeps refusing.
   proposal), and who holds it; the fee of a prepared device-seal spend
   (LIP-0029), which EB4 could raise only if that spend has an output to the
   cold wallet.
-- **The seal binding of section 11.4.** The spec review's confirmation that
-  the endorsement is redundant, and the co-author's agreement; until both,
-  section 11.2 and LIP-0024 stand. The members of the grant that state the
+- **The seal binding of section 11.4.** The co-author's agreement. The spec
+  review confirmed on 2026-11-16 that the endorsement is redundant. Until the
+  agreement, section 11.2, LIP-0024 and the texts that point to section 11.4
+  stand. The members of the grant that state the
   kind of seal and its key come with the v4 bytes.
 - Whether the issuer rule of section 3 should also require that the bound
   owner wrote the `swarma` value in force, as LIP-0014 section 7.1 requires

@@ -494,7 +494,7 @@ What it leaves: the harness verifies, and a harness that the agent can
 replace verifies nothing (J7.8, a deployment rule). The frame still informs
 the model and does not bind it, and step 9 still bounds the effects. The
 platform book treats memory in the same way (chapter 11, «Доставка памяти
-agent»): a separate channel, and «Подпись службы удостоверяет конверт, но не
+агенту»): a separate channel, and «Подпись службы удостоверяет конверт, но не
 повышает полномочий вложенного текста». Chapter 7, «Очередь и вопросы
 среды», takes a marker in an echo as evidence of delivery and not of
 authority, and chapter 8, «Один владелец дома», keeps the agent's bounding

@@ -42,9 +42,10 @@ row inside one owner may have no certifier, and its child then needs no
 attestation. The first paragraph of this summary holds for every v3 child and
 for every v4 child of a row that names a certifier. J9 admits the child of a
 row without a certifier only through the class of landlords and the list of
-holders, which await the co-author's agreement (J10 and J11). Until both owners
-have decided J10 and J11, no child of a row without a certifier is admitted
-(section 8.3).
+holders (J10 and J11). Ivan Oparin put J10 and J11 in force in version 0.1.51
+without waiting for the co-author's agreement, so such a child is admitted
+where its recipient passes those checks (section 8.3). The co-author's answer
+is folded in by amendment.
 
 ## Decisions recorded
 
@@ -132,26 +133,28 @@ for each row and its causes. D1 is not reopened.
 
 Ivan Oparin decided four further points on 2026-11-15. The co-author agreed to
 J9 on the same day: J9 is decided and agreed by both owners on 2026-11-15, and
-section 8.3 holds it as text in force. On J10, J11 and J12 the co-author's
-agreement is pending, and until then the text in force for them stays as it is.
-All four concern the rows of a v4 parent. The contract profile
-`swarma-trust-contract/2` of Grant v3 does not change: its member set is the
-one of sections 2 and 3, each of its rows names a notary, and every v3 child is
-certified.
+section 8.3 holds it as text in force. J10, J11 and J12 are in force since
+version 0.1.51: on 2026-11-16 Ivan Oparin decided to put them in force without
+waiting for the co-author's agreement, which has not been given. The
+co-author's answer, when it comes, is folded in by amendment. All four concern
+the rows of a v4 parent. The contract profile `swarma-trust-contract/2` of
+Grant v3 does not change: its member set is the one of sections 2 and 3, each
+of its rows names a notary, and every v3 child is certified.
 
 | Label | Touches | The decision | State |
 | --- | --- | --- | --- |
-| J9. No certifier inside one owner | D1, D2, D3 and D8; J1.1 on v4 | A child needs an attestation only where its row names a certifier, and the right of re-delegation of the parent decides that for each row. A row without a certifier is valid only where its recipient constraint is limited to the issuer's own landlord. Across owners a certifier stays mandatory, as D8 says. The stop coin of section 10.1 belongs only to rows with a certifier. Section 8.3; LIP-0026 section 10. | Decided and agreed by both owners on 2026-11-15. It limits D1 on v4 to the children of rows that name a certifier. A child of a row without a certifier is admitted only through the class of J10 and the holders of J11, so until both owners have decided J10 and J11 no child of such a row is admitted (section 8.3). |
-| J10. Landlord class | J1; LIP-0008 section 3.1 | The recipient constraint of a row gains a third form beside a key and a name: a list of landlords, each pinned like a notary under section 7.1. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order; the fourth asks that a holder of the landlord wrote the value of the recipient name. LIP-0026 section 9. | The co-author's agreement is pending. Until then a row names its recipient in one of the two modes of LIP-0008 section 3.1. |
-| J11. Holders | LIP-0010 section 3 | A landlord lists, in its own name value, the owner keys of the names of its agents and stations. An absent or empty list admits no name to a class. LIP-0010 section 10. | The co-author's agreement is pending. Until then the landlord binding has the one member `grant`. |
-| J12. Groups | J1 | A parent states its rows as groups: a template with coin ranges, and one ordinal across groups and ranges. LIP-0026 section 8. | The co-author's agreement is pending. Until then a parent states each row by itself. |
+| J9. No certifier inside one owner | D1, D2, D3 and D8; J1.1 on v4 | A child needs an attestation only where its row names a certifier, and the right of re-delegation of the parent decides that for each row. A row without a certifier is valid only where its recipient constraint is limited to the issuer's own landlord. Across owners a certifier stays mandatory, as D8 says. The stop coin of section 10.1 belongs only to rows with a certifier. Section 8.3; LIP-0026 section 10. | Decided and agreed by both owners on 2026-11-15. It limits D1 on v4 to the children of rows that name a certifier. A child of a row without a certifier is admitted only through the class of J10 and the holders of J11, which are in force since version 0.1.51 (section 8.3). |
+| J10. Landlord class | J1; LIP-0008 section 3.1 | The recipient constraint of a row gains a third form beside a key and a name: a list of landlords, each pinned like a notary under section 7.1. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order; the fourth asks that a holder of the landlord wrote the value of the recipient name. LIP-0026 section 9. | In force since version 0.1.51, by Ivan Oparin's decision of 2026-11-16 not to wait for the co-author. The co-author's answer is folded in by amendment. |
+| J11. Holders | LIP-0010 section 3 | A landlord lists, in its own name value, the owner keys of the names of its agents and stations. An absent or empty list admits no name to a class. LIP-0010 section 10. | In force since version 0.1.51, by Ivan Oparin's decision of 2026-11-16 not to wait for the co-author. The co-author's answer is folded in by amendment. |
+| J12. Groups | J1 | A parent states its rows as groups: a template with coin ranges, and one ordinal across groups and ranges. LIP-0026 section 8. | In force since version 0.1.51, by Ivan Oparin's decision of 2026-11-16 not to wait for the co-author. The co-author's answer is folded in by amendment. |
 
 The four belong together in one direction. J10 needs the list of J11, and J9
 uses the checks of J10 to say what "one owner" means for a verifier. J12 stands
-by itself. Where the text of one of them uses another, it says so. J9 is in
-force and J10 and J11 are not, so no child of a row without a certifier can
-yet meet rule J9.2, and none is admitted until both owners have decided J10 and
-J11 (section 8.3).
+by itself. Where the text of one of them uses another, it says so. All four
+are in force, so a child of a row without a certifier meets rule J9.2 through
+the checks of J10 and the list of J11 (section 8.3). Both owners agreed to J9;
+J10, J11 and J12 rest on Ivan Oparin's decision alone until the co-author
+answers.
 
 ### One member set for profile `/2` (2026-11-15)
 
@@ -1226,22 +1229,20 @@ The owner's practice, which is no rule: a certifier for rows whose children
 permit effects, such as payments, the use of a model and landings, and none for
 rows whose children permit instructions and reviews.
 
-J9.2 names two recipient constraints, and both rest on decisions that await
-the co-author's agreement. The class is the third form of the recipient that
-J10 adds (LIP-0026 section 9). The landlord and holder checks are the checks of
-a class under J10, and the holder checks read the list `holders` that J11 adds
-to the landlord binding (LIP-0010 section 10). In the text in force the
-recipient of a v4 row is a request key or a name with its owner key (LIP-0008
-section 3.1), and the landlord binding has the one member `grant`. A request
-key never meets J9.2, and a class is no recipient constraint of the text in
-force. A name meets J9.2 only by checks that are not in force, against a list
-that no landlord value in force carries: a parent may hold a row without a
-certifier whose recipient is an exact name (LIP-0026 R10.2), and that row then
-admits no child. Until both owners have decided J10 and J11, no child of a row
-without a certifier is therefore admitted, and every v4 child that is admitted
-is certified (J9.1). J12 does not bear on J9: without groups a parent
-states for each row whether it names a certifier, and under J12 a template
-states it for the rows of its group (LIP-0026 R10.1).
+J9.2 names two recipient constraints, and both rest on J10 and J11. The class
+is the third form of the recipient that J10 adds (LIP-0026 section 9). The
+landlord and holder checks are the checks of a class under J10, and the holder
+checks read the list `holders` that J11 adds to the landlord binding (LIP-0010
+section 10). A request key never meets J9.2. Until version 0.1.51 neither the
+class nor the list was in force, and no child of a row without a certifier was
+admitted. Since that version both are in force, by Ivan Oparin's decision of
+2026-11-16 not to wait for the co-author: a child of a row without a certifier
+is admitted where its recipient passes the checks of LIP-0026 section 9 for a
+class, or of R10.3 for an exact name, and it needs no attestation (J9.1). That
+admission rests on J9, which both owners agreed, and on J10 and J11, which the
+co-author has not yet answered; the co-author's answer is folded in by
+amendment. J12 does not bear on J9: a template states for the rows of its group
+whether they name a certifier (LIP-0026 R10.1).
 
 LIP-0026 section 10 states J9.1 to J9.4 on the facts of a v4 row, with the
 class of landlords in its section 9 and the list of holders in LIP-0010 section
@@ -1286,8 +1287,8 @@ Three things are lost or left open with a row without a certifier:
 
 The vectors of LIP-0026 section 11 hold these cases as decisions on stated
 facts. The codes of S9-5 and S9-6 are proposals of that LIP. The vectors follow
-J9 through the checks of J10 and the holders of J11, which await the
-co-author's agreement.
+J9 through the checks of J10 and the holders of J11, in force since version
+0.1.51.
 
 ## 9. Sibling budgets
 
@@ -1390,11 +1391,12 @@ bytes come with v4.
 Under J9, decided and agreed by both owners on 2026-11-15 (section 8.3), the
 certifier of a v4 row is one of the notaries that the parent pins or, where
 rule J9.2 holds, the statement that the row has none. LIP-0026 sections 8 and 9
-hold Draft text under two decisions of 2026-11-15 that await the co-author's
-agreement: a v4 parent states its rows in groups (J12), and the recipient of a
-v4 row has a third form, a class of landlords (J10). Until the co-author
-agrees, the paragraph above holds for the recipient and the rows, and no child
-of a row without a certifier is admitted (section 8.3).
+state two decisions of 2026-11-15 that are in force since version 0.1.51: a v4
+parent states its rows in groups (J12), and the recipient of a v4 row has a
+third form, a class of landlords (J10). Under them the paragraph above is read
+as LIP-0026 R8.1 and R9.1 say: a template states the executor, the recipient,
+the limits and the certifier once for the rows of its group, and the recipient
+is a request key, a name with its owner key, or a class.
 
 | # | Rule | Refusal |
 | --- | --- | --- |
@@ -2023,8 +2025,8 @@ agent's key. The second: a key that every child's seal pays, named in the
 parent and held by the delegating operator apart from the signer, is a
 profile option and no part of the first v4 version. With it the operator
 could spend the seal of a child that a thief of the delegation key signed.
-It costs one more key and a change of the endorsement rule of LIP-0008
-section 11.1 for children. Section 11.2 holds Draft text, under a decision of
+It costs one more key, and under Draft LIP-0008 section 11.4 the child's
+grant states that key in place of an endorsement. Section 11.2 holds Draft text, under a decision of
 2026-11-16 that awaits the co-author's agreement, that puts this key into the
 first v4 version.
 
@@ -2063,7 +2065,9 @@ key signs a child with a seal of its own, so that the delegating operator
 has no seal of that child to spend. Under CS2 every child's seal pays a key
 that the parent names and the thief does not hold. LIP-0008 section 11.4 uses
 the same key to drop the seal-key endorsement for children: the parent, which
-the grant key signs, fixes the key, and the child names only its outpoint.
+the grant key signs, fixes the key, and the child names its seal's outpoint
+and states the child-seal key as its seal key (LIP-0008 SB1), which a
+verifier compares with the parent's (CS2).
 
 | # | Rule | Refusal |
 | --- | --- | --- |

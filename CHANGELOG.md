@@ -2,11 +2,13 @@
 
 ## 0.1.51 — 2026-11-16
 
-Adds Draft text for five decisions of Ivan Oparin that the lead recorded on
-2026-11-16 in the consolidated brief. The text is written optimistically: the
+Adds Draft text for eight decisions of Ivan Oparin of 2026-11-16: five that
+the lead recorded in the consolidated brief, and three on owner control that
+the lead relayed at about 00:40Z. The text is written optimistically: the
 co-author's agreement is pending, and until it is given every text that it
-revises stands. Every LIP stays a Draft, nothing is implemented, and no v3
-byte and no vector changes.
+revises stands. Puts J10, J11 and J12 in force. Every LIP stays a Draft,
+nothing is implemented, no v3 byte changes, and no vector outcome changes;
+the notes of three vector files change.
 
 The seal binding and the child-seal key (LIP-0008 section 11.4, LIP-0014
 section 11.2). The decision drops the separate seal-key endorsement only if it
@@ -16,42 +18,59 @@ from it, and the same grant key signs both at the same time. Six cases in which
 the endorsement could still carry something are checked, and none does. The
 grant states its seal (SB1), the verifier compares the script on its own node
 before the spend counts as the issuer's (SB2, SB3), and the endorsement type
-leaves the registry once agreed (SB4). The spec review is asked to confirm the
-argument. Every v4 parent names a child-seal key from the first version (CS1).
-Every child's seal pays it (CS2), and it differs from the grant key, the
-delegation key and the other keys of the path (CS3). The delegating operator
-holds it apart from the delegation signer (CS4), so a child that a thief of the
-delegation key signs can still be revoked. Cases S4-9 and S4-10.
+leaves the registry once agreed (SB4). The spec review confirmed the argument
+in substance. Every text that still reads the endorsement points to section
+11.4 and stands until agreement: section 11, rule 4 of sections 11.1 and 11.3,
+the watch-only import, the two conformance rows of the endorsement, LIP-0029
+O10.2 and the README. Section 11.4 no longer says that sections 11, 11.1 and
+11.3 do not change: a child's seal pays its parent's child-seal key, not a key
+of its own, and the child's grant states that key. Every v4 parent names a
+child-seal key from the first version (CS1). Every child's seal pays it (CS2),
+and it differs from the grant key, the delegation key and the other keys of
+the path (CS3). The delegating operator holds it apart from the delegation
+signer (CS4), so a child that a thief of the delegation key signs can still be
+revoked. Cases S4-9 and S4-10.
 
 One mechanism for statement sets (LIP-0010 section 11, LIP-0016 section 3.1).
 The head of every statement set of an owner is a member `{"seq","sha256"}` of
 the owner's name value outside `swarma`, and only the last head confirmed in
-the active chain counts. A pending update gives no head, a lower `seq` after a
-reorganisation gives no verified set, and a defect of a head member refuses that
-set and no other part of the value (SH1 to SH8). `swarma-devices` of LIP-0029
-is the first head and `swarma-certs` the second. The certificate store drops
-its anchor, its chain of spends and the mempool step, and its head is no longer
-signed (CH1 to CH4). With both heads, a landlord value with a NIP-05 object and
-one relay leaves 22 of 520 bytes, which is stated as a cost.
+the active chain counts. A pending update gives no head, and a defect of a
+head member refuses that set and no other part of the value (SH1 to SH8).
+After a reorganisation that removes the name operation of the head that a
+reader journaled, the last confirmed head counts again, as the Link book §9.4
+has it, and every refusal that the reader journaled stays; a lower `seq` that
+a later name operation carries still refuses (SH5). This narrows the version
+pin of LIP-0029 O9.2, and LIP-0029 says so. `swarma-devices` of LIP-0029 is
+the first head and `swarma-certs` the second. The certificate store drops its
+anchor, its chain of spends and the mempool step, and its head is no longer
+signed (CH1 to CH4). With both heads, a landlord value with a NIP-05 object
+and one relay leaves 22 of 520 bytes, which is stated as a cost.
 
 The emergency brake on v4 (LIP-0008 section 5.3, LIP-0011 section 4). The brake
 names the stops of v4 that one owner starts alone: a device seal, a recorded
 seal spend and the break of the issuer name. It states, for a witness, for a
 node that has not seen the transaction and for a newcomer, when each act takes
 effect before confirmation and after a reorganisation. An issuer keeps a
-confirmed UTXO of a cold wallet for the fee of the break (EB1 to EB3) and raises
-the fee through the break's change (EB4). Its monitor rebroadcasts (EB5), and
-no act is undone (EB6). A break signed in advance and held by the L2 devices is
-proposed and not decided. A recorded seal spend carries no verdict reference,
-and LIP-0011 says that this is no defect.
+confirmed UTXO of a cold wallet for the fee of the break (EB1, the decision).
+The draft proposes the rest: the break's inputs and change (EB2), restoring
+the reserve (EB3), the fee raise through the break's change (EB4), the
+monitor (EB5), and that no act is undone (EB6). A break signed in advance and
+held by the L2 devices is proposed and not decided; it needs no cold key only
+while its fixed fee suffices. A recorded seal spend carries no verdict
+reference, and LIP-0011 says that this is no defect.
 
 The trust-root pin (LIP-0015 section 5.1). An overwrite by the administrator
 that no rotation statement carries is pending for a stated delay, proposed as
 1008 blocks. The loader notifies the owner over a channel the agent cannot
-reach, and the pinned grant key can cancel within the delay with
-`swarma-root-cancel/1` (AO1 to AO6). The thief of a stolen grant key can then
-veto recovery by overwrite. The draft proposes that a key that the name owner
-has since replaced cannot cancel, and leaves it open.
+reach. It takes the pin into effect only at `E`, the later of
+`effective_height` and its own tip at the first notice plus the delay, so a
+backdated pin or a late loader leaves the owner the whole delay. The currently
+pinned grant key can cancel until then with `swarma-root-cancel/1` (AO1 to
+AO6). The administrator account owns the pin and the loader's records, so
+whoever takes it can rewrite the pin directly; the section states this as a
+limit, as for a replaced loader. The thief of a stolen grant key can veto
+recovery by overwrite. The draft proposes that a key that the name owner has
+since replaced cannot cancel, and leaves it open.
 
 The authority frame (LIP-0013 section 3.4). The frame is an envelope of body
 kind `authority-frame/1`, signed by the key holder with a frame key that signs
@@ -60,8 +79,62 @@ harness verifies it before the agent sees it (FE4, FE6). Text in the stream
 that looks like a frame is data (FE5), and a frame is presented once (FE7). T11
 is narrowed.
 
+Owner control, three decisions relayed at about 00:40Z (LIP-0029 sections
+3.5, 4.1 and 8.3; decisions 14 to 16). Figure 1, the device seal, stands in
+the LIP in the words of the decision, for the book to carry in the same words:
+a seal on a fresh key, a revocation signed in advance with it, the key
+destroyed, the revocation with the other devices, and the list hash in the
+name by the cold key; per command the device signature, the hash from the name
+and `gettxout` of the seal; on loss any device broadcasts the revocation, and a
+rollback cannot restore the device (O8.8 to O8.10). The name pins only the
+hash; the list is addressed by its content; the sender attaches it to every
+envelope, and executors cache it by hash. The owner's domain, at
+`/.well-known/swarma/device-list/<h(D)>`, and a Nostr event are secondary
+paths, and their unavailability never blocks a sender that attaches the list
+(O3.11 to O3.14, `DEVICE_LIST_UNAVAILABLE`). A messenger device is an ordinary
+record: `alg` `matrix-ed25519` for a Matrix device's Ed25519 key, `ceiling` 1
+and no presence. A Megolm event counts as an L1 owner command only when the
+receiver binds its session to that key through the Olm channel; forwarded,
+backed-up or imported sessions and every event whose device it cannot bind are
+refused (`MESSENGER_UNAUTHENTICATED`), and plaintext never counts (OM1 to
+OM7). Section 3.2 gains an example list of 789 bytes with its hash, so that an
+implementation can check its encoding. Cases S29-16 to S29-18.
+
+Puts J10, J11 and J12 in force. Ivan Oparin decided them on 2026-11-15, and on
+2026-11-16 decided to put them in force without waiting for the co-author's
+agreement, which has not been given: «принимаем оптимистично их не ждем. но
+ответы учитываем и потом правим». The co-author's answer, when it comes, is
+folded in by amendment. J12, groups of rows, is LIP-0026 section 8; J10, the
+landlord class, is LIP-0026 section 9; J11, the list `holders` in the landlord
+binding, is LIP-0010 section 10. Each section now opens "In force since
+version 0.1.51", and LIP-0014 "Decisions of 2026-11-15" records the state of
+each. What those sections mark as the draft's stays a proposal: the bounds of
+R8.4, the order of the count in R8.3 and the witness key hash of R8.2, the
+checkpoint of R9.2, the fifth step of R9.5, the eight codes of a class, the
+order of `holders` and the refusals of its rule 3, and the rules R8.9, R8.10,
+R9.11 and R9.12 for the two signers.
+
+The gate of J9 is lifted. Under 0.1.49 no child of a row without a certifier
+was admitted, because both recipient constraints of J9.2 rested on J10 and J11.
+With J10 and J11 in force, such a child is admitted where its recipient passes
+the checks of LIP-0026 section 9 for a class, or of R10.3 for an exact name,
+and it needs no attestation (LIP-0014 J9.1). That admission rests on J9, which
+both owners agreed, and on J10 and J11, which only Ivan Oparin has decided; the
+texts say so in place. Other texts follow: LIP-0027, KEY-REGISTRY, the notes
+of `vectors/LIP-0010/holders-vectors.json`, `vectors/LIP-0026/class-vectors.json`
+and `vectors/LIP-0026/groups-vectors.json`, the README paragraphs of 0.1.47 and
+0.1.49, and two rows of the index of open questions. The co-author's answer on
+J10 to J12 is listed as open.
+
+Review. The spec review of 77cc51d (rev372) found four defects, fixed in this
+version: the cancellation window of section 5.1 ended before the pin took
+effect; the claim that the administrator account cannot hide an overwrite was
+not held by the rules; the surfaces that read the endorsement were not
+revised; and SH5 refused the last confirmed head after a reorganisation. Two
+citation slips are corrected (§7.7, «Доставка памяти агенту»).
+
 Reconciliation. The text cites:
-- the platform book: chapter 22 §22.5, chapter 6 §6.6.2, chapter 7 §7.9 and
+- the platform book: chapter 22 §22.5, chapter 6 §6.6.2, chapter 7 §7.7 and
   §7.12, chapter 8 §8.3 and chapter 11 §11.10;
 - the Link book: §3.9, §3.10, §3.12, §4.9.3, §4.9.9, §5.4, §6.13, §9.2, §9.4
   and §10.3 to §10.4;
@@ -75,10 +148,10 @@ chapters 6, 7 and 9 before the renumbering of 2026-11-10, or as chapters 5, 8
 and 11 after it; the citations name sections by title.
 
 Pointers. The key registry adds the emergency fee reserve key and the frame key
-of a key holder, and marks the child-seal key, the grant key and the seal keys.
-The key map, LIP-0020, LIP-0024 and LIP-0029 point to the new text. LIP-0029
-gains the fourth body kind and the reading of SH3, SH4 and SH6 for
-`swarma-devices`.
+of a key holder, marks the child-seal key, the grant key and the seal keys,
+and gives the device key a Matrix form and the device seal key no holder. The
+key map, LIP-0020, LIP-0024 and LIP-0029 point to the new text. LIP-0029 gains
+the fourth body kind and the reading of SH3 to SH6 for `swarma-devices`.
 
 ## 0.1.50 — 2026-11-15
 

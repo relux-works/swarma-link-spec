@@ -44,16 +44,17 @@ This LIP proposes the first profile for rows on v4, on Namecoin:
 It defines no octets of a row. The members of a v4 grant do not exist yet,
 and the rows come with them.
 
-Sections 8 and 9 hold Draft text under two decisions of Ivan Oparin of
-2026-11-15 that await the co-author's agreement: a parent states its rows in
-groups (J12), and a row may name the recipient of its child by a class of
-landlords (J10). Until the co-author agrees, sections 1 to 7 stand as they are
-for groups and the recipient. Section 10 holds J9, decided and agreed by both
-owners on 2026-11-15: a row inside one owner may have no certifier, so the
-certifier of R1.1 may be absent. J9 admits a child of such a row only through
-the class of section 9 and the holders of LIP-0010 section 10 (J11), so until
-both owners have decided J10 and J11 no child of a row without a certifier is
-admitted.
+Sections 8 and 9 state two decisions of Ivan Oparin of 2026-11-15, in force
+since version 0.1.51: a parent states its rows in groups (J12), and a row may
+name the recipient of its child by a class of landlords (J10). On 2026-11-16
+Ivan Oparin put them in force without waiting for the co-author's agreement,
+which has not been given; the co-author's answer is folded in by amendment.
+Sections 1 to 7 are read as sections 8 and 9 say for groups and the recipient.
+Section 10 holds J9, decided and agreed by both owners on 2026-11-15: a row
+inside one owner may have no certifier, so the certifier of R1.1 may be absent.
+J9 admits a child of such a row only through the class of section 9 and the
+holders of LIP-0010 section 10 (J11), and since version 0.1.51 such a child is
+admitted where it passes those checks.
 
 ## What is decided and what is proposed
 
@@ -73,6 +74,9 @@ LIP-0008 sections 4 and 12.2. This LIP changes none of them.
 | Two cumulative ledgers, the child's and the row's; one request identity is charged once; the row ledger draws on the pool only (J1.3) | The same | Section 5 names the accounts and says which of them a request debits |
 | The coin is confirmed before the parent is signed and pays a separate key of the re-delegating side; the issuance of a child spends it in the transaction that carries the child's commitment; "the code is fixed with the v4 bytes" (J1.9) | The same | Section 3, with two codes |
 | "Who funds the coin, and the account and the path of its key, are not fixed" | LIP-0014 section 9.1; the key registry, open points | Section 4, as a proposal that awaits the owners |
+| A parent states its rows as groups: a template with coin ranges, and one ordinal across groups and ranges (J12, decided by Ivan Oparin, in force since version 0.1.51) | LIP-0014, "Decisions of 2026-11-15" | Section 8 |
+| The recipient constraint of a row has a third form, a class of landlords each pinned like a notary, with four checks in a fixed order (J10, decided by Ivan Oparin, in force since version 0.1.51) | The same | Section 9 |
+| A landlord lists in `holders` the owner keys of the names of its agents and stations (J11, decided by Ivan Oparin, in force since version 0.1.51) | LIP-0010 section 10 | Section 9, checks (c) and (d) |
 | A child needs an attestation only where its row names a certifier; a row without one is valid only where its recipient constraint is limited to the issuer's own landlord; across owners a certifier stays mandatory; a row without a certifier has no stop coin (J9, decided and agreed by both owners on 2026-11-15) | LIP-0014 section 8.3, rules J9.1 to J9.4 | Section 10 |
 | Every applicable link is charged once for a request; independent executors need signed partitions and share no remainder | LIP-0008 sections 4 and 12.2 | Section 5 takes the row as the parent's link for a request under a child |
 
@@ -102,15 +106,16 @@ and the owners should look at them first:
 
 Three further decisions are Ivan Oparin's of 2026-11-15. The co-author agreed
 to J9 on the same day, so J9 is decided and agreed by both owners on
-2026-11-15; on J10 and J12 the co-author's agreement is pending. They are
-recorded in LIP-0014, "Decisions of 2026-11-15", and each has one section of
-this LIP that opens with what the decision says and marks what this draft
-adds.
+2026-11-15. J10 and J12 are in force since version 0.1.51, by Ivan Oparin's
+decision of 2026-11-16 not to wait for the co-author; the co-author's answer is
+folded in by amendment. They are recorded in LIP-0014, "Decisions of
+2026-11-15", and each has one section of this LIP that opens with what the
+decision says and marks what this draft adds.
 
 | Decision | What it says | Section |
 | --- | --- | --- |
-| J12. Groups | A parent states its rows as groups. A group is a template with coin ranges. The template holds the executor, the recipient constraint, the limits of each child, and a certifier or none. A range is a transaction id, a first output index, a count and a script, and each coin of a range is one row. One ordinal runs across groups and ranges | 8 |
-| J10. Landlord class | The recipient constraint of a row has a third form beside a key and a name: a list of landlords, each pinned like a notary. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order, the last of which asks who wrote the value of that name | 9 |
+| J12. Groups | A parent states its rows as groups. A group is a template with coin ranges. The template holds the executor, the recipient constraint, the limits of each child, and a certifier or none. A range is a transaction id, a first output index, a count and a script, and each coin of a range is one row. One ordinal runs across groups and ranges. In force since version 0.1.51 | 8 |
+| J10. Landlord class | The recipient constraint of a row has a third form beside a key and a name: a list of landlords, each pinned like a notary. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order, the last of which asks who wrote the value of that name. In force since version 0.1.51 | 9 |
 | J9. No certifier inside one owner | A child needs an attestation only where its row names a certifier. A row without one is valid only where its recipient is limited to the issuer's own landlord. Across owners a certifier stays mandatory. Decided and agreed by both owners on 2026-11-15 | 10 |
 
 The bounds of section 8, the refusal codes of sections 9 and 10, and every rule
@@ -129,7 +134,7 @@ rules through this LIP, under LIP-0001.
 | The row account in a signer | No | The owners' choice of the account, and the custody of v4 accounts, which is open (LIP-0024 section 5) |
 | An executor's ledger on a store | No | A store that is qualified under LIP-0014 J1.4; LIP-0025 proposes its form |
 | The arithmetic of one kind of limit | No | The type profile of that kind (LIP-0008 section 2) |
-| The checks of sections 8 to 10 as functions of stated facts and of the octets of name scripts and name values | Yes | The co-author's agreement to J10, J11 and J12, and the owners' acceptance; section 10 (J9) is decided and admits a row without a certifier only through the checks of section 9 |
+| The checks of sections 8 to 10 as functions of stated facts and of the octets of name scripts and name values | Yes | The owners' acceptance of the rules that sections 8 to 10 mark as this draft's. J9 to J12 are in force: J9 agreed by both owners, J10 to J12 since version 0.1.51 on Ivan Oparin's decision, with the co-author's answer folded in by amendment |
 
 ## Motivation
 
@@ -204,12 +209,12 @@ Section 10.1 of LIP-0014 adds a sixth thing to a v4 row, the stop coin of
 the row's notary (J2.7). This LIP does not treat it;
 [LIP-0027](LIP-0027-row-stop.md) proposes its profile.
 
-Sections 8 and 9 hold Draft text under decisions that await the co-author's
-agreement. Under section 8 (J12) a parent states its rows in groups, and R1.1,
-R1.3 and R1.4 are read as that section says. Under section 9 (J10) the
-recipient of R1.1 has a third form. Section 10 holds J9, which both owners
-decided: the certifier of R1.1 may be absent where R10.2 holds, and no child of
-such a row is admitted before J10 and J11 are decided.
+Sections 8 and 9 state J12 and J10, in force since version 0.1.51. Under
+section 8 (J12) a parent states its rows in groups, and R1.1, R1.3 and R1.4 are
+read as that section says. Under section 9 (J10) the recipient of R1.1 has a
+third form. Section 10 holds J9, which both owners decided: the certifier of
+R1.1 may be absent where R10.2 holds, and a child of such a row is admitted
+only through the checks of section 9 (R10.2, R10.3).
 
 A parent with a pool of 100 and rows of 60 and 40 is valid, and so is one
 with rows of 60 and 30. Rows of 60 and 60 are not. Two rows may name the
@@ -244,7 +249,7 @@ A child that names the executor of another row of its parent refuses under
 R2.2, also when every other member fits that other row. The ordinal selects
 the row, and nothing in the child selects another one.
 
-Under the Draft text of section 9 (J10, agreement pending) R2.3 has a third
+Under section 9 (J10, in force since version 0.1.51) R2.3 has a third
 case: a child of a row whose recipient is a class names its recipient by name,
 and four further checks on the verifier's node follow.
 
@@ -362,7 +367,7 @@ How a v4 account is created, wrapped and recovered is open for the seal
 account (LIP-0024 section 5). The same question holds for the row account,
 and this LIP proposes nothing for it.
 
-Under the Draft text of section 8 (J12, agreement pending) every coin of a
+Under section 8 (J12, in force since version 0.1.51) every coin of a
 range has one script, so one index of the row account serves one range, and
 R4.3 is read as R8.9 says.
 
@@ -490,9 +495,11 @@ accept the rules that they follow.
 
 ### 8. Groups of rows (J12)
 
-**Owner decision pending: J12.** Ivan Oparin decided on 2026-11-15 that a
-parent states its rows as groups. The co-author's agreement is pending, and
-until then a parent states each row by itself, as section 1 says.
+**In force since version 0.1.51: J12.** Ivan Oparin decided on 2026-11-15 that
+a parent states its rows as groups. On 2026-11-16 Ivan Oparin put the decision
+in force without waiting for the co-author's agreement, which has not been
+given; the co-author's answer is folded in by amendment. Section 1 is read as
+R8.1 to R8.3 say.
 
 A parent that permits 10,000 children states, under section 1, 10,000 rows, and
 most of them differ in nothing but their coin. The owner named 10,000 agents as
@@ -578,10 +585,11 @@ Three points stay open under this section:
 
 ### 9. The landlord class (J10)
 
-**Owner decision pending: J10.** Ivan Oparin decided on 2026-11-15 that the
-recipient constraint of a row gains a third form beside a key and a name: a
-class of landlords. The co-author's agreement is pending, and until then a
-row names the recipient of its child in one of the two modes of R1.1.
+**In force since version 0.1.51: J10.** Ivan Oparin decided on 2026-11-15
+that the recipient constraint of a row gains a third form beside a key and a
+name: a class of landlords. On 2026-11-16 Ivan Oparin put the decision in force
+without waiting for the co-author's agreement, which has not been given; the
+co-author's answer is folded in by amendment.
 
 A row that names a key or a name fixes one party at the moment at which the
 parent is signed. A principal that runs a swarm starts agents after that
@@ -722,20 +730,18 @@ section 9 against the issuer's landlord. Across owners a certifier stays
 mandatory, as D8 of LIP-0014 says. The stop coin of LIP-0027 belongs only to
 rows with a certifier.
 
-Both recipient constraints of the decision rest on decisions that await the
-co-author's agreement. The class is the form of section 9 (J10), and the
-landlord and holder checks of an exact name are checks of section 9 that read
-the list `holders` of LIP-0010 section 10 (J11). In the text in force a row
-names its recipient in one of the two modes of R1.1, so a class is no
-recipient of a valid row. The checks that R10.3 makes for an exact name are
-checks of section 9, and check (c) reads a list that no landlord value in force
-carries, since the landlord binding has the one member `grant`. A row without a
-certifier whose recipient is an exact name meets R10.2 and admits no child.
-Until both owners have decided J10 and J11, no child of a row without a
-certifier is therefore admitted, and every child that is admitted is certified
-(LIP-0014 J9.1). Section 8 (J12) does not bear on the
-decision: until it is decided, R10.1 and R10.2 apply to each row, and under it
-to the template of each group.
+Both recipient constraints of the decision rest on J10 and J11. The class is
+the form of section 9 (J10), and the landlord and holder checks of an exact
+name are checks of section 9 that read the list `holders` of LIP-0010 section
+10 (J11). Until version 0.1.51 neither was in force, and no child of a row
+without a certifier was admitted. Since that version both are in force, by
+Ivan Oparin's decision of 2026-11-16 not to wait for the co-author: a child of
+a row without a certifier is admitted where its recipient passes the checks of
+section 9 for a class, or of R10.3 for an exact name, and it needs no
+attestation. That admission rests on J9, which both owners agreed, and on J10
+and J11, which the co-author has not yet answered; the co-author's answer is
+folded in by amendment. Section 8 (J12) does not bear on the decision: R10.1
+and R10.2 apply to the template of each group, and so to each of its rows.
 
 The owner's practice, which is no rule of this profile: a certifier for rows
 whose children permit effects, such as payments, the use of a model and
@@ -796,10 +802,11 @@ Three limits hold:
 
 ### 11. Vectors of sections 8 to 10
 
-Two files hold 103 vectors over the 27 rules of sections 8 to 10, and they
-follow Draft text that awaits the co-author's agreement. The vectors of rows
-without a certifier follow section 10, which both owners decided, through the
-checks of section 9 and the holders of LIP-0010 section 10, which await it.
+Two files hold 103 vectors over the 27 rules of sections 8 to 10. They follow
+J12 and J10, in force since version 0.1.51, and the vectors of rows without a
+certifier follow section 10, which both owners decided, through the checks of
+section 9 and the holders of LIP-0010 section 10 (J11, in force since the same
+version).
 
 | File | Group | Vectors | What a checker does |
 | --- | --- | --- | --- |
@@ -951,9 +958,9 @@ No node, no signer and no store was run for this LIP.
   child that widens its row refuses for the widening, also when a notary
   certified it.
 
-The following consequences belong to sections 8 to 10: to the Draft text of
-sections 8 and 9, and to section 10, which both owners decided, where its rows
-meet the checks of section 9.
+The following consequences belong to sections 8 to 10: to sections 8 and 9,
+in force since version 0.1.51, and to section 10, which both owners decided,
+where its rows meet the checks of section 9.
 
 - **A class is as strong as the custody of its holder keys.** A holder key
   admits whatever value it writes into a name that it holds (R9.7). It is a
@@ -983,8 +990,10 @@ still run on a real store.
 
 Sections 8 to 10 add nothing to Grant v3 either: a row of profile `/2` names
 its grantee by key and always names its notary. Their two vector files are
-Draft vectors: they follow J10, J11 and J12, which are pending, and the
-vectors of section 10 follow J9, which is decided, through the checks of J10.
+Draft vectors: they follow J10, J11 and J12, in force since version 0.1.51
+without the co-author's answer, and the vectors of section 10 follow J9, which
+both owners decided, through the checks of J10. The codes they name stay
+proposals.
 They change no vector of section 7.
 
 ## Open questions
@@ -1009,10 +1018,11 @@ They change no vector of section 7.
   attestation.
 - **A run** of the reads of section 3 on nodes, and of section 5 on a store
   that is qualified under LIP-0014 J1.4.
-- **The co-author's agreement** to J10 and J12, on which sections 8 and 9
-  rest, and to J11 in LIP-0010. Section 10 (J9) is decided and agreed by both
-  owners on 2026-11-15, and no child of a row without a certifier is
-  admitted before J10 and J11 are decided.
+- **The co-author's answer** on J10 and J12, on which sections 8 and 9
+  rest, and on J11 in LIP-0010. All three are in force since version 0.1.51
+  without it, and it is folded in by amendment. The admission of a child of a
+  row without a certifier (section 10) rests on J9, which both owners agreed,
+  and on J10 and J11, which only Ivan Oparin has decided.
 - **The four bounds of R8.4** and a bound on the landlords of a class.
 - **The stop coins of a group** whose template names a certifier (section
   8).
