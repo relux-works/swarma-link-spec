@@ -205,7 +205,7 @@ with a delay.
 | --- | --- | --- |
 | AO1 | An overwrite of the pin that no rotation statement of section 5 carries is pending first. The administrator writes it, with that account's authentication, as a pending pin: the seven members of section 1 followed by `effective_height`, the height of the root's chain from which it takes effect. Until the active chain of the loader's own node reaches `effective_height`, the loader keeps the current pin. | |
 | AO2 | `effective_height` is at least `pinned_at_height` of the pending pin plus the delay `D`. The draft proposes `D` = 1008 blocks, about seven days. A pending pin with a shorter delay is not accepted. The administrator writes `pinned_at_height`, so this rule alone does not bound the window; AO3 does. | `PIN_PENDING_INVALID` |
-| AO3 | The loader MUST notify the owner when it finds a pending pin, and again at every load while the pin is pending. The notice names the current and the pending `root_name` and `pinned_grant_key`, the SHA-256 of the pending pin and `effective_height`. It goes over a channel that the deployment names and that the agent's OS user can neither write nor suppress, and the loader records each notice outside the agents' write authority. When it first finds the pending pin, the loader records the height `h_first` of the tip of its own node's active chain and the effect height `E` = max(`effective_height`, `h_first` + `D`), and every notice names `E`. A pending pin takes effect only when that active chain reaches `E`; without a notice it never takes effect. A backdated `pinned_at_height` or a loader that finds the pin late therefore shortens nothing: the owner has at least `D` blocks after the first notice. | |
+| AO3 | The loader MUST notify the owner when it finds a pending pin, and again at every load while the pin is pending. The notice names the current and the pending `root_name` and `pinned_grant_key`, the SHA-256 of the pending pin and `effective_height`. It goes over a channel that the deployment names and that the agent's OS user can neither write nor suppress, and the loader records each notice outside the agents' write authority. The loader records the anchor `h_first` at the first load at which it finds the pending pin while its own node is caught up: the node is not in initial block download and knows no header more than `LAG` blocks above its tip (LIP-0022 B2.3, `LAG` = 1 block as proposed there). `h_first` is the greater of the height of that node's tip and the height of the best header it knows. The loader then records the effect height `E` = max(`effective_height`, `h_first` + `D`), and every later notice names `E`. While the node is not caught up, the loader keeps the current pin, sends the notice without `E`, and records no `h_first`; a stale tip is never the anchor. A pending pin takes effect only when the active chain of that node reaches `E`; without a notice, or without a recorded `h_first`, it never takes effect. A backdated `pinned_at_height`, a loader that finds the pin late, or a node that comes back behind the chain therefore shortens nothing: the owner has at least `D` blocks after the first notice that names `E`. | |
 | AO4 | Until the pending pin takes effect under AO3, the currently pinned grant key can cancel. That is the key that the loader currently accepts for the root: the pinned key, or the `new_grant_key` of the last rotation statement that continues the chain from the pin (section 5). A cancellation is a statement `swarma-root-cancel/1` with the members `schema`, `root_name` and `pending_sha256`, in this order, signed over `SHA-256("swarma-root-cancel-v1" \|\| statement bytes)`. The loader accepts it from any channel, because its signature authenticates it. It then discards the pending pin and records the cancellation. A cancellation that arrives when the active chain has reached `E` changes nothing, because the pin has taken effect. | |
 | AO5 | An overwrite that a rotation statement of section 5, signed by the pinned key, carries takes effect at once, as today. The old key has agreed, and nothing remains to cancel. | |
 | AO6 | The pending pin and the record of notices, of `h_first` and `E` and of cancellations live where the agent's OS user cannot write, like the pin itself (section 1). A process of that user can write none of them, nor shorten the delay. The administrator account can still write them (see the limits below). | |
@@ -213,14 +213,15 @@ with a delay.
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
 | S51-1 | On Alisa's host the administrator writes a pending pin with a delay of 1008 blocks; the loader finds it at once and sends the notice; nobody cancels: the pin takes effect at `E`, which here equals `effective_height` | The same pin with a delay of 144 blocks: `PIN_PENDING_INVALID`. A pin of which no notice was sent: it never takes effect. Until `E` the loader keeps the current pin. A backdated pin, with `pinned_at_height` at the tip minus 1008 and `effective_height` at the tip, found at the tip: `E` is the tip plus 1008, and the loader keeps the current pin until then. |
-| S51-2 | Alisa's pinned grant key signs `swarma-root-cancel/1` for the pending pin one block before `E`: the pin is discarded and the cancellation recorded. For the backdated pin of S51-1, a cancellation one block after the first notice: discarded. For an honest pin that the loader first finds 900 blocks after `pinned_at_height`, because its node was off, a cancellation at `effective_height` plus 2: discarded, because `E` is `h_first` plus 1008 | The same cancellation at `E`: nothing changes. A cancellation signed by Karl's key: ignored. An overwrite that a rotation statement of the pinned key carries: in effect at once, with no delay (AO5). |
+| S51-2 | Alisa's pinned grant key signs `swarma-root-cancel/1` for the pending pin one block before `E`: the pin is discarded and the cancellation recorded. For the backdated pin of S51-1, a cancellation one block after the first notice: discarded. For an honest pin that the loader first finds 900 blocks after `pinned_at_height`, on a node that is caught up (the host was off and the node has since left initial block download and synced its headers), a cancellation at `effective_height` plus 2: discarded, because `h_first` is the caught-up tip and `E` is `h_first` plus 1008 | The same cancellation at `E`: nothing changes. A cancellation signed by Karl's key: ignored. An overwrite that a rotation statement of the pinned key carries: in effect at once, with no delay (AO5). |
+| S51-3 | Alisa's host was off for 900 blocks. At the first load after it comes back, the node is in initial block download at a tip 900 blocks behind, and the loader finds the pending pin: it keeps the current pin, sends a notice without `E` and records no `h_first`. Two loads later the node has left initial block download and its best header is at most one block above its tip, at height `T`: `h_first` = `T`, `E` = max(`effective_height`, `T` + 1008), and the owner has 1008 blocks from there | A loader that took `h_first` from the stale tip at the first load would give `E` = `effective_height` and a window of 108 blocks; AO3 refuses that anchor. A node that has left initial block download but still knows a header 500 blocks above its tip: not caught up, no `h_first`. A pending pin on a host whose node never catches up: it never takes effect, and the current pin stays. |
 
 What the rules give and what they leave:
 
 - **An overwrite through the loader is seen before it counts.** A pending
   pin cannot be hidden from the loader or take effect early: the owner is
-  told for at least `D` blocks after the first notice, about seven days, and
-  the old key can cancel until the pin takes effect.
+  told for at least `D` blocks after the first notice that names `E`, about
+  seven days, and the old key can cancel until the pin takes effect.
 - **The administrator account itself is outside this section.** Section 1
   makes that account the owner of the pin, and AO6 puts the records beyond
   the agent's OS user only. An administrator account that rewrites the pin
@@ -245,6 +246,16 @@ What the rules give and what they leave:
 - **The notice is only as good as its channel.** A deployment whose notice
   channel the attacker controls has no notice. AO3 then still holds the pin
   for the delay, and nothing tells the owner.
+- **The anchor is only as good as the node's view of the chain.** AO3 takes
+  `h_first` from a node that is caught up by its own account: out of initial
+  block download, with no header far above its tip. A node that has no peers
+  reports a stale tip and no header above it, and meets that test while it
+  is behind. A node whose host was off for less than the tip age at which
+  Namecoin Core enters initial block download is in the same position until
+  it has synced its headers. The loader cannot tell either case from the node
+  alone. A deployment that gives the loader the comparison nodes of LIP-0022
+  B2.1 and records `h_first` only in a healthy observation (B2.5) closes
+  this; whether the loader requires them is open.
 
 Under Draft [LIP-0029](LIP-0029-owner-control.md), configuration moves to
 the owner's L2 devices. Whether an L2 device of the old pin's owner may
@@ -407,4 +418,6 @@ Ivan Oparin, as the author of that paper.
   cancel, and the draft proposes an exception); whether an L2 device of
   LIP-0029 can cancel; the code `PIN_PENDING_INVALID`; where the pin, the
   pending pin and the records of AO6 could live beyond the administrator
-  account; and the co-author's agreement.
+  account; whether the loader requires the comparison nodes of LIP-0022 for
+  `h_first`, against a node without peers that reports a stale tip; and the
+  co-author's agreement.

@@ -2,9 +2,10 @@
 
 ## 0.1.51 — 2026-11-16
 
-Adds Draft text for eight decisions of Ivan Oparin of 2026-11-16: five that
-the lead recorded in the consolidated brief, and three on owner control that
-the lead relayed at about 00:40Z. The text is written optimistically: the
+Adds Draft text for eleven decisions of Ivan Oparin of 2026-11-16: five that
+the lead recorded in the consolidated brief, three on owner control that
+the lead relayed at about 00:40Z, and three more on owner control relayed at
+about 01:15Z and 01:40Z. The text is written optimistically: the
 co-author's agreement is pending, and until it is given every text that it
 revises stands. Puts J10, J11 and J12 in force. Every LIP stays a Draft,
 nothing is implemented, no v3 byte changes, and no vector outcome changes;
@@ -63,8 +64,14 @@ The trust-root pin (LIP-0015 section 5.1). An overwrite by the administrator
 that no rotation statement carries is pending for a stated delay, proposed as
 1008 blocks. The loader notifies the owner over a channel the agent cannot
 reach. It takes the pin into effect only at `E`, the later of
-`effective_height` and its own tip at the first notice plus the delay, so a
-backdated pin or a late loader leaves the owner the whole delay. The currently
+`effective_height` and `h_first` plus the delay, where `h_first` is the
+height its node reports at the first notice on a node that is caught up: out
+of initial block download and with no header more than `LAG` above its tip
+(LIP-0022 B2.3), taken as the greater of the tip and the best header. Until
+the node is caught up the loader keeps the current pin and records no
+anchor. A backdated pin, a late loader or a node that comes back behind the
+chain leaves the owner the whole delay (S51-3). A node without peers that
+reports a stale tip is stated as a limit. The currently
 pinned grant key can cancel until then with `swarma-root-cancel/1` (AO1 to
 AO6). The administrator account owns the pin and the loader's records, so
 whoever takes it can rewrite the pin directly; the section states this as a
@@ -87,11 +94,11 @@ destroyed, the revocation with the other devices, and the list hash in the
 name by the cold key; per command the device signature, the hash from the name
 and `gettxout` of the seal; on loss any device broadcasts the revocation, and a
 rollback cannot restore the device (O8.8 to O8.10). The name pins only the
-hash; the list is addressed by its content; the sender attaches it to every
-envelope, and executors cache it by hash. The owner's domain, at
+hash; the list is addressed by its content; the sender attaches it, and
+executors cache it by hash. The owner's domain, at
 `/.well-known/swarma/device-list/<h(D)>`, and a Nostr event are secondary
 paths, and their unavailability never blocks a sender that attaches the list
-(O3.11 to O3.14, `DEVICE_LIST_UNAVAILABLE`). A messenger device is an ordinary
+(O3.11 to O3.14). A messenger device is an ordinary
 record: `alg` `matrix-ed25519` for a Matrix device's Ed25519 key, `ceiling` 1
 and no presence. A Megolm event counts as an L1 owner command only when the
 receiver binds its session to that key through the Olm channel; forwarded,
@@ -99,6 +106,36 @@ backed-up or imported sessions and every event whose device it cannot bind are
 refused (`MESSENGER_UNAUTHENTICATED`), and plaintext never counts (OM1 to
 OM7). Section 3.2 gains an example list of 789 bytes with its hash, so that an
 implementation can check its encoding. Cases S29-16 to S29-18.
+
+Owner control, three decisions relayed at about 01:15Z and 01:40Z (LIP-0029
+sections 3.5 and 3.6; decisions 17 to 19). Distribution is refined: the
+sender attaches the full list when it changes and at first contact with a
+receiver, and otherwise the envelope carries the hash alone; the receiver
+caches by hash; an unknown hash refuses with the named `LIST_UNKNOWN`, which
+replaces the draft's `DEVICE_LIST_UNAVAILABLE`, and the sender re-sends; no
+silent fetch replaces the refusal, and a reader fetches only from the two
+places that the owner's name value names. The Nostr path is a parameterized
+replaceable event with the tag `d` `swarma-device-list`, signed by the Nostr
+key in the name; a storage service by grant comes later (O3.12 to O3.14).
+An algorithm registry gives every `alg` of a device record its key
+encoding, its signature encoding, its presence semantics and its highest
+level: Secure Enclave P-256, FIDO2/WebAuthn with the UP and UV flags as
+signed presence, YubiKey PIV P-256 and P-384, TPM 2.0 P-256, Android
+Keystore/StrongBox P-256, Matrix device Ed25519, XMPP OMEMO, Signal identity,
+Nostr BIP-340, OpenPGP Ed25519, and SSH Ed25519 and sk-ecdsa; Telegram
+secret chats and WhatsApp are not supported, with the reason stated. Only
+Matrix has a verifier in M5n; the other entries are reserved, and a receiver
+without a verifier admits the list and refuses the device's commands
+(O3.15 to O3.17, `DEVICE_ALG_UNSUPPORTED`). The D2 signer threat model is
+accepted with limits: a key without per-signature presence is L1 at most,
+the presence flag is a claim, and a host console with agent shells is not
+L2. L2 is strengthened at the signer: `biometryCurrentSet` with no passcode
+fallback, a fresh authentication for every signature without `LAContext`
+reuse, the fields shown by the signer itself, verified on a real Mac; several
+L2 devices each have a record, a finger change invalidates that device's key
+and the device returns by the slow add path, and two L2 devices are
+recommended (O3.18 to O3.20, O6.2). Case S29-19. The staging relayed with the
+decision is recorded in "What can be built" and nothing beyond it.
 
 Puts J10, J11 and J12 in force. Ivan Oparin decided them on 2026-11-15, and on
 2026-11-16 decided to put them in force without waiting for the co-author's
@@ -131,7 +168,11 @@ version: the cancellation window of section 5.1 ended before the pin took
 effect; the claim that the administrator account cannot hide an overwrite was
 not held by the rules; the surfaces that read the endorsement were not
 revised; and SH5 refused the last confirmed head after a reorganisation. Two
-citation slips are corrected (§7.7, «Доставка памяти агенту»).
+citation slips are corrected (§7.7, «Доставка памяти агенту»). The delta
+review of 82c5eda (rev372 r2) found two more, fixed in this version: the
+anchor `h_first` of LIP-0015 AO3 could come from a lagging node and shorten
+the window, and OM7 of LIP-0029 left step 5 of the admission to refuse a
+plain encrypted text that carries no `devices` member.
 
 Reconciliation. The text cites:
 - the platform book: chapter 22 §22.5, chapter 6 §6.6.2, chapter 7 §7.7 and
@@ -149,9 +190,11 @@ and 11 after it; the citations name sections by title.
 
 Pointers. The key registry adds the emergency fee reserve key and the frame key
 of a key holder, marks the child-seal key, the grant key and the seal keys,
-and gives the device key a Matrix form and the device seal key no holder. The
-key map, LIP-0020, LIP-0024 and LIP-0029 point to the new text. LIP-0029 gains
-the fourth body kind and the reading of SH3 to SH6 for `swarma-devices`.
+and gives the device key a Matrix form, the reserved entries of the registry
+and the enrolment rule of a Secure Enclave key at ceiling 2, and the device
+seal key no holder. The key map, LIP-0020, LIP-0024 and LIP-0029 point to the
+new text. LIP-0029 gains the fourth body kind and the reading of SH3 to SH6
+for `swarma-devices`.
 
 ## 0.1.50 — 2026-11-15
 

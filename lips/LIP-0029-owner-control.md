@@ -1,11 +1,11 @@
 # LIP-0029: Owner control by signed envelopes and a pinned device list
 
 - **Status:** Draft, written optimistically. Ivan Oparin accepted the
-  thirteen decisions of this LIP on 2026-11-15 and asked that the text be
-  written without waiting for the co-author: where the co-author objects, the
-  point is fixed separately. The co-author's agreement is pending, no rule of
-  this LIP is adopted, and until the co-author agrees every text that this LIP
-  revises stands as written.
+  thirteen decisions of this LIP on 2026-11-15, and six more on 2026-11-16,
+  and asked that the text be written without waiting for the co-author: where
+  the co-author objects, the point is fixed separately. The co-author's
+  agreement is pending, no rule of this LIP is adopted, and until the
+  co-author agrees every text that this LIP revises stands as written.
 - **Created:** 2026-11-15
 - **Affects:** how an owner directs and bounds its own executors and the key
   holders of its agents: the signed envelope and its typed body kinds, the
@@ -59,11 +59,19 @@ This LIP gives the owner a voice that the receivers check:
 8. The grant key grants to others only. The owner's devices
    speak for the owner at its own executors, and there is no statement key
    (section 10). This is where R5 closes.
-9. Draft text of 2026-11-16: the sender attaches the list to its envelopes,
-   and the owner's domain and a Nostr event are secondary paths (section
-   3.5); a Matrix device is an ordinary record at L1 without presence, and
-   only an end-to-end encrypted event bound to its session counts (section
-   4.1).
+9. Draft text of 2026-11-16: the sender attaches the list when it changes
+   and at first contact with a receiver, otherwise the envelope carries the
+   hash and the receiver reads its cache; an unknown hash refuses by name and
+   the sender re-sends; the owner's domain and a Nostr replaceable event are
+   secondary paths (section 3.5). A Matrix device is an ordinary record at L1
+   without presence, and only an end-to-end encrypted event bound to its
+   session counts (section 4.1).
+10. Draft text of 2026-11-16: an algorithm registry gives every `alg` of a
+    device record its key encoding, its signature encoding, its presence
+    semantics and its highest level; only the Matrix entry has a verifier in
+    M5n. L2 is strengthened: a Secure Enclave key under `biometryCurrentSet`
+    without passcode fallback, a fresh authentication for each signature, and
+    a signer that shows the fields first (section 3.6).
 
 The text states its limits in place: a key without presence serves any code
 on its device, the presence flag is a claim, and a console that agents can
@@ -107,6 +115,17 @@ co-author's agreement is pending.
 | 15 | The name pins only the hash of the device list. The list is addressed by its content, so any copy that hashes right is valid. The sender attaches the current list to its envelopes, which is the primary path, and executors cache it by hash. A well-known path on the owner's domain and a Nostr event are secondary. Their unavailability never blocks a sender that attaches the list. | 3.5 |
 | 16 | A messenger device key (a Matrix device's Ed25519 key, an XMPP OMEMO key) is an ordinary device record with the messenger's algorithm, an L1 ceiling and no presence. An end-to-end encrypted event authenticated by that device's session counts as an L1 command. Forwarded or backup-restored session keys are refused as unauthenticated, and plaintext never counts. | 4.1 |
 
+**Decisions of 2026-11-16, later.** Ivan Oparin decided three more points,
+which the lead relayed at about 01:15Z (17 and 18) and, with the keeper, at
+about 01:40Z (19). They are written optimistically: the co-author's agreement
+is pending. Decision 17 refines decision 15 and stands where the two differ.
+
+| # | Decision | Section |
+| --- | --- | --- |
+| 17 | The sender attaches the full list on change and on first contact with a peer; otherwise the envelope carries only the list hash. The receiver caches by hash. An unknown hash is refused with a named `LIST_UNKNOWN`, and the sender re-sends; the list is never silently fetched from an untrusted place. A Nostr replaceable event, parameterized, with a `d` tag for the device list and signed by the Nostr key in the name, is a real secondary channel. A storage service by grant comes later. | 3.5 |
+| 18 | An algorithm registry for device records. Each entry gives the key encoding, the signature encoding, the presence semantics and the highest level. The entries: Apple Secure Enclave P-256; FIDO2/WebAuthn (ES256 or EdDSA, with the UP and UV flags as signed presence, L2-capable); YubiKey PIV P-256 and P-384; TPM 2.0 P-256; Android Keystore/StrongBox P-256; Matrix device Ed25519 (L1, Olm-direct sessions only); XMPP OMEMO (XEdDSA Curve25519, L1); Signal identity (XEdDSA, L1, through a client API); Nostr BIP-340; OpenPGP Ed25519; SSH Ed25519 and sk-ecdsa (FIDO). Telegram secret chats and WhatsApp are not supported: no per-device signing identity that a verifier can use, or no client API. Only Matrix has a verifier in M5n; the other entries are reserved. | 3.6 |
+| 19 | The D2 signer threat model is accepted, with limits: a key without per-signature presence can be used by any code on that Mac, so it is L1 at most, within limits. The presence flag is a claim, not proof. A host console is not L2 when agents have shells on that host. L2 is strengthened: the key's access control is Secure Enclave `biometryCurrentSet` with no passcode fallback, so the key is invalidated when the enrolled fingers change; every signature needs a fresh authentication, with no `LAContext` reuse; the signer itself shows the fields before Touch ID; this is verified on a real Mac. Several L2 devices are allowed, each with its own record; a finger change invalidates that device's key, and the device is re-added by the slow, guarded add path. At least two L2 devices are recommended. | 3.6, 6, Honest limits |
+
 The reviewer's answer adds one condition that the decision takes over with
 the rest: the model's process does not hold the right. Keys, tokens and
 privileges of an effect sit at a gate under another OS account (rule O1.6).
@@ -134,15 +153,23 @@ has decided one.
    a P-256 device signs envelopes only (section 7).
 6. The action `swarma/device/revoke` of the fast path (section 8.2).
 7. The order of admission and its refusal codes (section 11).
-8. Under decision 15: the well-known path, the tag `x` of the Nostr event,
-   the duty of the sender to attach, and the code `DEVICE_LIST_UNAVAILABLE`
-   (section 3.5). The kind of the Nostr event is open.
+8. Under decisions 15 and 17: the well-known path, the `d` tag value
+   `swarma-device-list` of the Nostr event, the sender's record of what each
+   receiver admitted, and that the secondary paths serve only a reader that
+   has no sender to ask (section 3.5). The kind of the Nostr event is open.
+   The code `LIST_UNKNOWN` is decision 17's; it replaces the draft's
+   `DEVICE_LIST_UNAVAILABLE` of the earlier text of this date.
 9. Under decision 16: the value `matrix-ed25519` and the hex form of its key,
    `ceiling` exactly 1, the chain of OM2, the replay key of OM5, the member
    `swarma.owner_command`, the reading of a plain encrypted text as an L1
    `instruct`, and the code `MESSENGER_UNAUTHENTICATED` (section 4.1).
 10. Under decision 14: that `k_D` is neither the device key nor any other
     key, and rules O8.8 to O8.10 (section 8.3).
+11. Under decision 18: the `alg` values and the encodings of the reserved
+    entries, and the code `DEVICE_ALG_UNSUPPORTED` (section 3.6).
+12. Under decision 19: that the conditions of O3.19 are rules for the owner's
+    signer, which a verifier cannot check; that an invalidated key leaves the
+    list by section 8 and returns by section 9 as a new device (O3.20).
 
 ## What can be built from this LIP
 
@@ -155,7 +182,14 @@ has decided one.
 | The member in a live name | No | Every verifier of that name on a LIP-0010 reader (section 3.4) |
 | Revocation by seal | No | The script of a device seal and the fee of `tx_revoke_D`; custody is decided by Figure 1 (open questions) |
 | The device-list check of a Matrix device: list bytes, the record of OM1 and the L1 ceiling | Yes | The co-author's agreement; a receiver that decrypts Megolm and makes the chain of OM2 itself |
-| L2 by presence | No | A qualified signer provider; no provider is qualified (Honest limits) |
+| A verifier for an entry of section 3.6 other than `matrix-ed25519`, `p256` and `bip340` | No | The entry leaves the reserved state: its encoding agreed, a verifier and vectors |
+| L2 by presence | No | A signer that meets O3.19, verified on a real Mac; no signer provider is qualified yet (Honest limits) |
+
+Staging, as relayed with decision 19 and no further: L1 from Element is M5n;
+L2 is the M5 signer. The rule that an unsigned message is ignored (decision 1)
+switches on at a deployment only after M5n works live, Ivan Oparin has tested
+it himself, and a break-glass path for lost devices is ready; until then a
+deployment observes and labels only.
 
 ## Motivation
 
@@ -268,8 +302,8 @@ section 2.1, with exactly these members in this order:
 | # | Member | Rule |
 | --- | --- | --- |
 | 1 | `label` | Printable ASCII, 1 to 64 bytes. Names the device for people; carries no authority. |
-| 2 | `alg` | `bip340` or `p256`; for a messenger device `matrix-ed25519` (section 4.1, Draft of 2026-11-16) |
-| 3 | `key` | For `bip340`: 64 lowercase hex, a valid x-only secp256k1 key under BIP-340 `lift_x`. For `p256`: 66 lowercase hex, the 33-byte compressed SEC1 point: prefix `02` or `03`, `x` below the field prime, on the curve, not the identity. For `matrix-ed25519`: 64 lowercase hex, the 32-byte Ed25519 public key of a Matrix device (section 4.1). |
+| 2 | `alg` | An `alg` value of the registry of section 3.6 (Draft of 2026-11-16): `bip340` or `p256`; for a messenger device `matrix-ed25519` (section 4.1); a reserved value of the registry otherwise. |
+| 3 | `key` | For `bip340`: 64 lowercase hex, a valid x-only secp256k1 key under BIP-340 `lift_x`. For `p256`: 66 lowercase hex, the 33-byte compressed SEC1 point: prefix `02` or `03`, `x` below the field prime, on the curve, not the identity. For `matrix-ed25519`: 64 lowercase hex, the 32-byte Ed25519 public key of a Matrix device, a canonical encoding of a point that is not of small order (section 4.1). For every other `alg`: the key encoding of its registry entry (section 3.6). |
 | 4 | `presence` | `true` or `false`. The owner's claim, made when the device is enrolled, that the key signs only with a person present. It is not proven (Honest limits). |
 | 5 | `ceiling` | `0`, `1` or `2`: the highest level the device may sign. |
 | 6 | `seal` | `{"txid":…,"vout":…}`, the outpoint of the device's revocation seal: 64 lowercase hex in display byte order and a canonical non-negative integer. |
@@ -375,28 +409,84 @@ observation profile (LIP-0008 section 3), and the J6 text of LIP-0008 section
 #### 3.5. Distribution of the device list (Draft, 2026-11-16)
 
 Ivan Oparin decided on 2026-11-16, as the lead relayed at about 00:40Z, how
-the list reaches its readers (decision 15). The text is written
-optimistically: the co-author's agreement is pending.
+the list reaches its readers (decision 15), and refined it at about 01:15Z
+(decision 17). The text is written optimistically: the co-author's agreement
+is pending.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | O3.11 | The name pins the hash and nothing else (O3.4). The list is addressed by its content: every copy whose exact octets hash to the pinned `sha256` is the list, whoever serves it, and no other copy is. | `DEVICE_LIST_MISMATCH` |
-| O3.12 | The primary path is the envelope. A sender MUST attach the current list to every envelope that it signs, in `device_list` (section 5.1), so that verification needs only the envelope and the name. An executor and a key holder cache every list that they verified, keyed by `h(D)`. | |
-| O3.13 | Two secondary paths serve a reader that holds no list with the pinned hash and received none attached. (a) The owner's domain: `https://<domain>/.well-known/swarma/device-list/<h(D)>`, where `<domain>` is the domain of the NIP-05 identifier in the owner's name value (LIP-0010 section 3), and the body of the response is the exact octets of the list. (b) A Nostr event signed by the key that the owner's name value yields for the Nostr channel, whose `content` is the exact octets of the list and which carries the tag `["x","<h(D)>"]`. A copy from either counts only under O3.11. | |
-| O3.14 | The unavailability of a secondary path never blocks an envelope that carries the list. A reader that holds no list with the pinned hash, received none attached and can fetch none refuses the command. | `DEVICE_LIST_UNAVAILABLE` |
+| O3.12 | The primary path is the envelope. Every envelope carries the list hash in `devices` (section 5.1). A sender MUST attach the full list in `device_list` when the list has changed since the last envelope that this receiver admitted from it, and at first contact, which is every envelope to a receiver of which the sender holds no record that it admitted an envelope under this `h(D)`. Otherwise the envelope carries the hash alone. An executor and a key holder cache every list that they verified under O3.11, keyed by `h(D)`, and verify a later envelope from the cache. | |
+| O3.13 | Two secondary paths serve a reader that has no sender to ask: a messenger event (section 4.1), or a reader that starts with an empty cache and no envelope in hand. (a) The owner's domain: `https://<domain>/.well-known/swarma/device-list/<h(D)>`, where `<domain>` is the domain of the NIP-05 identifier in the owner's name value (LIP-0010 section 3), and the body of the response is the exact octets of the list. (b) A parameterized replaceable Nostr event signed by the key that the owner's name value yields for the Nostr channel, with the tag `["d","swarma-device-list"]`, whose `content` is the exact octets of the current list. Both places are named by the owner's name value, and a reader fetches from no other: not from a URL in an envelope or an event, not from a relay's or a peer's hint. A copy from either counts only under O3.11. A storage service under a grant is a later third path and is not specified here. | |
+| O3.14 | A receiver that holds no list with the hash that an envelope names refuses by name, and the sender re-sends the envelope with the list attached. The refusal is never replaced by a silent fetch. A reader of a messenger event that holds no list with the pinned hash and finds none on the secondary paths refuses with the same code. The unavailability of a secondary path never blocks an envelope that carries the list. | `LIST_UNKNOWN` |
 
 No path adds a device. The pin comes from the name on the reader's own node
 (O5.3, O9.2), and a copy only supplies octets that hash to it. A domain that
 drops the file, or a relay that withholds the event, delays the readers that
 rely on it and does nothing else. An event of a messenger device (section
-4.1) carries no attachment, so its readers rely on their cache and the
-secondary paths.
+4.1) carries neither the list nor its hash, so its readers rely on their cache
+and the secondary paths. The kind of the Nostr event is open; a relay keeps
+the latest event for the `d` tag, and a reader takes it only where its
+`content` hashes to the pin.
+
+#### 3.6. Algorithm registry and presence semantics (Draft, 2026-11-16)
+
+Ivan Oparin decided on 2026-11-16, as the lead relayed at about 01:15Z, that
+device records have an algorithm registry (decision 18), and at about 01:40Z,
+as the lead and the keeper relayed, what presence means and how L2 is
+strengthened (decision 19). The text is written optimistically: the
+co-author's agreement is pending.
+
+Each row is one entry. The `alg` value is the draft's; the entry is the
+decision's. The signature encoding is over the signing preimage of O4.4,
+unless the row says otherwise. "Signed presence" means that the signature
+itself covers a flag that the authenticator sets only with a person present;
+"claimed presence" means that the owner claims it in the record and the
+signature shows nothing. The highest level is the ceiling that a record of
+this entry may carry; O3.2 and O3.19 still apply.
+
+| Entry | `alg` | Key encoding | Signature encoding | Presence semantics | Highest level |
+| --- | --- | --- | --- | --- | --- |
+| Apple Secure Enclave P-256 | `p256` | 33-byte compressed SEC1 point, 66 lowercase hex (section 3.1) | 64 bytes `r‖s`, low `s`, over SHA-256 (O4.2) | Claimed: the access control of O3.19 makes each signature need a fresh biometric authentication, which the verifier cannot see | 2, under O3.19 |
+| FIDO2/WebAuthn, ES256 or EdDSA | `fido2-es256`, `fido2-eddsa` | The COSE key of the credential: P-256 as the 33-byte compressed point, Ed25519 as 32 bytes; lowercase hex | The assertion: `authenticatorData` and `clientDataJSON` beside the signature, which is ES256 as 64 bytes `r‖s` or EdDSA as 64 bytes over `authenticatorData ‖ SHA-256(clientDataJSON)`; the `challenge` of `clientDataJSON` is the SHA-256 of the signing preimage | Signed: the flags byte of `authenticatorData`; UP (bit 0) is a touch, UV (bit 2) is a verified person. A record with `presence` `true` needs UV on every signature | 2, with UV |
+| YubiKey PIV P-256 and P-384 | `p256`, `p384` | P-256 as above; P-384 as the 49-byte compressed SEC1 point, 98 lowercase hex | P-256 as O4.2; P-384 as 96 bytes `r‖s`, low `s`, over SHA-384 of the signing preimage | Claimed: a touch policy of the slot is set at enrolment and the PIN is cached; the signature shows neither | 1 |
+| TPM 2.0 P-256 | `p256` | As above | As O4.2 | None: a TPM key signs for any process with the authorization value | 1 |
+| Android Keystore and StrongBox P-256 | `p256` | As above | As O4.2 | Claimed: user authentication per use with invalidation on biometric enrolment is the counterpart of O3.19 and is not verified on a device | 1 until that check is done on a real device (open questions) |
+| Matrix device Ed25519 | `matrix-ed25519` | 32-byte Ed25519 key, 64 lowercase hex (OM1) | No envelope signature: the Megolm message signature of a session bound to the device over Olm (OM2); forwarded, restored and imported sessions never count (OM3) | None | 1 |
+| XMPP OMEMO | `omemo-xeddsa` | The 32-byte Curve25519 identity key of the OMEMO device, 64 lowercase hex | XEdDSA, 64 bytes, over the signing preimage, as OMEMO signs its signed pre-key; the session binding is open | None | 1 |
+| Signal identity | `signal-xeddsa` | The 32-byte Curve25519 identity key, 64 lowercase hex, read through a client API | XEdDSA, 64 bytes; the binding of a message to the identity key through a client API is open | None | 1 |
+| Nostr BIP-340 | `bip340` | 32-byte x-only key, 64 lowercase hex (section 3.1) | BIP-340, 64 bytes (O4.3) | None: a browser or client signer may ask the person, and the signature shows nothing | 1 |
+| OpenPGP Ed25519 | `openpgp-ed25519` | The 32-byte Ed25519 key of the key packet, 64 lowercase hex | The raw 64-byte Ed25519 signature over the signing preimage; an OpenPGP signature packet is not admitted until a profile reads it | Claimed where a hardware token holds the key; none otherwise | 1 |
+| SSH Ed25519 and sk-ecdsa (FIDO) | `ssh-ed25519`, `ssh-sk-ecdsa` | Ed25519 as 32 bytes; sk-ecdsa as the 33-byte compressed P-256 point; lowercase hex, from the OpenSSH key blob | Ed25519 as the raw 64-byte signature; sk-ecdsa as the OpenSSH signature with its flags byte and counter beside `r‖s` | Ed25519: none. sk-ecdsa: signed, the flags byte of the signature, as FIDO2 | Ed25519: 1. sk-ecdsa: 2, with UV |
+
+Not supported:
+
+| System | Reason |
+| --- | --- |
+| Telegram secret chats | No per-device signing identity that a verifier can use: a secret chat is keyed by a Diffie-Hellman exchange and signs nothing, and no client API exposes its keys. |
+| WhatsApp | No client API: the identity keys exist in the client and no interface exposes them or binds a message to one. |
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| O3.15 | Every `alg` of a device record is an `alg` value of this registry, and `key` has the key encoding of its entry. A value outside the registry refuses the list. | `DEVICE_LIST_INVALID` |
+| O3.16 | A verifier verifies the signatures of an entry under its signature encoding and takes the presence semantics and the highest level from the entry. A record whose `ceiling` exceeds the highest level of its entry refuses the list. | `DEVICE_LIST_INVALID` |
+| O3.17 | Of the entries, only `matrix-ed25519` has a verifier in M5n (section 4.1). `p256` and `bip340` have the rules of section 4 and wait for the registration of section 5.4. Every other entry is reserved: it is registered so that a list may name it, and it has no verifier and no vector. A receiver without a verifier for the `alg` of a record admits the list and refuses every command of that device. | `DEVICE_ALG_UNSUPPORTED` |
+| O3.18 | The D2 signer threat model is accepted, with limits. A key without per-signature presence can be used by any code on that Mac, so a record of such a key has `ceiling` at most 1 and acts within the L1 limits of the executor's policy. The presence flag is a claim, not proof (O3.1, Honest limits). A host console is not L2 when agents have shells on that host (O6.3). | `DEVICE_LIST_INVALID` for a ceiling above the entry |
+| O3.19 | A record with `presence` `true` and `ceiling` 2 of the Secure Enclave entry is enrolled only for a key whose access control is `biometryCurrentSet` with no passcode fallback, so that the key is invalidated when the enrolled fingers change; whose every signature needs a fresh authentication, with no reuse of an `LAContext`; and whose signer shows the fields of the envelope itself before Touch ID (O1.5). The owner's client verifies these three on a real Mac before it enrols the record. A verifier reads only the record and cannot check them. | None at the verifier |
+| O3.20 | An owner may hold several L2 devices, each with its own record and its own seal. When the enrolled fingers of a device change, its key is invalidated and signs nothing more; the device leaves the list by section 8 and returns, with a new key and a new seal, by the slow add path of section 9. At least two L2 devices are RECOMMENDED, so that one invalidated key leaves the owner an L2 device. | |
+
+A `p256` record says nothing about which of its four entries holds the key.
+The owner knows at enrolment and claims `presence` and `ceiling` from the
+entry; the verifier reads the claim. The FIDO2 and sk-ecdsa entries are the
+two whose presence a verifier sees in the signature, and they conflict with
+`swarm-envelope/2` section 2.4 until the reviewed change of section 5.4
+(Reconciliation, X16).
 
 ### 4. Device keys and signatures
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O4.1 | A device key is a P-256 key or a BIP-340 key, as its record says. Under section 4.1 it may also be the Ed25519 key of a messenger device. | |
+| O4.1 | A device key is a P-256 key or a BIP-340 key, as its record says. Under section 4.1 it may also be the Ed25519 key of a messenger device. Every other `alg` is a reserved entry of section 3.6. | |
 | O4.2 | A P-256 public key is the 33-byte compressed SEC1 point of section 3.1. A P-256 signature is exactly 64 bytes: `r` then `s`, each 32 bytes big-endian, `1 ≤ r, s < n`, and `s ≤ ⌊n/2⌋`, over SHA-256 of the signing preimage. DER, an uncompressed point, a high `s` and every wrapper refuse. These are the rules of `swarm-envelope/2` section 2.3 for `p256:` keys. | `ENVELOPE_SIGNATURE` |
 | O4.3 | A BIP-340 device key is 32 x-only bytes, and its signature 64 bytes over SHA-256 of the signing preimage, under `swarm-envelope/2` section 2.3 for `bip340:` keys, without a low-`s` rule. | `ENVELOPE_SIGNATURE` |
 | O4.4 | Every body kind has a domain tag of its own (section 5.1). The signing preimage is the tag, one byte `0x0a`, and the CCJ-1 bytes of the signed record `{body, key, role, version}` (`swarm-envelope/2` section 2.2). A signature under one tag never verifies under another. | `ENVELOPE_SIGNATURE` |
@@ -416,8 +506,9 @@ itself or a client that retries.
 Ivan Oparin decided on 2026-11-16, as the lead relayed at about 00:40Z, that
 the device key of a messenger is an ordinary device record (decision 16). The
 text is written optimistically: the co-author's agreement is pending. It pins
-the Matrix device. An XMPP OMEMO device follows the same rules under an `alg`
-of its own, which a later section registers (open questions).
+the Matrix device. An XMPP OMEMO device follows the same rules under the
+reserved entry `omemo-xeddsa` of section 3.6; how its message binds to the
+identity key is open.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
@@ -427,7 +518,7 @@ of its own, which a later section registers (open questions).
 | OM4 | A plaintext event never counts. It is a message without an envelope and is ignored under O1.1. | Nothing |
 | OM5 | The replay journal of O4.5 keys the event by its Megolm session identifier and message index, which the session's signature covers. A pair already in the journal refuses. | `REPLAY` |
 | OM6 | The decrypted content gives the command. A member `swarma.owner_command` that holds the members of section 5.1 other than `type` and `device_list`, and those of section 5.2 with `level` `1`, gives that command. Without that member the event is an owner command with `level` 1, `action` `instruct` and `fields` `{}`, whose free text is its body: it starts or directs a run at L1 (O6.5) and defines no effect (O1.2, O1.3). | The codes of section 11 |
-| OM7 | Section 11 applies with three changes. OM2, OM3 and OM5 take the place of steps 1, 7 and 11. Step 6 finds the record whose `key` equals the Ed25519 key of OM2 and whose `alg` is `matrix-ed25519`. Steps 2 and 3 apply only where OM6 gives `aud`, `iat` and `exp`; the room of OM2 stands in for `aud` otherwise. | The codes of section 11 |
+| OM7 | Section 11 applies with four changes. OM2, OM3 and OM5 take the place of steps 1, 7 and 11. Step 6 finds the record whose `key` equals the Ed25519 key of OM2 and whose `alg` is `matrix-ed25519`. Steps 2 and 3 apply only where OM6 gives `aud`, `iat` and `exp`; the room of OM2 stands in for `aud` otherwise. Step 5 compares `devices` only where OM6 gives it; otherwise the list that the receiver holds in its cache, or fetches under O3.13, hashes to the pin of step 4, and a receiver that holds and finds none refuses `LIST_UNKNOWN` (O3.14). A messenger event never carries `device_list`. | The codes of section 11 |
 
 Megolm signs every message with the session key of its originator, so a
 homeserver cannot forge or alter an event inside a session. Two risks remain:
@@ -458,7 +549,7 @@ no second format.
 | `nonce` | The anti-replay number: 16 random bytes, canonical unpadded base64url | The same |
 | `iat`, `exp` | Signing time as claimed, and the expiry; `iat < exp` | The same |
 | `devices` | `{"seq":…,"sha256":…}`, the pin of the device list that the envelope relies on (section 5.3) | Proposed here |
-| `device_list` | The exact octets of that list, canonical unpadded base64url. The sender attaches it to every envelope (O3.12, Draft of 2026-11-16); a verifier does not refuse an envelope for the lack of it | Proposed here |
+| `device_list` | The exact octets of that list, canonical unpadded base64url. The sender attaches it on change and at first contact (O3.12, Draft of 2026-11-16) and leaves it out otherwise; a verifier that holds the list under `devices.sha256` does not refuse an envelope for the lack of it, and one that does not refuses `LIST_UNKNOWN` (O3.14) | Proposed here |
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
@@ -545,7 +636,7 @@ reviewed change.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | O6.1 | The `level` of an owner command MUST NOT exceed the `ceiling` of its device. | `LEVEL_ABOVE_DEVICE` |
-| O6.2 | L2 is signed only by a key whose record has the presence flag, or given at a separated human console. | `LEVEL_ABOVE_DEVICE` |
+| O6.2 | L2 is signed only by a key whose record has the presence flag and whose registry entry admits level 2 (section 3.6, O3.16, O3.19), or given at a separated human console. Where the entry carries presence in the signature, the flag of a verified person (UV) is on every L2 signature. | `LEVEL_ABOVE_DEVICE` |
 | O6.3 | A separated human console is a console of the executor's host under an OS account of a person, in which no agent has a shell and to whose input no agent's process can write. A console of a host where agents have shells is not L2, and an executor MUST NOT admit L2 from it. | `LEVEL_ABOVE_DEVICE` |
 | O6.4 | An action whose class the executor's policy assigns to a level above the command's `level` refuses. | `LEVEL_TOO_LOW` |
 | O6.5 | A launch inherits the level of the envelope that started it. The origin of a run that an owner command starts is that command's identifier and its `level` (extends LIP-0013 J7.1). A run that a run creates, and a run that is resumed, has the level of the run it comes from. | |
@@ -714,8 +805,8 @@ order and the codes are the draft's proposal.
 | 2 | `aud` equals the name of `X` | `NOT_FOR_ME` |
 | 3 | `iat` is not in the future beyond the skew of `X`, `exp` has not passed, and `exp − iat` is within the lifetime of section 5.1 | `STALE` |
 | 4 | `X` reads the owner's name on its own node: a valid `swarma-devices`, with a `seq` not lower than its journaled highest | `DEVICE_PIN_INVALID`, `DEVICE_LIST_ROLLBACK` |
-| 5 | `devices` equals the pin; the list that `X` holds, the attached one or one fetched under O3.13 hashes to it | `DEVICE_LIST_MISMATCH`; with no list at all, `DEVICE_LIST_UNAVAILABLE` (O3.14) |
-| 6 | Exactly one signature, whose key equals the `key` of one record, under that record's `alg` | `DEVICE_UNKNOWN`, `DEVICE_ALG_MISMATCH` |
+| 5 | `devices` equals the pin; the list that `X` holds under that hash, cached or attached, hashes to it | `DEVICE_LIST_MISMATCH`; with no list under that hash, `LIST_UNKNOWN` (O3.14), and the sender re-sends with the list attached |
+| 6 | Exactly one signature, whose key equals the `key` of one record, under that record's `alg`, for which `X` has a verifier (O3.17) | `DEVICE_UNKNOWN`, `DEVICE_ALG_MISMATCH`, `DEVICE_ALG_UNSUPPORTED` |
 | 7 | The signature verifies | `ENVELOPE_SIGNATURE` |
 | 8 | No closure of the device is journaled, and its seal is unspent in the view of the node | `DEVICE_REVOKED` |
 | 9 | `level` within the device's ceiling and presence (O6.1 to O6.3) | `LEVEL_ABOVE_DEVICE` |
@@ -751,9 +842,10 @@ with S29.
 | S29-13 | An L2 command from a console of a human OS account without agent shells | The same command typed at a console of a host where agents have shells: `LEVEL_ABOVE_DEVICE`. |
 | S29-14 | Laptop `M` (no presence, ceiling 1) signs an L1 `instruct` that starts run `R` of agent `A`. The section for `X` that `A`'s key holder accepted assigns `land` to L2 and caps an L1 `spend` at 10000 sat a day. `R` asks for a v4 `spend` invocation of 4000 sat at `X` under `G`, which lists `land` and `spend`: signed | `R` asks for a `land` invocation at `X` under `G`, which its L1 row lists: `LEVEL_NOT_FOR_RUN`. A `spend` of 12000 sat: `LIMIT_OVER`. A third `spend` of 4000 sat on the same day: `LIMIT_OVER` (O6.11). A child run of `R`, or a caller that states L2 for `R`: the same refusals. |
 | S29-15 | Phone `P` (presence, ceiling 2) signs an L2 `instruct`; its run asks for a `land` invocation at `X` under `G`, within the L2 limits of `X`'s section: signed | The same run asks for a `spend` above the L2 limit: `LIMIT_OVER`. A `land` at executor `Z`, for which the key holder holds no section: `LEVEL_NOT_FOR_RUN` (O6.10). A policy section or a `swarma/device/revoke` for the run: nothing is signed (O6.12). A section for `X` with `seq` 6, after 7, sent to the key holder by `P`: `CONFIG_ROLLBACK`. The envelope of `X`'s own section, relayed by `X`: `NOT_FOR_ME`, because its `aud` is `X` (O6.9). |
-| S29-16 | `P` signs an L1 command at `X` with list 5 attached. `X` has no list cached, and Alisa's domain is down: admitted (O3.14) | The attached octets with one added space: `DEVICE_LIST_MISMATCH`. The same command without the attachment, nothing cached and both secondary paths unreachable: `DEVICE_LIST_UNAVAILABLE`. A Nostr event with list 6, which the name does not pin: not taken (O3.11). |
-| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm: an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: ignored. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
+| S29-16 | `P`'s first command to `X` carries list 5 attached; `X` has no list cached, and Alisa's domain is down: admitted, and `X` caches list 5 (O3.12, O3.14). `P`'s next commands to `X` carry the hash alone: admitted from the cache. Alisa adds `K`, and `P`'s first command under list 6 to `X` carries list 6 attached: admitted | The attached octets with one added space: `DEVICE_LIST_MISMATCH`. A command under list 6 with the hash alone to Bob's executor `Y`, which Alisa's device never addressed, or to `X` before it saw list 6: `LIST_UNKNOWN`; `P` re-sends it with list 6 attached: admitted. A Nostr event with a list that the name does not pin: not taken (O3.11). A list fetched from a URL that the command names: not taken (O3.13). |
+| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm, and `X` holds list 5, cached from `P`'s envelope of S29-16, which hashes to the pin (OM7, step 5): an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: ignored. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. The same event at an executor with an empty cache, Alisa's domain down and no Nostr event for the `d` tag: `LIST_UNKNOWN`, and nothing to re-send, because the event carries no list. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
 | S29-18 | `M`'s seal `S_M` pays a fresh `k_M`; `tx_revoke_M` is signed, `k_M` destroyed, and `P` and `K` hold the spend; `X`'s `gettxout` shows `S_M` unspent, and `M`'s command is admitted | `P` broadcasts `tx_revoke_M`; `M`'s next command: `DEVICE_REVOKED`. After a reorganisation that removes the block with `tx_revoke_M`: still `DEVICE_REVOKED`, because the closure is journaled (O8.4). |
+| S29-19 | Alisa's phone `P` and her laptop `M2` are both Secure Enclave records with presence and ceiling 2, each with its own seal, enrolled under O3.19. Alisa enrols a new finger on `P`: `P`'s key is invalidated and signs nothing more; `K` broadcasts `tx_revoke_P`, and Alisa adds `P` again with a new key and a new seal by section 9. Meanwhile `M2` signs her L2 commands (O3.20) | A record of a YubiKey PIV slot (`p256`, touch policy) with ceiling 2: `DEVICE_LIST_INVALID` (O3.16, O3.18). A record with `alg` `fido2-es256` at `X`, which has no verifier for it in M5n: the list is admitted and its command refuses `DEVICE_ALG_UNSUPPORTED` (O3.17). A record with `alg` `telegram`: `DEVICE_LIST_INVALID` (O3.15). An assertion of a `fido2-es256` record with presence whose flags byte has UP without UV: `LEVEL_ABOVE_DEVICE` at L2. |
 
 ## Honest limits
 
@@ -769,9 +861,14 @@ The decision asks that these limits stand in the text and not be hidden.
   passcode in place of biometry. One touch can cover several signatures when
   the authentication context is reused. The screen of the device that shows
   the fields is not trusted: what it shows may differ from what the key
-  signs. No signer provider is qualified for exact-content presence
-  (`swarm-envelope/2` section 4: "no signer provider is qualified for A3"),
-  and L2 by presence rests on the owner's enrollment until one is.
+  signs. O3.19 closes the first two at the signer, with `biometryCurrentSet`
+  and no passcode fallback and with a fresh authentication for each
+  signature, and asks the signer itself to show the fields; the verifier
+  still sees none of it. No signer provider is qualified for exact-content
+  presence (`swarm-envelope/2` section 4: "no signer provider is qualified
+  for A3"), and L2 by presence rests on the owner's enrollment until one is.
+  Only the FIDO2 and sk-ecdsa entries of section 3.6 put a presence flag into
+  the signature, and no verifier admits them yet.
 - **A host console is not L2 when agents have shells there.** An agent with a
   shell on the host can write into a console of the same account, or into
   what that console reads. O6.3 admits only a console of a separate human
@@ -797,7 +894,13 @@ The decision asks that these limits stand in the text and not be hidden.
   reads that storage can send as the device. The L1 ceiling and the L1
   limits bound what it reaches. A plain encrypted text carries no signed
   time, so a homeserver can hold it back and deliver it later; OM5 still
-  refuses a second delivery.
+  refuses a second delivery. A messenger event carries no list and no hash,
+  so a reader with an empty cache depends on the secondary paths, and a
+  refusal `LIST_UNKNOWN` there has no sender that re-sends.
+- **An invalidated L2 key is a lost device.** Under O3.19 a change of the
+  enrolled fingers destroys the key. The owner removes the device and adds it
+  again by the slow path, and with one L2 device only, no L2 command can be
+  signed in between (O3.20).
 - **A device seal can be lost.** Nobody holds `k_D`. If every other device
   loses `tx_revoke_D`, the seal can no longer be spent, and only the fast
   path of section 8.2 and a name update remain for that device.
@@ -895,6 +998,7 @@ conflicts.
 | X13 | — | No decision gives the general stop a level. The book has the phone sign it while the keeper may hold a grant to stop (§6.6.2, §7.12); `swarm-envelope/2` and CIP-0011 let narrowing go without presence; the stop of ch. 22 is another mechanism. Decision 5 puts the fast revocation of a device at L2. |
 | X14 | — | Several operators with M of N confirmations (book ch. 12) are not addressed, nor the relation between CIP-0011 operator acts on one machine and the owner commands of this LIP. |
 | X15 | 8 | Key map K1 gives a principal three keys and no administrative key; device keys are further keys of the principal. |
+| X16 | 18 | `swarm-envelope/2` section 2.4 refuses WebAuthn assertions, and its signature profiles name P-256 and BIP-340 only. Decision 18 registers FIDO2, P-384, XEdDSA, Ed25519 and the OpenSSH forms as entries; each needs the reviewed change of section 5.4 before a verifier admits it. |
 
 ## Alternatives
 
@@ -976,13 +1080,18 @@ Swarma Envelope once registered there.
 
 ## Open questions
 
-- **Decisions 14 to 16 (Draft, 2026-11-16).** The script of `S_D`, how the
+- **Decisions 14 to 19 (Draft, 2026-11-16).** The script of `S_D`, how the
   fee of `tx_revoke_D` is set and raised, and what it pays; the kind of the
   Nostr event of O3.13 and the case of an owner without a NIP-05 domain; the
-  `alg` of an XMPP OMEMO device, and whether OMEMO 0.3 Curve25519 identity
-  keys are admitted at all; whether a messenger device may have `ceiling` 0;
+  storage service under a grant as a third path; whether OMEMO 0.3
+  Curve25519 identity keys are admitted at all, and how an OMEMO or Signal
+  message is bound to the identity key; whether a messenger device may have
+  `ceiling` 0; the `alg` values and encodings of the reserved entries of
+  section 3.6, the hash of the P-384 preimage among them; whether a PIV slot
+  with a touch policy can reach L2; the Android counterpart of O3.19 on a
+  real device; a signal to a messenger sender whose list the reader lacks;
   and the book's copy of Figure 1, which seat B writes in the same words.
-- **The co-author's agreement** to the thirteen decisions, written here
+- **The co-author's agreement** to the nineteen decisions, written here
   optimistically, and the owners' acceptance of each point that the section
   "What is decided and what is proposed" lists as the draft's.
 - **The conflicts X1 to X15** of the section "Reconciliation", which the

@@ -483,8 +483,12 @@ names it as the holder or as the channel key.
   the Secure Enclave of a phone or a laptop, or a BIP-340 key. Under Draft
   text of 2026-11-16 (LIP-0029 section 4.1) also the Ed25519 key of a Matrix
   device, held by the messenger client, with `ceiling` 1 and no presence. The
-  record's presence flag is the owner's claim that the key signs only with a
-  person present; it is not proven.
+  other entries of the algorithm registry (LIP-0029 section 3.6) are
+  reserved and have no verifier. The record's presence flag is the owner's
+  claim that the key signs only with a person present; it is not proven. A
+  Secure Enclave key at ceiling 2 is enrolled under `biometryCurrentSet`
+  without passcode fallback and a fresh authentication per signature
+  (LIP-0029 O3.19).
 - Signs: under Draft LIP-0029, `swarm-envelope/2` owner commands up to the
   record's ceiling, at the owner's own executors and at the key holders of
   the owner's agents; at ceiling 2 also the owner's executor policy sections

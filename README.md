@@ -655,11 +655,16 @@ and never as a marker in the text stream
 ([LIP-0013](lips/LIP-0013-trust-contract.md) section 3.4). In
 [LIP-0029](lips/LIP-0029-owner-control.md), Figure 1 shows the device seal in
 the words of the decision (section 8.3); the sender attaches the device list
-to its envelopes, and the owner's domain and a Nostr event are secondary
-paths (section 3.5); and a Matrix device is an ordinary record at L1 without
+when it changes and at first contact with a receiver, otherwise the envelope
+carries the hash, an unknown hash refuses by name and the sender re-sends,
+and the owner's domain and a Nostr replaceable event are secondary paths
+(section 3.5); a Matrix device is an ordinary record at L1 without
 presence, whose end-to-end encrypted events count only when bound to its
 session, never when forwarded, restored from backup or sent in plaintext
-(section 4.1).
+(section 4.1); and an algorithm registry gives every device algorithm its
+encodings, its presence semantics and its highest level, with a strengthened
+L2 for Secure Enclave keys, of which only the Matrix entry has a verifier in
+M5n (section 3.6).
 
 Version 0.1.51 also puts J10, J11 and J12 in force on Ivan Oparin's decision
 of 2026-11-16 not to wait for the co-author, whose answer is folded in by
