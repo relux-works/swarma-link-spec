@@ -23,8 +23,7 @@ Every LIP stays a Draft and nothing of this version is implemented. No
 member of `swarma-grant/4` changes, and no octet of a tool or of a vector
 file changes: `tools/grantv4` and `vectors/LIP-0020/grant-v4.json` are
 those of version 0.1.53. Version 0.1.54, the entry below, changed none
-of them either, and the texts of this version that say "until version
-0.1.54" speak of it.
+of them either.
 
 ### The step table (LIP-0014 section 8.4)
 
@@ -35,13 +34,21 @@ request, and the steps E0 to E3 of a request under an admitted child. For
 each step the table says what it reads, which side makes it, the result,
 the refusal code, what the refusal leaves behind, what the side has not
 observed yet, and its status: carried from a landed text with the state of
-that text, new with its reason, or amending a landed sentence. A list of
-twenty-five pairs gives a source for every boundary between two
-neighbouring steps and for the order inside every step with more than one
-code; the order is total outside four open points that the section names.
-Every step has one place in the order of each side, and a step that both
-sides make gives the same code on both, except where its row states a
-difference. The table of the v3 steps V1 to V18 is unchanged.
+that text, new with its reason, or amending a landed text. A list of
+twenty-seven pairs gives, for every boundary between two neighbouring
+steps and for the order inside a step with more than one code, either the
+sentence that states the order or the mark NEW with a reason. The claim is
+bounded: the order between the rows is total, with the checks of an
+invocation unordered against two of the steps that follow them; inside a
+row it is total where the row says so; and the section names what is
+unordered, the three blocs of the seal and the issuance above all. Eight
+open points are named. An order is called carried only where a cited
+sentence states it: step 4 of LIP-0008 section 4 lists its checks without
+an order, and the orders that the table takes inside that list are marked
+NEW. Every step that a side makes has one place in the order of that side,
+and a step that both sides make gives the same code on both, except where
+its row states a difference. The table of the v3 steps V1 to V18 is
+unchanged.
 
 The points that had no answer in any text, and what this version proposes:
 
@@ -67,7 +74,20 @@ The points that had no answer in any text, and what this version proposes:
   name, the closure journal, the window, the seal and the issuance.
   `PARENT_NOT_LIVE` reports four findings alone: a recipient name that its
   owner key does not hold (J4.5), a journaled closure, the window, and a
-  spent seal.
+  spent seal. The Draft text of LIP-0008 section 5.2 (J6) is no part of
+  the step while it awaits the co-author's agreement: neither its journal,
+  nor its read of pending operations, nor `ISSUER_NAME_CLOSED`. A journal
+  of closures that cannot be read admits nothing, and its code is open.
+- **The parent as a document, and its groups.** At the admission of a
+  child the parent is read through steps 1 to 8 of the pipeline and the
+  rules of every grant, with the forms of `delegate.actions` and of
+  `notaries` (F1). The rules of LIP-0020 W11.10 for a group and a range
+  are judged for the group and the range of the child alone, after the
+  bound of its ordinal (F13, `GRANT_DELEGATE`). The table asks nothing of
+  another group and decides nothing of proposal Q1 of LIP-0026, the
+  refusal of a whole parent: for a defect outside the child's group two
+  outcomes conform until the owner decides. The earlier drafts of this
+  version refused such a child; that is withdrawn.
 - **A child wider than its parent.** The actions of a child are a subset of
   `delegate.actions` (`CHILD_ACTIONS_WIDER`, F16), its window lies inside
   the parent's in block heights (`CHILD_WINDOW_NOT_NESTED`, F18), and it
@@ -89,11 +109,22 @@ The points that had no answer in any text, and what this version proposes:
   steps, and that the equality of F12 includes the parity octet. The
   signing service reads the seal that a child names before it signs
   (section 8.5, I8).
-- **One amended sentence.** LIP-0014 section 11.1 put every child check of
-  J4.3 (b) at the place of step V7. The comparison of the delegation key
-  with the attestation key of the row's notary stands in the certifier step
-  (F23), because the row is known only from the ordinal, and the sentence
-  now says so.
+- **Two amendments of landed text.** LIP-0014 section 11.1 put every child
+  check of J4.3 (b) at the place of step V7. The comparison of the
+  delegation key with the attestation key of the row's notary stands in
+  the certifier step (F23), because the row is known only from the
+  ordinal, and the sentence now says so. And case S4-9 of section 11.2
+  said "whose seal pays another key" for `CHILD_SEAL_KEY`; it now names
+  the `seal.key` that the child states for that code and the script of the
+  output for `SEAL_SCRIPT`, as rows F12 and F21 decide. Both are amended
+  in place and marked there, as proposals of this version.
+- **Three sentences in the text of the reservation ledger** (LIP-0014
+  section 11.1), none of which changes a rule of it: a pointer from the
+  order of one request to section 8.5; that the entry which records a hold
+  names the reservation key, the intent and the kind of the entry of the
+  mark that it closes; and that where a place is `signed` after a
+  reconciliation confirmed a signature (event 31), its last entry is the
+  entry of that outcome.
 - **The recipient and the request.** The proof of the name of a child's
   recipient has one place, with the checks of a class (F19), and it is a
   duty of the signing service as of a verifier. A request is authenticated
@@ -108,12 +139,23 @@ The points that had no answer in any text, and what this version proposes:
   stand before the first step that reads an attestation (F22 before F23),
   which closes the point that LIP-0026 R6.1 left to the profile of the
   attestation. The order is new and rests on no landed text.
-- **The order of the signing service's checks.** Section 8.5 orders what
-  J4.4 lists, in eleven steps, and changes no line of J4.4. The duties that
-  it adds to J4.4 are marked new: the observation, the contract, the
-  recipient, the window and the seal of the child, the coin and the stop
-  coin. The reading of a payload before it is signed is a proposal of five
-  steps (rule T7), for which LIP-0020 W9.1 has no class yet.
+- **The order of the signing service's checks.** One signing request has
+  one order, the order of one request that landed with the reservation
+  ledger in version 0.1.54 (LIP-0014 section 11.1), and this version
+  changes no step of it. Section 8.5 is the inner order of its step 1, the
+  checks of J4.4, as the steps I0 to I9: the caller is identified first,
+  then the documents are read, then the caller's list, the observation,
+  the contract, the parent, the keys, the row, the child on the node, and
+  the coin with the stop coin. Steps 2 to 9 of the order of one request
+  follow unchanged, and no check of section 8.5 makes a signature: a
+  replay is answered from the record, another intent for a taken place and
+  a lost ledger refuse with the codes of the ledger, and the second check
+  after the reservation makes the checks on the parent and on the row
+  again. The duties that section 8.5 adds to J4.4 are marked new: the
+  observation, the contract, the recipient, the window and the seal of the
+  child, the coin, which the service reads as unspent, and the stop coin.
+  The reading of a payload before it is signed is a proposal of five steps
+  (rule T7), for which LIP-0020 W9.1 has no class yet.
 - **One place for the observation.** The observation of a side (F3) stands
   after the documents and before every later step of the predicate, at the
   signing service and at a verifier alike (LIP-0022 B6.1; pair Q3). The
@@ -121,10 +163,12 @@ The points that had no answer in any text, and what this version proposes:
   holds the contract (I4), so that a child that binds another contract, at
   a void observation, gives `OBSERVATION_VOID` on both sides (case S8-3). At an
   admission the observation also stands before the authentication of the
-  request (pair Q21, case S8-25): carried from LIP-0022 B6.1 for a
-  recipient by name, and new as a reading for a recipient by key. The
-  service's check of its caller reads no node and stays before its
-  observation.
+  request and before the names (pair Q21, case S8-25). That is a reading
+  of LIP-0022 B6.1 and is marked new in both recipient modes, because
+  LIP-0008 section 4 numbers the healthy observation as its step 3, after
+  the names and the authentication; neither text is amended. The documents
+  stand before the observation, which is marked new as well. The service's
+  checks of its caller read no node and stay before its observation.
 - **A child outside its own window or closed.** A new code,
   `CHILD_NOT_LIVE` (F20, F21), for a child alone.
 
@@ -183,24 +227,47 @@ the coded checks of its keys, its row and its coin:
   reports `CHILD_CONTRACT_DIFFERS` or `CONTRACT_NOT_PRESENTED`, also under
   a parent that is closed;
 - a child with a limit of a kind without a profile reported no code at its
-  admission and now reports `LIMIT_KIND_UNDEFINED`.
+  admission and now reports `LIMIT_KIND_UNDEFINED`;
+- a child with a defect of its row, under a parent whose notary of that
+  row publishes the delegation key as its attestation key, reported
+  `DELEGATE_KEY_REUSE` at the place of step V7 and now reports the code of
+  the row, because that one comparison stands in the certifier step (the
+  amended sentence of section 11.1);
+- a child that states the child-seal key of its parent over a seal output
+  that pays another key could be read as `CHILD_SEAL_KEY` under case S4-9
+  and now reports `SEAL_SCRIPT`, at the step of the seal (the amended
+  case);
+- a parent with a defect in the group or the range of the child (rules 4
+  and 5 of LIP-0020 W11.10) keeps `GRANT_DELEGATE`, and at the admission
+  of a child that code now stands after the keys and the bound of the
+  ordinal, so that a child with a wrong signer or a reused key under such
+  a parent reports `CHILD_SIGNER` or `DELEGATE_KEY_REUSE` first.
+
+No verdict changes for a child of a parent with a defect outside its
+group: that stays undecided with proposal Q1 of LIP-0026.
 
 ### Left open
 
-Four points, O1 to O4 of LIP-0014 section 8.4: the order of the three blocs
-of the seal and the issuance of a grant against each other; the code of a
-request that is not authenticated; the codes, the inner order and the place
-of the checks of an invocation; and, after the contract identifier, the
+Eight points, O1 to O8 of LIP-0014 section 8.4: the order of the three
+blocs of the seal and the issuance of a grant against each other; the code
+of a request that is not authenticated; the codes, the inner order and the
+place of the checks of an invocation; after the contract identifier, the
 code of a contract that is no valid contract of its v4 profile and the code
 of a contract that does not mirror the terms of its grant, with the
-preimage of the identifier. Also open: the entries of the two registries,
-and the owners' line on every choice that the text marks NEW. Outside this
-version, and decided by none of its text: whether the key that signs
-children may run under the OS user of the delegating agent, which product
-holds the delegation key on a host, who funds the coin of a row and holds
-the path of its spend, the refusals of the signing service's record of
-places, where a key slot comes from, and which party of the delegating
-side makes the issuer's checks of the consent of a child's recipient.
+preimage of the identifier; the code of a journal of closures of a grant
+that cannot be read; the place of a validated spend of a seal against the
+checks of the anchor and of the issuance; what a side does with a rule of
+LIP-0020 W11.10 that only octets outside the group of the child break,
+which waits for proposal Q1 of LIP-0026; and the class under which a
+signing service judges the age of the tip. Also open: the entries of the
+two registries, and the owners' line on every choice that the text marks
+NEW. Outside this version, and decided by none of its text: whether the
+key that signs children may run under the OS user of the delegating agent,
+which product holds the delegation key on a host, who funds the coin of a
+row and holds the path of its spend, where a key slot comes from, and which
+party of the delegating side makes the issuer's checks of the consent of a
+child's recipient. The refusals of the signing service's record of places
+are not open: they are the reservation ledger of version 0.1.54.
 
 ## 0.1.54 — 2026-11-16
 

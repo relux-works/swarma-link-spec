@@ -1471,7 +1471,19 @@ Open beside these codes, and named in LIP-0014 section 8.4 as O2 to O4: the
 code of a request that is not authenticated, the codes of the checks of an
 invocation, and the two codes that follow the contract identifier, for a
 contract that is no valid contract of its profile and for one that does not
-mirror the terms of its grant.
+mirror the terms of its grant. One further open code is O5 there, the code
+of a journal of closures of a grant that cannot be read.
+
+One code of this section is reported at an admission as well, under the
+same proposal. `GRANT_DELEGATE` is the code of step 9 for the rules of
+W11.10. At the admission of a child LIP-0014 section 8.4 asks for rules 1
+and 3 with the parent (row F1) and for rules 4 and 5 for the group and the
+range of the child alone (row F13, part (b), rule T10). What a side does
+with a rule of W11.10 that only octets outside that group and range break
+stays where the last paragraphs of W11.10 leave it, with proposal Q1 of
+LIP-0026, and is open point O7 of that table. The result of the pipeline
+for a document does not change: a reader of a parent as a document judges
+every rule of W11.10 that every reader judges, in step 9.
 
 #### 11.12. Where each member comes from
 

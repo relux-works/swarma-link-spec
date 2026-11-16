@@ -840,8 +840,10 @@ Version 0.1.55 proposes a step table for a v4 child.
 states the steps F1 to F24 of one predicate, for the signing service of the
 delegation key before it signs a child and for a verifier at every
 admission, with the code of each step, what a refusal leaves behind, the
-status of each step (carried from a landed text, new, or amending one) and
-a source for the order of every pair of steps. A child states the contract
+status of each step (carried from a landed text, new, or amending one) and,
+for each pair of neighbouring steps, the sentence that states their order
+or the mark NEW with a reason; where an order is not decided, the section
+says "unordered". A child states the contract
 identifier of its parent (`CHILD_CONTRACT_DIFFERS`); a contract that is not
 presented (`CONTRACT_NOT_PRESENTED`) or does not recompute (`CONTRACT_ID`)
 refuses before the parent is read; a refusal of the parent keeps the code
@@ -849,7 +851,10 @@ of the rule that refused it; and a child that is wider than its parent in
 an action or in its window, or that names another chain, takes the codes
 of the same comparisons on v3. An absent and a wrong child-seal key refuse
 before any row is read, the coin of a row is checked before the
-attestation, and section 8.5 orders the checks of the signing service.
+attestation, and section 8.5 orders the checks of the signing service as
+the inner order of step 1 of the order of one request of section 11.1,
+whose steps 2 to 9, the reservation ledger of version 0.1.54, follow
+unchanged.
 [LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) W11.11 holds the four
 comparisons of a child against its parent and one table that registers the
 codes, and its section 11.14 the registries of action identifiers and of
@@ -858,10 +863,14 @@ version: `CHILD_CONTRACT_DIFFERS`, `CONTRACT_NOT_PRESENTED`, `CONTRACT_ID`,
 `CHILD_NOT_LIVE`, `ACTION_UNDEFINED` and `LIMIT_KIND_UNDEFINED`. Until a
 profile defines an action, a v4 grant has no effect at an executor, and
 until a profile defines a limit kind, a child that states a limit is
-neither signed nor admitted. Four points stay open and are named there:
+neither signed nor admitted. Eight points stay open and are named there:
 the order of the seal and the issuance blocs, the code of a request that
-is not authenticated, the checks of an invocation, and the codes that
-follow the contract identifier, which wait for a v4 contract profile. All
+is not authenticated, the checks of an invocation, the codes that follow
+the contract identifier, which wait for a v4 contract profile, the code of
+a closure journal that cannot be read, the place of a spent seal among the
+checks of the issuance, a defect of a parent outside the group of the
+child, which waits for proposal Q1 of LIP-0026, and the class under which
+a signing service judges the age of the tip. All
 of this is a proposal of version 0.1.55, in force by no word of the draft:
 it binds a reader of `swarma-grant/4` when the version lands, the owner's
 order of 2026-11-16 that Grant v4 does not wait covers the members of the

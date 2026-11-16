@@ -526,6 +526,11 @@ the invocation (LIP-0020 section 6); the vectors state both as facts.
 | `OWN_LIMIT_OVER` | A reservation would exceed an own account | R5.6 | New |
 | `ROW_CAP_OVER` | A reservation would exceed a row account | R5.6 | LIP-0014 J1.3 |
 
+One further code is reported inside the step of R2.4 and is no code of
+this LIP: `LIMIT_KIND_UNDEFINED` of LIP-0020 W11.14, which version 0.1.55
+proposes for a limit whose kind has no type profile (LIP-0014 section 8.4,
+row F17, part (b)). The paragraph after R6.1 says where it stands.
+
 R6.1. At the admission of a child, the four checks of section 2 stand in
 their order, at the place that R2.5 names. The three checks of the coin
 stand after the checks of LIP-0023 on the child's seal transaction and
@@ -533,7 +538,7 @@ anchor, in this order: `ROW_COIN_IN_SEAL_TRANSACTION`, then `ROW_COIN`,
 then `ROW_COIN_REQUIRED`. A child that LIP-0023 refuses gets the code of
 LIP-0023, and no code of that LIP changes its meaning. Where the three
 stand relative to the checks of the child's attestation was left to the
-profile of the attestation until version 0.1.54. Version 0.1.55 proposes
+profile of the attestation through version 0.1.54. Version 0.1.55 proposes
 it in LIP-0014 section 8.4 (rows F22 and F23, rule T6): the three stand
 before the first step that reads an attestation. That is a proposal of
 version 0.1.55, marked NEW there, and it binds a reader when the version
@@ -546,8 +551,13 @@ no rule and no code of this LIP, and it keeps the order of R2.5 and of this
 rule. It adds one check inside the step of R2.4, which that rule leaves to
 the type profile of a kind: the kind of a limit has a profile at the side,
 or the child refuses as `LIMIT_KIND_UNDEFINED` after the keys of its limits
-and before their amounts (row F17, rule T9 there). Its rows F17 and E3 keep two cases apart that are easy
-to merge. A child that states a limit under a key that its row lacks refuses
+and before their amounts (row F17, rule T9 there). After the bound of
+R2.1 it also holds the group and the range that the ordinal selects
+against rules 4 and 5 of LIP-0020 W11.10 (row F13, part (b), rule T10
+there). That is a check of the group and the range of the child, as the
+profile in force has it (section 8); the table asks nothing of another
+group, and it decides nothing of proposal Q1. Its rows F17 and E3 keep two
+cases apart that are easy to merge. A child that states a limit under a key that its row lacks refuses
 as `CHILD_BUDGET_OVER` at any amount, 0 included (R2.4). A key under which
 neither the row nor the child states a limit has the ceiling 0 at a
 reservation (R5.2), and a request that consumes it refuses as
@@ -657,6 +667,9 @@ binds no reader by the word of this draft, and it is the part of proposal
 Q2 that awaits that acceptance first. Two rules rest on it and need it
 fixed: the ordinal of a child (R2.1, R8.8; LIP-0014 section 8.4, row F13)
 and the record that a signer keeps for each coin with its ordinal (R8.9).
+Outside this LIP the place of the reservation ledger of the signing
+service rests on it as well (LIP-0014 J4.4 (a)), through the signed order
+of LIP-0020 W11.6.
 The row rule of R8.3, that each coin of a range is one row with the
 template of its group, was in force before. The other additions of the
 paragraph above keep their state.
