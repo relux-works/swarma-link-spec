@@ -437,6 +437,18 @@ members that Link reads, and section 8 says that a further entry has "a shape
 of its own in this LIP". `swarma-devices` is a third member that Link reads,
 for owner control and not for grants.
 
+Since version 0.1.53 LIP-0010 section 10 uses the method of sections 3.1 to
+3.3, 3.5 and 8 for the holders of a landlord: a holders list off the value,
+its pin `swarma-holders` beside `swarma-devices`, and a seal for each entry.
+That section is text in force on its own terms and changes no rule of this
+LIP. A holder entry names one agent or station name, the key that holds it
+and a seal, and has none of the other members of a device record, because a
+holder signs nothing for the landlord; every
+verifier of a landlord class reads the holders list, where only own
+executors read the device list (O3.7); and the devices of this section hold
+the prepared spends of the holder seals of their owner's landlord name
+(LIP-0010 H27).
+
 The member adds 103 bytes while `seq` has one digit, 118 bytes at the largest
 `seq`. The sizes count as in LIP-0010 section 8:
 
@@ -1247,7 +1259,9 @@ Swarma Envelope once registered there.
   suspends v4 admission (LIP-0008 sections 3 and 5.2).
 - **The size of the name value.** A landlord value with a NIP-05 object, one
   relay and the member leaves 123 bytes, less than the 150 that LIP-0010
-  section 8 keeps for the service declaration of LIP-0007.
+  section 8 keeps for the service declaration of LIP-0007. With the member
+  `swarma-holders` of LIP-0010 section 10.3 beside it, the same value leaves
+  20 bytes.
 - **The policy section.** The members that state classes, levels and limits,
   the `subject` of LIP-0015 that names an executor's policy, and its largest
   size within the 8192 bytes of an operator envelope.

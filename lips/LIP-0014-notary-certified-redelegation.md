@@ -1232,8 +1232,10 @@ rows whose children permit instructions and reviews.
 J9.2 names two recipient constraints, and both rest on J10 and J11. The class
 is the third form of the recipient that J10 adds (LIP-0026 section 9). The
 landlord and holder checks are the checks of a class under J10, and the holder
-checks read the list `holders` that J11 adds to the landlord binding (LIP-0010
-section 10). A request key never meets J9.2. Until version 0.1.51 neither the
+checks read the holders list of the landlord (J11; LIP-0010 section 10, since
+version 0.1.53 a list of names that the landlord's value pins by hash, each
+with its holder key and a seal, and no longer a member of the landlord
+binding). A request key never meets J9.2. Until version 0.1.51 neither the
 class nor the list was in force, and no child of a row without a certifier was
 admitted. Since that version both are in force, by Ivan Oparin's decision of
 2026-11-16 not to wait for the co-author: a child of a row without a certifier

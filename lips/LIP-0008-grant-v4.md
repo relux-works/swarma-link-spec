@@ -385,7 +385,16 @@ name on its validated active chain:
 
 Renewal closes nothing: it changes neither the owner nor `swarma`. The same
 holds for an update of the `nostr` member and of the owner's other members
-([LIP-0010](LIP-0010-name-value.md)). The seal remains the only way to end
+([LIP-0010](LIP-0010-name-value.md)). It holds for the holders of a landlord
+since version 0.1.53: the landlord's value pins its holders list in the
+member `swarma-holders`, outside `swarma`, so an update that changes the
+list changes neither the owner nor `swarma` and ends no grant, and the spend
+of a holder's seal is no operation of the name at all (LIP-0010 section
+10.4, H13). The `swarma` octets that rule 3 compares are, for such a
+landlord, the landlord binding with its grant key and nothing else. A
+landlord value in the inline form of version 0.1.51 carries its holders
+inside `swarma`, and a change of them there still ends its grants (LIP-0010
+section 10.9). The seal remains the only way to end
 one grant early; the name rule ends all grants of an issuer whose name
 changed hands or whose grant key was replaced.
 

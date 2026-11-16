@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.52
+**Version:** 0.1.53
 
 **Date:** 2026-11-16
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.52
+## Draft profiles and design decisions in v0.1.53
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -547,16 +547,20 @@ across them, so that a parent can permit thousands of children (J12;
 recipient of its child by a class of landlords, each pinned like a notary, and
 the executor then checks that the recipient's name is an agent of such a
 landlord, that a key which the landlord lists holds it, and that such a key
-wrote its value (J10; section 9). The landlord lists those keys in its own name
-value, in a member `holders` (J11; [LIP-0010](lips/LIP-0010-name-value.md)
-section 10). A row inside one owner may have no certifier, and its child then
+wrote its value (J10; section 9). The landlord lists those keys (J11;
+[LIP-0010](lips/LIP-0010-name-value.md) section 10): in version 0.1.51 in a
+member `holders` of its own name value, and since version 0.1.53 in a
+holders list off the value, one entry for each agent or station name, which
+the value pins by hash and version. A row inside one owner may have no certifier, and its child then
 needs no attestation; across owners a certifier stays mandatory (J9;
 [LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.3 and
 LIP-0026 section 10). The bounds of a group, the eight refusal codes of a class
 and every rule that the sections mark as the draft's are proposals. Two
-consequences are stated in place: a change of `holders` changes the `swarma`
-member and so ends the v4 grants that the landlord issued before it, and a
-holder that renews a name which was sent to it adopts the value of that name.
+consequences are stated in place: in the inline form of version 0.1.51 a
+change of `holders` changes the `swarma` member and so ends the v4 grants
+that the landlord issued before it, which the list of version 0.1.53 no
+longer does, and a holder that renews a name which was sent to it adopts
+the value of that name.
 The contract profile `swarma-trust-contract/2` of Grant v3 does not change. The
 33 vectors in [`vectors/LIP-0010/`](vectors/LIP-0010/) hold name values, and
 103 further vectors in [`vectors/LIP-0026/`](vectors/LIP-0026/) hold groups,
@@ -677,6 +681,25 @@ amendment: groups of rows, the landlord class
 row without a certifier (J9) is therefore admitted through the checks of a
 class, where 0.1.49 admitted none. Nothing of version 0.1.51 is implemented,
 and no vector outcome changes.
+
+Version 0.1.53 replaces the member `holders` by a hash-pinned holders list
+([LIP-0010](lips/LIP-0010-name-value.md) section 10), in force on an owner
+decision of 2026-11-16 without the co-author's answer, which is folded in by
+amendment. The landlord's name value pins the hash and the version of the
+list in a member `swarma-holders`, outside `swarma`, on the method of the
+LIP-0029 device list, and the list lives off the value with no cap of five.
+It has one entry for each agent or station name: the name, the key that
+holds it and a seal. A change of the list is a name update that ends no v4
+grant, because a grant depends on the owner and on the `swarma` member, which
+no longer holds the holders. The spend of an entry's seal revokes that one
+name at every verifier that sees it, with no name update; it ends no grant,
+and the name stays with its key holder. Names may be listed ahead and kept
+in reserve. A verifier that cannot get the pinned list refuses the child and
+falls back to nothing. The member of version 0.1.51 stays readable as the
+inline form for the transition. The bounds of a list, the owner pin in an
+entry, the six refusal codes and every rule that the section marks NEW are
+this text's choices for the owners. No vector of the list is published, and
+no historical vector byte or outcome changes.
 
 Version 0.1.52 records the specification-side reconciliation closures in
 [Decision 0004](decisions/0004-reconciliation-closures.md). LIP-0029 and

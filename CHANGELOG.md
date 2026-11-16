@@ -1,5 +1,83 @@
 # Changelog
 
+## 0.1.53 — 2026-11-16
+
+Replaces the five-entry member `holders` of the landlord binding by a
+hash-pinned holders list, on an owner decision of 2026-11-16. The text is
+in force without the co-author's agreement, which has not been given; the
+co-author's answer is folded in by amendment. Every LIP stays a Draft,
+nothing of this version is implemented, and no historical protocol byte,
+tool, vector byte or vector outcome changes.
+
+LIP-0010 section 10 is rewritten. The landlord's name value pins the hash
+and the version of a holders list in a top-level member `swarma-holders`,
+outside `swarma`, on the method of the device list of LIP-0029 sections 3.1
+to 3.3; the list lives off the value. It is one JSON object in the encoding
+of LIP-0013 section 2.1 with the members `schema`, `network`, `owner`, `seq`
+and `holders`, and its hash is the SHA-256 of its exact octets. An entry
+names one agent or station name, the owner pin of that name and the outpoint
+of a seal. The cap of five, which followed from the 520 bytes of a value,
+does not apply; a list holds at most 1024 entries and 262144 bytes.
+
+A change of the list no longer ends the v4 grants that the landlord issued.
+Rule 7 of version 0.1.51 is replaced by H13: the holders are no part of
+`swarma`, an update that changes only `swarma-holders` is no break and
+records no closure, and a grant depends in the landlord's name on its
+registration, its owner key and the octets of `swarma`, which are the
+landlord binding with its grant key alone. LIP-0008 section 3 is unchanged
+and says so for this member.
+
+A verifier of a landlord class reads, at each admission and on its own
+node, the pin from the landlord's confirmed value and the seal of the entry
+that names the recipient; it takes the list from its cache or from the
+presenter and counts only the list that the current confirmed value pins. A
+list has no expiry, and the freshness of the check is that of the
+observation under LIP-0022. A verifier that cannot get the pinned list
+refuses the child as `LIST_UNKNOWN`, records no closure and falls back to no
+older list. The list is distributed as LIP-0029 section 3.5 has it.
+
+One name is revoked by the spend of the seal of its entry, on the model of
+the device seal of LIP-0029 section 8: a fresh key, a revocation signed in
+advance, the key destroyed, and the spend kept by the devices of the
+landlord's owner. A verifier that sees the spend journals a closure that no
+rollback lifts; other names stay, those of the same key included; no grant
+ends, one agent's own grant is still ended by that grant's seal, and the
+name stays with its key holder. A listed name passes only while the pinned
+key holds it and wrote its value. A stolen holder key is answered by the
+spend of every entry with that pin. Names may be listed ahead and kept in
+reserve at the cost of their seals. A removed entry and a sealed-off entry
+are set side by side in section 10.8.
+
+The member of version 0.1.51 stays readable as the inline form (section
+10.9), with its rules 1 to 8 and its vectors unchanged. A value with both
+forms has no holder. A landlord moves by one update that removes the inline
+member and writes the pin; that update is the last to which the old rule 7
+applies, and a landlord that never wrote the inline member moves at no cost
+to its grants.
+
+Marked NEW in the text, for the owners: the member name and the schema
+string; the entry by name with its owner pin and the writer of check (d);
+the bounds; the reading of a duplicate pin under section 11 SH6 instead of
+LIP-0029 O3.5; the presenter as the sender of the list, the well-known path
+and the `d` tag; the codes `HOLDER_PIN_INVALID`, `HOLDER_LIST_INVALID`,
+`HOLDER_LIST_MISMATCH`, `HOLDER_LIST_ROLLBACK` and `HOLDER_REVOKED`; the
+whole of the seal of an entry, and that its closure is of the entry; the
+return of a removed entry after a reorganisation; the reserve; and the
+rules of the transition.
+
+LIP-0010 section 11 registers `swarma-holders` as a head member (SH2) and
+counts its bytes. LIP-0008 section 3, LIP-0014 section 8.3, LIP-0026
+sections 9 to 11 with its security consequences and open questions,
+LIP-0029 section 3.3, the key registry, the README and the open-question
+index follow. The key registry gains the entry "Holder seal key". LIP-0026
+R9.6 and R9.7 read the entry of the recipient name; the eight codes of a
+class keep their meaning, and the class vectors, whose landlord values are
+in the inline form, keep their bytes and outcomes.
+
+No vector of the list is published. LIP-0010 section 10.11 states what a
+vector set holds, with its refusal pairs; the length and the hash of the
+example in section 10.2 were computed by one implementation only.
+
 ## 0.1.52 — 2026-11-16
 
 Closes the specification-side reconciliation gaps in Decision 0004. Every

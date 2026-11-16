@@ -76,7 +76,7 @@ LIP-0008 sections 4 and 12.2. This LIP changes none of them.
 | "Who funds the coin, and the account and the path of its key, are not fixed" | LIP-0014 section 9.1; the key registry, open points | Section 4, as a proposal that awaits the owners |
 | A parent states its rows as groups: a template with coin ranges, and one ordinal across groups and ranges (J12, decided by Ivan Oparin, in force since version 0.1.51) | LIP-0014, "Decisions of 2026-11-15" | Section 8 |
 | The recipient constraint of a row has a third form, a class of landlords each pinned like a notary, with four checks in a fixed order (J10, decided by Ivan Oparin, in force since version 0.1.51) | The same | Section 9 |
-| A landlord lists in `holders` the owner keys of the names of its agents and stations (J11, decided by Ivan Oparin, in force since version 0.1.51) | LIP-0010 section 10 | Section 9, checks (c) and (d) |
+| A landlord lists the owner keys of the names of its agents and stations (J11, decided by Ivan Oparin, in force since version 0.1.51). Since version 0.1.53 the landlord's value pins by hash a holders list with one entry for each agent or station name: the name, the key that holds it and a revocation seal; the member `holders` of version 0.1.51 is the inline form of the transition | LIP-0010 section 10 | Section 9, checks (c) and (d) |
 | A child needs an attestation only where its row names a certifier; a row without one is valid only where its recipient constraint is limited to the issuer's own landlord; across owners a certifier stays mandatory; a row without a certifier has no stop coin (J9, decided and agreed by both owners on 2026-11-15) | LIP-0014 section 8.3, rules J9.1 to J9.4 | Section 10 |
 | Every applicable link is charged once for a request; independent executors need signed partitions and share no remainder | LIP-0008 sections 4 and 12.2 | Section 5 takes the row as the parent's link for a request under a child |
 
@@ -681,7 +681,9 @@ row. (b) That landlord is live, its registration and its owner are the pinned
 ones, its history from the checkpoint shows no change of owner, a transfer and
 a return included, and it has no pending name operation. (c) The current owner
 of the recipient name is one of the holders that the landlord's current value
-lists (LIP-0010 section 10). (d) The name operation that wrote the current
+lists (LIP-0010 section 10; since version 0.1.53 the value pins by hash a
+list that names the recipient name with that holder, and the seal of that
+entry is unspent). (d) The name operation that wrote the current
 value of the recipient name spent a name output that a holder owned. The
 decision asks that the refusal codes be proposed in this draft and named as
 proposals.
@@ -709,8 +711,8 @@ codes and their order; and the rules R9.11 and R9.12 for the two signers.
 | R9.3 | A child of a row whose recipient is a class names its recipient in the mode "by name" of LIP-0008 section 3.1: an exact name and the owner key of that name. | A child that names a request key: `CHILD_GRANTEE_NOT_ALLOWED` |
 | R9.4 | Check (a). The current value of the recipient name parses under LIP-0010 as an agent binding, and its `landlord` is, octet for octet, the name of one landlord of the class. That landlord is called `L`. | `CLASS_LANDLORD` |
 | R9.5 | Check (b), in six steps. `L` is live at the tip of the observation (LIP-0021 O5.1). The walk of `L` ends at the pinned registration (O6.1). That registration is confirmed at or below the checkpoint. Every output of `L` from the one that was current at the checkpoint to the current one reads as controlled by the pinned owner key (O3.4, O6.2). The value of the current output of `L` was written by the pinned owner (O4.4). The reading node holds no pending transaction that spends the current output of `L`. | The table below |
-| R9.6 | Check (c). The current value of `L` parses under LIP-0010 section 10, and the current output of the recipient name reads as controlled (O3.4) by one of the holders that it lists. | `CLASS_HOLDER` |
-| R9.7 | Check (d). The value of the current output of the recipient name was written by a holder of `L`: the check of LIP-0021 section 4 gives "written by the owner" for one pin of the list of R9.6. That holder need not be the holder of R9.6. | `CLASS_WRITER` |
+| R9.6 | Check (c). The current output of the recipient name reads as controlled (O3.4) by a holder of `L`. For a value of `L` that pins a holders list, the verifier makes steps 1 to 8 of LIP-0010 section 10.6: the pin, the list under its hash, the entry that names the recipient name, the control of the current output by the key of that entry, and the seal of that entry unspent. A name that no entry names does not pass, whoever holds it. For a value of `L` in the inline form of version 0.1.51 the holders are the pins of its member `holders`, and every name that one of them controls passes (LIP-0010 section 10.9). | `CLASS_HOLDER`; for the pin, the list and the seal, the codes of LIP-0010 section 10.6 |
+| R9.7 | Check (d). The value of the current output of the recipient name was written by a holder of `L`: the check of LIP-0021 section 4 gives "written by the owner" for the key of the entry of R9.6 (LIP-0010 section 10.6, step 9). In the inline form of version 0.1.51 it gives it for one pin of the member `holders`, and that holder need not be the holder of R9.6. | `CLASS_WRITER` |
 | R9.8 | Where a read of R9.4 to R9.7 proves nothing, the verifier refuses, and the refusal is no evidence about either name. That is so for a node that does not supply a fact (O1.3), an unsupported script (O3.5), an unsupported writer check (O4.4), and a walk that is incomplete or bounded (O6.3). | `CLASS_HISTORY_UNAVAILABLE` |
 | R9.9 | The four checks stand in the order (a), (b), (c), (d), and the six steps of (b) in the order of R9.5. The first step that fails, or that proves nothing, gives the refusal. The checks stand after the proof of the child's recipient by name (LIP-0021 section 7.2) and before the checks of the coin (R6.1). | The first that applies |
 | R9.10 | Every read of the four checks belongs to the observation of the admission (LIP-0022 section 1). The request key of the child is the key that the value of R9.7 yields for the channel (LIP-0008 section 3.1), so that the key which signs a request comes from the value whose writer was checked. | |
@@ -729,7 +731,9 @@ The six steps of check (b) give these refusals:
 
 Check (b) is the rule of a notary's name with two differences. It asks nothing
 about the octets of the `swarma` member, because the list of holders changes
-while the class stands, as a notary's attestation key does (LIP-0014 J3.3). And
+while the class stands, as a notary's attestation key does (LIP-0014 J3.3);
+since version 0.1.53 the list is outside that member altogether (LIP-0010
+section 10.4). And
 it refuses while a name operation of `L` is pending, because that operation may
 remove the very holder that checks (c) and (d) are about to accept. A transfer
 of `L` to another key and back leaves an output of the stretch that reads as
@@ -746,7 +750,9 @@ output that reads as another key than the one that the child signs refuses as
 for such a child, and the two codes keep the meaning that LIP-0021 gives them.
 
 Checks (c) and (d) read one list: the holders of `L`, the landlord that the
-value of the recipient name points to. In a class of several landlords a holder
+value of the recipient name points to. Since version 0.1.53 they read one
+entry of it, the entry that names the recipient name (LIP-0010 section
+10.6). In a class of several landlords a holder
 of another landlord of the class is no holder for this name. It can neither
 hold the name nor have written its value, so a holder of one listed landlord
 cannot make an agent of another.
@@ -768,14 +774,21 @@ holder's signer, as R4.5 binds the signer of a row key.
 
 Four further limits hold:
 
-- **A stolen holder key** passes all four checks for every name that it
-  holds, with whatever channel key the thief writes. The owner of the
-  landlord name removes the pin from `holders` by one update (LIP-0010
-  section 10), and from the block that confirms it the names of that key
-  refuse as `CLASS_HOLDER`.
+- **A stolen holder key** passes all four checks for every listed name that
+  it holds, with whatever channel key the thief writes. A device of the
+  landlord's owner broadcasts the prepared spend of the seal of every entry
+  with that key (LIP-0010 section 10.7, H35), and from the moment at which
+  a verifier's node sees a spend the name of that entry refuses there as
+  `HOLDER_REVOKED`, with no name update. The owner of the landlord name
+  completes it with a list that drops the entries, and from the block that
+  confirms that update the names refuse as `CLASS_HOLDER`. A landlord in the inline
+  form of version 0.1.51 has the update alone. Neither act ends a grant,
+  and the names stay with the thief; one agent's own grant is ended by that
+  grant's seal.
 - **The class says whose agent a recipient is.** It does not say which
-  agent: every name that a holder of a listed landlord holds and wrote fits
-  the row. Which of them receives the child is the delegator's choice, and a
+  agent: every name that the holders list of a listed landlord names, and
+  that the key of its entry holds and wrote, fits the row (in the inline
+  form of version 0.1.51, every name that a holder holds and wrote). Which of them receives the child is the delegator's choice, and a
   second child of the row is excluded by the coin (section 3) and not by the
   class.
 - **A pending operation of the recipient name** is not read. The value in
@@ -808,7 +821,7 @@ rows with a certifier.
 
 Both recipient constraints of the decision rest on J10 and J11. The class is
 the form of section 9 (J10), and the landlord and holder checks of an exact
-name are checks of section 9 that read the list `holders` of LIP-0010 section
+name are checks of section 9 that read the holders list of LIP-0010 section
 10 (J11). Until version 0.1.51 neither was in force, and no child of a row
 without a certifier was admitted. Since that version both are in force, by
 Ivan Oparin's decision of 2026-11-16 not to wait for the co-author: a child of
@@ -857,10 +870,15 @@ another owner cannot stand in a row without a certifier.
 
 The issuer's own rule is stricter than check (b). It asks that the `swarma`
 member of the issuer's name is unchanged from the recent block of the parent on
-(LIP-0008 section 3), and `holders` is part of that member. For a row whose
-landlord is the issuer the list of holders is therefore the list at the recent
-block of the parent: an update that changes it refuses the parent and every
-child of it.
+(LIP-0008 section 3). Since version 0.1.53 the holders are no part of that
+member: the issuer's value pins its holders list outside `swarma` (LIP-0010
+section 10.4, H13). For a row whose landlord is the issuer the list of holders
+is therefore the list that the issuer's current value pins at each admission,
+as for every other landlord of a class, and an update that changes it refuses
+neither the parent nor a child of it. Only for an issuer in the inline form of
+version 0.1.51, whose `swarma` carries the holders, is the list still the one
+at the recent block of the parent, and an update that changes it refuses the
+parent and every child of it (LIP-0010 section 10.9, rule 7).
 
 Three limits hold:
 
@@ -946,6 +964,12 @@ and `certifier-11` hold one history of the issuer's name, which came to its
 owner by a transfer below the recent block, under the two forms of a row
 without a certifier. Both refuse as `CLASS_VALUE_UNAUTHORIZED`.
 
+Every landlord value of the class file is in the inline form of version
+0.1.51 (LIP-0010 section 10.9), which a verifier still reads, so no byte and
+no outcome of the file changes with version 0.1.53. No admission of the file
+holds a holders list, a pin or a seal; the vectors of the pinned form are
+those that LIP-0010 section 10.11 describes, and none is published yet.
+
 The limits of the two files are these. Transaction ids are placeholders, and
 the octets of signatures are placeholders that verify nothing. No vector reads
 a chain or holds an observation, a pending transaction as octets, a request or
@@ -972,7 +996,7 @@ No node, no signer and no store was run for this LIP.
 | The reference laboratory holds none of the codes of J1.2 and J1.3 | A search of the Go files of `swarma-chain-lab` at `b03c6f10fad1be135e780d8b1f556fc46805eb06` |
 | A node relays a transaction of at most 400,000 weight units (section 8) | Namecoin Core at the tag `nc28.0`, `src/policy/policy.h`, the constant `MAX_STANDARD_TX_WEIGHT`. The count of 3223 outputs is computed from the sizes of a witness key hash input and output; no transaction of that size was built |
 | The owner pin, the three readings of a script, the writer check, a live name and the walk (section 9) | LIP-0021 sections 2 to 6 |
-| The list of holders in a landlord value (sections 9 and 10) | LIP-0010 section 10 |
+| The holders list of a landlord, its pin in the landlord value and the seal of each entry (sections 9 and 10) | LIP-0010 section 10; the inline form of version 0.1.51 in its section 10.9 |
 
 ## Alternatives
 
@@ -1045,10 +1069,25 @@ where its rows meet the checks of section 9.
 - **A holder that renews a gifted name adopts it.** Check (d) refuses a
   value that another key wrote, until a holder writes over it. R9.11 is the
   rule for the holder's signer, and no verifier sees its breach.
-- **A change of the holders ends the landlord's own v4 grants.** The list is
-  part of the `swarma` member that LIP-0008 section 3 binds for an issuer
-  (LIP-0010 section 10). A landlord that adds a holder for a new station
-  refuses every v4 grant that it issued before, and issues them again.
+- **A change of the holders no longer ends the landlord's own v4 grants.**
+  Since version 0.1.53 the list is outside the `swarma` member that LIP-0008
+  section 3 binds for an issuer: the landlord's value pins it by hash
+  (LIP-0010 section 10.4, H13). A landlord that adds a holder for a new
+  station pins a new list, and its grants stay. Only a landlord in the
+  inline form of version 0.1.51 still refuses every v4 grant that it issued
+  before such a change, and it does so once more when it moves to the list
+  (LIP-0010 section 10.9, M5).
+- **A class reads a list that is not on the chain.** The landlord's value
+  pins the hash, and the octets come from the presenter or from the
+  verifier's cache. A verifier that cannot get them refuses the child,
+  `LIST_UNKNOWN`, and admits nobody on an older list (LIP-0010 H24).
+- **A spent holder seal is seen by each verifier on its own node.** A
+  verifier whose node has not seen the spend admits the name of that entry
+  until it does (LIP-0010 section 10.7; LIP-0022).
+- **A class admits only listed names.** Since version 0.1.53 a name that a
+  holder key registers passes a class only once the landlord's list names
+  it. Names listed ahead, in reserve, need no update of the landlord's name
+  when they come into use (LIP-0010 H37).
 - **One key holds a whole range.** Under R8.9 a leaked row key voids every
   unused row of its range, where under R4.3 it voids one row.
 - **A row without a certifier has one signer of children.** The delegation
@@ -1102,10 +1141,10 @@ They change no vector of section 7.
 - **The four bounds of R8.4** and a bound on the landlords of a class.
 - **The stop coins of a group** whose template names a certifier (section
   8).
-- **Whether a change of `holders` should end an issuer's grants.** It does
-  under LIP-0008 section 3, because the list is part of `swarma`. A rule
-  that binds an issuer to its grant key alone, and a list outside the
-  member, are the two other ways.
+- **Whether a change of `holders` should end an issuer's grants.** Closed
+  in version 0.1.53 by an owner decision of 2026-11-16: it does not.
+  The list is outside the member, pinned by hash (LIP-0010 section 10). The
+  co-author's answer and the points that section marks NEW are open there.
 - **The owner of the delegator** in a row without a certifier (section 10).
 - **A pending operation of a recipient name** (section 9).
 - **The eight codes of section 9.**

@@ -90,6 +90,7 @@ and wait for the owners' confirmation.
 | Authority key of a person | high | Key map, K6; decision of 2026-11-14, agreement pending; LIP-0029 removes it in favour of device keys, agreement pending |
 | Device key of an owner | high; critical at ceiling 2 for the owner's own executors | LIP-0029 sections 3, 4 and 6, Draft; decision of 2026-11-15, written optimistically, agreement pending |
 | Device seal key | medium | LIP-0029 section 8, Draft; destroyed after it signs the revocation (section 8.3, Draft of 2026-11-16); its script is open |
+| Holder seal key | medium | LIP-0010 section 10.7, in force since version 0.1.53 without the co-author's answer; destroyed after it signs the revocation; its script is open |
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
@@ -138,15 +139,26 @@ and wait for the owners' confirmation.
   grants again and replaces the pins that name the old one.
 - Source: LIP-0004 section 1, in use on v3; LIP-0008 section 3, Draft.
 
-J11, in force since version 0.1.51 without the co-author's answer (LIP-0010
-section 10), gives some name-owner keys a second place of publication: a
-landlord lists in `swarma.landlord.holders` the name-owner keys that hold the
-names of its agents and stations. The list adds nothing to what such a key
-signs. A thief of a listed key passes the checks of a landlord class (LIP-0026
-section 9) for every name that the key holds, until the owner of the landlord
-name removes the pin by one update. The signer of a listed key signs a name
-operation only for a name that it registered itself or that its operator
-accepted (LIP-0026 R9.11).
+J11 (LIP-0010 section 10) gives some name-owner keys a second place of
+publication: a landlord lists the name-owner keys that hold the names of its
+agents and stations. Since version 0.1.53, in force without the co-author's
+answer, they stand in a holders list outside the name value: one entry for
+each agent or station name, with the key that holds it and a revocation
+seal. The landlord's value pins the hash and the version of that list in the
+member `swarma-holders`, outside `swarma`. The member
+`swarma.landlord.holders` of version 0.1.51 is the inline form, read for the
+transition only (LIP-0010 section 10.9). The list adds nothing to what such
+a key signs. A thief of a listed key passes the checks of a landlord class
+(LIP-0026 section 9) for every listed name that the key holds, until a
+device of the landlord's owner broadcasts the prepared spend of the seal of
+every entry with that key (LIP-0010 H35), or the owner of the landlord name
+pins a list without those entries. Neither ends a v4 grant of the landlord,
+and the names stay with the thief. The signer of a listed key signs a name operation only for a name
+that it registered itself or that its operator accepted (LIP-0026 R9.11).
+
+The name-owner key of a landlord name also writes that pin, and so decides
+which keys count as holders. A thief of it pins a list of its own holders; a
+v4 grant does not end by that update, because the owner and `swarma` stay.
 
 Draft [LIP-0029](lips/LIP-0029-owner-control.md), written optimistically under
 a decision of 2026-11-15 that awaits the co-author's agreement, gives the
@@ -533,6 +545,27 @@ names it as the holder or as the channel key.
   section 8.3, Draft of 2026-11-16, and the script of the seal and the fee of
   `tx_revoke_D` are open.
 
+**Holder seal key**
+
+- Owner: the owner of the landlord name whose holders list names the seal.
+- Published: nowhere; the seal's outpoint stands in the holder entry
+  (LIP-0010 section 10.1).
+- Holder: nobody. The seal pays a fresh key `k_N`, which signs one
+  revocation `tx_revoke_N` and is then destroyed (LIP-0010 H26). The devices
+  of the landlord's owner hold `tx_revoke_N`, which needs no further
+  signature (H27).
+- Signs: the spend of one holder seal, which revokes that entry of the list
+  and with it one agent or station name.
+- Danger: medium. A leak, like a copy of the prepared spend, revokes one
+  name and gives nothing else. It ends no grant.
+- Leak: the thief revokes the entry; that name is no longer admitted through
+  a class of the landlord until the landlord lists it again with a new seal
+  through a name update (H33).
+- Recovery: a new list with a new seal for the name.
+- Source: LIP-0010 section 10.7, in force since version 0.1.53 without the
+  co-author's answer, modelled on the device seal of LIP-0029 section 8; the
+  script of the seal and the fee of `tx_revoke_N` are open.
+
 ## Re-delegation and the notary
 
 Four of these keys follow Ivan Oparin's decisions of 2026-11-14 for v4. The
@@ -909,4 +942,6 @@ that tests them keeps the three apart:
   holder's key, and of a provider's closing statement.
 - The script of a device seal and who holds its key once the prepared
   spend exists (LIP-0029 section 8).
+- The script of a holder seal, the fee of its prepared spend, and who keeps
+  that spend for a landlord without a device list (LIP-0010 section 10.7).
 - The danger levels, which wait for the owners' confirmation.
