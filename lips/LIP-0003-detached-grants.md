@@ -19,7 +19,7 @@ of grants can be live at once, one per renter.
 {"swarma":{"agent":{"nostr":"<64 hex x-only>","grant":"<64 hex x-only>"}}}
 ```
 
-- `nostr`: the agent's public messaging key (the gateway holds the secret).
+- `nostr`: the agent's public messaging key (in the implemented rental profile the gateway holds the secret).
 - `grant`: the key that signs grants (held by the trusted component outside the sandbox, never by an instance).
 - Exact shape, ASCII, compact, as v0.1 `names` §2. A `name_update` happens only on key change.
 - **Custody.** The name is owned by a cold owner key (the operator's wallet). The `grant` and `nostr`

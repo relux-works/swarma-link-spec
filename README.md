@@ -800,12 +800,18 @@ second decision, of the same day, is a statement of terms: a v4 grant keeps
 block heights and has no clock member, a calendar interval is converted to
 heights at issuance, and a clock check of an issuer is its own rule
 ([LIP-0008](lips/LIP-0008-grant-v4.md) section 7.1). The third corrects the
-holder of an agent's request key: under J7 the key holder is Keymaker, by
-Ivan Oparin's decision of 2026-11-14, where
+holder of an agent's request key: under J7 the key holder is Keymaker and
+not the messaging daemon, by Ivan Oparin's decision of 2026-11-14 for his
+deployment, where
 [LIP-0013](lips/LIP-0013-trust-contract.md) section 3.6, the
 [key registry](KEY-REGISTRY.md) and the [key map](KEY-MAP.md) named the
 gateway of the agent's host; the gateway stays the holder in the
-implemented rental profile. The co-author's answer to the ledger is folded
+implemented rental profile. Keymaker holds the request key and signs the
+typed J7 objects, and the messaging daemon only asks for signatures over
+the socket. Whether NIP-17 messages use the same key, and through which
+holder, is not decided. The holder is named per owner: another owner names
+its own under the same J7 rules, and naming one gives no waiver from J4.
+The co-author's answer to the ledger is folded
 in by amendment. Nothing of this version is implemented, and every LIP
 remains Draft.
 

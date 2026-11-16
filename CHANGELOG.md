@@ -33,10 +33,14 @@ J4.4. J4.5 to J4.7 keep their numbers.
 - **The record and its states (J4.4 (c)).** A record is durable before the
   key is used, and the result is durable before the signature is released.
   The states are `reserved`, `signed` and `held`. No record is deleted and
-  no place becomes free again.
+  no place becomes free again. A signature that fails the service's own
+  verification holds the place: its octets are never released, and the
+  service never signs again for the place.
 - **Replay (J4.4 (d)).** The same parent, place and intent are answered
   with the stored octets of the signature and never with a new signature,
-  whose octets would differ under the auxiliary randomness of BIP-340.
+  whose octets would differ under the auxiliary randomness of BIP-340. The
+  checks of J4.4 apply to a replay as to a first request, so a replay
+  under a parent that the service holds closed discloses nothing.
 - **Conflict (J4.4 (e)).** Another intent for the same parent and place
   refuses with a closed code that is not retryable, and no signature
   exists.
@@ -48,8 +52,9 @@ J4.4. J4.5 to J4.7 keep their numbers.
   its operator ends the state. A lost ledger holds every place of every
   parent whose key the service holds.
 - **Audit and capacity (J4.4 (g)).** Every reservation, result, refusal and
-  reconciliation is audited, and the room for a reservation and its result
-  is secured before the reservation.
+  reconciliation is audited, and so are a replay that is answered from the
+  stored octets and a refusal of the caller check. The room for a
+  reservation and its result is secured before the reservation.
 
 Two codes are new, `PLACE_CONFLICT` (J4.4 (e), not retryable) and
 `PLACE_HELD` (J4.4 (f), not retryable as a request to sign; the same request
@@ -62,7 +67,9 @@ Cases S4-11 to S4-17 are new: the first signature, the exact replay with
 the same stored octets, another payload for the same place, a stop after
 the reservation and before the signature, a stop after the signature and
 before the record of the result, a second parent with the same place
-number, and a second place of the same parent. A vector plan follows them
+number, and a second place of the same parent. S4-15a stands beside
+S4-15: a signature that fails the service's own verification, which holds
+the place and is neither released nor repeated. A vector plan follows them
 and holds no vector: the intent, the replay, the conflict, the independence
 of keys and the answer on a held place can become deterministic vectors of
 a transition, in a file of their own, `vectors/LIP-0014/ledger-vectors.json`;
@@ -74,9 +81,9 @@ The section "Decisions recorded" of LIP-0014 gains the decision, and its
 open questions gain what the text leaves open: what a reconciliation may do
 with a held place for which no signature was made, whether a request that
 ends without a signature and with the key unused has to leave the place
-held, whether a replay is answered under a closed parent, the interface and
-the octets of the codes, and the entries of the ledger on the form of
-LIP-0025. The key registry names the duty in the entry of the delegation
+held, the interface and the octets of the codes, and the entries of the
+ledger on the form of LIP-0025. A replay under a closed parent is not
+among them: J4.4 (d) refuses it. The key registry names the duty in the entry of the delegation
 key.
 
 ### The window of a v4 grant keeps heights
@@ -95,9 +102,25 @@ an issuer's own clock check. LIP-0020 section 11 is not changed.
 
 ### The key holder of J7 is Keymaker
 
-Ivan Oparin decided on 2026-11-14, with J7, that the key holder of an agent,
+Ivan Oparin decided on 2026-11-14, with J7, that the key holder under J7,
 the service that holds the agent's request key and runs the gate for each
-run, is Keymaker. Three texts named the gateway of the agent's host
+run, is Keymaker and not the messaging daemon: «Держатель ключа по J7 — это
+Keymaker, а не a2a. a2a только просит подписать через сокет». LIP-0013
+section 3.6 quotes the decision in English. Keymaker holds the agent's
+request key under J7 and signs the typed J7 objects; the messaging daemon
+only asks for signatures over the socket, and the agent's OS user never
+reads the key. The texts do not say that Keymaker holds the agent's Nostr
+key for every use: whether NIP-17 messages use the same key, and through
+which holder, is not decided. The holder is named per owner. The texts
+record the decision for the deployment of the owner who took it, and
+another owner names its own holder under the same J7 rules. Naming a
+holder selects no deployment of another owner's holder and grants no
+waiver from J4: the delegation signer stays outside the agent's OS user
+and outside the request-key service. That the holder runs under an OS user
+of its own is written as a consequence of LIP-0013 section 3.6 and not as
+part of the decision.
+
+Three texts named the gateway of the agent's host
 instead and are corrected, each with the decision cited: LIP-0013 section
 3.6, in the sentence that names the key holder of an agent; the key
 registry, in the holder line of the entry "Agent's Nostr key"; and the key
@@ -107,7 +130,9 @@ proposed registration flow. LIP-0014 section 11.1 follows in the one
 sentence that named the gateway as the holder of that key. The gateway
 stays named as the holder in the implemented rental profile, where no gate
 of J7 runs. LIP-0006 section 1 already named Keymaker as the key holder of
-LIP-0013 section 3.6 and is unchanged. The authority-path diagram of the
+LIP-0013 section 3.6 and is unchanged. LIP-0003 section 1 now says that
+the gateway holds the secret of an agent's `nostr` key in the implemented
+rental profile. The authority-path diagram of the
 key map and the numbered steps of its registration flow keep the word
 "gateway": they describe the rental profile and an undecided proposal.
 

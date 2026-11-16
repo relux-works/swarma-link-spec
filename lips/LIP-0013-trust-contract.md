@@ -529,13 +529,29 @@ itself.
 
 Under this subsection the service that holds an identity's request key, the
 key holder, signs a run's objects only under what its operator listed for
-the origin of that run. For an agent the key holder is Keymaker, a service
-of the operator of the agent's host under an OS user of its own: Ivan
-Oparin decided this on 2026-11-14 with J7, and version 0.1.54 corrects the
-earlier text, which named the gateway of the host. The gateway holds the
-agent's key in the implemented rental profile, where no gate of this
-subsection runs (key map). The origin is the exact admission that started
-the run, a
+the origin of that run. The key holder is a role, and each owner names the
+service that fills it for the agents of that owner. Ivan Oparin decided on
+2026-11-14, with J7, that for his deployment the key holder is Keymaker and
+not the messaging daemon of the agent's host; in English, the decision
+reads: "The key holder under J7 is Keymaker, and not a2a. a2a only asks for
+a signature over the socket." There a2a is that messaging daemon. Keymaker
+holds the agent's request key under J7 and signs the typed objects of J7.
+The messaging daemon only asks for signatures over the socket, and the
+agent's OS user never reads the key. Whether the agent's NIP-17 messages
+use the same key, and through which holder, is not decided. That such a
+service runs under an OS user of its own is no part of what was decided: it
+follows from the rule that the agent's OS user does not read the key and
+from point 4 of the five points below, which puts the operator's table in
+a file of the key holder's OS user. This
+text records the decision for the deployment of the owner who took it.
+Another owner names its own holder under the same rules of J7. Naming a
+holder selects no deployment of another owner's holder, and it grants no
+waiver from J4: the delegation signer stays outside the agent's OS user and
+outside the service that holds the request key (LIP-0014 section 11.1).
+Version 0.1.54 corrects the earlier text, which named the gateway of the
+host. The gateway holds the agent's key in the implemented rental profile,
+where no gate of this subsection runs (key map). The origin is the exact
+admission that started the run, a
 grant and an event, and not the principal: on v3 every admission of one
 executor has the same principal (LIP-0004 section 5). The rule adds no key
 and no object, nothing on the wire and nothing on chain, and it changes no

@@ -426,10 +426,21 @@ names it as the holder or as the channel key.
 - Published: `swarma.agent.nostr` and `nostr.names._` in the agent's name,
   which must be equal on v3; `nostr` alone once LIP-0010 readers are
   deployed.
-- Holder: Keymaker, the key holder of LIP-0013 section 3.6, a service of
-  the operator of the agent's host under an OS user of its own. Ivan Oparin
-  decided on 2026-11-14 (J7) that Keymaker is that key holder, and version
-  0.1.54 corrects this line, which named the gateway of the agent's host.
+- Holder: as the agent's request key under J7, the key holder of LIP-0013
+  section 3.6, a role that each owner fills for its own agents. Ivan Oparin
+  decided on 2026-11-14 (J7) that for his deployment the key holder is
+  Keymaker: Keymaker holds the agent's request key under J7 and signs the
+  typed J7 objects, the messaging daemon only asks for signatures over the
+  socket, and the agent's OS user never reads the key. Whether NIP-17
+  messages use the same key, and through which holder, is not decided.
+  This entry records the decision for the deployment of the owner who took
+  it; another owner names its own holder under the same J7 rules. Naming a
+  holder selects no deployment of another owner's holder and grants no
+  waiver from J4: the delegation signer stays outside the agent's OS user
+  and outside the request-key service (LIP-0014 section 11.1, J4.4).
+  That the holder runs under an OS user of its own follows from LIP-0013
+  section 3.6 and is no part of the decision. Version 0.1.54 corrects this
+  line, which named the gateway of the agent's host.
   In the implemented rental profile the gateway holds the key, under its
   own OS user, and no gate of J7 runs there (key map). The key map proposes
   that the key is generated on the agent's host and never leaves it; that
@@ -440,7 +451,9 @@ names it as the holder or as the channel key.
 - Signs: the agent's messages; and, where a grant names the key as grantee
   or names the agent as a recipient by name: the kind-8181 consent,
   kind-8185 instruction envelopes, a kind-8186 delegation request, and v4
-  invocations. It signs no grant (rule 3).
+  invocations. It signs no grant (rule 3). The J7 decision above covers
+  the typed objects of the second group; it names no holder for the
+  signing of messages.
 - Danger: high.
 - Leak: the thief reads and writes the agent's messages and acts under
   every grant issued to the key or to the agent's name, inside each
