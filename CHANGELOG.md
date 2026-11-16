@@ -118,13 +118,30 @@ The points that had no answer in any text, and what this version proposes:
   the `seal.key` that the child states for that code and the script of the
   output for `SEAL_SCRIPT`, as rows F12 and F21 decide. Both are amended
   in place and marked there, as proposals of this version.
+- **Two amendments of the order of one request** (LIP-0014 section 11.1),
+  each in place and marked there, as proposals of this version. Step 6
+  read "It repeats the checks of J4.4 on the parent and on the row"; it
+  now repeats, on a fresh observation, every check of step 1 that reads a
+  node or a journal or is made on what such a read gave, which are I3 and
+  I5 to I9 of section 8.5, so that no child is signed whose window ended
+  or whose recipient's evidence changed between step 1 and step 6. The
+  cost is one more read of the node for every signature. Step 3 gains one
+  branch: a request that passed the check of the coin of its row only
+  because the confirmed issuance anchor of its own child has spent that
+  coin, for a place with no record and no open mark, is refused with no
+  code; nothing is reserved, and the operator is notified that a signature
+  exists outside the ledger (event 39 of the table of states, case
+  S4-30a). With these there are four amendments of landed text.
 - **Three sentences in the text of the reservation ledger** (LIP-0014
   section 11.1), none of which changes a rule of it: a pointer from the
-  order of one request to section 8.5; that the entry which records a hold
-  names the reservation key, the intent and the kind of the entry of the
-  mark that it closes; and that where a place is `signed` after a
-  reconciliation confirmed a signature (event 31), its last entry is the
-  entry of that outcome.
+  order of one request to section 8.5 and to the two amended steps; that
+  the entry which records a hold names the reservation key, the intent and
+  the kind of the entry of the mark that it closes; and that a
+  reconciliation which confirms a signature (event 31) writes a result
+  `signed`, which records that it came by a reconciliation and which hold
+  it closes and is the last entry of its place, so that the release rule
+  reads as landed. A fourth sentence names event 39 among the requests
+  that take neither code of the ledger.
 - **The recipient and the request.** The proof of the name of a child's
   recipient has one place, with the checks of a class (F19), and it is a
   duty of the signing service as of a verifier. A request is authenticated
@@ -142,18 +159,22 @@ The points that had no answer in any text, and what this version proposes:
 - **The order of the signing service's checks.** One signing request has
   one order, the order of one request that landed with the reservation
   ledger in version 0.1.54 (LIP-0014 section 11.1), and this version
-  changes no step of it. Section 8.5 is the inner order of its step 1, the
+  amends its steps 3 and 6 and no other step of it. Section 8.5 is the inner order of its step 1, the
   checks of J4.4, as the steps I0 to I9: the caller is identified first,
   then the documents are read, then the caller's list, the observation,
   the contract, the parent, the keys, the row, the child on the node, and
   the coin with the stop coin. Steps 2 to 9 of the order of one request
-  follow unchanged, and no check of section 8.5 makes a signature: a
-  replay is answered from the record, another intent for a taken place and
-  a lost ledger refuse with the codes of the ledger, and the second check
-  after the reservation makes the checks on the parent and on the row
-  again. The duties that section 8.5 adds to J4.4 are marked new: the
-  observation, the contract, the recipient, the window and the seal of the
-  child, the coin, which the service reads as unspent, and the stop coin.
+  follow, with the two amendments named above, and no check of section 8.5
+  makes a signature: a replay is answered from the record, another intent
+  for a taken place and a lost ledger refuse with the codes of the ledger,
+  and the second check after the reservation makes I3 and I5 to I9 again
+  on a fresh observation. The duties that section 8.5 adds to J4.4 are
+  marked new: the observation, the contract, the recipient, the window and
+  the seal of the child, the coin, and the stop coin. The service reads
+  the coin as unspent, or as spent by the confirmed issuance anchor of the
+  child in the request, so that a replay after publication reaches its
+  record; that exception is marked new, reads nothing of the ledger in
+  step 1 and does not hold in the second check.
   The reading of a payload before it is signed is a proposal of five steps
   (rule T7), for which LIP-0020 W9.1 has no class yet.
 - **One place for the observation.** The observation of a side (F3) stands
@@ -256,9 +277,10 @@ code of a contract that is no valid contract of its v4 profile and the code
 of a contract that does not mirror the terms of its grant, with the
 preimage of the identifier; the code of a journal of closures of a grant
 that cannot be read; the place of a validated spend of a seal against the
-checks of the anchor and of the issuance; what a side does with a rule of
-LIP-0020 W11.10 that only octets outside the group of the child break,
-which waits for proposal Q1 of LIP-0026; and the class under which a
+checks of the anchor and of the issuance; what a side does with a finding
+of rules 2 and 6 to 8 of LIP-0020 W11.10, and with a finding of rules 4
+and 5 outside the group and the range of the child, which waits for
+proposal Q1 of LIP-0026; and the class under which a
 signing service judges the age of the tip. Also open: the entries of the
 two registries, and the owners' line on every choice that the text marks
 NEW. Outside this version, and decided by none of its text: whether the

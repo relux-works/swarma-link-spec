@@ -1361,7 +1361,7 @@ Each row of the tables below has one of three states, and its column
 | --- | --- |
 | Carried | The row restates a text that landed in an earlier version. Its order, its codes and what a refusal leaves behind are those of that text. The row has the state of that text and no other: decided by both owners, carried for a reader of `swarma-grant/4` by LIP-0020 section 11, or the proposal of a draft that binds no reader until it is accepted |
 | **NEW** | The row decides something that no landed text decides. The cell gives the reason, and the open questions of this LIP name the choice for the owners |
-| **Amends** | The row changes what a landed sentence says, and that sentence is amended in place by the same change and marked there. There are two: the sentence of section 11.1 on the place of the child checks of J4.3 (b) (rows F11 and F23, pair Q18), and case S4-9 of section 11.2 on the seal of a child (rows F12 and F21, rule T5). Until the version lands, the reading in force of each is the text as version 0.1.54 has it |
+| **Amends** | The row changes what a landed sentence says, and that sentence is amended in place by the same change and marked there. There are four: the sentence of section 11.1 on the place of the child checks of J4.3 (b) (rows F11 and F23, pair Q18); case S4-9 of section 11.2 on the seal of a child (rows F12 and F21, rule T5); step 3 of the order of one request of section 11.1, which gains one branch (section 8.5, I9 and I10; event 39); and step 6 of that order, which names the checks that it repeats and their observation (section 8.5, I11 and the paragraph "The repeat"). Until the version lands, the reading in force of each is the text as version 0.1.54 has it |
 
 A row never states a second reading beside a landed one. Where two landed
 texts leave a point undecided between them, the row says so and names the
@@ -1457,7 +1457,7 @@ of a child is the row that its ordinal selects (LIP-0026 R8.3, R8.8).
 | F10 | The child-seal key of the parent: first `delegate.child_seal_key` is present (CS1); then it differs, by x coordinate, from the delegation key and from the keys of F9 (CS3) | Signed octets of `P` | both | `P` names a child-seal key that no other role holds | CS1: `CHILD_SEAL_KEY`. CS3: `DELEGATE_KEY_REUSE` | no | The seal of `C`; the rows | Carried rules: CS1 and CS3, which LIP-0020 section 11 carries. **NEW**: the place and the inner order, the key present before it is compared (pairs Q9 and Q10) |
 | F11 | The keys of the child, J4.3 (b), as far as no attestation is read: the delegation key differs, by x coordinate, from `seal.key` of `C`, from `recipient.key` or `recipient.owner` of `C`, and then, where `P` names its recipient by name, from every channel key that the value of that name yields. That value is the one that part 7.3 of F7 read in this observation, and F11 makes no read of its own. The comparison with the attestation key of the row's notary stands in F23 | Signed octets of `P` and `C`; the value of the name of `P`'s recipient as part 7.3 read it | both | The delegation key holds no second role at this admission | `DELEGATE_KEY_REUSE`, without closure | no for the octets; state for a channel key | The rows; the attestation | Carried: J4.3 (b) at the place of V7. **Amends** section 11.1 for the one comparison that moves to F23 (pair Q18) |
 | F12 | The seal key of the child, CS2 as far as octets decide it: `seal.key` of `C` equals `delegate.child_seal_key` of `P`, octet for octet, the parity octet included | Signed octets | both | The seal key that `C` states is the child-seal key of `P` | `CHILD_SEAL_KEY` | no | The rows; the script of the seal on a node (F21) | Carried: CS2 and LIP-0008 SB1, "for a child the seal public key is the child-seal key of its parent". **NEW** in two points (rule T5): CS2 is split between this row and F21, and the equality includes the parity octet. **Amends** case S4-9 of section 11.2, whose first refusal now names the key that the child states (rule T5) |
-| F13 | The row of the child, in two parts in this order. (a) The ordinal lies between 1 and the number of rows of `P`, the sum of the counts of all its ranges. No template is read before this. The ordinal then selects the group, the range and the coin (LIP-0026 R2.1, R8.3, R8.8). (b) The selected group and the selected range meet rules 4 and 5 of LIP-0020 W11.10: the template of that group, and that range with its `stop` | `ordinal` of `C`; the `count` of every range of `P`; for (b) the template of the selected group and the selected range | both | The row of `C` is known, and its group and its range are well-formed | (a) `CHILD_ORDINAL`. (b) `GRANT_DELEGATE`; a proposal point of rule 5 of W11.10 keeps its two outcomes. A rule of W11.10 that only octets outside the selected group and range break: open point O7 | no | Whether `C` fits the template (F14 to F18); the coin on a node | Carried for (a): the bound and its code are LIP-0026 R2.1 (J1.2). The order of the count that makes an ordinal name a row is that of R8.3; LIP-0026 section 8 states its state in one place: proposed in force by version 0.1.55, with the owner's explicit acceptance pending. LIP-0020 W11.6 states the same order for the octets of a parent. The selection of R8.8 is the text of proposal Q2 of LIP-0026, and that a verifier binds the ordinal to the signed template, range and coin as one signed binding is the other pending part of that proposal; the row has that state. For (b) the rules are carried: rules 4 and 5 of W11.10, which "every reader" of LIP-0020 section 11 judges, with the state that section gives them. **NEW** (rule T10): their place here at an admission, for the group and the range of the child alone, which is what the profile in force has a verifier check (LIP-0026 section 8) |
+| F13 | The row of the child, in two parts in this order. (a) The ordinal lies between 1 and the number of rows of `P`, the sum of the counts of all its ranges. No template is read before this. The ordinal then selects the group, the range and the coin (LIP-0026 R2.1, R8.3, R8.8). (b) The selected group and the selected range meet rules 4 and 5 of LIP-0020 W11.10: the template of that group, and that range with its `stop` | `ordinal` of `C`; the `count` of every range of `P`; for (b) the template of the selected group and the selected range | both | The row of `C` is known, and its group and its range are well-formed | (a) `CHILD_ORDINAL`. (b) `GRANT_DELEGATE`; a proposal point of rule 5 of W11.10 keeps its two outcomes. A finding of rules 2 and 6 to 8 of W11.10, whether or not octets of the selected group or range take part in it, and a finding of rules 4 and 5 in another group or range: open point O7 | no | Whether `C` fits the template (F14 to F18); the coin on a node | Carried for (a): the bound and its code are LIP-0026 R2.1 (J1.2). The order of the count that makes an ordinal name a row is that of R8.3; LIP-0026 section 8 states its state in one place: proposed in force by version 0.1.55, with the owner's explicit acceptance pending. LIP-0020 W11.6 states the same order for the octets of a parent. The selection of R8.8 is the text of proposal Q2 of LIP-0026, and that a verifier binds the ordinal to the signed template, range and coin as one signed binding is the other pending part of that proposal; the row has that state. For (b) the rules are carried: rules 4 and 5 of W11.10, which "every reader" of LIP-0020 section 11 judges, with the state that section gives them. **NEW** (rule T10): their place here at an admission, for the group and the range of the child alone, which is what the profile in force has a verifier check (LIP-0026 section 8) |
 | F14 | The executor of `C` is that of the template of its row: the same name and the same key (R2.2) | Signed octets | both | `C` names the executor of its row | `CHILD_AGENT_NOT_ALLOWED` | no | The recipient, the limits | Carried: LIP-0026 R2.2 and R2.5 (J1.2) |
 | F15 | The recipient of `C` is that of the template: the same mode, and in it the same request key or the same name with the same owner key; for a class, a recipient by name (R2.3, R9.3). No name is read here | Signed octets | both | `C` names the recipient of its row, as far as signed octets say it | `CHILD_GRANTEE_NOT_ALLOWED` | no | Whether the name is held, and by whom | Carried: LIP-0026 R2.3 and R2.5 (J1.2); R9.3 for a class (J10) |
 | F16 | Every entry of `actions` of `C` is an entry of `delegate.actions` of `P`, compared as texts (LIP-0020 W11.11, rule 2). An empty list passes | Signed octets | both | The actions of `C` are a subset of the delegable actions of `P` | `CHILD_ACTIONS_WIDER` | no | Whether an action is defined (E1) | Carried rule: LIP-0008 section 12.2, "Known action sets and numeric ceilings MUST NOT widen in a child". **NEW** code assignment and place among the checks of a row (rule T4; pair Q12) |
@@ -1467,7 +1467,7 @@ of a child is the row that its ordinal selects (LIP-0026 R8.3, R8.8).
 | A1 | At `ADMIT` alone, and no step of the predicate: the request is authenticated under the recipient mode of `C` (LIP-0008 section 4, step 2). By key: under the signed request key. By name: under the key that the value read in F19 yields for the channel of the request; for a row with a class that is the value whose writer check (d) judged (LIP-0026 R9.10) | The request; `recipient` of `C`; the value of the recipient name as F19 read it | consumer. The issuer has no request; its own operation is authenticated in I0 and I2 (section 8.5), before F3 | The request comes from the recipient of `C` | The refusal of the request's authentication: a wrong key, an unknown channel, a removed key. Open: the code comes with the members of the invocation (LIP-0020 section 3) and is not assigned here. The refusal is never reported as `CHILD_GRANTEE_NOT_ALLOWED` or as a code of F19 | open, with the code | Whether `C` is live; the seal, the coin, the attestation | Carried place: LIP-0008 section 4, "Admission order", authenticates the request in its numbered step 2, after the names of step 1 and before the checks of step 4. **NEW** against the proposal of the consuming side, which authenticates before the checks of a row (pair Q4). **NEW** as a reading: the place after F3, where the same section numbers "Require healthy observations" as step 3 (pair Q21) |
 | F20 | The child is live as a grant, in four parts in this order. (a) The side's journal holds no closure of `C` (LIP-0008 section 5.1). (b) The recent block of `C` is a block of the active chain of the observation, with the height `R` (LIP-0022 B4.2). (c) `R <= C.not_before_height` (LIP-0008 section 7.1, rule 3). (d) The tip `H` against the window (LIP-0008 section 7.1, rule 2; section 12.5). At `ADMIT`: `C.not_before_height <= H < C.not_after_height`. At `ISSUE`: `H < C.not_after_height` alone | The journal; the node; `recent_block` and the window of `C` | both. The sides differ in (d) by design (rule T3): the issuer signs a child whose window has not opened yet, and the consumer refuses that child until the tip reaches `C.not_before_height` | At `ADMIT`: `C` is inside its own window and not closed. At `ISSUE`: `C` is not closed and not backdated, and its window has not ended | (a) `CHILD_NOT_LIVE`. A journal of closures that cannot be read, or that cannot show its continuity, admits nothing (LIP-0008 section 5.1); that refusal has no code (open point O5). (b) `RECENT_BLOCK`. (c) `CHILD_NOT_LIVE`. (d) `CHILD_NOT_LIVE` | closed for (a); open, with the code, for a journal that cannot be read; state for (b), (c) and (d). A refusal of (c) changes only with a reorganisation that moves the recent block | The seal as an output, the anchor, the coin | Carried rules: LIP-0008 sections 5.1, 7.1 and 12.5; LIP-0022 B4.2. Carried place: (b) before (c) and (d) by LIP-0022 B6.2. **NEW** places (pair Q24): (a) before (b), and (c) before (d). Step 4 of LIP-0008 section 4 names the journal and the interval in one list, and that list states no order. **NEW** (rule T3): the code, its use for (c), and the rule of the issuer in (d) |
 | F21 | The seal and the issuance of the child, in three blocs. The blocs are unordered against each other: the letters name them and state no order (open point O1). (s) The output at `seal.outpoint` exists with the single-key script of the profile for `seal.key`, and the profile and the kind are supported (LIP-0008 SB2; CS2). (w) The seal transaction and the anchor pass LIP-0023, in the order of its C7.1. (i) A reference to the grant from another object of the presentation, the `grant_id` of a preparation, equals the identifier of `C` (step 8 of the pipeline, LIP-0020 W11.8 and W8.1); then the presentation passes steps 2 to 6 of LIP-0020 W9.4 in their order; and the anchor stands in the window of the recent block (LIP-0022 B4.3). A validated spend of the seal closes `C` (CS5) | The node; the presentation of `C` | consumer for the whole step. The issuer makes bloc (s) alone, as its duty before it signs (section 8.5, I8); no anchor of `C` exists then | `C` is issued on the active chain, and its seal is the one that CS2 asks for | (s) `SEAL_OUTPUT`, then `SEAL_SCRIPT`, then `SEAL_PROFILE`, as LIP-0008 SB2 names them and LIP-0024 E3.1 orders them. (w) The codes of LIP-0023 section 7. (i) `WIRE_ID` for the reference; `ISSUANCE_MODE`; the codes of the pipeline of the assent as a signed object, then `ASSENT_BINDING`, `ASSENT_PARTY`; `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME`; `ISSUANCE_FRAME`; `ISSUANCE_COMMITMENT`; and `RECENT_BLOCK_WINDOW`. A spent seal: `CHILD_NOT_LIVE` | As the text of each code gives it: no where the octets of the presentation decide, state where the node decides; closed for a validated spend of the seal; pending for `W_ANCHOR_PENDING` and for `SEAL_OUTPUT`, which proves nothing about the seal (LIP-0024 section 3) | Which input of the anchor spends the coin | Carried inside each bloc. Four orders across the blocs are carried: a spend is classified only after (s) and the signature (LIP-0008 SB3); `RECENT_BLOCK_WINDOW` stands after the read of the anchor (LIP-0022 B6.2); `ISSUANCE_FRAME` stands where W9.4 puts it (LIP-0023 section 7); and the consent of the child's recipient has this one place at a consumer, step 4 of W9.4. **NEW** as a stated place: the reference of step 8 at the head of bloc (i), where the object that holds it is read. Unordered, and open by name: (s) against (w), (s) against (i), and (w) against (i) (open point O1); and the classification of a validated spend against (w) and against (i), which LIP-0008 SB3 orders after (s) alone (open point O6). Open with LIP-0020 W7.2: which key assents to the contract of a child. Until that is decided, step 3 of W9.4 names no party for a child, and no case holds a defect of it |
-| F22 | The coin of the row, in the order of LIP-0026 R6.1: it is no output of the child's seal transaction (R3.4); it is on the active chain as the range states it, at or below the recent block of `P` (R3.2); one input of the confirmed anchor of `C` spends it (R3.3) | Signed octets for R3.4; the node; the anchor of `C` | consumer. At `ISSUE` the issuer makes R3.4 and R3.2 and does not make R3.3: no anchor exists, and a plan of one is no fact. In its place the issuer reads that the output of the coin is unspent in its observation: a coin that another transaction has spent is a coin that no anchor of `C` can spend | The issuance of `C` is the one issuance of its row on the active chain. At `ISSUE`: the coin is there and can still be spent | `ROW_COIN_IN_SEAL_TRANSACTION`, then `ROW_COIN`, then `ROW_COIN_REQUIRED`. At `ISSUE` the last code reports a coin that is spent | no for R3.4; state for the others | The attestation | Carried: LIP-0026 R6.1, the proposal of that draft, for the inner order and for the place after the checks of LIP-0023 (pair Q15). Carried as a duty of the issuer: section 11.1, "that the coin of a row is unspent is read on a node, by the service under J4.4 and by every verifier at use". **NEW**: the place before the attestation (rule T6); the part of the issuer (section 8.5, I9); and the code of a spent coin at `ISSUE`, `ROW_COIN_REQUIRED`, the code that a consumer reports for the same coin once an anchor exists (case S8-18). How a node is read for an unspent output against one tip is open in LIP-0022 and LIP-0027 |
+| F22 | The coin of the row, in the order of LIP-0026 R6.1: it is no output of the child's seal transaction (R3.4); it is on the active chain as the range states it, at or below the recent block of `P` (R3.2); one input of the confirmed anchor of `C` spends it (R3.3) | Signed octets for R3.4; the node; the anchor of `C` | consumer. At `ISSUE` the issuer makes R3.4 and R3.2 and does not make R3.3: no anchor exists, and a plan of one is no fact. In its place the issuer reads that the output of the coin is unspent in its observation, or that the confirmed issuance anchor of `C` has spent it, which is the case of a replay after publication (section 8.5, I9): a coin that another transaction has spent is a coin that no anchor of `C` can spend | The issuance of `C` is the one issuance of its row on the active chain. At `ISSUE`: the coin is there and can still be spent | `ROW_COIN_IN_SEAL_TRANSACTION`, then `ROW_COIN`, then `ROW_COIN_REQUIRED`. At `ISSUE` the last code reports a coin that another transaction than the confirmed anchor of `C` has spent | no for R3.4; state for the others | The attestation | Carried: LIP-0026 R6.1, the proposal of that draft, for the inner order and for the place after the checks of LIP-0023 (pair Q15). Carried as a duty of the issuer: section 11.1, "that the coin of a row is unspent is read on a node, by the service under J4.4 and by every verifier at use". **NEW**: the place before the attestation (rule T6); the part of the issuer (section 8.5, I9); and the code of a spent coin at `ISSUE`, `ROW_COIN_REQUIRED`, the code that a consumer reports for the same coin once an anchor exists (case S8-18). How a node is read for an unspent output against one tip is open in LIP-0022 and LIP-0027 |
 | F23 | The certifier. A row without a certifier ends the predicate here: F23 and F24 are not made, and an attestation that is presented is not read (J9.1; LIP-0026 R10.4). For a row with a certifier, steps V10 to V17 of section 8 in their order, with the notary of the row in V12 (J2.2, section 10.1), and after V12 the last comparison of J4.3 (b): the delegation key differs from the attestation key that this notary yields | The attestation; the node; `notaries` and `certifier` of `P` | consumer | The child is certified by the notary of its row | `CHILD_NOT_CERTIFIED`; then the codes of V11 and V12; then `DELEGATE_KEY_REUSE`; then the codes of V13 to V17 | no for the shape, the signature and the binding; state for the name, the tip and the anchor; pending for `NOTARY_HISTORY_UNAVAILABLE` and an unconfirmed anchor | The stop coin and the seal of the attestation | Carried: steps V10 to V17; J9.1 for a row without a certifier, where the sentence of R10.4 that a presented attestation is not read is a proposal of LIP-0026. The notary of the row in V12 is J2.2, which LIP-0020 section 11 carries for a reader of `swarma-grant/4` since version 0.1.53; the note under the table of section 8, which lets V12 accept any pinned notary until the co-author agrees, speaks of v3. The order of the codes inside V11 and V13 is stated by the table of section 8 ("then", "in this order"). The four middle codes of V12, `NOTARY_CHECKPOINT`, `NOTARY_NAME_CHANGED`, `NOTARY_VALUE_UNAUTHORIZED` and `NOTARY_HISTORY_UNAVAILABLE`, are listed there without an order among themselves: they are unordered here as well, and no case holds two of them. **Amends** section 11.1 for the place of the last comparison of J4.3 (b) (pair Q18) |
 | F24 | The end of the row and of the attestation: the checks of the stop coin in the order of LIP-0027 H2.7, and then step V18 | The journal of closures; signed octets for H2.2; the node | consumer for the whole step. The issuer makes the checks of the stop coin and not V18 | The row is not ended, and the attestation is not withdrawn | `JOURNAL_LOST`, `JOURNAL_FENCED`, then `ROW_CLOSED_FOR_CAUSE` from the journal; `ROW_STOP_ALIAS`; `ROW_STOP`; `ROW_CLOSED_FOR_CAUSE` for a spent coin; then `NOTARY_WITHDRAWN` | closed for `ROW_CLOSED_FOR_CAUSE`; no for `ROW_STOP_ALIAS`; state for the others | Whether the request fits an account | Carried: LIP-0027 H2.7 and H5.1, the proposal of that draft, and step V18. **NEW**: the part of the issuer beyond the closure for cause that J4.4 names, that is the checks H2.2 to H2.4 (section 8.5, I9) |
 
@@ -1519,7 +1519,7 @@ names, and each is a proposal of version 0.1.55.
 | T7 | At `ISSUE` the service reads the payload of `C` in five steps, in this order, and reports the first refusal. (1) The document step of LIP-0020 W9.2 on the octets of the payload; `WIRE_SIZE` is judged on the length of the signed form that the signature completes, which the payload fixes. (2) The `type` (W3.1). (3) The members, in the order of W9.3. (4) The reference to the parent, as step 6 of W11.8 states it for a child: `WIRE_ID`, then `CHAIN_DEPTH`, then `NOT_DELEGABLE`. (5) The rules of W11.9. These are the three steps of the class "unsigned payload" of W9.1, followed by steps 6 and 9 of the class "signed object". Steps 2, 5 and 7 of that class have no subject before a signature exists, and step 8 has none for a child, whose one reference stands in step 6. **NEW:** LIP-0020 W9.1 defines no such class and gains one by amendment when this rule is accepted | F2 | The codes of F2 without `WIRE_SIGNATURE_FORM` and `CHILD_SIGNER` |
 | T8 | A refusal of the parent at the admission of a child keeps the code of the rule that refused the parent. **NEW:** on v3 step V5 reports every such refusal as `PARENT_NOT_LIVE`, and no landed v4 text says which code the admission of a child reports for a parent that LIP-0021, LIP-0022, LIP-0023 or LIP-0020 W9.4 refuses. The reason is that those codes tell a caller what to do, and one code for all of them does not: a changed issuer name, a seal with another script and an anchor that is still pending call for three different acts. The codes of those drafts are proposals and keep that state here. `PARENT_NOT_LIVE` keeps the findings that landed texts give it, J4.5 with the cases S4-4 and S4-6, and takes the two for which no v4 code exists: a journaled closure and the window. The order of the six parts is one order for both sides, and each part names its source in the table "Inside F7": B6.2 and the numbered steps of LIP-0008 section 4 fix 7.1 before 7.2 and the names before the checks of step 4, and the three other boundaries, 7.2 before 7.3, 7.4 before 7.5 and 7.5 before 7.6, are **NEW**, because the texts that name those checks list them and state no order. The Draft text of LIP-0008 section 5.2 is no part of F7 (part 7.2) | F7 | The codes of the table "Inside F7" |
 | T9 | LIP-0020 W11.4 says that "a verifier refuses the admission that an unknown kind affects", and LIP-0026 R2.4 says that a kind whose amount is a floor "is no limit in the sense of this rule" and leaves its comparison to the type profile of the kind. Neither names a code or a place. **NEW:** F17 gives both. A side cannot compare an amount whose kind it does not know, so the kind is judged after the keys, which octets decide, and before the amounts. The code is `LIMIT_KIND_UNDEFINED` of LIP-0020 W11.14. No kind is defined in version 0.1.55, so a child or a template that states a limit refuses in F17 at every side until a profile defines its kind, and a pair that states no limit passes. E2 repeats the check for the kinds that a request consumes and that neither the child nor its row limits. A floor that fails the relation of its profile is reported as `CHILD_BUDGET_OVER`; R2.4 gives that code to ceilings, and its use for a floor is **NEW** | F17, E2 | `LIMIT_KIND_UNDEFINED` |
-| T10 | At the admission of a child a side judges the rules of LIP-0020 W11.10 in two places and no other. In F1: rules 1 and 3, the forms of `delegate.actions` and of `notaries`, which F16 and F23 read. In F13, part (b): rules 4 and 5 for the group and the range that the ordinal of the child selects. **NEW:** the places, and the limit to the group and the range of the child. LIP-0020 W11.10 states that the result of its pipeline is a statement about a document and "does not say what a verifier must have read before it admits a child"; the profile in force has a verifier check "only the group and the range of its child" (LIP-0026 section 8); and the refusal of a whole parent is proposal Q1 of LIP-0026, which is pending and takes effect by no text before the owner decides it. This rule decides nothing of Q1: what a side does with a rule of W11.10 that only octets outside the selected group and range break, which is every finding of rules 2 and 6 to 8 and a finding of rules 4 and 5 in another group or range, is open point O7. A reader of documents that judged all eight rules in step 9, as LIP-0020 W11.8 has a reader do, knows more than this rule asks, and at the admission of a child it reports a finding of rules 4 and 5 for the selected group and range in F13 and not in F1 | F1, F13 | `GRANT_DELEGATE` |
+| T10 | At the admission of a child a side judges the rules of LIP-0020 W11.10 in two places and no other. In F1: rules 1 and 3, the forms of `delegate.actions` and of `notaries`, which F16 and F23 read. In F13, part (b): rules 4 and 5 for the group and the range that the ordinal of the child selects. **NEW:** the places, and the limit to the group and the range of the child. LIP-0020 W11.10 states that the result of its pipeline is a statement about a document and "does not say what a verifier must have read before it admits a child"; the profile in force has a verifier check "only the group and the range of its child" (LIP-0026 section 8); and the refusal of a whole parent is proposal Q1 of LIP-0026, which is pending and takes effect by no text before the owner decides it. This rule decides nothing of Q1: what a side does with a finding of rules 2 and 6 to 8, whether or not octets of the selected group or range take part in the finding, and with a finding of rules 4 and 5 in another group or range, is open point O7. The findings of rules 2 and 6 to 8 are not all caused by octets outside the selection: the sum of a pool is taken over every group, the selected one included, and the coin of the selected range can itself be the outpoint of the seal, meet another range or share its stop coin. Such a finding goes to O7 like the others, and to no row of this table. LIP-0020 W11.10 leaves that question to the pending proposal and states two outcomes only for its two proposal points. A reader of documents that judged all eight rules in step 9, as LIP-0020 W11.8 has a reader do, knows more than this rule asks, and at the admission of a child it reports a finding of rules 4 and 5 for the selected group and range in F13 and not in F1 | F1, F13 | `GRANT_DELEGATE` |
 
 T6 closes the point that LIP-0026 R6.1 left to the profile of the
 attestation. The order is **NEW**, and no landed text gives it. Its reason
@@ -1641,7 +1641,7 @@ for O8 the cutoff that a signing service applies is not determined.
 | O4 | The code of a contract that is no valid contract of its v4 profile, the code of a contract that does not mirror the terms of its grant, and the order of the two after the identifier. With them: the preimage of the identifier, without which part (b) of F6 cannot be computed | F6, parts (b) and (c) | A v4 contract profile (LIP-0017 section 2; LIP-0018) |
 | O5 | The code, and what the refusal leaves behind, of a journal of closures of a grant that cannot be read or cannot show its continuity. The verdict is fixed: such a side admits nothing and signs nothing (LIP-0008 section 5.1, "Failure to persist closure permits no effect and requires journal recovery"; J4.4, "its closure journals included"). The codes `JOURNAL_LOST` and `JOURNAL_FENCED` of F24 belong to the journal of rows and are not assigned to this one | Part 7.4 of F7; F20, part (a) | The entries of a closure journal on the form of LIP-0025, or an owner's line on the code |
 | O6 | The place of the classification of a validated spend of a seal (`CHILD_NOT_LIVE`, `PARENT_NOT_LIVE`; closed) against the blocs (w) and (i). LIP-0008 SB3 orders it after bloc (s) and the signature and against nothing else | F21; part 7.6 of F7 | The profile of the seal and the issuance, with O1 |
-| O7 | What a side does, at the admission of a child, with a rule of LIP-0020 W11.10 that only octets outside the group and the range of the child break: every finding of rules 2 and 6 to 8, and a finding of rules 4 and 5 in another group or range. Two outcomes conform until the owner decides proposal Q1 of LIP-0026: a side that judged the rule refuses in F13, part (b), as `GRANT_DELEGATE`, and a side that judges the group and the range of its child alone goes on. The two sides of one path may therefore differ on such a parent. LIP-0020 W11.10 states the same two positions for a verifier | F13, part (b); rule T10 | The owner's decision on proposal Q1 of LIP-0026 |
+| O7 | What a side does, at the admission of a child, with a finding of rules 2 and 6 to 8 of LIP-0020 W11.10, whether or not octets of the group or the range of the child take part in the finding, and with a finding of rules 4 and 5 in another group or range. A finding of rules 2 and 6 to 8 can be caused by the coin of the selected range itself, which is the outpoint of the seal, meets another range or shares its stop coin, and by the pool sum, which is taken over the selected group as well; it is held here all the same, and no row of this table judges it. Two outcomes conform until the owner decides proposal Q1 of LIP-0026: a side that judged the rule refuses in F13, part (b), as `GRANT_DELEGATE`, and a side that judges rules 4 and 5 for the group and the range of its child alone goes on. The two sides of one path may therefore differ on such a parent, a parent whose defect is the child's own coin included. LIP-0020 W11.10 leaves that question to the pending proposal and states two outcomes only for its two proposal points | F13, part (b); rule T10 | The owner's decision on proposal Q1 of LIP-0026 |
 | O8 | The class of action under which the signing service judges `TIP_AGE`. LIP-0022 B3.6 measures the age of the tip against the class of the action of a request, and at `ISSUE` there is no request | F3 at `ISSUE`; section 8.5, I3 | A line of LIP-0022 or of the owners on the class of signing a child |
 
 What the table does not decide: whether the key that signs children may run
@@ -1664,14 +1664,18 @@ section 8.5 points.
 
 One signing request has one order. It is the order of one request of
 section 11.1, in nine steps, which landed with the reservation ledger in
-version 0.1.54, and this subsection changes no step and no word of it.
+version 0.1.54. Version 0.1.55 amends two steps of it, in place and marked
+there: step 3, which gains one branch (I9 and I10 below), and step 6, which
+names the checks that it repeats (I11 and the paragraph "The repeat"
+below). This subsection changes no other step and no other word of it.
 Step 1 of that order reads: the service "identifies the caller and makes
 the checks of J4.4". J4.4 lists those checks, and step 1 names them in one
 sentence; neither gives them an order among themselves or names the rows
 of section 8.4 that make them. This subsection gives that: the steps I0 to
 I9 below are the inner order of step 1. Step 6 of the order of one request
-repeats "the checks of J4.4 on the parent and on the row", and the
-paragraph "The repeat" below says which of I0 to I9 those are. I10 and I11
+repeated, through version 0.1.54, "the checks of J4.4 on the parent and on
+the row"; as amended it repeats I3 and I5 to I9 on a fresh observation, and
+the paragraph "The repeat" below states it. I10 and I11
 are no checks and make no signature of their own: they are steps 2 to 5
 and steps 6 to 9 of the order of one request, named here so that the table
 shows the whole order in one place, and their cells point into section
@@ -1701,9 +1705,9 @@ of it (J4.4 (a)), and that holds for a replay as for a first request
 | I6 | makes the comparisons of the subject and of the keys | Carried: "the comparisons of section 4"; the sentence after the table of J4, that a verifier repeats the checks of J4.4 on the parent and on the child; for the child-seal key **NEW** as a duty of the service | F8 to F12 | The code of the row |
 | I7 | finds the row of the ordinal and holds the child against it and against the parent | Carried: "that the child's row exists and that the child fits it"; "the comparisons of section 4". **NEW** as duties of the service where the rows are new: part (b) of F13 (rule T10) and part (b) of F17 (rule T9) | F13 to F18 | The code of the row |
 | I8 | establishes on its own node that the recipient of the child is one that the row admits; then holds the child against its journal, its recent block and its window; then reads the output that `seal.outpoint` of `C` names, in the seal transaction as the delegating side fixed it. It finds there the single-key script of the parent's profile for the child-seal key of `P`. It holds no private child-seal key and needs none for this (CS4) | **NEW**, all three: J4.4 lists no check of the child's recipient on a node, none of the child's own window and none of its seal | F19; then F20, with the issuer's reading of part (d); then F21, bloc (s) alone | The code of the row: for F19 its codes; `CHILD_NOT_LIVE`, `RECENT_BLOCK`; `SEAL_OUTPUT`, `SEAL_SCRIPT`, `SEAL_PROFILE`. No signature exists |
-| I9 | establishes that the coin of the row is there and unspent, so that the child's anchor can still spend it, and then that the row is not ended | Carried: "that under section 10.1 the row is not closed for cause"; section 11.1, "that the coin of a row is unspent is read on a node, by the service under J4.4". **NEW** as duties of the service: for the coin LIP-0026 R3.4 and R3.2, and for the stop coin LIP-0027 H2.2 to H2.4. **NEW**: the code of a spent coin (section 8.4, row F22) | F22 in the issuer's part: R3.4, then R3.2, then the output unspent; then F24 without V18. For a row without a certifier F24 is not made | The code of the row; where both rows refuse, that of F22 |
-| I10 | takes steps 2 to 5 of the order of one request, as section 11.1 states them and in its order: the continuity check of the ledger, the read of the place, the room, the reservation. It computes the intent itself from the payload that passed I0 to I9 (J4.4 (b)). A request for a place that has a record or an open mark, a replay included, ends in step 3 and reaches no later step | Carried: section 11.1, the order of one request and J4.4 (a) to J4.4 (g), decided on 2026-11-16 and landed in version 0.1.54. This row states no rule of them and adds none | None: no row of section 8.4, and no check that a verifier can repeat | As section 11.1 gives it: `PLACE_HELD`; `PLACE_CONFLICT`; for a replay of a place that is `signed`, the stored octets and no new signature; for want of room, behind an open mark of another place and for a mark that did not land, a refusal with no code (events 2 to 11) |
-| I11 | takes steps 6 to 9 of the order of one request, as section 11.1 states them and in its order: the repeat of the checks on the parent and on the row; the entry of the use of the key and one call of the signer; the verification of the signature; the entry of the result, and only then the release | Carried: section 11.1, as for I10; J4.4, "It computes the digest itself". **NEW**: which of I0 to I9 the repeat of step 6 makes, and in which observation (the paragraph "The repeat") | For the repeat: F3, F7, and F22 and F24 in the issuer's part. For steps 7 to 9: none; the signature is what step 7 of F2 reads at `ADMIT` | As section 11.1 gives it. A repeat that refuses is event 12: the refusal of J4.4, here the code of the row that refused, no code of section 11.1, no signature, and the place is held. After it: `PLACE_HELD` (events 13, 15, 17, 19 and 21 to 23) or the 64 octets of the signature (event 20) |
+| I9 | establishes that the coin of the row is there, and then that it is unspent, so that the child's anchor can still spend it, or that it is spent by the confirmed issuance anchor of the child in this request; a spend by anything else refuses as before. It then establishes that the row is not ended. The anchor of the child in this request is read from the payload and the chain alone: a transaction that the observation of I3 shows confirmed on the active chain, of which one input spends the coin of the row and one input spends the linkage output of the seal transaction that `seal.outpoint` of the payload names (LIP-0023). The service reads nothing of its ledger for this (J4.4 (a)). Where the check passes by that anchor and not by an unspent coin, step 1 hands step 3 that one fact, "I9 passed by the anchor exception", and nothing else | Carried: "that under section 10.1 the row is not closed for cause"; section 11.1, "that the coin of a row is unspent is read on a node, by the service under J4.4". **NEW** as duties of the service: for the coin LIP-0026 R3.4 and R3.2, and for the stop coin LIP-0027 H2.2 to H2.4. **NEW**: the code of a spent coin (section 8.4, row F22). **NEW**: the anchor exception, so that a replay after publication reaches its record; the landed sentence has the service read the coin as unspent and names no exception. **NEW**: that the anchor is recognised by the two inputs alone, without the issuance commitment, which the service is not presented with | F22 in the issuer's part: R3.4, then R3.2, then the output unspent or spent by the anchor of this child; then F24 without V18. For a row without a certifier F24 is not made | The code of the row; where both rows refuse, that of F22. A coin that another transaction than the confirmed anchor of this child has spent: `ROW_COIN_REQUIRED` |
+| I10 | takes steps 2 to 5 of the order of one request, as section 11.1 states them and in its order: the continuity check of the ledger, the read of the place, the room, the reservation. It computes the intent itself from the payload that passed I0 to I9 (J4.4 (b)). A request for a place that has a record or an open mark, a replay included, ends in step 3 and reaches no later step. So does a request that I9 passed by the anchor exception, for a place with no record and no open mark: step 3 refuses it and reserves nothing | Carried: section 11.1, the order of one request and J4.4 (a) to J4.4 (g), decided on 2026-11-16 and landed in version 0.1.54. **Amends** step 3 of that order by one branch, event 39, which is stated there and marked there; this row states no other rule of them and adds none | None: no row of section 8.4, and no check that a verifier can repeat | As section 11.1 gives it: `PLACE_HELD`; `PLACE_CONFLICT`; for a replay of a place that is `signed`, the stored octets and no new signature; for want of room, behind an open mark of another place and for a mark that did not land, a refusal with no code (events 2 to 11); and where I9 passed by the anchor exception and the place has no record and no open mark, a refusal with no code, an entry of the operational audit and a notice to the operator that a signature exists outside this ledger (event 39) |
+| I11 | takes steps 6 to 9 of the order of one request, as section 11.1 states them and in its order: the repeat of I3 and I5 to I9 on a fresh observation; the entry of the use of the key and one call of the signer; the verification of the signature; the entry of the result, and only then the release | Carried: section 11.1, as for I10; J4.4, "It computes the digest itself". **Amends** step 6 of that order, which through version 0.1.54 repeated "the checks of J4.4 on the parent and on the row": it now repeats I3 and I5 to I9 on a fresh observation (the paragraph "The repeat"), and the step is amended in place and marked there | For the repeat: F3, and F7 to F24 as far as I5 to I9 make them: F7; F8 to F12; F13 to F18; F19, F20 and bloc (s) of F21; F22 and F24 in the issuer's part. For steps 7 to 9: none; the signature is what step 7 of F2 reads at `ADMIT` | As section 11.1 gives it. A repeat that refuses is event 12: the refusal of J4.4, here the code of the row that refused, no code of section 11.1, no signature, and the place is held. After it: `PLACE_HELD` (events 13, 15, 17, 19 and 21 to 23) or the 64 octets of the signature (event 20) |
 
 The service stops at the first step that refuses, and then no signature
 exists. Where the step is a row of section 8.4, the service returns the
@@ -1728,14 +1732,16 @@ check on the parent before the first check that reads a row.
 of these, and I0 to I9 decide none of them alone.
 
 - A replay: a listed caller sends again the payload of a place that is
-  `signed`. I0 to I9 are made as for a first request and pass. I10 reads
+  `signed`. I0 to I9 are made as for a first request and pass, also after
+  the confirmed anchor of that child has spent the coin of its row, by the
+  anchor exception of I9 (case S4-30a). I10 reads
   the place in step 3 and answers with the stored octets; no later step is
   reached, and the service does not sign again (J4.4 (d), event 5, case
   S4-12). Where one of I0 to I9 now refuses, the answer is that refusal and
   nothing of the record (event 1).
 - A parent that is closed after the reservation: the request passed I0 to
-  I9 and I10 wrote the reservation; the repeat of I11 makes F7 again, and
-  part 7.4 refuses as `PARENT_NOT_LIVE`. That is event 12: no use of the
+  I9 and I10 wrote the reservation; the repeat of I11 makes F7 again, in
+  its fresh observation, and part 7.4 refuses as `PARENT_NOT_LIVE`. That is event 12: no use of the
   key, no signature, and the place is held (case S4-30).
 - A place that is taken, and a lost ledger: a request that passes I0 to I9
   with another intent than the record or the open mark of its place is
@@ -1744,39 +1750,58 @@ of these, and I0 to I9 decide none of them alone.
   step 2 as `PLACE_HELD` (event 4 in the last column, case S4-24). In
   neither does a signature exist.
 
-**The repeat.** Step 6 of the order of one request repeats "the checks of
-J4.4 on the parent and on the row". Of I0 to I9 these are the checks whose
-result a node or a journal of the service can change between step 1 and
-step 6: I5, which is F7, on the parent, and I9, which is F22 and F24 in the
-issuer's part, on the row. The service makes them in that order, in a new
-observation that it establishes first as in I3, because the observation of
-step 1 ended before the reservation was written. I7 is a check on the row
-as well, and signed octets alone decide it: repeated on the payload of the
-recorded intent it gives the same verdict, so the repeat need not make it
-again. I0, I2, I4, I6 and I8 are checks on the caller, on the contract and
-on the child, which step 6 does not name; the repeat does not make them.
-**NEW**, each of these three: that the repeat is I5 and I9; that it has an
-observation of its own, whose codes are those of F3; and that it leaves out
-I8, so that a child whose own window ended or whose recipient name changed
-hands between step 1 and step 6 is signed and then refused by every
-consumer. The alternative, to repeat I8 as well, goes beyond the words of
-step 6 and is the owners' to choose. A refusal of the repeat is event 12
+**The repeat.** Through version 0.1.54 step 6 of the order of one request
+read: "It repeats the checks of J4.4 on the parent and on the row (event
+12)." Version 0.1.55 **amends** that step, in place and marked there: the
+service repeats I3 and I5 to I9, in that order, on a fresh observation that
+it establishes for the step as in I3, because the observation of step 1
+ended before the reservation was written. No check of the repeat is made
+on a value that step 1 read: the name of the parent's recipient, which I6
+compares, the evidence of the child's recipient, the journal and the
+window of the child and the seal output, which I8 reads, and the coin and
+the stop coin of I9 are all read again. No child is therefore signed whose
+window ended, whose recipient's evidence changed or whose parent or row
+closed between step 1 and step 6. I7 is repeated with the others; signed
+octets alone decide it, and on the payload of the recorded intent it gives
+the verdict of step 1. I0, I1, I2 and I4 are not repeated: the caller, the
+documents, the caller's list and the contract are read on no node, and the
+payload of the recorded intent is the payload that step 1 read. In the
+repeat I9 has no anchor exception: the place is `reserved`, no signature of
+this ledger exists for it, and a coin that the fresh observation shows
+spent, by the anchor of this child or by anything else, refuses as
+`ROW_COIN_REQUIRED`. The cost of the amendment is one more read of the node
+for every signature: where the landed step read the parent and the row
+again, the service now also reads again the names, the journal of the
+child, the seal output and the tip for the child's window. Marked for the
+owners: the amendment of step 6 itself (**Amends**); that the repeat has an
+observation of its own, whose codes are those of F3 (**NEW**); and that the
+anchor exception of I9 does not hold in the repeat (**NEW**). A refusal of
+the repeat is event 12
 whatever its code and whatever its mark, a pending read included: the
 place is held, and the exit is that of case S4-18. A service may read again
 inside the request, while the claim lives, before it ends the request on a
 read that proved nothing; a request that it ends there is event 12 or
 event 13, and both hold the place.
 
-**A consequence for a replay.** J4.4 (d) has a replay answered only after
-all checks of step 1, "as for a first request". With I9 among them, a
-replay that is asked after the anchor of the child has spent the coin of
-its row is refused in I9 as `ROW_COIN_REQUIRED`, as a first request for
-that coin would be, and takes no stored octets: the service reads nothing
-of its ledger in step 1 and cannot tell that spend from another. The stored
-signature is then reached by no request, and the child that was issued is
-not affected. This follows from the sentence of section 11.1 that the
-service reads the coin as unspent under J4.4, and it is named here for the
-owners.
+**A replay after publication.** J4.4 (d) has a replay answered only after
+all checks of step 1, "as for a first request". With I9 among them and
+with the coin read as unspent alone, a replay that is asked after the
+anchor of the child has spent the coin of its row would be refused as
+`ROW_COIN_REQUIRED`, and the stored signature would be reached by no
+request. I9 therefore passes a coin that the confirmed issuance anchor of
+the child in this request has spent (**NEW**). The service tells that spend
+from another on the payload and the chain, and reads nothing of its ledger
+in step 1 (J4.4 (a)). The pass carries one fact into step 3, that I9 passed
+by the anchor exception, and step 3 decides what it is worth. A place with
+a record `signed` of this intent answers with the stored octets (event 5,
+case S4-30a). A place with no record and no open mark is refused there with
+no code, and the operator is told that a signature exists outside this
+ledger (event 39): an anchor of the child is confirmed, this ledger shows
+no signature for the place, and a service that signed now would make a
+signature that it cannot show to be the first. In every other state of
+the place and under a lost ledger the answer is the one that section 11.1
+gives without the exception. A coin that anything else has spent refuses
+in I9 as before.
 
 The observation has one place on both sides. F3, F5 and F6 are marked
 "both" in section 8.4, and LIP-0022 B6.1 puts the codes of an observation
@@ -1798,8 +1823,9 @@ row. Among the rows that both sides make in full the two differ in F20
 alone: the service signs a child whose window has not opened yet, and it
 signs none that is closed in its journal, that is backdated, or whose
 window has ended (section 8.4, rule T3). In F21, F22 and F24 the service
-makes the part that its row states, and in F22 it reads the coin as unspent
-where a consumer reads the input of the anchor.
+makes the part that its row states, and in F22 it reads the coin as
+unspent, or as spent by the confirmed anchor of this child (I9), where a
+consumer reads the input of the anchor.
 
 I8 is also the pre-sign duty for the seal of a child. Without it a signing
 service signs a child whose seal pays another key, and every verifier
@@ -1817,7 +1843,8 @@ read.
 A step that the consumer makes and the issuer does not, in section 8.4, is
 no duty of the service: the anchor, the input that spends the coin, the
 attestation and the withdrawal are facts that do not exist when a child is
-signed.
+signed. One read of such a fact is made all the same, for a replay alone:
+the anchor exception of I9.
 
 ### 8.6. Cases of the step order
 
@@ -2701,10 +2728,17 @@ creating request holds a live claim (J4.4 (c)). `signed` is a result
 `signed` of which every write is durable, its mark, its entry and the kept
 head over that entry, and after which the place has no later entry. Where
 `signed` is reached after event 31, by a reconciliation that confirmed a
-signature of a held place, the last entry of the place is the entry of that
-outcome, durable under the kept head, and the place is `signed` by it, with
-the octets and the identifier that it confirmed; a replay is then answered
-from that entry (sentence added with version 0.1.55). `held`
+signature of a held place, the entry that the reconciliation writes for
+that outcome is a result `signed`, an entry of the kind of a result and of
+no other kind: it holds the octets and the identifier that the
+reconciliation confirmed, it records that it came by a reconciliation and
+which hold it closes, it is written as every entry is, by its mark, the
+entry and the kept head over it, and it is the last entry of its place. The
+place is `signed` by that result as by the result of event 20, and the
+definition before this sentence, the release rule of the contract of the ledger,
+step 3 of the order of one request and event 5 read for it as they stand:
+a replay is answered with the stored octets, read from that result
+(sentence added with version 0.1.55). `held`
 is a place under an open mark, under a record `held`, under a record
 `reserved` with no live claim, or a place of a delegation key whose whole
 life the ledger does not show. A mark is pending while the one writer makes
@@ -2771,6 +2805,7 @@ that key.
 | 36 | The genesis: the operator starts a new ledger by an act that is its first entry | Impossible, because a genesis is taken only for a lost ledger or where no ledger ever was; a second ledger beside a usable one is a fork (event 34) | Impossible, for the same reason | Impossible, for the same reason | Impossible, for the same reason | A usable new ledger, whose first entry names the loss that it ends. Every place of every parent whose delegation key the service holds at that moment is `held`, and no reconciliation frees one (event 7), because the new chain does not reach back to the making of those keys. Key idle. No answer to a caller. A genesis whose write does not complete leaves the ledger lost, and the operator makes it again |
 | 37 | The entry of a key that the service makes under this ledger: the entry records the making and is durable before the public key leaves the service | Every place of the key has no record and is served from its first request (event 4). Key idle. No answer | Impossible, because a key enters once, and before its entry no place of it has a record | Impossible, for the same reason | Impossible, because a key that the chain shows from its making enters with no place held | Impossible, because a lost ledger takes no entry except its genesis, and under it the service makes no key |
 | 38 | The entry of any other key: one that signed before this duty bound its service, one that comes from another custody or another ledger, and one whose entry as in event 37 did not complete after its mark | Impossible, because such a key enters with every place held | Impossible, because such a key is never used | Impossible, for the same reason | Every place of every parent of the key is `held`, with no intent recorded, and no reconciliation frees one. Key idle. `PLACE_HELD` for every request (event 7) | Impossible, as in event 37; under a lost ledger every such parent is held as well (event 4) |
+| 39 | A request that passes the checks, and passes the check of the coin of its row only because the confirmed issuance anchor of its own child has spent that coin (step 3 of the order of one request; section 8.5, I9), for a place with no record and no open mark. The request is judged in step 3, before room is sought, so it is none of events 2, 3 and 4 (row added with version 0.1.55, as a proposal of that version) | Unchanged. Key idle. Refused with no code, as in events 2 and 3: the service reserves nothing, seeks no room and writes no mark, and no record and no signature of this ledger exist for the place. The service writes an entry of the operational audit (J4.4 (g)) and notifies its operator that a signature exists outside this ledger; a failure of that write changes nothing. The same request asked again is refused in the same way for as long as the place has no record and the coin is so spent | Impossible, because a record exists: the request is a replay (event 5) or has another intent (event 6), and how it passed the check of the coin changes neither answer | Impossible, for the same reason: a replay takes the stored octets (event 5), and another intent `PLACE_CONFLICT` (event 6) | Impossible, for the same reason: a record or an open mark holds an intent (events 5 and 6), or the place is held with no intent (event 7), and the answer is the one of that event | Impossible, because under a lost ledger the request is answered at the continuity check, before the place is read (event 4): `PLACE_HELD`, and no notice of this event |
 
 Four notes go with the table. The service records `held` where it can
 (event 25), but a place is held whether or not that write succeeds: an open
@@ -2803,13 +2838,36 @@ and a later step is not reached where an earlier one refuses.
    the stored octets in the state `signed`, read from the result that the
    kept head covers, and `PLACE_HELD` in the states `reserved` and `held`
    (event 5). A place that is held with no intent recorded: `PLACE_HELD`
-   (event 7).
+   (event 7). A place with no record and no open mark, for a request that
+   passed the check of the coin of its row in step 1 only because the
+   confirmed issuance anchor of its own child has spent that coin: the
+   service refuses with no code, as in events 2 and 3, reserves nothing
+   and writes no mark; it writes an entry of the operational audit
+   (J4.4 (g)) and notifies its operator that a signature exists outside
+   this ledger (event 39). Step 1 hands this step that one fact, which it
+   read on the node and on the payload, and nothing else; in every other
+   branch of this step the fact changes nothing. (Amended with version
+   0.1.55, as a proposal of that version: the branch of event 39 is added.
+   Through version 0.1.54 the step ended with the sentence on event 7.)
 4. For a place with no record and no open mark it secures the room of
    J4.4 (g); without it the request is refused with no code (event 2), and
    so it is while an open mark of another place is not resolved (event 3).
 5. It writes the reservation: the mark, the entry, the kept head (events 8
    to 11).
-6. It repeats the checks of J4.4 on the parent and on the row (event 12).
+6. It repeats, on a fresh observation of its own node that it establishes
+   for this step, every check of step 1 that reads a node or a journal or
+   that is made on what such a read gave: the observation itself, the
+   parent, the keys, the row, the recipient, the window and the seal of
+   the child, and the coin and the end of the row. In section 8.5 these
+   are the steps I3 and I5 to I9, in their order. A refusal of any of them
+   is event 12, and for this step the words "the checks of J4.4 on the
+   parent and on the row" of J4.4 (c) and of event 12 name these checks. A
+   coin of the row that the fresh observation shows spent refuses here by
+   whatever transaction it was spent: the place is `reserved`, and no
+   signature of this ledger exists for it. (Amended with version 0.1.55,
+   as a proposal of that version. Through version 0.1.54 the step read:
+   "It repeats the checks of J4.4 on the parent and on the row (event
+   12).")
 7. It writes the use of the key, as the mark, the entry and the kept head
    (events 13 to 15), and calls the signer, once (events 16 and 17).
 8. It verifies the signature under the delegation key over the recorded
@@ -2825,10 +2883,13 @@ still costs its place, because the child that is then signed refuses at
 every verifier.
 
 Section 8.5 proposes, with version 0.1.55, the inner order of the checks of
-step 1, as its steps I0 to I9, and names the checks that step 6 repeats. It
-changes no step of this order and no rule of J4.4 (a) to J4.4 (g); until
-the version lands, steps 1 and 6 read as the sentences above have them
-(sentence added with version 0.1.55, as a pointer).
+step 1, as its steps I0 to I9, and names the checks that step 6 repeats.
+The same version amends two steps of this order in place, each marked at
+its place: step 3, which gains the branch of event 39, and step 6, which
+names its checks and their observation. No other step of this order and no
+rule of J4.4 (a) to J4.4 (g) changes; until the version lands, steps 1, 3
+and 6 read as version 0.1.54 has them (sentence added with version 0.1.55,
+as a pointer).
 
 **The contract of the ledger.** The contract is that of the ledger store of
 J1.4 (section 9.1), taken for this ledger; like that one it states duties
@@ -3067,6 +3128,9 @@ A request that the checks of J4.4 refuse takes neither code in any state
 mark of another place which the service cannot resolve, or whose mark is
 shown not to have landed, takes neither code and may be asked again
 (events 2, 3 and 9); no mark, no record and no signature exist for it.
+A request that step 3 refuses because the anchor of its own child has
+spent the coin of its row, at a place with no record, takes neither code
+either (event 39; sentence added with version 0.1.55).
 Every other request that passes the checks is answered with the stored
 octets, with `PLACE_CONFLICT` or with `PLACE_HELD`. One code serves the
 request that is still served, the unknown outcome, the key whose life is
@@ -3214,6 +3278,7 @@ claimed:
 | S4-28 | By partial outcome. The write of the result, by the last component that is durable. Control: all three are durable, the mark, the entry and the kept head, and the signature is released (event 20) | The store is cut after each component in turn. No mark landed: the place is held, nothing of the result stands in the chain, and the place stays held for ever (events 21 and 32). The mark alone: held under the open mark, with no whole octets, and held for ever after the hold is recorded (events 22, 27 and 32). The mark and the whole entry, the kept head not moved: held under the open mark, and the entry is evidence for S4-19 alone (events 23, 27 and 31). A mark or a kept head that cannot be read: the ledger is lost (event 24). In none of them is the signature released, and a service that releases it because the entry stands whole, or because a later kept head covers it, fails. The same cuts are run on the write of the use of the key: with no mark of the use the place can be freed as in S4-18 (event 13), and with the mark durable it cannot (event 15), and in neither is the signer called. |
 | S4-29 | Over the whole life of a key. Control: a key that the service made under this ledger, whose place is held as in S4-14, is freed as in S4-18 (events 37 and 30) | A key that signed one child for a place before it came under this ledger enters it (event 38). Every place of its parent is held; a request for the signed place and a request for any other place take `PLACE_HELD`, with whatever intent (event 7). The operator opens a reconciliation for the signed place: the chain of this ledger holds no use of the key for it, and nothing is proved (event 32). A service that frees the place because its own chain shows no use from the entry of the key onward fails: it would sign a second child for the place. So does one that enters as unused a key that arrives with a statement, a log or a copy of another ledger, and one that frees such a place at a genesis (S4-25). |
 | S4-30 | The second check. Control: S4-11, in which the checks pass both times | The parent is closed in the service's journal after the reservation is durable and before the write of the use of the key. The request ends with the refusal of J4.4 and no code of this section; the signer is not called, no mark and no entry of a use exists, and the place is held (event 12). A service that signs the child, which every verifier would refuse, fails. The place can be freed as in S4-18. A closure that comes after the second check still costs the place. |
+| S4-30a | A replay after publication (case added with version 0.1.55, as a proposal of that version). The request of S4-11 is asked again on the continuous ledger, after the confirmed issuance anchor of its child has spent the coin of its row. Step 1 passes, the check of the coin by that anchor alone (section 8.5, I9); the place has its record `signed`, and the answer holds the stored 64 octets, byte for byte, as in S4-12 (event 5). The service does not sign, appends nothing and sends no notice | The same request on a continuous ledger that holds no record and no open mark for the place, the coin of the row spent by the confirmed issuance anchor of this child: refused with no code; no signature exists, nothing is reserved, no mark is written, the chain is unchanged, and the operational audit holds the entry and the operator the notice that a signature exists outside this ledger (event 39). A service that takes the request for a first request and signs fails the case, although the child that it returns would verify: it would make a second signature for a place whose first one this ledger does not show. So does one that answers `PLACE_HELD` or `PLACE_CONFLICT`, or that reserves the place. With the same coin spent by any other transaction the request is refused in step 1 as before, with the code of that check and no notice (event 1). Under a lost ledger the same request takes `PLACE_HELD` in step 2 and no notice (event 4 in the last column, S4-24); for a place that is held with no intent recorded, after a genesis included, `PLACE_HELD` (event 7, S4-25); for a place with a record `reserved` or `held` of this intent, `PLACE_HELD` (event 5); and with another intent than the record, `PLACE_CONFLICT` (event 6). |
 
 A vector plan goes with these cases. It is a plan and holds no vector; no
 file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
@@ -3607,9 +3672,9 @@ for a property that its subsection lists as open.
   computed; the code of a journal of closures of a grant that cannot be
   read (part 7.4, F20); the place of a validated spend of a seal against
   the checks of the anchor and of the issuance (F21, part 7.6); what a
-  side does with a rule of LIP-0020 W11.10 that only octets outside the
-  group and the range of the child break, which waits for proposal Q1 of
-  LIP-0026 (F13, rule T10); and the class under which a signing service
+  side does with a finding of rules 2 and 6 to 8 of LIP-0020 W11.10, and
+  with a finding of rules 4 and 5 outside the group and the range of the
+  child, which waits for proposal Q1 of LIP-0026 (F13, rule T10); and the class under which a signing service
   judges `TIP_AGE` (F3). The vectors of section 8.7 are a plan, and none
   is generated.
 - The owners' acceptance of sections 8.4 to 8.7, which are a proposal of
@@ -3652,10 +3717,18 @@ for a property that its subsection lists as open.
   8.5 adds to the signing service inside step 1 of the order of one
   request: the observation as a step of its own (I3), the contract (I4),
   the recipient, the window and the seal of the child (I8), and the coin
-  and the stop coin (I9); the places of I0 and I2; and which checks the
-  repeat of step 6 makes, in an observation of its own and without I8. And
-  the two amendments of landed text: the sentence of section 11.1 (Q18)
-  and case S4-9 of section 11.2 (rule T5).
+  and the stop coin (I9); the places of I0 and I2; the anchor exception of
+  I9, under which a coin that the confirmed issuance anchor of the child in
+  the request has spent passes, so that a replay after publication reaches
+  its record, with the anchor recognised by its two inputs; and that the
+  repeat of step 6 has an observation of its own, in which that exception
+  does not hold. And the four amendments of landed text: the sentence of
+  section 11.1 (Q18); case S4-9 of section 11.2 (rule T5); step 3 of the
+  order of one request, which refuses, with no code and a notice to the
+  operator, a request that passed I9 by the anchor exception for a place
+  with no record (event 39, case S4-30a); and step 6 of that order, which
+  repeats I3 and I5 to I9 on a fresh observation, at the cost of one more
+  read of the node for every signature.
 - Which party of the delegating side makes, for a child, the checks that
   LIP-0020 W7.5 to W7.9 ask of an issuer before a grant is signed. Section
   8.4 gives the signing service none of them.

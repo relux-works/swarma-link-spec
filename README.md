@@ -853,8 +853,9 @@ of the same comparisons on v3. An absent and a wrong child-seal key refuse
 before any row is read, the coin of a row is checked before the
 attestation, and section 8.5 orders the checks of the signing service as
 the inner order of step 1 of the order of one request of section 11.1,
-whose steps 2 to 9, the reservation ledger of version 0.1.54, follow
-unchanged.
+whose steps 2 to 9, the reservation ledger of version 0.1.54, follow, with
+two of them amended in place: step 3 by one branch and step 6 by the checks
+that it repeats on a fresh observation.
 [LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) W11.11 holds the four
 comparisons of a child against its parent and one table that registers the
 codes, and its section 11.14 the registries of action identifiers and of
