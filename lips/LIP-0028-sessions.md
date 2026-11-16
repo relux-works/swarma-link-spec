@@ -156,9 +156,13 @@ therefore asks that a model proxy verifies the presentation, the signed limits,
 the validity and the seal against its own view of the chain.
 
 On each use, the caller's authority at today's proxy is the
-dispatcher-prepared run binding held by its bearer. J7 issues that binding
-upstream of the proxy. The proxy re-checks mode, window and account block on
-use. It checks neither the key holder nor the chain at that point
+dispatcher-prepared run binding held by its bearer. The dispatcher is the
+service of the platform book (chapter 7); the paragraph above names the
+gateway as the preparer of the slot binding. Whether the two are one
+preparer and one binding in today's deployment is not established here. J7
+issues the run binding upstream of the proxy. The proxy re-checks mode,
+window and account block on use. It checks neither the key holder nor the
+chain at that point
 ([Decision 0004](../decisions/0004-reconciliation-closures.md), caller
 authority). T4.5 adds the service's own proof-path check before each
 reservation; that check describes the proposed session service.

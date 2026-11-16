@@ -77,16 +77,20 @@ socket path, expected service UID and independently pinned receipt public key.
 The receipt key is distinct from the grantee key; the service rejects their
 reuse. No response chooses its own trusted key. This is not a multi-tenant broker.
 
-**Wallet request signing through Keymaker (decision of 2026-11-15).**
-Keymaker, the key holder of LIP-0013 section 3.6, holds the wallet request key.
-The agent asks Keymaker to sign a request. Keymaker checks the run's origin
-and the operator's table before releasing the signature, under J7. The
+**Wallet request signing through Keymaker (Ivan Oparin's decision of
+2026-11-15).** The paragraph above describes the implemented service, in
+which the client holds its action-signing key. Under the decided successor
+path, Keymaker, the key holder of LIP-0013 section 3.6, holds the wallet
+request key. The agent asks Keymaker to sign a request, and Keymaker
+checks the run's origin and the operator's table before it releases the
+signature, under J7. The decision is in force in this version; the
+co-author's answer is folded in later by amendment and gates nothing. The
 existing wallet slice stays as it is, with its stated limit of one grant per
 slot. The Keymaker slice follows the runtime privilege-isolation work, with
 a spend-request purpose and the wallet client calling Keymaker
 ([Decision 0004](../decisions/0004-reconciliation-closures.md), wallet request
-key). This decision changes the planned custody and signing path; sections
-2 to 4 keep the implemented wallet service v1 bytes and checks.
+key and status). This decision changes the planned custody and signing
+path; sections 2 to 4 keep the implemented wallet service v1 bytes and checks.
 
 There is one request and one response per Unix connection. Each body has a
 four-byte unsigned big-endian length prefix, then 1–65536 bytes of compact JSON.

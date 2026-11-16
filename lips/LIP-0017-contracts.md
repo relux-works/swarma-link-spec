@@ -302,7 +302,7 @@ The scenarios show which objects each kind of contract uses:
 
 | Scenario | Parties | Contract | Grants under it | Who can end it |
 | --- | --- | --- | --- | --- |
-| Rental of an agent | A renter and the operator who rents the agent out | The booking contract, with the price, the period and the limits | One grant for the whole term (LIP-0008 section 2.1) | The issuer, by the seal of the grant |
+| Rental of an agent | A renter and the operator who rents the agent out | The booking contract, with the price, the period and the limits | At least a TEXT grant and an EFFECT grant, each for the whole term (LIP-0008 section 2.1) | The issuer, by the seal of each grant |
 | Trust between the agents of two owners | A principal and an agent of another owner | A trust contract (LIP-0013) | One grant; under LIP-0014 also child grants | The issuer, by the seal of the grant |
 | Services between two companies | Two companies | A framework contract for a year, anchored under section 3 | One grant for each order, each inside the year | Either company, when the termination clause says "either party" |
 | Employment | A company and a person | A framework contract for the employment | Grants that let the person, or the person's agent, act on the company's resources | The parties together, or an arbiter, when the clause says so |

@@ -270,7 +270,7 @@ Uncertain effects retain their reservations until reconciled. Enforcement
 requires intact service credentials and journal; stealing the upstream API key
 can bypass this service's rental accounting.
 
-### 2.1. One grant for the term; the period belongs to limits and payment
+### 2.1. Each grant for the whole term; the period belongs to limits and payment
 
 This section records the decision of 2026-11-11 by Ivan Oparin.
 
@@ -279,9 +279,12 @@ about 13,000 blocks for three months at the nominal ten minutes. Each grant
 has its issuance record and ends at `not_after_height`, or earlier when the
 issuer spends its seal.
 
-The hire decision of 2026-11-15 revises the earlier one-grant description:
-a hire is a contract plus at least two grants, a TEXT grant and an EFFECT
-grant ([Decision 0004](../decisions/0004-reconciliation-closures.md), hire).
+Ivan Oparin's hire decision of 2026-11-15 revises the earlier one-grant
+description: a hire is a contract plus at least two grants, a TEXT grant
+and an EFFECT grant. The decision is in force in this version; the
+co-author's answer is folded in later by amendment and gates nothing
+([Decision 0004](../decisions/0004-reconciliation-closures.md), hire and
+status).
 TEXT governs the agent's work; EFFECT authorizes effects under the machine
 checks of LIP-0006 section 7. These labels add no wire member or action.
 
@@ -342,12 +345,13 @@ name string alone is insufficient: after expiry, a new registration cannot
 inherit the old issuer's authority, even under the same spelling or owner
 key. Expired names refuse without waiting for another registration.
 
-**Issuance term (decision of 2026-11-16).** A grant's `not_after` MUST NOT
-be later than the issuer's name expiry, as observed at issuance, 36000 blocks
-from the last update. The issuer MUST refuse to sign otherwise
-([Decision 0004](../decisions/0004-reconciliation-closures.md), grant term).
-On v4 this bounds `not_after_height` (section 7.1). A later renewal does not
-extend the signed window.
+**Issuance term.** A grant's `not_after` MUST NOT be later than the
+issuer's name expiry, as observed at issuance, 36000 blocks from the last
+update. The issuer MUST refuse to sign otherwise. The rule comes from the
+reconciliation closure list, which gives it no date; it is in force in this
+version ([Decision 0004](../decisions/0004-reconciliation-closures.md), grant
+term and status). On v4 this bounds `not_after_height` (section 7.1). A
+later renewal does not extend the signed window.
 
 The grant lives while the name's updates change neither the owner nor the
 `swarma` member. At every admission the verifier walks the history of the
@@ -621,12 +625,6 @@ of it, and each point stays open until both owners accept it.
 
 ### 5.2. Observed owner break of the issuer name and durable closure
 
-J6 closes an issuer's grants at foreign verifiers that observe the break.
-The platform book's project stop (section 22.5) and installation stop
-(section 6.6.2) are separate mechanisms; neither is this grant closure
-([Decision 0004](../decisions/0004-reconciliation-closures.md), grant
-closure and stops).
-
 Accepted by Ivan Oparin on 2026-11-13 (J6); the co-author's agreement is
 pending. Every rule of this section is Draft text, for v4 only. Until the
 co-author agrees the text in force stands, under which the name rule stops
@@ -649,6 +647,12 @@ has no seal to spend, because the thief endorses a seal key of its own
 decision of 2026-11-11 fixes the name rule and names neither case; the
 answer after a reorganisation is this draft's choice, like the start point
 of rule 3.
+
+J6 closes an issuer's grants at foreign verifiers that observe the break.
+The platform book's project stop (section 22.5) and installation stop
+(section 6.6.2) are separate mechanisms; neither is this grant closure
+([Decision 0004](../decisions/0004-reconciliation-closures.md), grant
+closure and stops).
 
 Under this section a change of the owner or of `swarma` that the name owner
 signed, called a break below, closes the issuer's grants in the journal of

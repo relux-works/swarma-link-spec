@@ -449,19 +449,27 @@ until it starts again. Terms written there would outlive a spent seal and a
 closed window, and they would stand beside every message, whether a grant
 admitted it or not.
 
-**The frame's channel (correction of 2026-11-16).** The authority frame
-arrives in a separate channel. A signature on it is NOT established
-([Decision 0004](../decisions/0004-reconciliation-closures.md),
-authority-frame correction). The earlier claim of a decided signer and the
-format and frame key derived from that claim are withdrawn. A marker,
-header or quoted frame in the text stream gives no authority. Rules 1 to 6
-above retain their proposal status.
+The decision leaves open how a frame is made and carried. Whether it is
+signed, whether it ever leaves the executor and who else may see it are not
+decided. The draft proposes the simplest form: a frame that is local to the
+executor, unsigned and shown to nobody else. A signed handoff from outside
+the agent's write boundary would meet the decision as well. Also open are
+the encoding of the frame, the interface of the separate channel, how a
+deployment shows that the agent cannot write it, and what the frame carries
+at each executor of a v4 grant. A frame does not make an agent keep to its
+terms: it tells the agent what they are, and the checks of step 9 bound the
+effects.
 
-The frame's encoding and signature remain open, as do whether it leaves the
-executor, who else may see it, the interface of the separate channel, how a
-deployment shows that the agent cannot write the frame, and the frame at
-each executor of a v4 grant. A frame tells the agent the admitted terms;
-the checks of step 9 bound effects.
+**The frame's channel (correction of 2026-11-16).** Ivan Oparin decided on
+2026-11-16 that the authority frame arrives in a separate channel. This is
+an owner decision and not the draft's proposal. It is in force in this
+version; the co-author's answer is folded in later by amendment and gates
+nothing ([Decision 0004](../decisions/0004-reconciliation-closures.md),
+authority-frame correction and status). A signature on the frame is NOT
+established. The claim of version 0.1.51 that a signer was decided is
+withdrawn, with the format and the frame key derived from it; the paragraph
+above and its proposal stand. A marker, header or quoted frame in the text
+stream gives no authority. Rules 1 to 6 above retain their proposal status.
 
 A refusal is reported as its code only. The executor does not reveal grant
 contents, ledger state or the reason a key was refused beyond the code.
@@ -698,10 +706,14 @@ not the owner:
 1. The principal issues the trust grant to an agent of the other owner. The
    grant's `grantee_key` is that agent's key.
 2. The other owner instructs that agent over the owner channel under
-   LIP-0029 section 1: signed at minimum, encrypted at maximum. During M0,
-   unsigned work is delivered but labelled; effects require a signature.
-   After M6, unsigned input is ignored. This is the transitional rule of
-   2026-11-16 ([Decision 0004](../decisions/0004-reconciliation-closures.md),
+   LIP-0029 section 1: signed at minimum, encrypted at maximum. That
+   section defines the current transitional stage, which it calls M0, and
+   the later refuse-unsigned switch, which it calls M6; neither is scenario
+   M6 of section 3.4. During the transitional stage, unsigned work is
+   delivered but labelled, and the unsigned message itself is given no
+   effect. After the switch, unsigned input is ignored. This is Ivan
+   Oparin's decision of 2026-11-16
+   ([Decision 0004](../decisions/0004-reconciliation-closures.md),
    signed communication).
 3. The agent signs the envelope of section 3.1 with its key. The key holder
    releases the signature under the gate of section 3.6: the origin of the
@@ -709,6 +721,11 @@ not the owner:
    among the grants that runs of that origin may sign under.
 4. The executor admits the envelope under section 3.4, as an instruction on
    its principal's authority.
+
+Point 3 does not tell signed owner input from labelled unsigned work. A run
+started by labelled unsigned work still gets the owner row; binding of
+effects to the key holder signature is not specified. This is open question
+T12.
 
 A person's keys that need the person's presence are for rare acts. The
 grant key issues a grant. The authority key of a person consents to a
@@ -730,13 +747,17 @@ sent a message, and it is no authority either.
 [LIP-0029](LIP-0029-owner-control.md) holds Draft text, written
 optimistically under a decision of 2026-11-15 that awaits the co-author's
 agreement, for the owner command signed by a device of the owner's device
-list. Its section 1 carries the transitional rule now cited by point 2;
-after M6, unsigned input is ignored. The same text moves the
+list. Its section 1 carries the transitional rule that point 2 cites. The
+same text moves the
 envelope of section 3.1 into `swarm-envelope/2` as the body kind
 `instruction/1`, and requires the ref and the revision of a landing beside the
 repository. It replaces the authority key of a person, which this section
-names, by the owner's device keys. Apart from point 2's transitional
-correction, this section retains its existing agreement boundary.
+names, by the owner's device keys.
+
+Point 2 carries Ivan Oparin's decision of 2026-11-16. It is in force in
+this version; the co-author's answer is folded in later by amendment and
+gates nothing (Decision 0004, status). The rest of this section keeps its
+agreement boundary.
 
 ## 4. Vectors and reference checker
 
@@ -849,4 +870,5 @@ protocol text and a conformance change that names the vector set.
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
 | T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Section 3.6 states the case. | Section 3.6, decided by Ivan Oparin on 2026-11-14 (J7): the service that holds the agent's key signs a run's objects only under what its operator listed for the origin of that run. This adds no record to the chain. The co-author's agreement is pending. |
-| T11 | The authority frame of section 3.4: its signature, encoding, recipients and separate-channel interface; how a deployment shows that the agent cannot write it; the frame at each executor of a v4 grant | The frame arrives in a separate channel. A signature on it is NOT established (Decision 0004, authority-frame correction). The frame's rules retain their Draft or proposal status. |
+| T11 | The authority frame of section 3.4: its signature, encoding, recipients and separate-channel interface; how a deployment shows that the agent cannot write it; the frame at each executor of a v4 grant | The draft proposes a frame that is local to the executor and unsigned. Ivan Oparin decided on 2026-11-16 that the frame arrives in a separate channel (Decision 0004, authority-frame correction). A signature on it is NOT established. The frame's rules retain their Draft or proposal status. |
+| T12 | Unsigned owner work in the transitional stage of LIP-0029 section 1, under section 3.7 point 2 | Open. A run started by labelled unsigned work still gets the owner row; binding of effects to the key holder signature is not specified. This draft proposes no mechanism. |

@@ -127,9 +127,10 @@ The issuer name is bound by its registration and owner key: a grant lives
 while the name's updates change neither the owner nor `swarma`, the verifier
 walks the name's history through its transaction index on the active chain,
 and a renewal closes nothing. A grant covers the whole term in blocks, with
-the hour as a limit and payment period only. The hire decision of 2026-11-15
-requires a contract plus at least TEXT and EFFECT grants (LIP-0008 section
-2.1). A counted payment whose block is displaced is awaited for `N` blocks while it stays valid, and the grant is
+the hour as a limit and payment period only. The hire decision of 2026-11-15,
+in force in version 0.1.52, requires a contract plus at least TEXT and
+EFFECT grants (LIP-0008 section 2.1). A counted payment whose block is
+displaced is awaited for `N` blocks while it stays valid, and the grant is
 revoked when the same coins are spent differently. The co-author's agreement
 is pending; no implementation follows these rules yet.
 
@@ -680,16 +681,21 @@ and no vector outcome changes.
 Version 0.1.52 records the specification-side reconciliation closures in
 [Decision 0004](decisions/0004-reconciliation-closures.md). LIP-0029 and
 LIP-0013 carry signed-at-minimum, encrypted-at-maximum communication, with
-unsigned work delivered but labelled during M0, effects only with a
-signature, and unsigned input ignored after M6. Chain rules also apply
+unsigned work delivered but labelled during the transitional stage M0, no
+effect given to the unsigned message itself, and unsigned input ignored
+after the M6 switch (LIP-0029 section 1). Which effects the key holder
+signs for a run that unsigned work starts is open. Chain rules also apply
 inside one host, which is one node. The LIP-0029 device list stays in its
 existing format. The authority frame arrives in a separate channel, with
 its signature unestablished; the dependent frame format and key are
-withdrawn. LIP-0008 and LIP-0003 limit issuance to the issuer name expiry
+withdrawn, and the draft's proposal of a local, unsigned frame stands.
+LIP-0008 and LIP-0003 limit issuance to the issuer name expiry
 observed at issuance. LIP-0008 records the hire split and distinguishes grant
 closure from project and installation stops. LIP-0006 records wallet request
 signing through Keymaker, and LIP-0028 states today's bearer authority and
-on-use checks.
+on-use checks. The owner decisions first recorded in this version are in
+force in it; the co-author's answer is folded in later by amendment and
+gates nothing (Decision 0004, "Status of the decisions of this version").
 
 LIP-0026, "Owner decision proposals", gives one proposed text for each of
 whole-parent atomic refusal, ordinal-to-row mapping, class checkpoint

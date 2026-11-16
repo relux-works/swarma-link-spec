@@ -7,22 +7,38 @@ LIP retains its status. J9 to J12 keep their version 0.1.51 classification;
 no historical protocol, tool, vector byte or vector outcome changes.
 
 LIP-0029 decision 1, section 1 and row X1, and LIP-0013 section 3.7 point 2
-carry the signed-at-minimum, encrypted-at-maximum rule: M0 delivers unsigned
-work but labels it, effects require a signature, and after M6 unsigned input
-is ignored. LIP-0029 states that a host is one node under chain rules and
-keeps its device-list protocol. Registry simplification inside a host and
-the other owner-open reconciliation questions stay open.
+carry the signed-at-minimum, encrypted-at-maximum rule: the transitional
+stage M0 delivers unsigned work but labels it, the unsigned message itself
+is given no effect, and after the M6 switch unsigned input is ignored.
+LIP-0029 section 1 defines M0 and M6, and LIP-0013 no longer uses the bare
+label M6, which names a scenario there. LIP-0029 records the conditions of
+the M6 switch: the live messenger-device check, the owner's own test and
+break-glass, with observe-only verification until then. LIP-0029 states
+that a host is one node under chain rules and keeps its device-list
+protocol. Registry simplification inside a host and the other owner-open
+reconciliation questions stay open.
+
+One point of the signed-communication rule is open, and no mechanism is
+proposed for it: a run started by labelled unsigned work still gets the
+owner row; binding of effects to the key holder signature is not specified
+(LIP-0013 open question T12; LIP-0029 "Open questions").
 
 LIP-0028 states the caller authority of today's proxy: the bearer holds the
 dispatcher-prepared run binding, issued upstream under J7, and on-use checks
 cover mode, window and account block without consulting the key holder or
-chain. LIP-0013 states plainly that a receiver cannot verify an origin and
+chain. The text names the platform dispatcher and the gateway as preparers
+of a binding; whether they are one preparer in today's deployment is listed
+as open. LIP-0013 states plainly that a receiver cannot verify an origin and
 that the level holds at an honest key holder only.
 
 The authority frame arrives in a separate channel; its signature is NOT
 established by the corrected source. LIP-0013 withdraws the earlier claim
-of a decided signer and the dependent format and key. LIP-0029, the key
-registry, the README and the open-question index follow the correction.
+of a decided signer and the dependent format and key: rules FE1 to FE7,
+case S3-4F and the frame-key entry of the key registry. The paragraph of
+open points and the draft's proposal of a local, unsigned frame stand as
+before version 0.1.51 worded them, with the channel named as separate.
+LIP-0029, the key registry, the README and the open-question index follow
+the correction.
 The version 0.1.51 changelog below records the superseded claim as history.
 
 LIP-0008 section 5.2 cites J6 grant closure at foreign verifiers separately
@@ -31,8 +47,9 @@ from the platform project stop (section 22.5) and installation stop (section
 and LIP-0003 section 2, limit issuance to issuer name expiry observed at
 issuance, 36000 blocks from the last update; the issuer refuses to sign
 beyond it. LIP-0003 leaves its clock-time conversion open. LIP-0008 section
-2.1 records the contract plus at least TEXT and EFFECT grants per hire.
-LIP-0006 section 1 records wallet request signing through Keymaker, with
+2.1 records the contract plus at least TEXT and EFFECT grants per hire, and
+the rental row of LIP-0017 section 7 follows it. LIP-0006 section 1 records
+wallet request signing through Keymaker, with
 origin and operator-table checks, while keeping the existing wallet slice.
 
 LIP-0026 gives four explicit proposals, each marked "proposed, owner
@@ -41,6 +58,33 @@ instead of count caps, ordinal-to-row mapping, class checkpoint derivation
 and normative class refusal codes. None is enabled in the in-force profile.
 The decision map at version 0.1.51 remains the boundary, and whole-parent
 and whole-child composition stay unavailable under it.
+
+The owner decisions first recorded in this version are in force in it:
+the hire split, wallet request signing through Keymaker, signed
+communication with the M0 transition, the one-host rule, the staging of
+the M6 switch, the separate channel of the authority frame and the grant
+term against name expiry. The co-author's answer to each is folded in later
+by amendment and gates nothing. Decision 0004, "Status of the decisions of
+this version", names the decider and date of each. These markers of a
+pending agreement stood over the texts that carry them, and none blocks:
+
+- the status line of LIP-0029 ("until the co-author agrees every text that
+  this LIP revises stands as written") and its header "Revises, once
+  agreed";
+- "written optimistically: the co-author's agreement is pending", over the
+  decision tables of LIP-0029;
+- "the co-author's agreement is pending", over the pattern of LIP-0013
+  section 3.7, and "awaits the co-author's agreement" in that section's
+  last paragraphs;
+- "the co-author's agreement is pending", over the authority frame of
+  LIP-0013 section 3.4;
+- "The co-author's agreement is pending", after the term and hire rules in
+  the README's account of the v4 draft;
+- the same marker in the rows "Text and effects; the authority frame" and
+  "Owner control by signed envelopes and a pinned device list" of the
+  open-question index.
+
+Each marker keeps its force for the other text under it.
 
 Decision 0004 records completion of v4 and landing of the row-groups and
 session laboratories as prerequisites to freeze, without declaring either

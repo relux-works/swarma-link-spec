@@ -3,9 +3,14 @@
 - **Status:** Draft, written optimistically. Ivan Oparin accepted the
   thirteen decisions of this LIP on 2026-11-15, and six more on 2026-11-16,
   and asked that the text be written without waiting for the co-author: where
-  the co-author objects, the point is fixed separately. The co-author's
-  agreement is pending, no rule of this LIP is adopted, and until the
-  co-author agrees every text that this LIP revises stands as written.
+  the co-author objects, the point is fixed separately. On 2026-11-16 he
+  also corrected decision 1, decided the one-host rule and staged the M6
+  switch. Those three decisions are in force in this version; the
+  co-author's answer to them is folded in later by amendment and gates
+  nothing ([Decision 0004](../decisions/0004-reconciliation-closures.md),
+  status). For everything else the co-author's agreement is pending, no
+  other rule of this LIP is adopted, and until the co-author agrees every
+  other text that this LIP revises stands as written.
 - **Created:** 2026-11-15
 - **Affects:** how an owner directs and bounds its own executors and the key
   holders of its agents: the signed envelope and its typed body kinds, the
@@ -18,30 +23,33 @@
   envelope `swarm-envelope/2` of Swarma Envelope
 - **Revises, once agreed:** the owner's devices in LIP-0015 section 6 and
   LIP-0016; the owner's command as an origin in LIP-0013 section 3.6 (J7.1,
-  J7.2) and section 3.7 (point 2); the signer of the configuration statement
+  J7.2) and the device-signed owner command of its section 3.7; the signer
+  of the configuration statement
   of LIP-0015 section 3; decision K6 of the key map
 - **Deciders:** both owners
 
 ## Summary
 
 The chain rules apply inside one host too. The host is one node; a registry
-simplification inside a host remains an open question
-([Decision 0004](../decisions/0004-reconciliation-closures.md), one host).
+simplification inside a host remains an open question (Ivan Oparin's
+decision of 2026-11-16, in force in this version:
+[Decision 0004](../decisions/0004-reconciliation-closures.md), one host).
 
 The owner channel carries work under the transition of section 1:
-unsigned work is delivered but labelled, and effects require a signature.
-J7.2 gives the owner's work a row at the key holder. Section 6 adds the
-level bound to that row and to the objects signed under the agent's own
-grants. LIP-0015 still puts statements on the grant key; section 10 moves
-the owner's statements to its devices.
+unsigned work is delivered but labelled, and the unsigned message itself
+is given no effect. J7.2 gives the owner's work a row at the key holder.
+Section 6 adds the level bound to that row and to the objects signed under
+the agent's own grants. LIP-0015 still puts statements on the grant key;
+section 10 moves the owner's statements to its devices.
 
 This LIP gives the owner a voice that the receivers check:
 
 1. Communication is signed at minimum and encrypted at maximum. During M0,
-   unsigned work is delivered but labelled; effects require a signature.
-   After M6, unsigned input is ignored. Free text directs work; an effect
-   happens only through typed fields that the executor's gate compares with
-   the actual arguments (section 1).
+   unsigned work is delivered but labelled, and the unsigned message
+   itself is given no effect. After M6, unsigned input is ignored. Section
+   1 defines M0 and M6. Free text directs work; an effect happens only
+   through typed fields that the executor's gate compares with the actual
+   arguments (section 1).
 2. The owner's name value pins the hash of a **device list**, with a version
    number, in a member outside `swarma`. The list holds a record for each of
    the owner's devices: its key, the algorithm, a claimed presence flag, a
@@ -97,7 +105,7 @@ this LIP; each is written out in the section that the last column names.
 
 | # | Decision | Section |
 | --- | --- | --- |
-| 1 | Signed at minimum, encrypted at maximum: use native encryption where possible. Transitional (M0): unsigned work is delivered but labelled; effects require a signature. After M6, unsigned input is ignored. Free text directs work only. An effect happens only through typed fields that define it completely: repository, ref and exact revision; payee and amount. The executor's gate recomputes the actual arguments and compares them with the fields before any effect. The owner's client forms the fields and shows them; the executor's model does not. | 1 |
+| 1 | Signed at minimum, encrypted at maximum: use native encryption where possible. Transitional (M0): unsigned work is delivered but labelled; effects only on a signature, which section 1 carries for the unsigned message itself. After M6, unsigned input is ignored. Free text directs work only. An effect happens only through typed fields that define it completely: repository, ref and exact revision; payee and amount. The executor's gate recomputes the actual arguments and compares them with the fields before any effect. The owner's client forms the fields and shows them; the executor's model does not. | 1 |
 | 2 | The typed action registry is the action profiles of this specification: LIP-0006 and the v4 action profile of LIP-0008. A new action is a LIP section plus executor code. An unknown action class requires L2 or is refused. LIP-0008 section 12.4 stays reserved. | 2 |
 | 3 | The owner's name value pins the hash of the device list only, with a version number. The member sits outside `swarma`, so v4 grants are not ended by its changes. It is added only after every verifier runs the LIP-0010 reader, because the LIP-0004 reader refuses extra members. The v3 outage while a name update is pending is a known cost; v3 is the internal alpha. | 3.3, 3.4 |
 | 4 | A device record holds a label, the public key, the algorithm (BIP-340 or P-256; the verifier takes it from the record, never from the envelope), a presence flag (claimed, not proven), the level ceiling, and the outpoint of the revocation seal. | 3.1 |
@@ -132,14 +140,26 @@ is pending. Decision 17 refines decision 15 and stands where the two differ.
 | 18 | An algorithm registry for device records. Each entry gives the key encoding, the signature encoding, the presence semantics and the highest level. The entries: Apple Secure Enclave P-256; FIDO2/WebAuthn (ES256 or EdDSA, with the UP and UV flags as signed presence, L2-capable); YubiKey PIV P-256 and P-384; TPM 2.0 P-256; Android Keystore/StrongBox P-256; Matrix device Ed25519 (L1, Olm-direct sessions only); XMPP OMEMO (XEdDSA Curve25519, L1); Signal identity (XEdDSA, L1, through a client API); Nostr BIP-340; OpenPGP Ed25519; SSH Ed25519 and sk-ecdsa (FIDO). Telegram secret chats and WhatsApp are not supported: no per-device signing identity that a verifier can use, or no client API. Only Matrix has a verifier in M5n; the other entries are reserved. | 3.6 |
 | 19 | The D2 signer threat model is accepted, with limits: a key without per-signature presence can be used by any code on that machine, so it is L1 at most, within limits. The presence flag is a claim, not proof. A host console is not L2 when agents have shells on that host. L2 is strengthened: the key's access control is Secure Enclave `biometryCurrentSet` with no passcode fallback, so the key is invalidated when the enrolled fingers change; every signature needs a fresh authentication, with no `LAContext` reuse; the signer itself shows the fields before Touch ID; this must be verified on a real Mac, as a qualification requirement. Several L2 devices are allowed, each with its own record; a finger change invalidates that device's key, and the device is re-added by the slow, guarded add path. At least two L2 devices are recommended. | 3.6, 6, Honest limits |
 
-Decision 1 includes the owner correction of 2026-11-16, recorded in
-[Decision 0004](../decisions/0004-reconciliation-closures.md), signed
-communication. M0 is the current transitional rule, and M6 names the
-refuse-unsigned switch. The owner agenda's decision of 2026-11-16 at 01:45Z
-allows that switch only after the live messenger-device check, the owner's
-own test and break-glass; observe-only verification continues until then.
-This text supplies no deployment date. The device list of sections 3, 4 and
-8 stays in its existing format.
+Decision 1 includes Ivan Oparin's correction of 2026-11-16 at 03:15Z
+([Decision 0004](../decisions/0004-reconciliation-closures.md), signed
+communication). Section 1 defines M0, the current transitional stage, and
+M6, the refuse-unsigned switch. His decision of 2026-11-16 at 01:45Z allows
+that switch only after the live messenger-device check, the owner's own
+test and break-glass; observe-only verification continues until then. This
+text supplies no deployment date. The one-host rule of the Summary is his
+decision of 2026-11-16 at 03:08Z.
+
+These three decisions are in force in this version. The co-author's answer
+to them is folded in later by amendment and gates nothing (Decision 0004,
+status). The envelope, the device list and the levels by which a message is
+signed and admitted (sections 3 to 6 and 11) keep their Draft status and
+their agreement boundary.
+
+The correction says "effects only on a signature". Section 1 carries that
+for the unsigned message itself (O1.1). It does not carry it for the run
+that such work starts; that gap is listed under "Open questions".
+
+The device list of sections 3, 4 and 8 stays in its existing format.
 The external replacement of that format was not accepted (Decision 0004,
 completion before freeze).
 
@@ -215,7 +235,7 @@ has decided one.
 
 ## Motivation
 
-**R4: the owner has no voice that a receiver checks.** Under LIP-0013
+**R4: the owner has no voice that a receiver checks.** LIP-0013
 section 3.7 formerly let the owner instruct its agent without an envelope;
 point 2 now cites the labelled transition of section 1. In shadow mode
 "only the owner directs" (section 3.4). Every process that can post into an
@@ -290,12 +310,25 @@ from that name. Every other executor is **foreign** to that owner.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O1.1 | Communication is signed at minimum and encrypted at maximum, using native encryption where possible. During M0, unsigned work is delivered but MUST be labelled as unsigned; it gives no authority for effects. An own executor and an own key holder MUST give effect only to a signed message admitted under this LIP. After M6, unsigned input MUST be ignored: it directs no work, starts no run, changes no configuration and counts as no approval. An envelope that fails section 11 gives no authority. | The code of the failed step; nothing for unsigned input |
+| O1.1 | Communication is signed at minimum and encrypted at maximum, using native encryption where possible. During M0, unsigned work is delivered but MUST be labelled as unsigned. The unsigned message itself gives no authority for an effect: an own executor and an own key holder MUST give effect only to a signed message admitted under this LIP. After M6, unsigned input MUST be ignored: it directs no work, starts no run, changes no configuration and counts as no approval. An envelope that fails section 11 gives no authority. | The code of the failed step; nothing for unsigned input |
 | O1.2 | Free text inside a signed envelope directs work only. It MUST NOT define, select or widen an effect (LIP-0006 section 7). | |
 | O1.3 | An effect happens only through the typed fields of its action class, and the fields MUST define the effect completely. A landing names the repository, the ref and the exact revision, which is a full commit identifier. A payment names the payee and the amount. A class whose fields leave a part of the effect to the executor is not admitted for an effect. | `FIELDS_INCOMPLETE` |
 | O1.4 | Before any effect the executor's gate MUST recompute the actual arguments of the operation it is about to perform, from the operation itself and not from the envelope, and compare them with the signed fields. Any difference refuses, and no effect follows. LIP-0014 J5.7 and J5.9 have this step for the owner's confirmation of one operation; O1.4 makes it the step of every effect. | `FIELDS_MISMATCH` |
 | O1.5 | The owner's client MUST form the typed fields and show them to the owner before a device signs. The executor's model MUST NOT form them. | |
 | O1.6 | The process of the executor's model MUST NOT hold the right to the effect. Keys, tokens and privileges of an effect sit at a gate under another OS account, as the wallet service does (LIP-0006 section 1; LIP-0013 J7.8). | A deployment that leaves one within the model's reach does not meet this LIP |
+
+M0 and M6 name two points of the transition to signed owner communication,
+and this LIP uses them in this sense only. **M0** is the current stage:
+unsigned owner input is delivered and labelled as unsigned. **M6** is the
+switch after which unsigned owner input is ignored. The switch is allowed
+only under the conditions that "What is decided and what is proposed"
+records, and this LIP gives it no date.
+
+O1.1 covers the unsigned message. It does not cover the run that labelled
+unsigned work starts during M0. That run still gets the owner row of the
+key holder's table (LIP-0013 J7.1 and J7.2), and section 6 gives a level
+only to a run that a signed owner command starts (O6.5). Binding of effects
+to the key holder signature is not specified for it ("Open questions").
 
 O1.4 is the step that turns a signature into a bound. A gate that compared the
 fields with what the model told it would compare two things that the model
@@ -1016,7 +1049,7 @@ conflicts retain their existing open or proposed status.
 
 | # | Decision | Conflict |
 | --- | --- | --- |
-| X1 | 1 | Decided on 2026-11-16: signed at minimum, encrypted at maximum. Transitional (M0): unsigned work is delivered but labelled; effects require a signature; after M6, unsigned input is ignored. Section 1 and LIP-0013 section 3.7 point 2 carry this rule; the Link book section 8.9 requires the same correction. The level mapping of X11 remains open. |
+| X1 | 1 | Decided on 2026-11-16: signed at minimum, encrypted at maximum. Transitional (M0): unsigned work is delivered but labelled; effects only on a signature; after M6, unsigned input is ignored. Section 1 and LIP-0013 section 3.7 point 2 carry this rule for the unsigned message itself; the run that such work starts is an open question. The Link book section 8.9 requires the same correction. The transitional mode of the platform book (§24.4), which admits A0 and A1 commands within zones, is wider than this rule; it stays a platform-book item on hold. The level mapping of X11 remains open. |
 | X2 | 2 | The book registers actions at run time by signed records (§13.4). `swarm-envelope/2` section 4.1 refuses an unknown operation outright and has no branch for L2. |
 | X3 | 3, 4, 6 | Three anchors for the owner's devices: a phone key pinned at the machine (book §6.6; CIP-0011 §5.2), an operator root that attests devices in the owner's registry (book §6.7, §6.8), and the device list in the name. `swarm-envelope/2` section 2.1 says that device trust comes from the operator root "not a second device-key pin list". |
 | X4 | 5 | The book revokes in the registry by root-signed snapshots (§6.7). A P-256 device cannot sign a Namecoin spend, so a prepared spend is signed in advance by a secp256k1 key, with its fee fixed at signing (Link book §4.9.10). |
@@ -1133,7 +1166,10 @@ Swarma Envelope once registered there.
 - **The co-author's agreement** to the nineteen decisions, written here
   optimistically, and the owners' acceptance of each point that the section
   "What is decided and what is proposed" lists as the draft's.
-- **The remaining conflicts X2 to X15** of the section "Reconciliation",
+- **A run that unsigned work starts (decision 1, stage M0).** A run started
+  by labelled unsigned work still gets the owner row; binding of effects to
+  the key holder signature is not specified.
+- **The remaining conflicts X2 to X16** of the section "Reconciliation",
   which the owners decide; X1 is corrected above. Above all X3, the anchor
   of the owner's devices, and X10,
   the registration of the body kinds in Swarma Envelope or a new version name.
