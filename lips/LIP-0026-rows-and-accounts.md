@@ -140,7 +140,8 @@ effect before the owner's decision.
 Under the in-force profile, whole-parent atomic refusal (R1.5, R8.7) and
 whole-child composition remain unavailable. The profile checks fit only on
 independently established selected facts and does not establish their signed
-binding. One global ordinal is decided; its concrete traversal is proposed.
+binding. One global ordinal is decided; the state of its concrete traversal,
+the order of the count of R8.3, is stated in one place, in section 8.
 Each landlord requires an independently established checkpoint. The four
 class checks keep their decided order, while the eight class strings remain
 local diagnostics with no normative taxonomy or inner-step precedence.
@@ -179,6 +180,13 @@ in their signed order and outputs in ascending index order, with the first
 row at ordinal 1. The selection changes neither the template's recipient
 constraint nor its certifier requirement. An out-of-range ordinal retains
 `CHILD_ORDINAL`.
+
+One part of this proposal has a state of its own since version 0.1.55, the
+order of the count of R8.3; section 8 states it in one place, and it awaits
+the owner's explicit acceptance as the rest does. The other parts stay
+proposed and await the owner: that a verifier binds the ordinal to the
+signed template, range and coin as one signed binding, and the wording of
+the bound check.
 
 #### Q3. Class checkpoint derivation
 
@@ -524,8 +532,26 @@ stand after the checks of LIP-0023 on the child's seal transaction and
 anchor, in this order: `ROW_COIN_IN_SEAL_TRANSACTION`, then `ROW_COIN`,
 then `ROW_COIN_REQUIRED`. A child that LIP-0023 refuses gets the code of
 LIP-0023, and no code of that LIP changes its meaning. Where the three
-stand relative to the checks of the child's attestation comes with the
-profile of the attestation.
+stand relative to the checks of the child's attestation was left to the
+profile of the attestation until version 0.1.54. Version 0.1.55 proposes
+it in LIP-0014 section 8.4 (rows F22 and F23, rule T6): the three stand
+before the first step that reads an attestation. That is a proposal of
+version 0.1.55, marked NEW there, and it binds a reader when the version
+lands.
+
+The whole order of an admission of a child, with the place of the four
+checks of section 2 and of the three checks of the coin among the other
+steps, is proposed by the table of LIP-0014 section 8.4. That table changes
+no rule and no code of this LIP, and it keeps the order of R2.5 and of this
+rule. It adds one check inside the step of R2.4, which that rule leaves to
+the type profile of a kind: the kind of a limit has a profile at the side,
+or the child refuses as `LIMIT_KIND_UNDEFINED` after the keys of its limits
+and before their amounts (row F17, rule T9 there). Its rows F17 and E3 keep two cases apart that are easy
+to merge. A child that states a limit under a key that its row lacks refuses
+as `CHILD_BUDGET_OVER` at any amount, 0 included (R2.4). A key under which
+neither the row nor the child states a limit has the ceiling 0 at a
+reservation (R5.2), and a request that consumes it refuses as
+`OWN_LIMIT_OVER` (R5.6).
 
 R6.2. At a reservation, the order is that of R5.6. A request that is
 refused reserves nothing.
@@ -608,9 +634,32 @@ only the group and the range of its child, on signed octets.
 The decision fixes the four largest numbers of R8.4: 16 groups, 16 ranges in a
 group, 4096 coins in a range and 65536 octets. They are decided limits, and
 R8.4 and LIP-0020 W11.6 state them with one status, as bounds of the schema of
-a grant. LIP-0020 W11.6 says on which record the four numbers rest. This draft adds the order of the count in R8.3, the witness key hash
+a grant. LIP-0020 W11.6 says on which record the four numbers rest. This draft added the order of the count in R8.3, whose state the next
+paragraph gives, the witness key hash
 of R8.2, which follows R3.1, the smallest count of one group and one range in
 R8.4, and the rules R8.9 and R8.10 for the two signers.
+
+**The order of the count: proposed in force by version 0.1.55, the owner's
+explicit acceptance pending.** This paragraph is the one place that states
+the state of the order of the count, and every other text points here:
+proposal Q2 above, LIP-0014 section 8.4 (row F13) and the changelog. The
+decision gives a parent one ordinal across groups and ranges, and an
+ordinal names a row only under an order. The order of R8.3 is this draft's
+addition: the groups in their signed order, the ranges of a group in their
+signed order, the coins of a range by ascending output index, counted from
+1. Since version 0.1.53 LIP-0020 W11.6 states the same order for the octets
+of a parent, as text in force. Version 0.1.55 proposes that the order of
+the count is in force with it. No owner decision on the order of the count
+is recorded: the owner's order of 2026-11-16 that Grant v4 does not wait
+covers the members of the grant, as LIP-0020 section 11 says, and is not
+cited for this order. Until the owner accepts it explicitly, the order
+binds no reader by the word of this draft, and it is the part of proposal
+Q2 that awaits that acceptance first. Two rules rest on it and need it
+fixed: the ordinal of a child (R2.1, R8.8; LIP-0014 section 8.4, row F13)
+and the record that a signer keeps for each coin with its ordinal (R8.9).
+The row rule of R8.3, that each coin of a range is one row with the
+template of its group, was in force before. The other additions of the
+paragraph above keep their state.
 
 | Rule | Requirement |
 | --- | --- |

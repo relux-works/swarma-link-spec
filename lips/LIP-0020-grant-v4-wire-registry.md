@@ -69,6 +69,18 @@ been given; the co-author's answer is folded in by amendment. The section
 opens with what that means for each rule that it carries, and its table
 "Where each member comes from" names every form that no decision gives.
 
+Version 0.1.55 adds two things to section 11 and no member: the rule W11.11,
+with four comparisons of a child against its parent and their codes, and
+the subsection 11.14, with the two registries, both without a defined
+entry, and the two refusals of an executor. Both are proposals of version
+0.1.55 and are in force by no word of this draft: each binds a reader of
+`swarma-grant/4` when the version lands, and the co-author's answer is
+folded in by amendment. The owner's order that Grant v4 does not wait
+covers the members of the grant, as the paragraph above says, and is not
+stretched to these two additions. The steps at which they stand are those
+of LIP-0014 section 8.4, which has the same state. No octet of a grant and
+no vector of section 12 changes.
+
 The requirements that the proposal meets are Draft text of LIP-0008: a type
 and a version inside the signed bytes, one tagged digest for each type, one
 identifier for each object, strict BIP-340 verification, and RFC 8785 as the
@@ -819,6 +831,12 @@ new, and none replaces a code of an earlier format. The pipeline of a child
 also reports three codes of LIP-0014, with the meaning that they have
 there: `CHILD_SIGNER`, `CHAIN_DEPTH` and `NOT_DELEGABLE` (W11.8).
 
+The table holds the codes of the pipelines and no code of an admission.
+The codes that version 0.1.55 proposes for the admission of a child and
+for a request are registered in section 11.11, in the table "Codes of
+version 0.1.55", with the step of LIP-0014 section 8.4 at which each
+stands. No pipeline of this section reports one of them.
+
 ### 10. Vectors
 
 [`vectors/LIP-0020/wire-vectors.json`](../vectors/LIP-0020/wire-vectors.json)
@@ -1353,10 +1371,107 @@ this section. No rule of this table is changed here.
 | The stop coin of a row (LIP-0027 section 2) | `stop` of the range; `seal.outpoint` of the child; `recent_block` of the parent |
 | A child within its parent (LIP-0008 sections 12.2 and 12.5) | `genesis`, `actions` and the window of the child; `genesis`, `delegate.actions` and the window of the parent |
 
-For the last row no text names a v4 code. LIP-0014 section 4 names
-`SUBJECT_MISMATCH`, `CHILD_ACTIONS_WIDER` and `CHILD_WINDOW_NOT_NESTED` for
-the contract profile of v3. Whether v4 takes them is an open question, and
-this section assigns none.
+Before version 0.1.55 no text named a v4 code for the last row, and no rule
+said whether a child binds the contract of its parent. Version 0.1.55
+proposes both in W11.11. The table above is unchanged, and no member
+changes.
+
+W11.11 (proposed by version 0.1.55). A child lies within its parent in four
+comparisons of signed octets. Each is made by the signing service before
+it signs a child and by every verifier at admission, at the step that
+LIP-0014 section 8.4 gives it, and with the same code on both sides: the
+observation of a side stands before all four at the signing service and at
+a verifier alike (LIP-0014 section 8.4, pair Q3; section 8.5, I3 before
+I4).
+
+| # | Rule | Refusal | Step of LIP-0014 section 8.4 |
+| --- | --- | --- | --- |
+| 1 | The member `contract` of the child equals the member `contract` of the parent. The comparison is of the two values as the two payloads hold them, 64 hexadecimal characters each (W11.2), and of no octet of a contract document | `CHILD_CONTRACT_DIFFERS` | F5 |
+| 2 | Every text of `actions` of the child is a text of `delegate.actions` of the parent. The texts are compared as octets, and an empty list passes | `CHILD_ACTIONS_WIDER` | F16 |
+| 3 | `not_before_height` of the parent is at most `not_before_height` of the child, and `not_after_height` of the child is at most `not_after_height` of the parent. The comparison is of heights and of nothing else | `CHILD_WINDOW_NOT_NESTED` | F18 |
+| 4 | `genesis` of the child equals `genesis` of the parent | `SUBJECT_MISMATCH` | F8 |
+
+Rule 1 is a new restriction of this version, and so is its code. A v4
+grant carries no text, and the words that govern an agent's work stand in
+the contract that `contract` binds (W11.2). Both owners agree that on v4 a
+re-delegation narrows only typed fields and appends no text (LIP-0014
+section 3.4). That agreement fixes no byte, and it does not by itself
+forbid a second contract that carries the same text: a child that bound a
+narrower contract of its own would meet every sentence of it. Rule 1 does
+not follow from the agreement. It is a choice, and it needs the owners'
+decision: until a profile states how the contract of a child narrows the
+contract of its parent, this version admits none, so that no words reach a
+path that the parent's contract does not hold. A later profile that lets a
+child bind a narrower contract of its own replaces the rule by amendment.
+The bytes that the rule compares are fixed, the two values of the member
+`contract`. One thing behind them is not: the preimage of the identifier is
+open (LIP-0017 section 2), so the rule says that two grants name one
+identifier and says nothing yet about the octets of a contract. The rule
+does not say which key assents to the contract for the delegating side,
+which stays open (W7.2). A contract that is not presented and a contract
+whose octets do not recompute to the identifier are two further findings,
+with the codes `CONTRACT_NOT_PRESENTED` and `CONTRACT_ID`. They are decided
+after rule 1, which signed octets alone decide (LIP-0014 section 8.4, rows
+F5 and F6, rule T1 and pair Q5).
+
+Rules 2, 3 and 4 are LIP-0008 sections 12.2 and 12.5 on these members. Their
+codes are the codes that LIP-0014 section 4 names for the same comparisons
+of the v3 contract profile: a set that is no subset, a window that is not
+nested, another chain. A v3 code is taken where the v4 comparison is the
+same relation on the corresponding members, whether or not v3 compares
+further members under it (LIP-0014 section 8.4, rule T4): `SUBJECT_MISMATCH`
+reports on v4 the one member `genesis` of the three that step V6 compares.
+They are taken as LIP-0026 section 2 takes the four codes of a row. The
+rules are landed text; that these codes report them on v4 is the proposal
+of this version. The window is a
+pair of block heights (LIP-0008 section 7.1; Ivan Oparin's decision of
+2026-11-16 that the window of a v4 grant is stated in heights only), and
+rule 3 never reads a clock: the clock of an invocation is a rule of the
+invocation. That the child's own window is not empty is rule 1 of W11.9.
+
+The four are checks of an admission and no step of the pipeline of W11.8:
+a child that breaks one is a well-formed child, a reader of documents
+reads it without a refusal, and no vector of section 12 changes. The state
+of W11.11 is that of LIP-0014 section 8.4: a proposal of version 0.1.55,
+which binds a reader of `swarma-grant/4` when the version lands, with the
+co-author's answer folded in by amendment.
+
+**Codes of version 0.1.55.** Six codes are new with version 0.1.55, and
+three codes of v3 are taken for v4. This table registers all of them for a
+checker; each is proposed with the row of LIP-0014 section 8.4 that reports
+it, and none is reported by a pipeline of section 9. "Again" is the mark of
+LIP-0014 section 8.4 for what a refusal leaves behind.
+
+| Code | What it reports | Step | Again | Defined by | State |
+| --- | --- | --- | --- | --- | --- |
+| `CHILD_CONTRACT_DIFFERS` | The member `contract` of a child differs from that of its parent | F5 | no | W11.11, rule 1 | New code, new rule |
+| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind | F6, part (a) | input | LIP-0014 section 8.4, rule T1 | New code, new rule |
+| `CONTRACT_ID` | The presented contract document does not recompute to the identifier that the grants bind (LIP-0017 section 2). Not computable until a v4 contract profile fixes the preimage | F6, part (b) | no | LIP-0014 section 8.4, rule T1 | New code, new rule |
+| `CHILD_NOT_LIVE` | A child that its own closure or its own window refuses: a journaled closure, a window that opens below its recent block, a window that has not opened, a window that has ended, a spent seal | F20, F21 | closed for a closure and a validated spend; state for the window | LIP-0014 section 8.4, rule T3 | New code for rules of LIP-0008 sections 5.1 and 7.1 |
+| `ACTION_UNDEFINED` | A request for an action that no type profile of the executor defines | E1 | no, under one profile | W11.14, rule 1 | New code for the rule of W11.4 |
+| `LIMIT_KIND_UNDEFINED` | A limit of a child or of its row whose kind has no type profile at the side; a request that consumes a kind without a profile | F17, part (b); E2 | no, under one set of profiles | W11.14, rule 2; LIP-0014 section 8.4, rule T9 | New code for the rule of W11.4 |
+| `SUBJECT_MISMATCH` | `genesis` of a child differs from that of its parent | F8 | no | W11.11, rule 4 | Code of LIP-0014 section 4, taken for v4 |
+| `CHILD_ACTIONS_WIDER` | An action of a child is no entry of `delegate.actions` of its parent | F16 | no | W11.11, rule 2 | Code of LIP-0014 section 4, taken for v4 |
+| `CHILD_WINDOW_NOT_NESTED` | The window of a child does not lie inside the window of its parent, in heights | F18 | no | W11.11, rule 3 | Code of LIP-0014 section 4, taken for v4 |
+
+Three names are chosen against confusion with a neighbour, and two of them
+replace names of the first draft of this version. `CONTRACT_ID`, first
+called `CONTRACT_ID_MISMATCH`, is not `CONTRACT_MISMATCH` of LIP-0013
+section 2.5, which reports that fields of a v3 contract differ from fields
+of its grant, and not `CONTRACT_HASH` of the same section, which reports a
+plain hash. The v4 counterpart of `CONTRACT_MISMATCH`, the mirror of the
+terms of a grant in its contract, has no code yet; it gets one with the v4
+contract profile, as part (c) of row F6. `CHILD_CONTRACT_DIFFERS`, first
+called `CHILD_CONTRACT_MISMATCH`, follows `CHILD_TEXT_DIFFERS` of LIP-0014
+section 3.4, which reports the same relation between a child and its
+parent for a text hash. `CONTRACT_NOT_PRESENTED` reports a missing input
+and no finding about a contract.
+
+Open beside these codes, and named in LIP-0014 section 8.4 as O2 to O4: the
+code of a request that is not authenticated, the codes of the checks of an
+invocation, and the two codes that follow the contract identifier, for a
+contract that is no valid contract of its profile and for one that does not
+mirror the terms of its grant.
 
 #### 11.12. Where each member comes from
 
@@ -1462,6 +1577,55 @@ typed digest is
 and the signed form with the signature of that vector has 1464 octets. The
 names, the actions and the texts of the limits are placeholders, and the
 transaction ids and the recent block name no transaction and no block.
+
+#### 11.14. Action identifiers and limit kinds
+
+W11.4 says that the texts of `actions` and the texts of a limit are
+identifiers, and that their registries are open. This subsection, a
+proposal of version 0.1.55 with the state of W11.11, states the two
+registries as they stand and the two rules that follow from them, for an
+executor at a request and, for a limit kind, for both sides at the
+admission of a child. It adds no member and changes no
+octet: a reader of documents still compares texts and knows no action and
+no kind.
+
+W11.14. The registry of action identifiers lists the texts that a type
+profile of this specification defines as an action, with the profile that
+defines each (LIP-0007; LIP-0008 section 12.3; LIP-0018 section 3). The
+registry of limit kinds lists the texts that a type profile defines as the
+`kind` of a limit, with its units, its periods and its arithmetic (LIP-0008
+section 2; LIP-0018 section 2).
+
+| Registry | Entries in version 0.1.55 |
+| --- | --- |
+| Action identifiers | None. No text of this specification names a v4 action identifier: the names of LIP-0014 D12 are actions of the v3 contract profile, and the actions of the vectors of section 12 are placeholders |
+| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet |
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| 1 | An executor MUST refuse a request whose action no type profile under which it runs defines. That the text stands in `actions` of the grant does not define it | `ACTION_UNDEFINED` |
+| 2 | A limit of an undefined kind is never read as no limit. At the admission of a child, the signing service and a verifier MUST refuse a child where the kind of a limit of the child or of the template of its row has no type profile at that side (LIP-0014 section 8.4, row F17, part (b)). An executor MUST refuse a request that consumes a limit kind for which it has no type profile (row E2). A request that needs `policy` refuses in this way | `LIMIT_KIND_UNDEFINED` |
+| 3 | An entry joins a registry by the LIP that defines its profile. A text under `swarma/` is assigned by this specification alone (LIP-0008 section 12.3) | None: a rule of the registries, which no reader and no executor judges |
+
+Rule 1 is a refusal of a request, after the grant and, for a child, its
+path were admitted: step E1 of LIP-0014 section 8.4. Rule 2 has two places.
+W11.4 says that a verifier refuses "the admission that an unknown kind
+affects", and it names no code and no step. For a child, the kinds of the
+limits that the child and its row state are judged at its admission, in
+row F17, after the keys of the limits and before their amounts, at the
+signing service and at a verifier alike; an executor judges the kinds that
+a request consumes and that neither states in step E2. A root grant has no
+step table in this version, and rule 2 reaches it at a request alone. The
+refusals record no closure, and the grant stays a well-formed grant. Both
+codes are new. Two facts follow for whoever plans on Grant v4, and both
+hold until a profile exists. No action is defined: an executor that
+conforms to this specification refuses as `ACTION_UNDEFINED` every request
+that reaches rule 1, and a v4 grant has no effect at an executor. No limit
+kind is defined: a child that states a limit, and a child of a row whose
+template states one, refuses as `LIMIT_KIND_UNDEFINED` at every side, and
+only a pair without limits passes row F17. A kind whose amount is a floor
+takes the same members as a ceiling (W11.4); how a floor is compared is for
+its profile, and until that profile exists rule 2 refuses.
 
 ### 12. Vectors of the grant
 
@@ -1570,9 +1734,21 @@ an admission is not the obstacle, since a pair with one failing check has
 one outcome in any order, and neither is a pending agreement, since the
 signer of a child is in the same state and has vectors here. The four come
 with the vectors of an admission. Section 11.11 also names `SUBJECT_MISMATCH`,
-`CHILD_ACTIONS_WIDER` and `CHILD_WINDOW_NOT_NESTED`; they are codes of the
-v3 contract profile, this section assigns none of them to v4, and they have
-no vector here.
+`CHILD_ACTIONS_WIDER` and `CHILD_WINDOW_NOT_NESTED`. Before version 0.1.55
+no text assigned them to v4. Version 0.1.55 proposes that W11.11 does, and
+that it adds `CHILD_CONTRACT_DIFFERS`; W11.14 adds `ACTION_UNDEFINED` and
+`LIMIT_KIND_UNDEFINED`, and LIP-0014 section 8.4 adds
+`CONTRACT_NOT_PRESENTED`, `CONTRACT_ID` and `CHILD_NOT_LIVE` and gives
+`CHILD_SEAL_KEY` and `DELEGATE_KEY_REUSE` their place among the steps of an
+admission (rows F9 to F12). The table "Codes of version 0.1.55" of section
+11.11 registers the six new codes and the three that are taken from v3.
+Each of these is a check of an admission or of a request, the pipeline of
+W11.8 reports none of them, and none has a vector here. The file and its
+list
+`not_exercised` stand as they were made for version 0.1.53: not one octet
+of the file changes with version 0.1.55, and the list names the four codes
+of the table above and not the later ones. LIP-0014 section 8.7 plans the
+vectors of the steps.
 
 The document step has four vectors on the octets of a grant beside those of
 section 10: a signed form that stops before its last octet (`WIRE_JSON`), a
@@ -1873,13 +2049,39 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   verifier reads of a parent at admission is proposal Q1.
 - **Vectors of an admission** for `CHILD_ORDINAL`, `CHILD_SEAL_KEY`,
   `DELEGATE_KEY_REUSE` and `SEAL_PROFILE` on the octets of grants. The last
-  three have no vector on a v4 grant anywhere (section 12).
+  three have no vector on a v4 grant anywhere (section 12). The same holds
+  for the codes of W11.11 and W11.14 and for `CONTRACT_NOT_PRESENTED`,
+  `CONTRACT_ID` and `CHILD_NOT_LIVE`; LIP-0014 section 8.7 plans vectors
+  for them, plans none for a result that this version cannot compute, and
+  generates none.
 - **The registries of action names and of limit kinds**, with the meaning
-  of a period (LIP-0007, LIP-0018; LIP-0008 sections 2 and 12.3). Until
-  they exist the texts of a grant are identifiers without a list.
-- **A child that is wider than its parent allows.** No text names a v4
-  code for a child whose chain, actions or window do not lie inside those
-  of its parent (section 11.11).
+  of a period (LIP-0007, LIP-0018; LIP-0008 sections 2 and 12.3). Section
+  11.14, a proposal of version 0.1.55, states them, and both are without a
+  defined entry: the texts of a grant are identifiers without a list, an
+  executor refuses a request for an action or a kind that no profile
+  defines, and a child that states a limit refuses at its admission. Open
+  are the entries, the grammar of an identifier and who assigns one outside
+  `swarma/`.
+- **A child that is wider than its parent allows.** W11.11, a proposal of
+  version 0.1.55, names the codes for a child whose contract, chain,
+  actions or window do not lie inside those of its parent. Open are the
+  owners' acceptance and the co-author's answer, and above all the owners'
+  decision on rule 1: that a child binds the contract identifier of its
+  parent is a new restriction that the agreed point on text does not
+  entail, and with it whether a later profile lets a child bind a narrower
+  contract of its own.
+- **The codes that follow the contract identifier.** The code of a contract
+  that is no valid contract of its v4 profile and the code of a contract
+  that does not mirror the terms of its grant, with the preimage of the
+  identifier (LIP-0017 section 2), without which `CONTRACT_ID` cannot be
+  computed. They come with a v4 contract profile (LIP-0014 section 8.4,
+  open point O4). Open with the members of the invocation: the code of a
+  request that is not authenticated and the codes of the checks of an
+  invocation (O2, O3).
+- **The reading of a payload before it is signed.** LIP-0014 section 8.4,
+  rule T7, proposes five steps for the signing service of the delegation
+  key. W9.1 has no class for it and gains one by amendment if the rule is
+  accepted.
 - **A scope text and typed constraints on v4.** The octets that carry a
   text along a path (LIP-0014 section 3.4) and the machine members for a
   ref, a revision, a payee or a list of targets have no source and no

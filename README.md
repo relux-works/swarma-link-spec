@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.54
+**Version:** 0.1.55
 
 **Date:** 2026-11-16
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.54
+## Draft profiles and design decisions in v0.1.55
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -834,6 +834,44 @@ its own under the same J7 rules, and naming one gives no waiver from J4.
 The co-author's answer to the ledger is folded
 in by amendment. Nothing of this version is implemented, and every LIP
 remains Draft.
+
+Version 0.1.55 proposes a step table for a v4 child.
+[LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.4
+states the steps F1 to F24 of one predicate, for the signing service of the
+delegation key before it signs a child and for a verifier at every
+admission, with the code of each step, what a refusal leaves behind, the
+status of each step (carried from a landed text, new, or amending one) and
+a source for the order of every pair of steps. A child states the contract
+identifier of its parent (`CHILD_CONTRACT_DIFFERS`); a contract that is not
+presented (`CONTRACT_NOT_PRESENTED`) or does not recompute (`CONTRACT_ID`)
+refuses before the parent is read; a refusal of the parent keeps the code
+of the rule that refused it; and a child that is wider than its parent in
+an action or in its window, or that names another chain, takes the codes
+of the same comparisons on v3. An absent and a wrong child-seal key refuse
+before any row is read, the coin of a row is checked before the
+attestation, and section 8.5 orders the checks of the signing service.
+[LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) W11.11 holds the four
+comparisons of a child against its parent and one table that registers the
+codes, and its section 11.14 the registries of action identifiers and of
+limit kinds, both without a defined entry. Six codes are new with this
+version: `CHILD_CONTRACT_DIFFERS`, `CONTRACT_NOT_PRESENTED`, `CONTRACT_ID`,
+`CHILD_NOT_LIVE`, `ACTION_UNDEFINED` and `LIMIT_KIND_UNDEFINED`. Until a
+profile defines an action, a v4 grant has no effect at an executor, and
+until a profile defines a limit kind, a child that states a limit is
+neither signed nor admitted. Four points stay open and are named there:
+the order of the seal and the issuance blocs, the code of a request that
+is not authenticated, the checks of an invocation, and the codes that
+follow the contract identifier, which wait for a v4 contract profile. All
+of this is a proposal of version 0.1.55, in force by no word of the draft:
+it binds a reader of `swarma-grant/4` when the version lands, the owner's
+order of 2026-11-16 that Grant v4 does not wait covers the members of the
+grant and is not stretched to it, and the co-author's answer is folded in
+by amendment. The order in which
+[LIP-0026](lips/LIP-0026-rows-and-accounts.md) R8.3 counts the rows of a
+parent is proposed in force by this version, with the owner's explicit
+acceptance pending. No member of the grant, no tool and no vector octet
+changes; the vectors of the step order are planned and not generated.
+Every LIP remains Draft, and nothing of it is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

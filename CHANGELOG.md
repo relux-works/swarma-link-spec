@@ -1,5 +1,207 @@
 # Changelog
 
+## 0.1.55 — 2026-11-16
+
+Proposes one step table for a v4 child, with the codes and the order of
+every step, for the signing service before it signs and for a verifier at
+admission.
+
+**State, and its source.** On 2026-11-16 the owner ordered that Grant v4
+does not wait for the co-author's agreement, which is folded in by
+amendment. That order covers the members of the grant, as LIP-0020 section
+11 says since version 0.1.53. It is not stretched to this version: every
+rule, code and order that version 0.1.55 adds is a proposal of version
+0.1.55, in force by no word of this draft, and binds a reader of
+`swarma-grant/4` when the version lands. A step that restates a landed text
+keeps the state of that text. One point is stated apart, in one place: the
+order of the count of LIP-0026 R8.3 is proposed in force by this version,
+with the owner's explicit acceptance pending (LIP-0026 section 8). Every
+other statement of status in this entry, in the README and in the LIPs
+follows this paragraph.
+
+Every LIP stays a Draft and nothing of this version is implemented. No
+member of `swarma-grant/4` changes, and no octet of a tool or of a vector
+file changes: `tools/grantv4` and `vectors/LIP-0020/grant-v4.json` are
+those of version 0.1.53. Version 0.1.54, the entry below, changed none
+of them either, and the texts of this version that say "until version
+0.1.54" speak of it.
+
+### The step table (LIP-0014 section 8.4)
+
+LIP-0014 section 8.4 proposes the steps F1 to F24 of one predicate that
+the signing service of the delegation key runs before it signs a child and
+that a verifier runs at every admission, the step A1 that authenticates a
+request, and the steps E0 to E3 of a request under an admitted child. For
+each step the table says what it reads, which side makes it, the result,
+the refusal code, what the refusal leaves behind, what the side has not
+observed yet, and its status: carried from a landed text with the state of
+that text, new with its reason, or amending a landed sentence. A list of
+twenty-five pairs gives a source for every boundary between two
+neighbouring steps and for the order inside every step with more than one
+code; the order is total outside four open points that the section names.
+Every step has one place in the order of each side, and a step that both
+sides make gives the same code on both, except where its row states a
+difference. The table of the v3 steps V1 to V18 is unchanged.
+
+The points that had no answer in any text, and what this version proposes:
+
+- **The same contract.** A child states the contract identifier of its
+  parent, or refuses as `CHILD_CONTRACT_DIFFERS` (LIP-0020 W11.11, rule 1;
+  F5). The rule is a new restriction and needs the owners' decision: the
+  point that both owners agree on, that a v4 re-delegation appends no text,
+  fixes no byte and does not entail it. It compares the two values of the
+  member `contract` and is decided before any contract is read.
+- **A contract that is missing or does not recompute.** Two new codes at a
+  step that stands before the parent is read (F6): `CONTRACT_NOT_PRESENTED`
+  for a contract that is not presented, which says nothing about the
+  grants, and `CONTRACT_ID` for a document that does not recompute to the
+  identifier. The place is new for the child and for the parent alike; v3
+  runs the other way. `CONTRACT_ID` cannot be computed until a v4 contract
+  profile fixes the preimage of the identifier (LIP-0017 section 2), and
+  the codes of a contract that is invalid under its profile or does not
+  mirror the terms of its grant are open. The v3 codes `CONTRACT_HASH` and
+  `CONTRACT_MISMATCH` are not used on v4.
+- **The parent keeps its codes.** A refusal of the parent at the admission
+  of a child keeps the code of the rule that refused it, in one order of
+  six parts (F7): the recent block, the issuer's name, the recipient's
+  name, the closure journal, the window, the seal and the issuance.
+  `PARENT_NOT_LIVE` reports four findings alone: a recipient name that its
+  owner key does not hold (J4.5), a journaled closure, the window, and a
+  spent seal.
+- **A child wider than its parent.** The actions of a child are a subset of
+  `delegate.actions` (`CHILD_ACTIONS_WIDER`, F16), its window lies inside
+  the parent's in block heights (`CHILD_WINDOW_NOT_NESTED`, F18), and it
+  states the chain of its parent (`SUBJECT_MISMATCH`, F8). The three codes
+  are those of v3, taken where the v4 comparison is the same relation on
+  the corresponding members. No step reads a clock for the validity of a
+  grant, by Ivan Oparin's decision of 2026-11-16 that the window of a v4
+  grant is stated in heights only.
+- **The limits and their kinds.** A limit of a child whose kind has no type
+  profile refuses at the admission of the child as `LIMIT_KIND_UNDEFINED`,
+  after the keys of the limits and before their amounts (F17), and a floor
+  is not compared as a ceiling. No kind is defined yet, so only a child
+  without limits passes that step.
+- **The child-seal key.** A parent without one (`CHILD_SEAL_KEY`, F10) and
+  a child whose `seal.key` is another key (`CHILD_SEAL_KEY`, F12) refuse
+  before any row is read, beside the key comparisons of J4.3 (F9, F11). The
+  script of the seal on a node is judged with the seal (F21,
+  `SEAL_SCRIPT`). Two readings are new: the split of CS2 between the two
+  steps, and that the equality of F12 includes the parity octet. The
+  signing service reads the seal that a child names before it signs
+  (section 8.5, I8).
+- **One amended sentence.** LIP-0014 section 11.1 put every child check of
+  J4.3 (b) at the place of step V7. The comparison of the delegation key
+  with the attestation key of the row's notary stands in the certifier step
+  (F23), because the row is known only from the ordinal, and the sentence
+  now says so.
+- **The recipient and the request.** The proof of the name of a child's
+  recipient has one place, with the checks of a class (F19), and it is a
+  duty of the signing service as of a verifier. A request is authenticated
+  after it (A1), as LIP-0008 section 4 orders names and authentication, and
+  not before the checks of a row, as the consuming side proposed. The code
+  of a request that is not authenticated is open.
+- **The window of the child at the two sides.** The signing service signs a
+  child whose window has not opened yet and refuses one whose window has
+  ended, that is backdated or that is closed; a verifier refuses a child at
+  every tip outside its window, and admits it when the window opens (F20).
+- **The coin and the attestation.** The three checks of the coin of a row
+  stand before the first step that reads an attestation (F22 before F23),
+  which closes the point that LIP-0026 R6.1 left to the profile of the
+  attestation. The order is new and rests on no landed text.
+- **The order of the signing service's checks.** Section 8.5 orders what
+  J4.4 lists, in eleven steps, and changes no line of J4.4. The duties that
+  it adds to J4.4 are marked new: the observation, the contract, the
+  recipient, the window and the seal of the child, the coin and the stop
+  coin. The reading of a payload before it is signed is a proposal of five
+  steps (rule T7), for which LIP-0020 W9.1 has no class yet.
+- **One place for the observation.** The observation of a side (F3) stands
+  after the documents and before every later step of the predicate, at the
+  signing service and at a verifier alike (LIP-0022 B6.1; pair Q3). The
+  service establishes it in a step of its own (section 8.5, I3) before it
+  holds the contract (I4), so that a child that binds another contract, at
+  a void observation, gives `OBSERVATION_VOID` on both sides (case S8-3). At an
+  admission the observation also stands before the authentication of the
+  request (pair Q21, case S8-25): carried from LIP-0022 B6.1 for a
+  recipient by name, and new as a reading for a recipient by key. The
+  service's check of its caller reads no node and stays before its
+  observation.
+- **A child outside its own window or closed.** A new code,
+  `CHILD_NOT_LIVE` (F20, F21), for a child alone.
+
+Section 8.6 holds one case for each pair of steps whose order decides a
+code, and one case that keeps apart a limit that a child states under a
+key its row lacks (`CHILD_BUDGET_OVER`) and a key under which nobody states
+a limit (a ceiling of 0 at the reservation). Section 8.7 plans the vectors
+of the order; none is generated, and none is planned on an open point or
+on a result that this version cannot compute.
+
+### Actions and limit kinds (LIP-0020 section 11.14)
+
+LIP-0020 section 11.14 states the registry of action identifiers and the
+registry of limit kinds. Neither has a defined entry; `policy` is reserved
+and undefined. An executor refuses a request for an action that no profile
+defines (`ACTION_UNDEFINED`) and one that consumes a limit kind without a
+profile (`LIMIT_KIND_UNDEFINED`). Two facts for whoever plans on Grant v4,
+both until a profile exists: a v4 grant has no effect at an executor,
+because no action is defined, and a child that states a limit is neither
+signed nor admitted, because no limit kind is defined.
+
+### The order of the count (LIP-0026 R8.3)
+
+The order in which the rows of a parent are counted, groups and ranges in
+their signed order and coins by ascending output index, from 1, is an
+addition of the draft. This version proposes it in force, with the owner's
+explicit acceptance pending; LIP-0026 section 8 is the one place that
+states that state, and no owner decision is cited for it. The same order
+of the octets is text in force since version 0.1.53 (LIP-0020 W11.6).
+Proposal Q2 of LIP-0026 keeps its other parts.
+
+### New codes
+
+Six codes are new, counted from the tables of LIP-0014 section 8.4:
+`CHILD_CONTRACT_DIFFERS` (F5), `CONTRACT_NOT_PRESENTED` and `CONTRACT_ID`
+(F6), `CHILD_NOT_LIVE` (F20, F21), `ACTION_UNDEFINED` (E1) and
+`LIMIT_KIND_UNDEFINED` (F17, E2). Every other code of the tables comes
+from a text of an earlier version. Taken for v4 from v3:
+`SUBJECT_MISMATCH`, `CHILD_ACTIONS_WIDER`, `CHILD_WINDOW_NOT_NESTED`.
+LIP-0020 section 11.11 registers all nine in one table. Two names replace
+names of the first draft of this version, so that neither is read as
+`CONTRACT_MISMATCH` of LIP-0013: `CONTRACT_ID` was `CONTRACT_ID_MISMATCH`,
+and `CHILD_CONTRACT_DIFFERS` was `CHILD_CONTRACT_MISMATCH`.
+
+No earlier code changes its meaning. The first code of some children
+changes against the text before this version, in which a v4 child had only
+the coded checks of its keys, its row and its coin:
+
+- a child with an action outside `delegate.actions` and a limit above its
+  row reported `CHILD_BUDGET_OVER` and now reports `CHILD_ACTIONS_WIDER`;
+- a child with another `genesis` and a reused delegation key, a wrong seal
+  key or a defect of its row reported the code of that defect and now
+  reports `SUBJECT_MISMATCH`;
+- a child with another `contract` than its parent, or without a presented
+  contract, reported the code of whatever else was wrong, or none, and now
+  reports `CHILD_CONTRACT_DIFFERS` or `CONTRACT_NOT_PRESENTED`, also under
+  a parent that is closed;
+- a child with a limit of a kind without a profile reported no code at its
+  admission and now reports `LIMIT_KIND_UNDEFINED`.
+
+### Left open
+
+Four points, O1 to O4 of LIP-0014 section 8.4: the order of the three blocs
+of the seal and the issuance of a grant against each other; the code of a
+request that is not authenticated; the codes, the inner order and the place
+of the checks of an invocation; and, after the contract identifier, the
+code of a contract that is no valid contract of its v4 profile and the code
+of a contract that does not mirror the terms of its grant, with the
+preimage of the identifier. Also open: the entries of the two registries,
+and the owners' line on every choice that the text marks NEW. Outside this
+version, and decided by none of its text: whether the key that signs
+children may run under the OS user of the delegating agent, which product
+holds the delegation key on a host, who funds the coin of a row and holds
+the path of its spend, the refusals of the signing service's record of
+places, where a key slot comes from, and which party of the delegating
+side makes the issuer's checks of the consent of a child's recipient.
+
 ## 0.1.54 — 2026-11-16
 
 Records three owner decisions: the reservation ledger of the signing
