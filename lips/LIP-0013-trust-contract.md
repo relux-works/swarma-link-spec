@@ -529,8 +529,13 @@ itself.
 
 Under this subsection the service that holds an identity's request key, the
 key holder, signs a run's objects only under what its operator listed for
-the origin of that run. For an agent the key holder is the gateway of its
-host (key map). The origin is the exact admission that started the run, a
+the origin of that run. For an agent the key holder is Keymaker, a service
+of the operator of the agent's host under an OS user of its own: Ivan
+Oparin decided this on 2026-11-14 with J7, and version 0.1.54 corrects the
+earlier text, which named the gateway of the host. The gateway holds the
+agent's key in the implemented rental profile, where no gate of this
+subsection runs (key map). The origin is the exact admission that started
+the run, a
 grant and an event, and not the principal: on v3 every admission of one
 executor has the same principal (LIP-0004 section 5). The rule adds no key
 and no object, nothing on the wire and nothing on chain, and it changes no

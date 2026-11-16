@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.53
+**Version:** 0.1.54
 
 **Date:** 2026-11-16
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.53
+## Draft profiles and design decisions in v0.1.54
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -779,6 +779,35 @@ two points. No vector reads a chain, nothing of it is
 implemented in the reference laboratory, and one implementation computed
 the file: no second one has recomputed it. Every LIP remains Draft, and no
 earlier vector changes.
+
+Version 0.1.54 records three owner decisions and changes no octet of a
+grant, no tool and no vector. The first is the reservation ledger of the
+service that signs children with a delegation key
+([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 11.1,
+rules J4.4 (a) to J4.4 (g)), decided by Ivan Oparin on 2026-11-16. For one
+place of one parent, which is one row of the parent by its ordinal, the
+service makes one signature, ever, and makes a record durable before it
+signs. The same request is answered with the stored signature and never
+with a new one, another payload for the same place refuses as
+`PLACE_CONFLICT`, and a write whose outcome is unknown, a stop between the
+signature and its record included, holds the place as `PLACE_HELD` until
+the operator reconciles it: the service does not retry, and it answers with
+no new key and no other place. The duty is one that no verifier can observe,
+and it proves nothing to a consumer; the two codes are answers of the
+service to its caller and no codes of a verifier. Cases S4-11 to S4-17 and a
+plan of vectors stand in the same section, and no vector of it exists. The
+second decision, of the same day, is a statement of terms: a v4 grant keeps
+block heights and has no clock member, a calendar interval is converted to
+heights at issuance, and a clock check of an issuer is its own rule
+([LIP-0008](lips/LIP-0008-grant-v4.md) section 7.1). The third corrects the
+holder of an agent's request key: under J7 the key holder is Keymaker, by
+Ivan Oparin's decision of 2026-11-14, where
+[LIP-0013](lips/LIP-0013-trust-contract.md) section 3.6, the
+[key registry](KEY-REGISTRY.md) and the [key map](KEY-MAP.md) named the
+gateway of the agent's host; the gateway stays the holder in the
+implemented rental profile. The co-author's answer to the ledger is folded
+in by amendment. Nothing of this version is implemented, and every LIP
+remains Draft.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

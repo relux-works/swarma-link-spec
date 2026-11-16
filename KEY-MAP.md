@@ -35,7 +35,7 @@ signs, a danger level, the effect of a leak and the recovery.
 | Landlord grant key / issuer | Grant, contract hash, P2PKH seal spends. | Confirm grant-key update in name; prior observers close grants. Old seals need old key. | Forge grants/spend seals; binding change stops future admission. |
 | Funding key / issuer | Fees and pool refill; separate script. | New script, move funds, reconcile accounting. | Drain funding; cannot spend seals. |
 | Provider key / booking | Contract hash and kind-8182 package. | New provider pin rejects old packages. | Forge offers; consent and issuance checked separately. |
-| Agent Nostr key / gateway | NIP-17; public key in `id/`, `d/`. | Update value/mirror/pins; messaging address changes. | Read/impersonate messages; grant key stays separate. |
+| Agent Nostr key / gateway; Keymaker under J7 | NIP-17; public key in `id/`, `d/`. | Update value/mirror/pins; messaging address changes. | Read/impersonate messages; grant key stays separate. |
 | Renter key / renter device | Kind-8181 consent, NIP-17; grant `grantee_key`. | Update contacts; revoke/reissue old grants. | Impersonate renter; revocation, window and grant limits constrain use. |
 | Single-use grantee / client | 1-of-2 P2SH spend committing request hash. | Revoke; issue new grant and seal. | Take seal value; grant/request/window/journal and service peer admission constrain effects. |
 | Wallet money keys / Core | Coin signatures via private service RPC. | New addresses, fund/RPC access transfer. | Drain funds; keep secrets outside client. |
@@ -89,8 +89,13 @@ K1 adds no row to the table above. The name-owner key and the landlord grant
 key are its first two rows, and the principal's Nostr key is the personal
 key that the deployment policy above keeps apart from the grant key. Under
 K2 the name-owner key of an agent name is one of its operator's cold keys,
-and the agent's Nostr key is the fifth row. How an agent's Nostr key reaches
-its gateway is not decided; the last section of this map proposes a flow.
+and the agent's Nostr key is the fifth row. That row names the gateway,
+which holds the key in the implemented rental profile. Ivan Oparin decided
+on 2026-11-14 (J7, LIP-0013 section 3.6) that the key holder of an agent,
+the service that holds its request key and runs the gate for each run, is
+Keymaker; version 0.1.54 records it here, where this map named the gateway
+alone. How an agent's Nostr key reaches its key holder is not decided; the
+last section of this map proposes a flow.
 The trust anchor that K4 waits for is proposed in
 [LIP-0015](lips/LIP-0015-trust-root-and-statements.md).
 
@@ -328,7 +333,7 @@ previous section says.
 | Grant key, later target | BIP-85 at `m/83696968'/2'/7'`, the keyvault's fixed path | The owner's key service, with presence per signature and typed display, once its grant-signing purpose is qualified | A new recovery group with new words, then the same update of `swarma.landlord.grant`; the old group keeps the old key until the old seals are spent |
 | Authority key of a person, interim (decided for Ivan Oparin's grants, K6) | Generated on the owner's Mac; not derived from a seed | A generic-password item of the macOS Keychain, read under Touch ID per signature, with the fields of the consent or the envelope shown first; not exported | The issuers revoke the grants that name the key and issue new ones to a new key |
 | Notary attestation key | `m/44'/1237'/2'/0/n'` for an owner who certifies; a notary on another host generates its own | A key service; on a host without one, the exception of LIP-0014 section 6.3 | An update of the notary's own name |
-| Agent's Nostr key | Generated on the agent's gateway host; not derived from the owner's seed | The gateway, under its own OS user | A name update by the operator |
+| Agent's Nostr key | Generated on the agent's host; not derived from the owner's seed | Keymaker, the key holder of LIP-0013 section 3.6, under an OS user of its own (decided, J7, 2026-11-14); in the implemented rental profile the gateway, under its own OS user | A name update by the operator |
 | Delegation key of a re-delegating agent, v4 (decision of 2026-11-14, J4; agreement pending) | Not fixed; a sketch that is not decided derives it for each parent from the seed of the operator's signer. The key is in no name | A signing service of the operator that consented to the parent as its recipient, outside the agent's OS user and outside the service that holds the request or channel key; the service holds no name-owner, seal or funding key (LIP-0014 section 11.1) | A new parent grant |
 | Coin key of a row of a re-delegating agent, v4 (decision of 2026-11-14, J1; agreed by both owners on 2026-11-15) | A separate key, derived from the seed of the operator's signer in an account of its own, as v4 seal keys are; the account and the path are not fixed | The operator's signer (LIP-0014 section 9.1) | A new parent grant |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
@@ -358,7 +363,11 @@ The alternative is one seed for everything: fewer backups, and one root.
 Under K2 the operator owns the agent's name and the agent holds only its
 Nostr key. The proposed flow lets no private key leave the host that
 generated it, and needs no signature by the operator's own keys at
-registration:
+registration. The flow was written when this map named the gateway as the
+holder of an agent's key. Under J7 that holder is Keymaker (Ivan Oparin's
+decision of 2026-11-14, LIP-0013 section 3.6), so "the gateway host" below
+is the agent's host, and whether the key is generated inside Keymaker is
+not decided:
 
 1. The agent's gateway host generates the agent's Nostr key and prints only
    the public key.

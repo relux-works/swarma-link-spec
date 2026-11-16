@@ -426,12 +426,17 @@ names it as the holder or as the channel key.
 - Published: `swarma.agent.nostr` and `nostr.names._` in the agent's name,
   which must be equal on v3; `nostr` alone once LIP-0010 readers are
   deployed.
-- Holder: the gateway of the agent's host, under its own OS user. The key
-  map proposes that the key is generated on that host and never leaves it;
-  that flow is not decided. No person is present at its signatures. Ivan
-  Oparin decided on 2026-11-14 that for an agent's key a gate at the key
-  holder, which checks each run, takes the place of presence (LIP-0013
-  section 3.6).
+- Holder: Keymaker, the key holder of LIP-0013 section 3.6, a service of
+  the operator of the agent's host under an OS user of its own. Ivan Oparin
+  decided on 2026-11-14 (J7) that Keymaker is that key holder, and version
+  0.1.54 corrects this line, which named the gateway of the agent's host.
+  In the implemented rental profile the gateway holds the key, under its
+  own OS user, and no gate of J7 runs there (key map). The key map proposes
+  that the key is generated on the agent's host and never leaves it; that
+  flow is not decided. No person is present at its signatures. Ivan Oparin
+  decided on 2026-11-14 that for an agent's key a gate at the key holder,
+  which checks each run, takes the place of presence (LIP-0013 section
+  3.6).
 - Signs: the agent's messages; and, where a grant names the key as grantee
   or names the agent as a recipient by name: the kind-8181 consent,
   kind-8185 instruction envelopes, a kind-8186 delegation request, and v4
@@ -628,7 +633,10 @@ of that child.
 - Holder: a signing service of that party's operator, apart from the
   service that holds the messaging key. It signs without a person. What it
   can sign is bounded by the rows of the parent, by the notary and by the
-  coins of each row.
+  coins of each row. Since version 0.1.54 the service keeps a reservation
+  ledger: for one place of one parent it makes one signature, ever, with a
+  durable record before it signs (LIP-0014 J4.4 (a) to J4.4 (g); an owner
+  decision of 2026-11-16). No verifier can observe that duty.
 - Signs: the child grants of that one parent and nothing else. It differs
   from every other key on the path.
 - Danger: high.

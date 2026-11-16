@@ -156,6 +156,22 @@ the checks of J10 and the list of J11 (section 8.3). Both owners agreed to J9;
 J10, J11 and J12 rest on Ivan Oparin's decision alone until the co-author
 answers.
 
+### Decision of 2026-11-16 on the reservation ledger of the signing service
+
+Ivan Oparin decided on 2026-11-16, as the lead relayed it, that the issuer's
+reservation ledger is part of the v4 specification, as a duty of the signing
+service of the delegation key and not as a check of a verifier. For one place
+of one parent the service makes one signature, ever, with a durable record
+before it signs. The same intent is answered with the same result, another
+payload for the same place refuses, and a write that was interrupted or
+whose outcome is unknown is not taken as absent: the place is held, with no
+automatic retry, no new key and no new place. Section 11.1 holds the duty as
+rules J4.4 (a) to J4.4 (g), with two codes of the service and the cases
+S4-11 to S4-17. It adds no member to a grant, no step for a verifier and no
+vector, and it changes no v3 byte. The duty binds wherever a delegation key
+of J4 signs, so it has the standing of J4: the co-author's agreement has not
+been given, and the co-author's answer is folded in by amendment.
+
 ### One member set for profile `/2` (2026-11-15)
 
 Before version 0.1.46 this LIP described the right of re-delegation twice: with
@@ -1936,7 +1952,9 @@ version 0.1.53 is LIP-0020 W11.8.
 By the rule in force the parent's recipient signs the child (LIP-0008
 section 12.6): the grantee key, or for a parent issued by name the key that
 the name yields at admission. An agent's name yields one key, its Nostr key
-(LIP-0010), and the gateway of the agent's host holds that key (key map).
+(LIP-0010), and the key holder of the agent's host holds that key: Keymaker
+under LIP-0013 section 3.6, and the gateway in the implemented rental
+profile (key map).
 One key then signs both messages and grants, which the key map keeps apart
 for a principal, and when another operator runs the host, a key that signs
 grants is in that operator's hands. A change of the key is a name update by
@@ -1970,13 +1988,91 @@ another key signed refuses as `CHILD_SIGNER` in the reader's pipeline
 | J4.3 (b) | Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the name of `P`'s recipient yields at that admission, when `P` names its recipient by name; from the attestation key that the notary of `C`'s attestation, under section 10.1 the notary of `C`'s row, yields at that admission; from the key of `C`'s seal; and from `C`'s own recipient key, or from the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). | That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
 | J4.3 (c) | Where an owner pin is not one key, and for keys that no verifier sees, such as funding and fee keys, the separation is a custody duty of J4.4. It is not checked on the wire. | none at a verifier |
 | J4.4 | The delegation key is held by a signing service of the party that consented to the parent as its recipient: for a recipient by name, the operator who holds that name's owner key; for a recipient by key, the operator of that key's key holder. In both modes the service runs outside the delegating agent's OS user and outside the service that holds the request or channel key, and it holds no name-owner key, seal key or funding key. Before it signs, the service MUST take the complete child and, on its own node, check that `P` is live under every admission rule, its closure journals included, which under LIP-0008 section 5.2 and section 10.1 hold the closures of an issuer's name and of a row; that the child's row exists and that the child fits it (section 9.1), and that under section 10.1 the row is not closed for cause; and the comparisons of section 4. It computes the digest itself (LIP-0008 section 8) and MUST NOT sign a digest that a caller supplies. It MUST identify the caller and sign only for a caller that its operator listed for delegation under `P`; under LIP-0013 section 3.6 the caller is a run, and the list is the `delegate` list of that run's origin. Possession of the messaging key is not the authority to ask. | No signature exists |
+| J4.4 (a) | The reservation key. The signing service of J4.4 keeps a reservation ledger. A record of the ledger is keyed by the pair of the parent's identifier (LIP-0020 W6.1) and the place. The place is the ordinal of a row of that parent in the count of LIP-0026 R8.3 and R8.8 (J12), which LIP-0020 section 11 carries as the signed order of `groups` and `ranges` (W11.6) and as the member `ordinal` of a child (W11.2). For one place of one parent the service MUST make one signature, ever. A place number names nothing without its parent: the same ordinal under another parent, and another ordinal under the same parent, are other keys with records of their own. The service reserves only after the checks of J4.4 have passed for the request, and a request that those checks refuse reserves nothing. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
+| J4.4 (b) | The intent. The intent of a request is the SHA-256 of the exact signing preimage of the complete child. That preimage is the octets of LIP-0020 W4.1: the SHA-256 of the tag `swarma-grant/4`, the same 32 octets once more, and the canonical bytes of the child's payload. The intent is therefore the typed digest that the signature covers (LIP-0020 W5.1), and the service computes it itself from the complete child, as J4.4 requires of the digest. It is neither the identifier of the child (LIP-0020 W6.1) nor a hash of a signed form (W6.4). One payload has one intent, and a payload that differs in one octet has another. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
+| J4.4 (c) | The record and its states. Before any use of the delegation key for a child the service MUST make durable a record under the reservation key. The record holds the intent, the identity of the request for the audit, which is the origin of the calling run and the identifier of the request, and the state `reserved`. Two requests that arrive together for one reservation key create one record. After it signs, the service verifies the signature and makes the result durable: the state `signed`, with the exact 64 octets of the signature and the identifier of the child. Only then does it release the signature. A record has one of three states: `reserved`, `signed`, and `held`, the state of an unknown outcome (J4.4 (f)). `reserved` passes to `signed` or to `held`. `signed` is final. `held` ends only as J4.4 (f) says. Only the request that created a record takes it from `reserved` to `signed`. No record is deleted and no place becomes free again, also after the parent is closed or the child is revoked. A verifier cannot observe this duty; it proves nothing to a consumer. | No signature exists before the reservation is durable, and none is released before the result is |
+| J4.4 (d) | Replay. A request whose parent, place and intent equal those of a record in the state `signed` is answered with the stored octets of the signature. The service MUST NOT sign again. BIP-340 takes auxiliary randomness, so a second signature over the same digest has other octets (LIP-0020 W5.4), and it would be a second use of the key for the place. The answer writes no reservation and changes no record. The caller check of J4.4 applies to it as to a first request. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier; at the service the stored octets or nothing |
+| J4.4 (e) | Conflict. A request whose intent differs from the intent in the record of its parent and place MUST be refused, in every state of that record. The refusal is closed and is not retryable: no later request with that intent is signed for that place. No signature exists for the refused payload, and the record does not change. The service answers with no other place, no other key and no other parent. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_CONFLICT`, at the service alone |
+| J4.4 (f) | An unknown outcome holds the place. A write of a reservation or of a result that failed, or whose outcome the service cannot establish, is not taken as "no record". A stop of the service between the reservation and the durable result, the moment between the signature and the record of the result included, is not taken as "no signature". In each case the place is `held`. To every request other than the one that created it, and to every request after a restart of the service, a record in the state `reserved` is a held place. For a held place the service MUST NOT sign; MUST NOT release a signature for the place, one that was made before the stop included; MUST NOT repeat the signing by itself; and MUST NOT answer with a new delegation key or with another place. Only a reconciliation by the operator of the service ends the state: on evidence the operator records `signed` with octets that verify under the delegation key over the recorded intent, or leaves the place held. A ledger that is lost, that was put back to an earlier state, or whose continuity the service cannot show is unknown for every place of every parent whose key the service holds, and every such place is held. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_HELD` for a request with the recorded intent; `PLACE_CONFLICT` for a request with another intent (J4.4 (e)) |
+| J4.4 (g) | Audit and capacity. Every reservation, every result, every refusal under J4.4 (e) to (g) and every reconciliation by the operator is written to an audit record outside the write authority of the delegating agent, with the reservation key, the intent, the identity of the request and the outcome. Before it reserves, the service secures the room that the reservation, its result and their audit entries need. A service that cannot secure it refuses before any record and before any use of the key, and that refusal holds no place. A verifier cannot observe this duty; it proves nothing to a consumer. | No record and no signature exist |
 | J4.5 | What a name update does to children. A rotation of the delegating agent's channel key under the same owner, a renewal and a change of host stop no child. An update that makes a channel key equal to the delegation key refuses children for as long as it holds (J4.3 (b)). A change of the name's owner refuses a parent by name and with it every child (LIP-0008 section 3). A parent by key is not portable through any name. | `DELEGATE_KEY_REUSE` while a channel key equals the delegation key; `PARENT_NOT_LIVE` for every child after a change of the name's owner |
 | J4.6 | Replacing the delegation key requires a new parent. A move of custody that cannot keep exclusive control of the key MUST NOT begin before the old parent is closed. | none at a verifier |
 | J4.7 | v3 is unchanged: the landlord's grant key signs the child on a kind-8186 request signed by `P.grantee_key` (section 5). A delegation key gives nothing on v3. | none new |
 
 A verifier repeats the checks of J4.4 on the parent and on the child at use.
 The checks of the signing service spare a wasted child and bound a thief of
-the caller's channel.
+the caller's channel. The ledger of J4.4 (a) to J4.4 (g) is no such check: a
+verifier cannot repeat it.
+
+**The reservation ledger (J4.4 (a) to J4.4 (g)).** Ivan Oparin decided on
+2026-11-16, as the lead relayed it, that the issuer's reservation ledger
+belongs to the v4 specification as a duty of the signing service. The rows
+state it as duties that can be observed at the service and as names of
+states. They fix no storage schema, no record octets and no interface. The
+duty binds wherever a delegation key of J4 signs and has the standing of J4:
+the co-author's agreement has not been given, and the co-author's answer is
+folded in by amendment.
+
+The core of the duty is one sentence: for one place of one parent the
+service makes one signature, ever, and the durable record comes before the
+signature. A child states its parent and its ordinal in its payload
+(LIP-0020 W11.2), so every payload belongs to exactly one reservation key,
+and the first intent that the service reserves for a key is the only one
+that it ever signs for it. Without the ledger nothing at the service stops
+a caller, or an error of the caller, from obtaining two different children
+for one row; section 9.1 states that case for a child signer that uses one
+ordinal twice.
+
+The reservation is a fourth fact of the kind that J1.7 lists: beside the
+record of the notary and the consumption in the row ledger, the place at the
+signing service is used for good. A revoked child, a withdrawn attestation,
+a closed parent and a reissue free none of them. A delegator that wants
+another child takes another row, and where no row is left, another parent.
+
+The ledger writes journal first, as the key holder of LIP-0013 section 3.6
+does for a consent (J7.3 (d)): the record is durable, and only then is the
+signature released. A service that cannot tell an empty ledger from a lost
+one treats it as lost, as LIP-0027 H3.3 has it for a journal of closures
+and as J7.3 (e) has it for the denials of a key holder. A lost ledger holds
+every place of every parent whose key the service holds, and starting the
+ledger anew lifts none of them: the way forward is a new parent with a new
+delegation key (J4.6).
+
+The service has two codes for its caller. They are answers of the signing
+service on its own interface and stand in this section alone. No verifier
+reports them, no pipeline of LIP-0020 section 9 holds them, and no object on
+the wire carries them. The codes of a verifier have other meanings
+(`CHILD_SIGNER`, `DELEGATE_KEY_REUSE`, `PARENT_NOT_LIVE`, `CHILD_ORDINAL`),
+the codes of a key holder judge the caller's run and not the place
+(`GRANT_NOT_FOR_RUN`), and J4.4 itself names no code, so none of the
+existing sets states a place that is taken or held.
+
+| Code | Rule | Meaning | Retryable |
+| --- | --- | --- | --- |
+| `PLACE_CONFLICT` | J4.4 (e) | The place of the parent has a record with another intent. No signature exists for the refused payload | No. The refusal is closed: the same request is refused in the same way for good |
+| `PLACE_HELD` | J4.4 (f) | The place has a record with this intent and no released result: its outcome is unknown, or its first request is still being served | Not as a request to sign: no request makes the service sign for a held place. The same request asked again reads the record. It is answered with `PLACE_HELD` while the place is held and with the stored signature once the record is `signed` (J4.4 (d)) |
+
+A request that the checks of J4.4 refuse, and a request that finds no room
+(J4.4 (g)), reserve nothing and take neither code: no signature exists, as
+J4.4 already says, and the same request may be asked again.
+
+What the ledger does not give is stated with each row: a verifier cannot
+observe it. A child shows its signature and not the ledger behind it, and
+two children of one row with different payloads, each validly signed, are
+what a missing ledger, a broken one and a stolen key all produce. A
+consumer therefore concludes nothing from the duty. What a verifier has for
+a row is what it reads itself: on v4 the coin of the row, which admits one
+issuance on the active chain (J1.9), the one child that the notary of the
+row certifies (J1.6), and the row ledger of the executor (J1.3). The ledger
+of the signing service keeps an honest service from signing twice, and that
+is all it does.
+
+Three things are no part of the duty. The ledger reads no clock and adds
+no time member: the window of a child is a pair of heights, and LIP-0008
+section 7.1 says where a clock check of an issuer stands. The ledger charges
+no budget and no quota: consumption stays with the executor (J1.3). And the
+reservation states nothing about a chain: that the coin of a row is unspent
+is read on a node, by the service under J4.4 and by every verifier at use.
 
 **The messaging key never grants authority.** That is the hard rule of this
 decision, and J4.1 and J4.2 are its form on v4: a key that signs or
@@ -2060,6 +2156,46 @@ the channel key signs children:
 | S4-6 | A new live parent with a new delegation key, after the old parent's seal was spent | A fresh child signed with the old key under the closed parent: `PARENT_NOT_LIVE`, at a verifier whose node shows the spend. |
 | S4-7 | v3: a child issued by the landlord's grant key on a valid kind-8186 request, with a complete bundle | v3: a child signed by any other key refuses; a v4 delegation key gives nothing on v3. |
 | S4-8 | A recipient by key with no name: the operator of its key holder runs the delegation signer, and its children verify | Treating that parent as portable through a name, and refusing it for lack of a name, are both wrong. |
+
+Cases (reservation ledger, J4.4 (a) to J4.4 (g)). Their identifiers go on
+from S4-11, because section 11.2 holds S4-9 and S4-10. All are cases at the
+signing service and none is a case of a verifier: every child that they name
+would verify. They run against the real entry point of the service with its
+real store, as S4-5 does; a test that hands the service a ledger state which
+the test itself wrote shows the answers and not the durability. No such
+service exists, and no result is claimed:
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S4-11 | First signature. For a parent and a place without a record, a listed caller asks for a complete child that passes J4.4. The record `reserved` with the intent is durable before the key is used, the result `signed` with the 64 octets and the child's identifier is durable before the answer, and the signature verifies under the delegation key | A service that signs first and writes its record afterwards, or that releases the signature before the result is durable, fails the case, although the child that it returns is valid. A request that J4.4 refuses leaves no record. |
+| S4-12 | Exact replay. The request of S4-11, with the same parent, place and intent, is asked again, also after a restart of the service: the answer holds the stored 64 octets, byte for byte | A second valid signature over the same digest, made with other auxiliary randomness, fails the case, although a verifier accepts it (LIP-0020 W5.4). The ledger holds one record for the place, and the replay writes no reservation. |
+| S4-13 | Another payload for the same place. After S4-11 the replay of S4-12 is still answered | A child of the same parent and ordinal that differs in one member, such as the amount of a limit or the recipient: `PLACE_CONFLICT`, no signature exists, and the record is unchanged. Asked again, it refuses in the same way; so it does while the record is `reserved` and while the place is held. A service that signs the second payload, that moves the request to a free ordinal or that answers with another key fails. |
+| S4-14 | A stop after the reservation and before the signature. The service is stopped when the record `reserved` is durable and the key has not been used, and is started again. The record is still there with its intent | The same request asked again: `PLACE_HELD`, and no signature. A request with another intent: `PLACE_CONFLICT`. The service signs nothing by itself after the start. A service that treats the place as free, or that signs on the repeated request, fails. The state ends only by the operator's reconciliation. |
+| S4-15 | A stop after the signature and before the record of the result. The signature was made, the state `signed` is not durable, and the service is stopped and started again | The same request asked again: `PLACE_HELD`. The signature that was made before the stop is not released, whether or not the service still holds its octets, and the service does not sign again. After the operator's reconciliation recorded `signed` with octets that verify over the recorded intent, the request is answered as in S4-12, with those octets. A reconciliation with octets that do not verify over the recorded intent records nothing, and the place stays held. |
+| S4-16 | A second parent with the same place number. Parent `P2`, with a delegation key of its own, has a row with the ordinal that S4-11 used under `P1`. A child of `P2` at that ordinal is served as a first signature, with a record of its own | An answer of `PLACE_CONFLICT` or `PLACE_HELD` on the strength of the record of `P1`, also while the place of `P1` is held, is wrong; so is the stored signature of `P1`. A ledger that is keyed by the ordinal alone fails. |
+| S4-17 | A second place of the same parent. Another ordinal of `P1` is served as a first signature while the place of S4-11 is `signed`, and while it is held | A service that refuses every place of a parent because one of them is held or in conflict fails; so does one that answers from the record of the first place. Run together with S4-13, so that a service that signs every request does not pass. |
+
+A vector plan goes with these cases. It is a plan and holds no vector; no
+file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
+
+| Cases | Kind | What a vector would state |
+| --- | --- | --- |
+| The intent (J4.4 (b)) | Deterministic | The canonical payload of a child and its intent, beside its identifier, so that an implementation that reserves under the identifier or under a hash of the signed form is reported. The child payloads of `vectors/LIP-0020/grant-v4.json` serve as inputs by reference |
+| S4-12, the replay | Deterministic, on a stated ledger state | A record `signed` with its reservation key, its intent and its 64 stored octets, and a request with the same three values: the answer is the stored octets, compared byte for byte. Beside it a second signature that verifies over the same digest, which the answer must not be |
+| S4-13, the conflict | Deterministic, on a stated ledger state | A record in each of the three states and a request with another intent: `PLACE_CONFLICT`, no signature, and the state after equal to the state before |
+| S4-16 and S4-17, the independence of keys | Deterministic, on a stated ledger state | Records under (`P1`, 1), and requests under (`P2`, 1) and (`P1`, 2): each is a first signature. A vector states the record that the request creates and not the octets of the new signature, which auxiliary randomness leaves free |
+| A held place answered (J4.4 (f)) | Deterministic for the answer alone | A record `held`, or a record `reserved` that the request did not create: `PLACE_HELD` for the recorded intent and `PLACE_CONFLICT` for another |
+| S4-11, the order of record and signature | Behavioural only | No vector shows that a record was durable before the key was used. It takes the real service and its store |
+| S4-14 and S4-15, the stops | Behavioural only | A stop is injected between two steps of a running service. A vector can state the answer on the state that the stop leaves, which is the row above, and not that the service reaches that state |
+| Two requests together for one key, the room of J4.4 (g), the audit record, a lost ledger | Behavioural only | They are qualified on a real store, as the stores of J1.4 and of LIP-0025 are |
+
+The deterministic vectors would stand in a file of their own,
+`vectors/LIP-0014/ledger-vectors.json`, as vectors of a transition: a ledger
+state before, a request, the answer and the ledger state after. They are
+vectors of a service and belong to no conformance class of a verifier. The
+behavioural cases belong to the qualification of a signing service on its
+real store, with the stops injected in an isolated fixture, and to no vector
+file.
 
 ### 11.2. The child-seal key (Draft, 2026-11-16)
 
@@ -2328,6 +2464,17 @@ for a property that its subsection lists as open.
 - The child-seal key of section 11.2: its member name, its form among the v4
   bytes, whether a per-child key derived from a key named in the parent
   should replace one key for all children, and the co-author's agreement.
+- The reservation ledger of section 11.1 (J4.4 (a) to J4.4 (g)): the
+  co-author's answer; what an operator's reconciliation may do with a held
+  place for which it establishes that no signature was made, where the text
+  lets it record an existing signature or leave the place held and gives no
+  first signature; whether a request that ends without a signature, with
+  the key known to be unused, has to leave the place held, as the rule on a
+  record in the state `reserved` has it; whether a replay is also answered
+  under a parent that the
+  service holds closed; the interface of the service and the octets of its
+  two codes; the entries of the ledger on the form of LIP-0025; and the
+  vectors of the plan in section 11.1, of which none exists.
 - Canonical vectors for the request and for the attestation, whose values have
   no fixed form yet, and a published checker for the vectors of profile `/2`
   (section 12).

@@ -1,5 +1,118 @@
 # Changelog
 
+## 0.1.54 — 2026-11-16
+
+Records three owner decisions: the reservation ledger of the signing
+service of a delegation key, the terms of the window of a v4 grant, and the
+holder of an agent's request key under J7. Every LIP stays a Draft. No octet
+of a grant changes, LIP-0020 sections 11 and 12, `tools/grantv4` and
+`vectors/LIP-0020/` are untouched, no vector byte or vector outcome changes,
+and nothing of this version is implemented.
+
+### The reservation ledger of the signing service
+
+Ivan Oparin decided on 2026-11-16, as the lead relayed it, to take the
+issuer's reservation ledger into the v4 specification: «да берем - годно».
+It is written as a duty of the signing service of the delegation key, in
+the manner of J4.4, and marked in every row as a duty that a verifier
+cannot observe and that proves nothing to a consumer. The co-author's
+agreement has not been given, and the co-author's answer is folded in by
+amendment.
+
+LIP-0014 section 11.1 gains the rules J4.4 (a) to J4.4 (g), directly after
+J4.4. J4.5 to J4.7 keep their numbers.
+
+- **The reservation key (J4.4 (a)).** The parent's identifier and the
+  place, which is the ordinal of a row under the count of LIP-0026 R8.3 and
+  R8.8 (J12), as LIP-0020 W11.2 and W11.6 carry it. For one place of one
+  parent the service makes one signature, ever. The same ordinal under
+  another parent and another ordinal under the same parent are other keys.
+- **The intent (J4.4 (b)).** The SHA-256 of the exact signing preimage of
+  the child, which is the typed digest of LIP-0020 W4.1 that the signature
+  covers. It is not the identifier of the child.
+- **The record and its states (J4.4 (c)).** A record is durable before the
+  key is used, and the result is durable before the signature is released.
+  The states are `reserved`, `signed` and `held`. No record is deleted and
+  no place becomes free again.
+- **Replay (J4.4 (d)).** The same parent, place and intent are answered
+  with the stored octets of the signature and never with a new signature,
+  whose octets would differ under the auxiliary randomness of BIP-340.
+- **Conflict (J4.4 (e)).** Another intent for the same parent and place
+  refuses with a closed code that is not retryable, and no signature
+  exists.
+- **Held (J4.4 (f)).** A write that failed or whose outcome is unknown, and
+  a stop of the service between the reservation and the durable result,
+  the moment between the signature and its record included, hold the
+  place. The service does not retry, releases no signature for the place
+  and answers with no new key and no other place; only a reconciliation by
+  its operator ends the state. A lost ledger holds every place of every
+  parent whose key the service holds.
+- **Audit and capacity (J4.4 (g)).** Every reservation, result, refusal and
+  reconciliation is audited, and the room for a reservation and its result
+  is secured before the reservation.
+
+Two codes are new, `PLACE_CONFLICT` (J4.4 (e), not retryable) and
+`PLACE_HELD` (J4.4 (f), not retryable as a request to sign; the same request
+asked again reads the record). They are answers of the signing service to
+its caller and stand in LIP-0014 section 11.1 alone: no verifier reports
+them and no pipeline of LIP-0020 section 9 holds them. The existing closed
+sets state no place that is taken or held, which the section says.
+
+Cases S4-11 to S4-17 are new: the first signature, the exact replay with
+the same stored octets, another payload for the same place, a stop after
+the reservation and before the signature, a stop after the signature and
+before the record of the result, a second parent with the same place
+number, and a second place of the same parent. A vector plan follows them
+and holds no vector: the intent, the replay, the conflict, the independence
+of keys and the answer on a held place can become deterministic vectors of
+a transition, in a file of their own, `vectors/LIP-0014/ledger-vectors.json`;
+the order of record and signature, the two stops, concurrent requests, the
+room, the audit and a lost ledger are behavioural and belong to the
+qualification of a service on its real store.
+
+The section "Decisions recorded" of LIP-0014 gains the decision, and its
+open questions gain what the text leaves open: what a reconciliation may do
+with a held place for which no signature was made, whether a request that
+ends without a signature and with the key unused has to leave the place
+held, whether a replay is answered under a closed parent, the interface and
+the octets of the codes, and the entries of the ledger on the form of
+LIP-0025. The key registry names the duty in the entry of the delegation
+key.
+
+### The window of a v4 grant keeps heights
+
+Ivan Oparin decided on 2026-11-16, as the lead relayed it, the terms of the
+window: a v4 grant keeps block heights and has no clock member; a calendar
+interval is converted to a height at issuance and written into the parent;
+and a clock check on the issuer's side is the issuer's own rule, no member
+of a grant and no step of the shared predicate: «ок так им и скажи».
+LIP-0008 section 7.1 gains one sentence that says so. The members were
+already heights alone: LIP-0020 W11.2 gives a grant `not_before_height` and
+`not_after_height` and no other time member, and LIP-0008 section 7.1 says
+that no clock enters the comparison and that a date is never an admission
+input. What no text said was the conversion at issuance and the standing of
+an issuer's own clock check. LIP-0020 section 11 is not changed.
+
+### The key holder of J7 is Keymaker
+
+Ivan Oparin decided on 2026-11-14, with J7, that the key holder of an agent,
+the service that holds the agent's request key and runs the gate for each
+run, is Keymaker. Three texts named the gateway of the agent's host
+instead and are corrected, each with the decision cited: LIP-0013 section
+3.6, in the sentence that names the key holder of an agent; the key
+registry, in the holder line of the entry "Agent's Nostr key"; and the key
+map, in the fifth row of its table, in the paragraph after K4, in the row
+"Agent's Nostr key" of the proposed key layout and in the opening of the
+proposed registration flow. LIP-0014 section 11.1 follows in the one
+sentence that named the gateway as the holder of that key. The gateway
+stays named as the holder in the implemented rental profile, where no gate
+of J7 runs. LIP-0006 section 1 already named Keymaker as the key holder of
+LIP-0013 section 3.6 and is unchanged. The authority-path diagram of the
+key map and the numbered steps of its registration flow keep the word
+"gateway": they describe the rental profile and an undecided proposal.
+
+The README and the open-question index follow.
+
 ## 0.1.53 — 2026-11-16
 
 This version holds two changes: the hash-pinned holders list of a landlord,
