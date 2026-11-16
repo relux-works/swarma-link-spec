@@ -94,7 +94,7 @@ and wait for the owners' confirmation.
 | Agent's Nostr key | high | LIP-0004 and LIP-0010, in use on v3 |
 | Renter key | high | LIP-0004, in use in the rental profile |
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
-| Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending |
+| Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending; the reservation ledger of its signing service, J4.4 (a) to J4.4 (g), decision of 2026-11-16 |
 | Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreed by both owners on 2026-11-15 |
 | Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version. LIP-0014 section 11.2, Draft of 2026-11-16: in v4 from the first version, agreement pending |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft |
@@ -649,7 +649,11 @@ of that child.
   coins of each row. Since version 0.1.54 the service keeps a reservation
   ledger: for one place of one parent it makes one signature, ever, with a
   durable record before it signs (LIP-0014 J4.4 (a) to J4.4 (g); an owner
-  decision of 2026-11-16). No verifier can observe that duty.
+  decision of 2026-11-16). A key stands in one ledger with one writer. A
+  ledger that is lost, rolled back or forked holds every place of every
+  parent whose key the service holds, and a key that signed before it came
+  under a ledger enters with every place held. No verifier can observe
+  that duty.
 - Signs: the child grants of that one parent and nothing else. It differs
   from every other key on the path.
 - Danger: high.

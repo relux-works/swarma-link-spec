@@ -789,12 +789,23 @@ place of one parent, which is one row of the parent by its ordinal, the
 service makes one signature, ever, and makes a record durable before it
 signs. The same request is answered with the stored signature and never
 with a new one, another payload for the same place refuses as
-`PLACE_CONFLICT`, and a write whose outcome is unknown, a stop between the
-signature and its record included, holds the place as `PLACE_HELD` until
-the operator reconciles it: the service does not retry, and it answers with
-no new key and no other place. The duty is one that no verifier can observe,
+`PLACE_CONFLICT`, and an interrupted write or one whose outcome is unknown,
+a stop between the signature and its record included, holds the place as
+`PLACE_HELD`: the service does not retry, and it answers with no new key
+and no other place. A held place has two exits, each a reconciliation by
+the operator that never uses the delegation key: it confirms a signature
+that the service itself recorded, or it proves from the ledger and the
+audit that the key was never used, which frees the place. Where neither is
+proved the place stays held for ever. The ledger has one writer and is a
+chain whose head the service keeps outside it; a ledger that is absent,
+rolled back or forked is lost and holds every place of every parent whose
+delegation key the service holds, until it is restored whole or the
+operator starts a new one by a recorded act, with those places held unless
+proved unused. The section states all of this as one table of states and
+events, from which its rules, codes and cases are read. The duty is one
+that no verifier can observe,
 and it proves nothing to a consumer; the two codes are answers of the
-service to its caller and no codes of a verifier. Cases S4-11 to S4-17 and a
+service to its caller and no codes of a verifier. Cases S4-11 to S4-26 and a
 plan of vectors stand in the same section, and no vector of it exists. The
 second decision, of the same day, is a statement of terms: a v4 grant keeps
 block heights and has no clock member, a calendar interval is converted to

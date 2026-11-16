@@ -1989,13 +1989,13 @@ another key signed refuses as `CHILD_SIGNER` in the reader's pipeline
 | J4.3 (b) | Child checks, at every admission of a child `C`. The delegation key MUST differ from every channel key that the name of `P`'s recipient yields at that admission, when `P` names its recipient by name; from the attestation key that the notary of `C`'s attestation, under section 10.1 the notary of `C`'s row, yields at that admission; from the key of `C`'s seal; and from `C`'s own recipient key, or from the owner key of `C`'s recipient name. Another notary of the parent is not read (J3.7). | That admission refuses as `DELEGATE_KEY_REUSE` and records no closure |
 | J4.3 (c) | Where an owner pin is not one key, and for keys that no verifier sees, such as funding and fee keys, the separation is a custody duty of J4.4. It is not checked on the wire. | none at a verifier |
 | J4.4 | The delegation key is held by a signing service of the party that consented to the parent as its recipient: for a recipient by name, the operator who holds that name's owner key; for a recipient by key, the operator of that key's key holder. In both modes the service runs outside the delegating agent's OS user and outside the service that holds the request or channel key, and it holds no name-owner key, seal key or funding key. Before it signs, the service MUST take the complete child and, on its own node, check that `P` is live under every admission rule, its closure journals included, which under LIP-0008 section 5.2 and section 10.1 hold the closures of an issuer's name and of a row; that the child's row exists and that the child fits it (section 9.1), and that under section 10.1 the row is not closed for cause; and the comparisons of section 4. It computes the digest itself (LIP-0008 section 8) and MUST NOT sign a digest that a caller supplies. It MUST identify the caller and sign only for a caller that its operator listed for delegation under `P`; under LIP-0013 section 3.6 the caller is a run, and the list is the `delegate` list of that run's origin. Possession of the messaging key is not the authority to ask. | No signature exists |
-| J4.4 (a) | The reservation key. The signing service of J4.4 keeps a reservation ledger. A record of the ledger is keyed by the pair of the parent's identifier (LIP-0020 W6.1) and the place. The place is the ordinal of a row of that parent in the count of LIP-0026 R8.3 and R8.8 (J12), which LIP-0020 section 11 carries as the signed order of `groups` and `ranges` (W11.6) and as the member `ordinal` of a child (W11.2). For one place of one parent the service MUST make one signature, ever. A place number names nothing without its parent: the same ordinal under another parent, and another ordinal under the same parent, are other keys with records of their own. The service reserves only after the checks of J4.4 have passed for the request, and a request that those checks refuse reserves nothing. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
-| J4.4 (b) | The intent. The intent of a request is the SHA-256 of the exact signing preimage of the complete child. That preimage is the octets of LIP-0020 W4.1: the SHA-256 of the tag `swarma-grant/4`, the same 32 octets once more, and the canonical bytes of the child's payload. The intent is therefore the typed digest that the signature covers (LIP-0020 W5.1), and the service computes it itself from the complete child, as J4.4 requires of the digest. It is neither the identifier of the child (LIP-0020 W6.1) nor a hash of a signed form (W6.4). One payload has one intent, and a payload that differs in one octet has another. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
-| J4.4 (c) | The record and its states. Before any use of the delegation key for a child the service MUST make durable a record under the reservation key. The record holds the intent, the identity of the request for the audit, which is the origin of the calling run and the identifier of the request, and the state `reserved`. Two requests that arrive together for one reservation key create one record. After it signs, the service verifies the signature and makes the result durable: the state `signed`, with the exact 64 octets of the signature and the identifier of the child. Only then does it release the signature. A signature that fails that verification is an unknown outcome and the place is `held` (J4.4 (f)): the service MUST NOT release its octets and MUST NOT sign again for the place, in that request or in any later one, because a second signature would be a second use of the key for the place. A record has one of three states: `reserved`, `signed`, and `held`, the state of an unknown outcome (J4.4 (f)). `reserved` passes to `signed` or to `held`. `signed` is final. `held` ends only as J4.4 (f) says. Only the request that created a record takes it from `reserved` to `signed`. No record is deleted and no place becomes free again, also after the parent is closed or the child is revoked. A verifier cannot observe this duty; it proves nothing to a consumer. | No signature exists before the reservation is durable, and none is released before the result is |
-| J4.4 (d) | Replay. A request whose parent, place and intent equal those of a record in the state `signed` is answered with the stored octets of the signature. The service MUST NOT sign again. BIP-340 takes auxiliary randomness, so a second signature over the same digest has other octets (LIP-0020 W5.4), and it would be a second use of the key for the place. The answer writes no reservation and changes no record. The checks of J4.4 apply to it as to a first request, and not the caller check alone: a replay that they refuse, such as one under a parent that the service holds closed, is answered with nothing and discloses no stored octets. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier; at the service the stored octets or nothing |
-| J4.4 (e) | Conflict. A request whose intent differs from the intent in the record of its parent and place MUST be refused, in every state of that record. The refusal is closed and is not retryable: no later request with that intent is signed for that place. No signature exists for the refused payload, and the record does not change. The service answers with no other place, no other key and no other parent. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_CONFLICT`, at the service alone |
-| J4.4 (f) | An unknown outcome holds the place. A write of a reservation or of a result that failed, or whose outcome the service cannot establish, is not taken as "no record". A stop of the service between the reservation and the durable result, the moment between the signature and the record of the result included, is not taken as "no signature". In each case the place is `held`. To every request other than the one that created it, and to every request after a restart of the service, a record in the state `reserved` is a held place. For a held place the service MUST NOT sign; MUST NOT release a signature for the place, one that was made before the stop included; MUST NOT repeat the signing by itself; and MUST NOT answer with a new delegation key or with another place. Only a reconciliation by the operator of the service ends the state: on evidence the operator records `signed` with octets that verify under the delegation key over the recorded intent, or leaves the place held. A ledger that is lost, that was put back to an earlier state, or whose continuity the service cannot show is unknown for every place of every parent whose key the service holds, and every such place is held. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_HELD` for a request with the recorded intent; `PLACE_CONFLICT` for a request with another intent (J4.4 (e)) |
-| J4.4 (g) | Audit and capacity. Every reservation, every result, a failed verification under J4.4 (c) included, every replay that is answered from the stored octets (J4.4 (d)), every refusal of the caller check of J4.4, every refusal under J4.4 (e) to (g) and every reconciliation by the operator is written to an audit record outside the write authority of the delegating agent, with the reservation key, the intent, the identity of the request and the outcome. The entry of a refused caller holds what the request stated and what the service established of the caller. Before it reserves, the service secures the room that the reservation, its result and their audit entries need. A service that cannot secure it refuses before any record and before any use of the key, and that refusal holds no place. A verifier cannot observe this duty; it proves nothing to a consumer. | No record and no signature exist |
+| J4.4 (a) | The reservation key. The signing service of J4.4 keeps a reservation ledger. A record of the ledger is keyed by the pair of the parent's identifier (LIP-0020 W6.1) and the place. The place is the ordinal of a row of that parent in the count of LIP-0026 R8.3 and R8.8 (J12), which LIP-0020 section 11 carries as the signed order of `groups` and `ranges` (W11.6) and as the member `ordinal` of a child (W11.2). For one place of one parent the service MUST make one signature, ever. A place number names nothing without its parent: the same ordinal under another parent, and another ordinal under the same parent, are other keys with records of their own. One ledger holds the records of every delegation key that the service holds; a delegation key stands in one ledger, and that ledger has one writer (J4.4 (f)). The service identifies the caller and makes the checks of J4.4 before it reads the ledger for a request, in the order of one request that follows the table of states. A request that those checks refuse reserves nothing, reads nothing and learns nothing of the ledger. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
+| J4.4 (b) | The intent. The intent of a request is the SHA-256 of the exact signing preimage of the complete child. That preimage is the octets of LIP-0020 W4.1: the SHA-256 of the tag `swarma-grant/4`, the same 32 octets once more, and the canonical bytes of the child's payload. The intent is therefore the typed digest that the signature covers (LIP-0020 W5.1), and the service computes it itself from the complete child, as J4.4 requires of the digest. It is neither the identifier of the child (LIP-0020 W6.1) nor a hash of a signed form (W6.4). One payload has one intent, and another payload has another, for as long as SHA-256 keeps two payloads apart. The intent binds the payload alone and nothing of the caller or of the request: two requests with one payload, from two listed callers, are one intent and take one result. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier |
+| J4.4 (c) | The record and its states. A place has one of four states: no record; `reserved`; `signed`; and `held`, the state of an outcome that the service does not know. The ledger as a whole is usable or lost (J4.4 (f)). The table of states that follows these rules gives, for every state and every event, the next state, the use of the key, the answer and the code. The service MUST follow it, and where a rule of J4.4 (a) to J4.4 (g) and that table differ, the table governs. Before any use of the delegation key for a child the service MUST make durable a record under the reservation key. The record holds the intent, the identity of the request for the audit, which is the origin of the calling run and the identifier of the request, and the state `reserved`. The reservation is one atomic test and set at the one writer of the ledger: of two requests that arrive together for one reservation key exactly one creates the record, and the other is answered from it. The request that created a record holds its claim, which is the right to take the record from `reserved` to `signed`. A claim lives in one run of the service: it ends when its request ends or the service stops, and it is never passed on and never renewed. Under one record the service calls the signer once. It verifies the signature under the delegation key over the recorded intent, takes the identifier of the child from the payload of that intent, and makes the result durable: the state `signed`, with the exact 64 octets of the signature and the identifier of the child. Only then does it release the signature. A signing call that returns no signature or whose outcome the service does not know, and a signature that fails that verification, are unknown outcomes and the place is `held` (J4.4 (f)): the service MUST NOT release such octets and MUST NOT sign again for the place, in that request or in any later one, because a second signature would be a second use of the key for the place. `reserved` passes to `signed` or to `held`. `signed` is final. `held` ends only as J4.4 (f) says. No entry of the ledger is deleted. A place for which the key was used never takes another signature, also after the parent is closed or the child is revoked. A verifier cannot observe this duty; it proves nothing to a consumer. | No signature exists before the reservation is durable, and none is released before the result is |
+| J4.4 (d) | Replay. A request whose parent, place and intent equal those of a record is a replay, whichever listed caller asks. A replay is answered only after the service has identified the caller and made the checks of J4.4, all of them and not the caller check alone, as for a first request. A replay that they refuse is answered with the refusal of J4.4 and nothing else: under a parent that the service holds closed or whose window has ended, and for a caller that is no longer on the list, it discloses no stored octets, no state and not that a record exists. A replay that passes them is answered from the record: in the state `signed` with the stored octets of the signature, and in the states `reserved` and `held` as J4.4 (f) says. The service MUST NOT sign again. BIP-340 takes auxiliary randomness, so a second signature over the same digest has other octets (LIP-0020 W5.4), and it would be a second use of the key for the place. The answer writes no reservation and changes no record. A verifier cannot observe this duty; it proves nothing to a consumer. | none at a verifier; at the service the stored octets, `PLACE_HELD` or the refusal of J4.4 |
+| J4.4 (e) | Conflict. A request that passes the checks of J4.4 and whose intent differs from the intent in the record of its parent and place MUST be refused, in every state of that record: `reserved`, `signed` and `held`, a place under an open reconciliation included. No signature exists for the refused payload, and the record does not change. The refusal is closed and is not retryable: while the place has a record with another intent no request with the refused intent is signed for it, and once the place is `signed` that is for good. Only a place that a reconciliation returned to "no record" (J4.4 (f)) takes a first request again. Under a lost ledger no record can be read, no conflict can be established, and the answer is `PLACE_HELD` for every intent (J4.4 (f)). The service answers with no other place, no other key and no other parent. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_CONFLICT`, at the service alone |
+| J4.4 (f) | An unknown outcome holds the place. A write that was interrupted, or whose outcome the service does not know, is never taken as "no record", and a stop of the service between the reservation and the durable result, the moment between the signature and the record of the result included, is never taken as "no signature". So that a failed or torn write still leaves a trace, every write to the ledger is announced by a mark: the mark names the reservation key and the intent and is durable outside the ledger before the write begins. A place is held in three forms: under an open mark; under a record `held`; and under a record `reserved` that has no live claim, which is every record `reserved` after a stop of the service. For a held place the service MUST NOT sign; MUST NOT release a signature, one that was made before the stop included; MUST NOT repeat the signing by itself; and MUST NOT answer with a new delegation key or with another place. A held place has two exits and no other, and each is a reconciliation by the operator of the service. A reconciliation never uses the delegation key and accepts no octets from outside the service. It may confirm a signature that the service itself recorded at its making, and the place is then `signed`. It may prove, from the ledger and from the audit record of J4.4 (g) with its continuity shown, that the key was never used for the place, and the place then returns to "no record". Where neither is proved the place stays held for ever: the row is lost to this parent, and the next child takes another row or another parent. A reconciliation opens only on a held place, and from its opening no claim exists or arises for the place, so the request that created the record cannot complete while a reconciliation is open, and a reconciliation cannot open while that request can complete. The ledger as a whole follows the contract that stands below the table of states: one fenced writer, a chain whose head the service keeps outside the ledger, and a start by an act of the operator alone. A ledger that is absent, that was put back to an earlier state, that forked or that does not continue the kept head is lost. Under a lost ledger every place of every parent whose delegation key the service holds is held, a parent that the service first sees after the loss included, until the complete ledger is restored or the genesis of that contract is made. A verifier cannot observe this duty; it proves nothing to a consumer. | `PLACE_HELD` for a request with the recorded intent, and for every request under a lost ledger; `PLACE_CONFLICT` for a request with another intent than a record that can be read (J4.4 (e)) |
+| J4.4 (g) | Audit and capacity. The service keeps an audit record outside the write authority of the delegating agent, and it keeps the continuity of that record as it keeps the ledger's (J4.4 (f)). The audit record holds every reservation; every use of the key, in an entry that is durable before the signer is called; every result, a failed verification and a signing call of unknown outcome included (J4.4 (c)); every replay that is answered from the stored octets (J4.4 (d)); every refusal by the checks of J4.4; every refusal under J4.4 (e) to (g); every act of the operator, which is a reconciliation with its evidence and its outcome, a genesis and the entry of a delegation key; and every finding that the ledger is lost. An entry holds the reservation key, the intent, the identity of the request and the outcome, and the entry of a refused caller holds what the request stated and what the service established of the caller. A signature, a first one and a replayed one alike, is released only after its audit entry is durable. A refusal does not wait for its entry. Before it writes a mark for a reservation, the service secures the room that the mark, the reservation, the entry of the use of the key, the result and their audit entries need, so that none of those writes fails for want of room. A service that cannot secure it refuses before any mark, before any record and before any use of the key, and that refusal holds no place. A write that fails after its mark is durable is no such refusal: it holds the place (J4.4 (f)). A verifier cannot observe this duty; it proves nothing to a consumer. | No mark, no record and no signature exist |
 | J4.5 | What a name update does to children. A rotation of the delegating agent's channel key under the same owner, a renewal and a change of host stop no child. An update that makes a channel key equal to the delegation key refuses children for as long as it holds (J4.3 (b)). A change of the name's owner refuses a parent by name and with it every child (LIP-0008 section 3). A parent by key is not portable through any name. | `DELEGATE_KEY_REUSE` while a channel key equals the delegation key; `PARENT_NOT_LIVE` for every child after a change of the name's owner |
 | J4.6 | Replacing the delegation key requires a new parent. A move of custody that cannot keep exclusive control of the key MUST NOT begin before the old parent is closed. | none at a verifier |
 | J4.7 | v3 is unchanged: the landlord's grant key signs the child on a kind-8186 request signed by `P.grantee_key` (section 5). A delegation key gives nothing on v3. | none new |
@@ -2018,26 +2018,216 @@ The core of the duty is one sentence: for one place of one parent the
 service makes one signature, ever, and the durable record comes before the
 signature. A child states its parent and its ordinal in its payload
 (LIP-0020 W11.2), so every payload belongs to exactly one reservation key,
-and the first intent that the service reserves for a key is the only one
-that it ever signs for it. Without the ledger nothing at the service stops
+and the first intent under which the delegation key is used for a place is
+the only one that the service ever signs for it. Without the ledger nothing at the service stops
 a caller, or an error of the caller, from obtaining two different children
 for one row; section 9.1 states that case for a child signer that uses one
 ordinal twice.
 
-The reservation is a fourth fact of the kind that J1.7 lists: beside the
-record of the notary and the consumption in the row ledger, the place at the
-signing service is used for good. A revoked child, a withdrawn attestation,
-a closed parent and a reissue free none of them. A delegator that wants
-another child takes another row, and where no row is left, another parent.
+The reservation is on v4 what the first of the three facts of J1.7 is on
+v3, the reservation of the ordinal at the signer: beside the record of the
+notary and the consumption in the row ledger, a place at the signing service
+for which the key was used is used for good. A revoked child, a withdrawn
+attestation, a closed parent and a reissue free none of them. A delegator
+that wants another child takes another row, and where no row is left,
+another parent. The one place that becomes free again is a held place for
+which a reconciliation proved that the key was never used (event 19 of the
+table).
+
+**The table of states.** The rules J4.4 (b) to J4.4 (g), the cases and the
+vector plan are read from this table. A place has one of four states. "No
+record" is a place that has no record and no open mark, and also a place
+that a reconciliation returned to that state. `reserved` is a record
+`reserved` whose creating request holds a live claim (J4.4 (c)). `signed`
+is a record with a released or releasable result. `held` is a place under
+an open mark, under a record `held`, or under a record `reserved` with no
+live claim. The first four columns suppose a usable ledger; the fifth is a
+lost ledger, under which no state of a place can be read. Each cell states
+three things in one order: the next state of the place; what the service
+does with the delegation key; and the answer to the caller with its code.
+"Unchanged" says that the state stays, and "key idle" that the event makes
+no use of the delegation key. A pair that cannot occur says why.
+
+| # | Event | No record | `reserved` | `signed` | `held` | Ledger lost |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | A request that the checks of J4.4 refuse: a caller that is not identified or not listed, a parent that is closed or whose window has ended, a child that does not fit | Unchanged. Key idle. The refusal of J4.4: no code of this section, no stored octets, no state, and not whether a record exists | As in the first column | As in the first column, also for a replay (J4.4 (d)) | As in the first column | As in the first column: the request does not learn that the ledger is lost |
+| 2 | A request that passes the checks and for which the service cannot secure the room of J4.4 (g) | Unchanged. Key idle. Refused with no code; no mark and no record exist, and the same request may be asked again | Unchanged. Key idle. A refusal waits for no room: answered as in event 4 or 5 | Unchanged. Key idle. A replay whose audit entry cannot be made durable is answered with nothing and with no code, and may be asked again; another intent is answered as in event 5 | As under `reserved` | Unchanged. Key idle. `PLACE_HELD` |
+| 3 | A first request: it passes the checks, room is secured, and the place has no record | The service begins the write of the reservation, and the next state is that of events 6 to 9. Key idle. No answer yet | Impossible, because a record exists: the request is a replay (event 4) or has another intent (event 5) | Impossible, for the same reason | Impossible, for the same reason | Unchanged. Key idle. `PLACE_HELD`, for every intent and for every parent, a parent that the service first sees after the loss included |
+| 4 | A replay: a request that passes the checks and whose parent, place and intent equal those of the record | Impossible, because no record holds an intent to equal: the request is a first request (event 3) | Unchanged; the creating request goes on. Key idle for this request. `PLACE_HELD` | Unchanged. Key idle: the service never signs again. The stored 64 octets, after the audit entry of the replay is durable; no code | Unchanged. Key idle. `PLACE_HELD` | Unchanged. Key idle. `PLACE_HELD`, because no record can be read |
+| 5 | A request that passes the checks and whose intent differs from that of the record | Impossible, because no record holds an intent to differ from: the request is a first request (event 3) | Unchanged. Key idle. `PLACE_CONFLICT` | Unchanged. Key idle. `PLACE_CONFLICT` | Unchanged, also while a reconciliation is open. Key idle. `PLACE_CONFLICT` | Unchanged. Key idle. `PLACE_HELD`, because no conflict can be established |
+| 6 | The write of the reservation succeeds: the mark, the record `reserved` and the kept head are durable, in that order | `reserved`, with the claim at the request that made it. Key idle so far. No answer yet | Impossible, because the one writer reserves by test and set and only for a place with no record | Impossible, for the same reason | Impossible, for the same reason | Impossible, because a lost ledger takes no write but its genesis |
+| 7 | The write of the mark of a reservation fails, and the service shows that no mark landed | Unchanged. Key idle. Refused with no code, as in event 2; the same request may be asked again | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 |
+| 8 | The mark of a reservation is durable, and the write of the record or of the kept head fails, is torn, or has an outcome that the service does not know | `held`, under the open mark. Key idle. `PLACE_HELD` | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 |
+| 9 | The write of the mark of a reservation has an outcome that the service does not know, or a mark cannot be read | Ledger lost, because the mark could name any place. Key idle. `PLACE_HELD` | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 | Impossible, as in event 6 |
+| 10 | The creating request ends before the signer is called: the audit entry of the use of the key cannot be made durable, the caller is gone, or the service ends the request | Impossible, because no request holds a claim where no record is | `held`; the claim ends. Key idle, and the audit holds no entry of its use, so exit 19 is open. `PLACE_HELD` | Impossible, because the claim ended when the record became `signed` | Impossible, because a held place has no claim | Impossible, because a lost ledger takes no reservation, so no request holds a claim; a request that was under way when the loss was found is event 22 |
+| 11 | The signing call returns a signature | Impossible, because the signer is called only under a durable record `reserved`, by the holder of its live claim | Unchanged. The key was used, once, and is never used again for the place. No answer yet: the octets are not released | Impossible, because the claim ended and no request may call the signer for the place | Impossible, because for a held place the service does not sign | Impossible, as in event 10 |
+| 12 | The signing call returns no signature, or the service does not know its outcome | Impossible, as in event 11 | `held`; the claim ends. The key counts as used and the signer is not called again. `PLACE_HELD` | Impossible, as in event 11 | Impossible, as in event 11 | Impossible, as in event 10 |
+| 13 | The service's own verification of the fresh signature passes | Impossible, because only the holder of a live claim verifies a signature | Unchanged. Key idle. No answer yet: the write of the result follows | Impossible, for the same reason | Impossible, for the same reason | Impossible, as in event 10 |
+| 14 | The service's own verification of the fresh signature fails | Impossible, as in event 13 | `held`; the claim ends. Key idle: the service does not sign again. The octets are released to nobody. `PLACE_HELD`. No exit can be proved for this place: no signature that verifies was recorded, and the key was used | Impossible, as in event 13 | Impossible, as in event 13 | Impossible, as in event 10 |
+| 15 | The write of the result succeeds: the mark, the record `signed` with the 64 octets and the identifier of the child, the kept head and the audit entry are durable | Impossible, because only the holder of a live claim writes a result | `signed`; the claim ends. Key idle. The 64 octets of the signature; no code | Impossible, for the same reason | Impossible, for the same reason | Impossible, as in event 10 |
+| 16 | The write of the result fails, is torn, or has an outcome that the service does not know | Impossible, as in event 15 | `held`; the claim ends. Key idle: the service does not sign again and does not repeat the write by itself. The signature is not released. `PLACE_HELD`. Octets that the service did write to its ledger or its audit record are evidence for exit 20 | Impossible, as in event 15 | Impossible, as in event 15 | Impossible, as in event 10 |
+| 17 | The service stops and starts again | Unchanged. Key idle. No answer | `held`: no claim outlives a stop. Key idle: at the start the service signs nothing, repeats nothing and releases nothing by itself. Later requests are answered as in events 4 and 5 | Unchanged. Key idle. A replay is answered as in event 4 | Unchanged. Key idle. An open reconciliation that reached no outcome leaves the place held | Unchanged: the check at the start finds the ledger lost again. Key idle |
+| 18 | The operator opens a reconciliation for the place | Impossible, because a reconciliation opens only on a held place | Impossible, because the claim is live: the opening is refused. The operator first lets the request end (events 10 to 16) or stops the service (event 17) | Impossible, because `signed` is final | Unchanged, and from the opening no claim exists or arises for the place. Key idle. Requests are answered as in events 4 and 5 | Impossible, because no record can be read; a lost ledger ends only by a restore of the complete ledger or by the genesis (event 23) |
+| 19 | A reconciliation proves that the key was never used for the place | Impossible, as in event 18 | Impossible, as in event 18 | Impossible, as in event 18 | No record; the ledger keeps the earlier entries and the act. Key idle. No answer to a caller: the next request for the place is a first request (event 3), with whatever intent | Impossible, as in event 18 |
+| 20 | A reconciliation confirms a signature that the service itself recorded at its making | Impossible, as in event 18 | Impossible, as in event 18 | Impossible, as in event 18 | `signed`, with those octets and the identifier recorded with them. Key idle: the verification takes the public key alone. No answer to a caller: the next replay is answered as in event 4 | Impossible, as in event 18 |
+| 21 | A reconciliation proves neither | Impossible, as in event 18 | Impossible, as in event 18 | Impossible, as in event 18 | Unchanged, and held for ever unless a later reconciliation proves event 19 or 20. Key idle. Requests are answered as in events 4 and 5 | Impossible, as in event 18 |
+| 22 | The ledger is found absent, put back to an earlier state, forked, or not continuing the kept head | Ledger lost. Key idle from that moment. `PLACE_HELD` for every request that passes the checks | Ledger lost. The request under way ends with no release, also where its signature was made, and the signer is not called where it was not. `PLACE_HELD` | Ledger lost. Key idle. No stored octets are released from a ledger that is lost. `PLACE_HELD` | Ledger lost. Key idle. `PLACE_HELD` | Unchanged. Key idle. `PLACE_HELD` |
+| 23 | The genesis: the operator starts a new ledger by an act that the audit records | Impossible, because a genesis is taken only for a lost ledger or where no ledger ever was; a second ledger beside a usable one is a fork (event 22) | Impossible, for the same reason | Impossible, for the same reason | Impossible, for the same reason | A usable new ledger. Every place of every parent whose delegation key the service holds is `held`, except a place for which the operator proves, as in event 19, that the key was never used, which has no record. Key idle. No answer to a caller |
+
+Three notes go with the table. The service records `held` where it can, but
+a place is held whether or not that write succeeds: an open mark and a
+record `reserved` with no live claim are held by rule. A request that finds
+a record `reserved` cannot tell, and need not tell, whether the creating
+request is still served or its outcome is unknown: both are answered with
+`PLACE_HELD`, and in both the same request asked again reads the record.
+And in the last column the answer is `PLACE_HELD` also where the place had
+a record `signed` before the loss: the stored signature is not released on
+the strength of a ledger whose history the service cannot show.
+
+**The order of one request.** The service takes the steps in this order,
+and a later step is not reached where an earlier one refuses.
+
+1. It identifies the caller and makes the checks of J4.4: that the caller
+   is listed for delegation under the parent, that the parent is live, that
+   the row exists and the child fits it, and the comparisons of section 4,
+   on a digest that it computes itself. A refusal here is event 1. Nothing
+   of the ledger is read for it or disclosed by it, and a replay is treated
+   as a first request is (J4.4 (d)).
+2. It makes the continuity check of the ledger. Under a lost ledger the
+   answer is `PLACE_HELD` for every intent.
+3. It reads the place. A record with another intent: `PLACE_CONFLICT`. A
+   record with this intent: the stored octets in the state `signed`, after
+   the audit entry of the replay is durable, and `PLACE_HELD` in the states
+   `reserved` and `held`.
+4. For a place with no record it secures the room of J4.4 (g); without it
+   the request is refused with no code (event 2).
+5. It writes the reservation: the mark, the record, the kept head.
+6. It makes the audit entry of the use of the key durable and calls the
+   signer, once.
+7. It verifies the signature under the delegation key over the recorded
+   intent.
+8. It writes the result and its audit entry, and only then releases the
+   signature.
+
+A request that carries another intent for a taken place and that also fails
+a check of J4.4 is therefore refused at step 1, as any request that fails
+that check is, and learns nothing of the place.
+
+**The contract of the ledger.** The contract is that of the ledger store of
+J1.4 (section 9.1), taken for this ledger; like that one it states duties
+and no schema.
+
+- **One writer.** Every use of a delegation key passes through the ledger
+  that holds that key, and the ledger has one writer. Writes are fenced as
+  in J1.4: the ledger takes an entry only from the writer that holds its
+  current write token, a number that only increases. Two instances of the
+  service, or a replica, never keep a ledger each for one key: a replica
+  holds no ledger of its own that it may write, joins by receiving the one
+  ledger and never starts empty, and an instance that was cut off and
+  returns with an older token writes nothing and therefore releases
+  nothing. A run of the service begins with a new token, which is why no
+  claim outlives a stop.
+- **The chain and the kept head.** The ledger is a chain: it has an
+  identity, given once by the operator at its genesis, a position that only
+  moves forward, and entries of which each binds the exact history before
+  it. The service keeps the head of the chain, which is the identity, the
+  position and a commitment to the exact history, outside the ledger, where
+  a restore of the ledger does not reach it. An entry counts as durable
+  only when the kept head covers it. The key is used only under a record
+  `reserved` that the kept head covers, and a signature is released only
+  under a record `signed` that the kept head covers.
+- **Marks.** No entry is written without a mark. The mark names the
+  reservation key, the intent and the kind of entry, and it is durable
+  beside the kept head before the write of the entry begins. It is closed
+  in the write that moves the kept head over the entry. A mark that is
+  open holds its place (event 8). This is the stricter of two ways to keep
+  a trace of a failed write, and the text takes it for that reason: the
+  other way, a rule that an incomplete tail of the ledger holds every place
+  that it could have named, holds nothing where the write left no octet in
+  the ledger. That rule is kept for what the mark does not cover: a mark
+  that cannot be read, and an entry beyond the kept head that no open mark
+  names, could have named any place, and the ledger is lost (event 9).
+- **The continuity check** runs at every start, when a replica joins, and
+  before every answer that reads the ledger. A ledger is usable only if its
+  identity and its exact history match the kept head; equal positions alone
+  establish nothing. One difference is not a loss: a single entry beyond
+  the kept head that an open mark names. The service does not complete
+  that write by itself. The place of the mark is held, and the entry, where
+  it is whole, is evidence for a reconciliation and for nothing else. Every
+  other state is a lost ledger: a history that does not match the kept
+  head, also at an equal position; a history that cannot be proved; a
+  ledger behind the kept head, which is what a restore to an earlier state
+  looks like; a ledger beyond the kept head by more than the one marked
+  entry; a second history beside the first; a kept head that is absent or
+  cannot be read; another identity; a ledger that is absent or was created
+  anew without a genesis. An empty ledger beside a delegation key is
+  therefore never read as "every place free".
+- **A lost ledger.** Under a lost ledger the service uses no delegation key
+  and releases no signature. It answers `PLACE_HELD` to every request that
+  passes the checks of J4.4, for every place of every parent whose
+  delegation key it holds, and it takes no new delegation key into its
+  care as a key that it may use: a parent that it first sees after the loss
+  is held like the others. The state ends in one of two ways. The complete
+  ledger is put back and continues the kept head exactly; the check then
+  passes, and that is a restore and no new ledger. Or the operator makes
+  the genesis.
+- **The genesis.** A ledger starts only by an act of the operator of the
+  service, which the audit records with the new identity and the first
+  kept head: the first ledger of a service, and a new ledger after a loss.
+  A new ledger starts with every place of every parent whose delegation key
+  the service holds at that moment in the state `held`. The one exception
+  is a place for which the operator proves at the genesis, by the standard
+  of the reconciliation below, that the key was never used; it starts with
+  no record. Starting a ledger anew thus lifts no hold by itself. For a
+  parent whose places stay held the way forward is a new parent with a new
+  delegation key (J4.6), entered after the genesis.
+- **The entry of a key.** A delegation key comes under a usable ledger
+  once, by an act that the audit records. A key that the service itself
+  made, for a parent that had no key before, and that has signed nothing,
+  enters with no record at any place. Every other key enters with every
+  place held: a key that signed before this duty bound its service, a key
+  that arrives from another custody without the ledger that served it, and
+  a key whose whole life the audit does not show.
+- **The reconciliation.** It is an act of the operator of the service of
+  J4.4, never of a caller, of the delegating agent or of a request on the
+  interface of the service, and the audit records its opening, its evidence
+  and its outcome. It opens only on a held place of a usable ledger, by an
+  entry after which the writer takes no `signed` from a claim for that
+  place; a place whose record `reserved` has a live claim is not held, and
+  the opening is refused. It never calls the signer. It takes no octets
+  from a caller, from the operator's hand, from a copy, or from a record
+  that the service did not write. It has three outcomes. It confirms a
+  signature (event 20) only on octets that the service itself wrote at the
+  making, into the ledger or into its audit record, together with the
+  reservation key and the intent, and that verify under the delegation key
+  over the recorded intent; the identifier of the child is the one written
+  with them. It returns the place to "no record" (event 19) only on proof
+  that the key was never used for it: the entries of the ledger for the
+  place show no result, and the audit record, whose continuity is shown
+  from the entry of the delegation key onward, holds no entry of a use of
+  the key for the place. That entry is durable before the signer is called
+  (J4.4 (g)), so its absence in a continuous audit is proof and not a
+  guess. Where the audit is not continuous, where it holds an entry of a
+  use, and where the octets of a signature that was made stand nowhere in
+  the service's own records, neither is proved (event 21): the place stays
+  held for ever, the row is lost to that parent, and the next child takes
+  another row or another parent.
+
+**The two holds.** The hold of a place and the hold of a lost ledger differ
+in reach. The hold of a place touches one pair of parent and place: every
+other place of that parent and every place of every other parent is served
+as before. The hold of a lost ledger touches every place of every parent
+whose delegation key the service holds, a parent first seen after the loss
+included, and it lasts until the ledger is restored whole or the genesis is
+made. After the genesis the places of the parents that the service held
+stay held one by one, and a parent whose key enters after it is served from
+the new ledger.
 
 The ledger writes journal first, as the key holder of LIP-0013 section 3.6
 does for a consent (J7.3 (d)): the record is durable, and only then is the
 signature released. A service that cannot tell an empty ledger from a lost
 one treats it as lost, as LIP-0027 H3.3 has it for a journal of closures
-and as J7.3 (e) has it for the denials of a key holder. A lost ledger holds
-every place of every parent whose key the service holds, and starting the
-ledger anew lifts none of them: the way forward is a new parent with a new
-delegation key (J4.6).
+and as J7.3 (e) has it for the denials of a key holder.
 
 The service has two codes for its caller. They are answers of the signing
 service on its own interface and stand in this section alone. No verifier
@@ -2050,12 +2240,19 @@ existing sets states a place that is taken or held.
 
 | Code | Rule | Meaning | Retryable |
 | --- | --- | --- | --- |
-| `PLACE_CONFLICT` | J4.4 (e) | The place of the parent has a record with another intent. No signature exists for the refused payload | No. The refusal is closed: the same request is refused in the same way for good |
-| `PLACE_HELD` | J4.4 (f) | The place has a record with this intent and no released result: its outcome is unknown, or its first request is still being served | Not as a request to sign: no request makes the service sign for a held place. The same request asked again reads the record. It is answered with `PLACE_HELD` while the place is held and with the stored signature once the record is `signed` (J4.4 (d)) |
+| `PLACE_CONFLICT` | J4.4 (e); event 5 | The request passed the checks of J4.4, the ledger is usable, and the place of the parent has a record, in the state `reserved`, `signed` or `held`, with another intent. No signature exists for the refused payload | No. The same request is refused in the same way for as long as the record stands, and for good once the place is `signed`. It is served only if a reconciliation returned the place to "no record" (event 19), which no request brings about |
+| `PLACE_HELD` | J4.4 (f); events 2 to 5, 8 to 10, 12, 14, 16 and 22 | The request passed the checks of J4.4 and no signature can be released for it now. Either the place has a record or an open mark with this intent and no released result, because its first request is still served or its outcome is unknown; or the ledger is lost, and then the code is given for every intent | Not as a request to sign: no request makes the service sign for a held place. The same request asked again reads the record. It is answered with `PLACE_HELD` while the place is held or the ledger is lost, and with the stored signature once the record is `signed` (J4.4 (d)) |
 
-A request that the checks of J4.4 refuse, and a request that finds no room
-(J4.4 (g)), reserve nothing and take neither code: no signature exists, as
-J4.4 already says, and the same request may be asked again.
+The code follows from the table in every state that a request can meet.
+A request that the checks of J4.4 refuse takes neither code in any state
+(event 1). A first request that finds no room, or whose mark is shown not
+to have landed, takes neither code and may be asked again (events 2 and 7);
+no mark, no record and no signature exist for it. Every other request that
+passes the checks is answered with the stored octets, with `PLACE_CONFLICT`
+or with `PLACE_HELD`. One code serves the request that is still served, the
+unknown outcome and the lost ledger, because the caller's part is the same
+in all three: it cannot make the service sign, and it asks again or takes
+another row.
 
 What the ledger does not give is stated with each row: a verifier cannot
 observe it. A child shows its signature and not the ledger behind it, and
@@ -2160,22 +2357,34 @@ the channel key signs children:
 
 Cases (reservation ledger, J4.4 (a) to J4.4 (g)). Their identifiers go on
 from S4-11, because section 11.2 holds S4-9 and S4-10. All are cases at the
-signing service and none is a case of a verifier: every child that they name
-would verify. They run against the real entry point of the service with its
-real store, as S4-5 does; a test that hands the service a ledger state which
-the test itself wrote shows the answers and not the durability. No such
-service exists, and no result is claimed:
+signing service and none is a case of a verifier: every signed child that
+they name would verify. Each case names the events of the table of states
+that it exercises. They run against the real entry point of the service with
+its real store, as S4-5 does; a test that hands the service a ledger state
+which the test itself wrote shows the answers and not the durability. In
+every case all parents are held by the same signing service, in one ledger,
+unless the case says otherwise. No such service exists, and no result is
+claimed:
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
-| S4-11 | First signature. For a parent and a place without a record, a listed caller asks for a complete child that passes J4.4. The record `reserved` with the intent is durable before the key is used, the result `signed` with the 64 octets and the child's identifier is durable before the answer, and the signature verifies under the delegation key | A service that signs first and writes its record afterwards, or that releases the signature before the result is durable, fails the case, although the child that it returns is valid. A request that J4.4 refuses leaves no record. |
-| S4-12 | Exact replay. The request of S4-11, with the same parent, place and intent, is asked again, also after a restart of the service: the answer holds the stored 64 octets, byte for byte | A second valid signature over the same digest, made with other auxiliary randomness, fails the case, although a verifier accepts it (LIP-0020 W5.4). The ledger holds one record for the place, and the replay writes no reservation. The same request asked after the service's journal holds the parent closed is refused by the checks of J4.4, as a first request would be, and the answer holds no stored octets. Each answered replay is in the audit record (J4.4 (g)). |
-| S4-13 | Another payload for the same place. After S4-11 the replay of S4-12 is still answered | A child of the same parent and ordinal that differs in one member, such as the amount of a limit or the recipient: `PLACE_CONFLICT`, no signature exists, and the record is unchanged. Asked again, it refuses in the same way; so it does while the record is `reserved` and while the place is held. A service that signs the second payload, that moves the request to a free ordinal or that answers with another key fails. |
-| S4-14 | A stop after the reservation and before the signature. The service is stopped when the record `reserved` is durable and the key has not been used, and is started again. The record is still there with its intent | The same request asked again: `PLACE_HELD`, and no signature. A request with another intent: `PLACE_CONFLICT`. The service signs nothing by itself after the start. A service that treats the place as free, or that signs on the repeated request, fails. The state ends only by the operator's reconciliation. |
-| S4-15 | A stop after the signature and before the record of the result. The signature was made, the state `signed` is not durable, and the service is stopped and started again | The same request asked again: `PLACE_HELD`. The signature that was made before the stop is not released, whether or not the service still holds its octets, and the service does not sign again. After the operator's reconciliation recorded `signed` with octets that verify over the recorded intent, the request is answered as in S4-12, with those octets. A reconciliation with octets that do not verify over the recorded intent records nothing, and the place stays held. |
-| S4-15a | A signature that fails the service's own verification. The service is not stopped: it signed, and its verification of the fresh signature over the recorded intent fails, as with a faulty signer or wrong key material. The record becomes `held`, and the failure is in the audit record (J4.4 (g)). Run together with S4-11, where the verification passes and the signature is released | The octets that failed are not released, to the request that created the record or to any other. The same request asked again: `PLACE_HELD`, and the service does not sign again. A request with another intent: `PLACE_CONFLICT`. A service that signs a second time for the place, in the same request or in a later one, until a signature verifies, fails the case, although the child that it then returns is valid: that is a second use of the key for the place (J4.4 (a)). So does one that puts the record back to `reserved` or treats the place as free. |
+| S4-11 | First signature. For a parent and a place without a record, a listed caller asks for a complete child that passes J4.4 (events 3, 6, 11, 13 and 15). The record `reserved` with the intent is durable, under the kept head, before the key is used; the audit entry of the use of the key is durable before the signer is called; the result `signed` with the 64 octets and the child's identifier is durable before the answer; and the signature verifies under the delegation key over the recorded intent | A service that signs first and writes its record afterwards, that calls the signer before the audit holds the entry of the use, or that releases the signature before the result is durable, fails the case, although the child that it returns is valid. A request that J4.4 refuses leaves no mark and no record (event 1). |
+| S4-12 | Exact replay. The request of S4-11, with the same parent, place and intent, is asked again, also after a restart of the service: the answer holds the stored 64 octets, byte for byte | A second valid signature over the same digest, made with other auxiliary randomness, fails the case, although a verifier accepts it (LIP-0020 W5.4). The ledger holds one record for the place, and the replay writes no reservation. The same request asked after the service's journal holds the parent closed, after the window of the parent has ended, or by a caller that was taken off the list after the result became durable, is refused by the checks of J4.4, as a first request would be (event 1): the answer holds no stored octets, neither code of this section, and nothing that shows a record. The same payload asked by another listed caller is the same intent and takes the same stored octets (J4.4 (b)). Each answered replay is in the audit record before its octets are released (J4.4 (g)). |
+| S4-13 | Another payload for the same place. After S4-11 the replay of S4-12 is still answered | A child of the same parent and ordinal that differs in one member and still passes the checks of J4.4, such as a lower amount of a limit or another height of its window: `PLACE_CONFLICT`, no signature exists, and the record is unchanged (event 5). Asked again, it refuses in the same way; so it does while the record is `reserved`, while the place is held and while a reconciliation is open. A variant that also fails a check of J4.4, such as a recipient that the row does not name, or the same variant from a caller that is not listed, takes the refusal of J4.4 and not `PLACE_CONFLICT` (event 1): a service that answers it from the ledger fails. A service that signs the second payload, that moves the request to a free ordinal or that answers with another key fails. |
+| S4-14 | A stop after the reservation and before the signature. The service is stopped when the record `reserved` is durable and the key has not been used, and is started again. The record is still there with its intent | The same request asked again: `PLACE_HELD`, and no signature. A request with another intent: `PLACE_CONFLICT`. The service signs nothing by itself after the start. A service that treats the place as free, or that signs on the repeated request, fails (event 17). No request and no act of the service ends the state; its one exit here, since the key was not used, is the reconciliation of S4-18. |
+| S4-15 | A stop after the signature and before the record of the result. The signature was made, the state `signed` is not durable, and the service is stopped and started again | The same request asked again: `PLACE_HELD`. The signature that was made before the stop is not released, whether or not the service still holds its octets, and the service does not sign again (event 17). What follows depends on what the service itself wrote before the stop, and S4-19 holds both branches: where the octets stand in its own ledger or audit record, a reconciliation may confirm them; where they stand nowhere in its own records, the place stays held for ever, because the audit holds the entry of the use of the key and no proof of an unused key exists. |
+| S4-15a | A signature that fails the service's own verification. The service is not stopped: it signed, and its verification of the fresh signature over the recorded intent fails, as with a faulty signer or wrong key material. The record becomes `held`, and the failure is in the audit record (J4.4 (g)). Run together with S4-11, where the verification passes and the signature is released | The octets that failed are not released, to the request that created the record or to any other. The same request asked again: `PLACE_HELD`, and the service does not sign again. A request with another intent: `PLACE_CONFLICT`. A service that signs a second time for the place, in the same request or in a later one, until a signature verifies, fails the case, although the child that it then returns is valid: that is a second use of the key for the place (J4.4 (a)). So does one that puts the record back to `reserved` or treats the place as free. No reconciliation ends this hold (events 14 and 21): no signature that verifies was recorded, and the key was used. The same holds for a signing call that returns nothing or whose outcome the service does not know (event 12). |
 | S4-16 | A second parent with the same place number. Parent `P2`, with a delegation key of its own, has a row with the ordinal that S4-11 used under `P1`. A child of `P2` at that ordinal is served as a first signature, with a record of its own | An answer of `PLACE_CONFLICT` or `PLACE_HELD` on the strength of the record of `P1`, also while the place of `P1` is held, is wrong; so is the stored signature of `P1`. A ledger that is keyed by the ordinal alone fails. |
-| S4-17 | A second place of the same parent. Another ordinal of `P1` is served as a first signature while the place of S4-11 is `signed`, and while it is held | A service that refuses every place of a parent because one of them is held or in conflict fails; so does one that answers from the record of the first place. Run together with S4-13, so that a service that signs every request does not pass. |
+| S4-17 | A second place of the same parent. Another ordinal of `P1` is served as a first signature while the place of S4-11 is `signed`, and while it is held | A service that refuses every place of a parent because one of them is held or in conflict fails; so does one that answers from the record of the first place. Run together with S4-13, so that a service that signs every request does not pass. The hold of a place reaches one pair of parent and place and no other. The hold of a lost ledger is another hold: under it the same request for the other ordinal is answered with `PLACE_HELD` (S4-24), and a service that serves it there fails. |
+| S4-18 | A held place for which the key was never used. The state of S4-14, or a mark whose record never landed (S4-21). The operator opens a reconciliation; the ledger shows no result for the place, and the audit record, continuous from the entry of the delegation key, holds no entry of a use of the key for it. The place returns to "no record" (event 19), the audit holds the act with its evidence, and the next request is a first request, also with another intent than the one first reserved | The same reconciliation where the audit record is not continuous, or where it holds an entry of a use of the key: nothing is proved, and the place stays held (event 21). A service that frees a held place by itself, at a start, after a time or on a request, fails. So does one that deletes the entries of the place, and one that frees the place of S4-15 or of S4-15a. Without a reconciliation the place of S4-14 is held for ever, and that is no failure of the service. |
+| S4-19 | A held place for which a signature was made. The state of S4-15, in the branch where the service wrote the octets itself before the stop: an entry `signed` beyond the kept head under its open mark, or the audit entry of the result. The reconciliation confirms those octets, which verify under the delegation key over the recorded intent (event 20); the place is `signed`, and the request is then answered as in S4-12, with those octets | Octets that the operator brings from outside, from a caller, from a copy or from a log that the service did not write, are not taken, also where they verify over the recorded intent: nothing is recorded, and the place stays held. A reconciliation that calls the signer fails the case, although the child that results is valid: that is a second use of the key. In the branch where the octets stand nowhere in the service's own records, the place stays held for ever (event 21). |
+| S4-20 | The fence between the creating request and a reconciliation. A request reserves and is slow inside the signing call; it then completes, the record is `signed`, and the signature is released. A reconciliation that the operator tries to open meanwhile is refused, because the claim is live (event 18) | After a stop of the service the operator opens a reconciliation for the place. An instance of the earlier run that returns with its signature writes nothing, because its token is older and the place has no claim, and releases nothing. A service in which the octets of the returning request and the outcome of the reconciliation can both be recorded, in either order, fails: two signatures for one place would then be released. |
+| S4-21 | A reservation write that fails. The store refuses the first write of a reservation before any mark landed, and the service shows that none did: the request is refused with no code, no mark and no record exist, and the same request asked again is served as S4-11 (event 7) | The mark is durable and the write of the record is cut, by a stop or by an error of the store: after a restart the place is held, the same request takes `PLACE_HELD` and another intent `PLACE_CONFLICT` (event 8). A service that finds no record after the restart and reserves another intent for the place fails. A mark that cannot be read loses the ledger (event 9, S4-24). |
+| S4-22 | Two requests together for one reservation key. With one intent: one record is created, one request signs, and the other takes `PLACE_HELD` and, asked again, the stored octets of the first (events 4 and 6) | With two intents: one creates the record, and the other takes `PLACE_CONFLICT` (event 5). A service that creates two records, that signs both intents, or that signs twice for one intent fails; a service that checks for a record and writes it in two steps fails under load although each step is right. |
+| S4-23 | Two writers. A second instance of the service, or a replica, serves requests for the delegation key of `P1` through the one ledger and its one writer, and the answers are those of S4-11 to S4-13 | A second instance with a ledger of its own for the same key, and an instance that returns with an older write token, sign nothing and release nothing. A service in which two instances each keep a conforming ledger and each sign another intent for one place fails. |
+| S4-24 | A lost ledger. Control: on the continuous ledger the replay of S4-12 is answered. The ledger is then put back to an earlier state that is consistent in itself, taken before S4-11, while the kept head stays | The check finds a ledger behind the kept head, and the ledger is lost (event 22). Every request that passes the checks of J4.4 takes `PLACE_HELD`: the replay of S4-12, although its record was `signed`; a request with another intent, which takes no `PLACE_CONFLICT`; another place of `P1`; a place of `P2`; and a place of a parent `P3` that the service first sees after the loss. A request that fails J4.4 takes the refusal of J4.4 and does not learn of the loss. A service that reads the restored ledger and signs another intent for the place of S4-11 fails; so does one that serves `P3`, one that treats an absent or empty ledger as "every place free", and one in which a kept head that cannot be read counts as a new start. Putting the complete ledger back, so that it continues the kept head exactly, ends the state, and S4-12 is answered again. |
+| S4-25 | The genesis after a loss. The operator starts a new ledger by an act that the audit records. Every place of `P1` and of `P2` starts held, except a place for which the operator proves by the standard of S4-18 that the key was never used. A parent `P4` whose delegation key the service makes after the genesis, and which has signed nothing, enters with no record and is served as S4-11 | A new ledger that starts empty, with the places of `P1` and `P2` free, fails. So does a ledger that starts without an act in the audit; a place freed at the genesis without the proof of S4-18; and a key that signed before it came under the ledger, or that arrives from another custody without its ledger, entered with free places. For a held parent the way forward is a new parent with a new key (J4.6). |
+| S4-26 | Room and audit. With room secured the first signature of S4-11 leaves its audit entries: the reservation, the use of the key, the result. A request for which the service cannot secure the room is refused with no code; no mark and no record exist, no key is used, and the same request asked later, with room, is served (event 2) | A service that reserves and then fails for want of room, leaving a held place where a refusal was due, fails the capacity duty. A replay whose audit entry cannot be made durable is answered with nothing. The audit record holds an entry for each refusal by the checks of J4.4, for each `PLACE_CONFLICT` and `PLACE_HELD`, for each act of the operator and for the finding of a lost ledger; an entry that the delegating agent could write or remove fails the case. |
 
 A vector plan goes with these cases. It is a plan and holds no vector; no
 file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
@@ -2186,10 +2395,15 @@ file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
 | S4-12, the replay | Deterministic, on a stated ledger state | A record `signed` with its reservation key, its intent and its 64 stored octets, and a request with the same three values: the answer is the stored octets, compared byte for byte. Beside it a second signature that verifies over the same digest, which the answer must not be |
 | S4-13, the conflict | Deterministic, on a stated ledger state | A record in each of the three states and a request with another intent: `PLACE_CONFLICT`, no signature, and the state after equal to the state before |
 | S4-16 and S4-17, the independence of keys | Deterministic, on a stated ledger state | Records under (`P1`, 1), and requests under (`P2`, 1) and (`P1`, 2): each is a first signature. A vector states the record that the request creates and not the octets of the new signature, which auxiliary randomness leaves free |
-| A held place answered (J4.4 (f)) | Deterministic for the answer alone | A record `held`, or a record `reserved` that the request did not create: `PLACE_HELD` for the recorded intent and `PLACE_CONFLICT` for another |
-| S4-11, the order of record and signature | Behavioural only | No vector shows that a record was durable before the key was used. It takes the real service and its store |
-| S4-14, S4-15 and S4-15a, the stops and the failed verification | Behavioural only | A stop, or for S4-15a a signer whose output does not verify, is injected between two steps of a running service. A vector can state the answer on the state that is left, which is the row above, and not that the service reaches that state |
-| Two requests together for one key, the room of J4.4 (g), the audit record, a lost ledger | Behavioural only | They are qualified on a real store, as the stores of J1.4 and of LIP-0025 are |
+| A held place answered (J4.4 (f); events 4 and 5) | Deterministic for the answer alone | A record `held`, a record `reserved` that the request did not create, or an open mark: `PLACE_HELD` for the recorded intent and `PLACE_CONFLICT` for another |
+| The order of the checks (events 1, 4 and 5; S4-12, S4-13) | Deterministic, on a stated ledger state and a stated outcome of the checks of J4.4 | A record `signed` or `held`, and a request that fails a check of J4.4, with the recorded intent and with another: the refusal of J4.4, no code of the ledger, no octets, and the state after equal to the state before |
+| A lost ledger answered (event 22; S4-24) | Deterministic for the answer alone | A ledger stated as lost, and requests that pass the checks: for the recorded intent, for another intent, for another place, for another parent and for a parent with no record at all, the answer is `PLACE_HELD` |
+| The outcomes of a reconciliation (events 19 to 21; S4-18, S4-19) | Deterministic, on a stated ledger state and stated evidence | A held place with the entries of its ledger and of its audit: the evidence of an unused key gives "no record"; octets that the service recorded and that verify give `signed`; octets marked as brought from outside, an audit with an entry of a use, and an audit stated as not continuous give the state before. A vector states the transition and not how the evidence is gathered |
+| The start of a new ledger (event 23; S4-25) | Deterministic, on a stated list of keys | The keys that the service holds at a genesis and the proofs given: the state of every place after it, and the state of the places of a key that enters afterwards |
+| S4-11, the order of record, audit entry and signature | Behavioural only | No vector shows that a record was durable before the key was used. It takes the real service and its store |
+| S4-14, S4-15, S4-15a and S4-21, the stops, the failed verification and the failed write | Behavioural only | A stop, a store that refuses or cuts a write, or for S4-15a a signer whose output does not verify, is injected between two steps of a running service. A vector can state the answer on the state that is left, which is the row "a held place answered", and not that the service reaches that state |
+| S4-20, S4-22 and S4-23, the fence, two requests together and two writers | Behavioural only | They take concurrent requests, a second instance and a returning instance on the real store. A vector states neither the atomic step nor the token |
+| S4-24 to S4-26, the continuity check, the genesis as an act, the room and the audit record | Behavioural only | They are qualified on a real store, as the stores of J1.4 and of LIP-0025 are: that a restore is found, that no ledger starts without the act, that a refusal for want of room comes before any mark, and that the audit is outside the reach of the delegating agent |
 
 The deterministic vectors would stand in a file of their own,
 `vectors/LIP-0014/ledger-vectors.json`, as vectors of a transition: a ledger
@@ -2467,16 +2681,43 @@ for a property that its subsection lists as open.
   bytes, whether a per-child key derived from a key named in the parent
   should replace one key for all children, and the co-author's agreement.
 - The reservation ledger of section 11.1 (J4.4 (a) to J4.4 (g)): the
-  co-author's answer; what an operator's reconciliation may do with a held
-  place for which it establishes that no signature was made, where the text
-  lets it record an existing signature or leave the place held and gives no
-  first signature; whether a request that ends without a signature, with
-  the key known to be unused, has to leave the place held, as the rule on a
-  record in the state `reserved` has it; the interface of the service and
-  the octets of its two codes; the entries of the ledger on the form of
-  LIP-0025; and the vectors of the plan in section 11.1, of which none
-  exists. A replay under a parent that the service holds closed is no
-  longer open: the checks of J4.4 apply to a replay (J4.4 (d)).
+  co-author's answer, and with it the standing that the text gives the duty,
+  that of J4. Three earlier items are closed by the table of states and are
+  no longer open: a held place for which the key was never used has one
+  exit, the reconciliation of event 19, and without that proof stays held
+  for ever; a request that ends with the key unused leaves the place held
+  (event 10); and a replay is answered only after the checks of J4.4
+  (J4.4 (d)). Open, each with its clause:
+  - J4.4 (c): whether the service repeats the liveness and row checks of
+    J4.4 between the reservation and the use of the key. The text asks for
+    no second check, so a parent that closes in that window costs its
+    place: the child that is signed refuses at every verifier.
+  - J4.4 (c) and J4.4 (f): whether the record should hold the canonical
+    payload beside the intent. It holds the intent alone, so the ledger and
+    the audit cannot show which child a held place reserved unless the
+    payload is presented again.
+  - J4.4 (d): what the service does with a record `signed` whose stored
+    octets do not verify when they are read. The text gives a replay no
+    verification on reading and gives `signed` no way back.
+  - J4.4 (f), the reconciliation: how the operator is authenticated for the
+    act, and whether the evidence standard of events 19 and 20 needs a
+    second party. The text says who may act and on what evidence, and no
+    more.
+  - J4.4 (f), the marks: the form of a mark, of the kept head and of the
+    place outside the ledger that holds them, which is the deployment
+    profile for stores that must tell an empty store from a lost one, open
+    for J1.4 as well.
+  - J4.4 (f), the genesis: how an operator shows that a delegation key
+    which arrives from another custody has signed nothing. The text holds
+    every place of such a key.
+  - J4.4 (g): what a service does when the audit entry of a refusal cannot
+    be written. The text lets the refusal stand and binds only the release
+    of a signature to its entry.
+  - The codes: whether a request that is still served and a lost ledger
+    should each have a code of their own beside `PLACE_HELD`; the interface
+    of the service and the octets of its codes.
+  - The entries of the ledger on the form of LIP-0025, and the vectors of
+    the plan in section 11.1, of which none exists.
 - Canonical vectors for the request and for the attestation, whose values have
   no fixed form yet, and a published checker for the vectors of profile `/2`
   (section 12).
