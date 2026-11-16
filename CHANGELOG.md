@@ -1,5 +1,85 @@
 # Changelog
 
+## 0.1.51 — 2026-11-16
+
+Adds Draft text for five decisions of Ivan Oparin that the lead recorded on
+2026-11-16 in the consolidated brief. The text is written optimistically: the
+co-author's agreement is pending, and until it is given every text that it
+revises stands. Every LIP stays a Draft, nothing is implemented, and no v3
+byte and no vector changes.
+
+The seal binding and the child-seal key (LIP-0008 section 11.4, LIP-0014
+section 11.2). The decision drops the separate seal-key endorsement only if it
+is redundant. Section 11.4 shows that it is: once a v4 grant carries the seal
+public key, each of the endorsement's eight members is in the grant or follows
+from it, and the same grant key signs both at the same time. Six cases in which
+the endorsement could still carry something are checked, and none does. The
+grant states its seal (SB1), the verifier compares the script on its own node
+before the spend counts as the issuer's (SB2, SB3), and the endorsement type
+leaves the registry once agreed (SB4). The spec review is asked to confirm the
+argument. Every v4 parent names a child-seal key from the first version (CS1).
+Every child's seal pays it (CS2), and it differs from the grant key, the
+delegation key and the other keys of the path (CS3). The delegating operator
+holds it apart from the delegation signer (CS4), so a child that a thief of the
+delegation key signs can still be revoked. Cases S4-9 and S4-10.
+
+One mechanism for statement sets (LIP-0010 section 11, LIP-0016 section 3.1).
+The head of every statement set of an owner is a member `{"seq","sha256"}` of
+the owner's name value outside `swarma`, and only the last head confirmed in
+the active chain counts. A pending update gives no head, a lower `seq` after a
+reorganisation gives no verified set, and a defect of a head member refuses that
+set and no other part of the value (SH1 to SH8). `swarma-devices` of LIP-0029
+is the first head and `swarma-certs` the second. The certificate store drops
+its anchor, its chain of spends and the mempool step, and its head is no longer
+signed (CH1 to CH4). With both heads, a landlord value with a NIP-05 object and
+one relay leaves 22 of 520 bytes, which is stated as a cost.
+
+The emergency brake on v4 (LIP-0008 section 5.3, LIP-0011 section 4). The brake
+names the stops of v4 that one owner starts alone: a device seal, a recorded
+seal spend and the break of the issuer name. It states, for a witness, for a
+node that has not seen the transaction and for a newcomer, when each act takes
+effect before confirmation and after a reorganisation. An issuer keeps a
+confirmed UTXO of a cold wallet for the fee of the break (EB1 to EB3) and raises
+the fee through the break's change (EB4). Its monitor rebroadcasts (EB5), and
+no act is undone (EB6). A break signed in advance and held by the L2 devices is
+proposed and not decided. A recorded seal spend carries no verdict reference,
+and LIP-0011 says that this is no defect.
+
+The trust-root pin (LIP-0015 section 5.1). An overwrite by the administrator
+that no rotation statement carries is pending for a stated delay, proposed as
+1008 blocks. The loader notifies the owner over a channel the agent cannot
+reach, and the pinned grant key can cancel within the delay with
+`swarma-root-cancel/1` (AO1 to AO6). The thief of a stolen grant key can then
+veto recovery by overwrite. The draft proposes that a key that the name owner
+has since replaced cannot cancel, and leaves it open.
+
+The authority frame (LIP-0013 section 3.4). The frame is an envelope of body
+kind `authority-frame/1`, signed by the key holder with a frame key that signs
+nothing else (FE1 to FE3). It reaches the run on the run's own channel, and the
+harness verifies it before the agent sees it (FE4, FE6). Text in the stream
+that looks like a frame is data (FE5), and a frame is presented once (FE7). T11
+is narrowed.
+
+Reconciliation. The text cites:
+- the platform book: chapter 22 §22.5, chapter 6 §6.6.2, chapter 7 §7.9 and
+  §7.12, chapter 8 §8.3 and chapter 11 §11.10;
+- the Link book: §3.9, §3.10, §3.12, §4.9.3, §4.9.9, §5.4, §6.13, §9.2, §9.4
+  and §10.3 to §10.4;
+- curator-spec CIP-0011 revision 6.
+
+Where the books say otherwise, it names the update for the book: the child-seal
+key as a profile option, the endorsement, the store's anchor and mempool step,
+the rule that only both acts together change the pin, and the unsigned local
+frame. The brief's chapters 05, 08 and 11 are read as the platform book's
+chapters 6, 7 and 9 before the renumbering of 2026-11-10, or as chapters 5, 8
+and 11 after it; the citations name sections by title.
+
+Pointers. The key registry adds the emergency fee reserve key and the frame key
+of a key holder, and marks the child-seal key, the grant key and the seal keys.
+The key map, LIP-0020, LIP-0024 and LIP-0029 point to the new text. LIP-0029
+gains the fourth body kind and the reading of SH3, SH4 and SH6 for
+`swarma-devices`.
+
 ## 0.1.50 — 2026-11-15
 
 Adds Draft LIP-0029, owner control by signed envelopes and a pinned device

@@ -226,6 +226,15 @@ adoption.
 6. A revocation for another reason keeps today's plain spend. This LIP
    defines no reference for it.
 
+[LIP-0008](LIP-0008-grant-v4.md) section 5.3 holds Draft text, under a
+decision of 2026-11-16 that awaits the co-author's agreement, for the
+emergency brake on v4. A recorded seal spend that the brake broadcasts
+carries no reference: the issuer signed it before issuance (LIP-0008 section
+11.3), when no verdict existed. By rule 1 it closes the grant all the same,
+and its lack of a frame says nothing about a violation. A verdict on the same
+grant that comes later finds the seal spent; this LIP gives such a verdict no
+carrier on chain, and that is open.
+
 ### 5. The whole flow
 
 | Step | Where | Who acts | What appears |

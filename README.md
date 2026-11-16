@@ -1,8 +1,8 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.50
+**Version:** 0.1.51
 
-**Date:** 2026-11-15
+**Date:** 2026-11-16
 
 **Status:** Draft
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.50
+## Draft profiles and design decisions in v0.1.51
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -626,6 +626,28 @@ closes R5. The LIP lists its conflicts with `swarm-envelope/2`, the platform
 book and curator-spec for the owners, defines no vector, and needs a reviewed
 change of `swarm-envelope/2` before any verifier admits its body kinds. Nothing
 of it is implemented, and until the co-author agrees the texts it revises stand.
+
+Version 0.1.51 adds Draft text for five decisions of Ivan Oparin that the lead
+recorded on 2026-11-16, written optimistically: the co-author's agreement is
+pending, and until it is given every text that they revise stands. A v4 grant
+carries its seal key, so the separate seal-key endorsement is shown to be
+redundant and is dropped, pending the spec review's confirmation
+([LIP-0008](lips/LIP-0008-grant-v4.md) section 11.4); and every v4 parent
+names a child-seal key, which is neither the grant key nor the delegation key
+and which every child's seal pays ([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md)
+section 11.2). Every statement set of an owner has its head in the owner's
+name value, and only the last head confirmed in the active chain counts
+([LIP-0010](lips/LIP-0010-name-value.md) section 11;
+[LIP-0016](lips/LIP-0016-certificate-store.md) section 3.1). The emergency
+brake on v4 names its stops and their window before confirmation and after a
+reorganisation, and reserves a UTXO of a cold wallet for the fee of an
+emergency name update (LIP-0008 section 5.3). An administrator may overwrite
+the trust-root pin after a stated delay, with notification, and the old key
+can cancel within it ([LIP-0015](lips/LIP-0015-trust-root-and-statements.md)
+section 5.1). The authority frame reaches the agent as a signed envelope from
+the key holder and never as a marker in the text stream
+([LIP-0013](lips/LIP-0013-trust-contract.md) section 3.4). Nothing of it is
+implemented, and no vector is added.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

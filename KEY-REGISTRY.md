@@ -79,6 +79,7 @@ and wait for the owners' confirmation.
 | Name-owner key | critical | LIP-0004, in use on v3; pinned by the v4 draft (LIP-0008) |
 | Grant key | critical | LIP-0004, in use on v3; v4 draft (LIP-0008) |
 | Funding key | high | LIP-0004, in use on v3 |
+| Emergency fee reserve key | high | LIP-0008 section 5.3 (EB1), Draft of 2026-11-16, agreement pending |
 | Seal keys, v4 | medium | LIP-0008 sections 11 and 11.1, Draft |
 | Single-use seal key, issuer branch | medium | LIP-0002 and LIP-0006; the v4 profile is open |
 | Single-use seal key, grantee branch | high | LIP-0002 and LIP-0006; the v4 profile is open |
@@ -94,13 +95,14 @@ and wait for the owners' confirmation.
 | Wallet client action key | high | LIP-0006 sections 1 and 2, implemented in the wallet service v1 profile |
 | Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending |
 | Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreed by both owners on 2026-11-15 |
-| Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version |
+| Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version. LIP-0014 section 11.2, Draft of 2026-11-16: in v4 from the first version, agreement pending |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
 | Row stop key, v4 | medium | LIP-0014 section 10.1; decision of 2026-11-14, agreement pending |
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
 | Wallet money keys | high | LIP-0006 and the key map, in use |
 | Agent-controlled wallet key | high | LIP-0006, security consequences; its provisioning is open |
+| Frame key of a key holder | high | LIP-0013 section 3.4 (FE2), Draft of 2026-11-16, agreement pending |
 | Moderator key | medium | LIP-0011, Draft |
 | Transport keys | low | Key map, in use in the rental profile |
 | Model bearer of a slot | high | Key map, in use in the rental profile |
@@ -169,7 +171,8 @@ update, because the owner and `swarma` stay.
   digest that LIP-0008 section 8 plans; `landlord_sig`, the raw contract
   hash of the consent; on v3 the spend of every seal, because a v3 seal
   pays this key; on v4 the endorsement of each seal key (LIP-0008 section
-  11) and no transaction. Proposed by LIP-0015 and LIP-0016: configuration
+  11) and no transaction. Under Draft text of 2026-11-16 (LIP-0008 section
+  11.4) the v4 grant carries its seal key and no endorsement is signed. Proposed by LIP-0015 and LIP-0016: configuration
   statements, root rotation statements, certificate statements and
   certificate set heads, each under its own signing domain. No message and
   no name operation.
@@ -209,12 +212,34 @@ LIP-0016 propose for this key is open there.
   accounting reconciled.
 - Source: LIP-0004 section 6, in use on v3.
 
+**Emergency fee reserve key**
+
+- Owner: the issuer of v4 grants.
+- Published: nowhere. It controls a confirmed UTXO of a cold wallet that is
+  reserved for the fee of an emergency name update (LIP-0008 EB1).
+- Holder: cold custody, apart from every hot service, like the name-owner
+  key. No hot service holds it, so no thief of a hot key can spend the fee
+  input of the break (J6.6).
+- Signs: the fee input of the break and, through the change, the child
+  transaction that raises its fee (EB2, EB4). Nothing else.
+- Danger: high. Without the reserve the break may not confirm in time.
+- Leak: the thief spends the reserve, which delays or prevents the break
+  until the issuer finds another cold input. It cannot sign the break,
+  which needs the name-owner key.
+- Recovery: a new reserve from another cold key before the next v4 grant
+  (EB3).
+- Source: LIP-0008 section 5.3, Draft, written optimistically under a
+  decision of Ivan Oparin recorded on 2026-11-16; the co-author's agreement
+  is pending.
+
 **Seal keys, v4**
 
 - Owner: the issuer of the sealed grant.
 - Published: in no name. The issuer's typed endorsement, signed by the
   grant key, binds the public key and the exact script to the seal's
-  outpoint (LIP-0008 section 11).
+  outpoint (LIP-0008 section 11). Under Draft text of 2026-11-16 the grant
+  itself names the key, and the verifier compares the script on its node
+  (LIP-0008 section 11.4).
 - Holder: the issuer's signer. The keys are derived under BIP-32 in an
   account that holds only seal keys, one key for each seal. The account's
   extended public key is a secret of the operator.
@@ -554,6 +579,13 @@ of that child.
 
 **Child-seal key, v4, optional**
 
+Draft text of 2026-11-16 (LIP-0014 section 11.2, the co-author's agreement
+pending) makes this key part of v4 from the first version and no longer
+optional: every parent names one (CS1), every child's seal pays it (CS2),
+it differs from the grant key and the delegation key (CS3), and the
+signing service of J4.4 does not hold it (CS4). The entry below stands
+until that agreement.
+
 - Owner: the re-delegating side.
 - Published: in the parent grant, which would name the key that every
   child's seal pays.
@@ -680,6 +712,24 @@ of that child.
 - Recovery: no refill, the remaining balance moved, and a new key. The
   refill limits and the revocation of this tier are open.
 - Source: LIP-0006, security consequences and open questions.
+
+**Frame key of a key holder**
+
+- Owner: the operator of the agent's key holder.
+- Published: pinned for the harness of each run by the launcher that the
+  key holder trusts (LIP-0013 FE6).
+- Holder: the key holder, outside the agent's OS user.
+- Signs: authority frames, the body kind `authority-frame/1`, one for each
+  instruction admitted at step 7 (LIP-0013 FE1 to FE3). No grant, event,
+  invocation, consent, owner command or transaction.
+- Danger: high. A frame tells the agent on whose authority it works.
+- Leak: the thief makes frames for instructions that were never admitted,
+  so the agent works under terms that no grant gave. It reaches no effect
+  that step 9 or an effect service refuses, and signs nothing else.
+- Recovery: a new frame key, pinned again by the launcher for every run.
+- Source: LIP-0013 section 3.4, Draft, written optimistically under a
+  decision of Ivan Oparin recorded on 2026-11-16; the co-author's agreement
+  is pending. Its algorithm and custody are open.
 
 **Moderator key**
 

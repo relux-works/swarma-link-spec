@@ -257,6 +257,11 @@ Draft [LIP-0024](LIP-0024-seal-endorsement.md) proposes the members of
 `swarma-seal-endorsement/1`, with its largest size, its codes and its
 vectors. The entry above stands until both owners accept them.
 
+Draft text of 2026-11-16 in LIP-0008 section 11.4 (SB4), which awaits the
+spec review and the co-author's agreement, puts the seal key into
+`swarma-grant/4` and removes `swarma-seal-endorsement/1` from this registry
+once agreed. Until then the entry stands.
+
 The entries of the grant and of the endorsement name the root case. Who
 signs a child's grant, who endorses the seal of a child and who assents to a
 child's contract are questions of LIP-0014 sections 9.1 and 11.1, and the

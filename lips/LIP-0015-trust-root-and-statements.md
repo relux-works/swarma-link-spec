@@ -97,7 +97,8 @@ and this LIP changes nothing in it.
 | `swarma-config-v1` | configuration statement (section 3) | Proposed |
 | `swarma-root-rotate-v1` | root rotation statement (section 5) | Proposed |
 | `swarma-cert-v1` | certificate statement (section 6) | Proposed |
-| `swarma-certset-v1` | certificate set head (LIP-0016) | Proposed |
+| `swarma-certset-v1` | certificate set head (LIP-0016) | Proposed; not used once the head lives in the name (LIP-0016 section 3.1, Draft of 2026-11-16) |
+| `swarma-root-cancel-v1` | cancellation of a pending pin (section 5.1) | Proposed, Draft of 2026-11-16 |
 | `swarma-release-v1` | release statement | Reserved for a later proposal |
 
 A key service that holds the grant key signs none of these from a digest
@@ -188,6 +189,54 @@ against the name's current key. The first one verifies under the pinned
 grant key, and each later one under the `new_grant_key` of the statement
 before it, in `seq` order. A statement that does not continue this chain
 from the pin is ignored, and step 3 then fails as `ROOT_KEY_CHANGED`.
+
+### 5.1. Overwrite by the administrator after a delay (Draft, 2026-11-16)
+
+Ivan Oparin decided, as recorded by the lead on 2026-11-16, that the
+administrator may overwrite the pin after a stated delay, with notification,
+and that the old key can cancel the overwrite within that delay. The text is
+written optimistically: the co-author's agreement is pending, and until it is
+given sections 1 and 5 stand. The Link book, §3.10 «Якорь доверия и
+подписанная конфигурация», states the rule in force: the pin changes only by
+both acts together. This section adds a path for the administrator alone,
+with a delay.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| AO1 | An overwrite of the pin that no rotation statement of section 5 carries is pending first. The administrator writes it, with that account's authentication, as a pending pin: the seven members of section 1 followed by `effective_height`, the height of the root's chain from which it takes effect. Until the active chain of the loader's own node reaches `effective_height`, the loader keeps the current pin. | |
+| AO2 | `effective_height` is at least `pinned_at_height` of the pending pin plus the delay `D`. The draft proposes `D` = 1008 blocks, about seven days. A pending pin with a shorter delay is not accepted. | `PIN_PENDING_INVALID` |
+| AO3 | The loader MUST notify the owner when it finds a pending pin, and again at every load while the pin is pending. The notice names the current and the pending `root_name` and `pinned_grant_key`, the SHA-256 of the pending pin and `effective_height`. It goes over a channel that the deployment names and that the agent's OS user can neither write nor suppress, and the loader records each notice outside the agents' write authority. A pending pin takes effect only when the active chain has reached both `effective_height` and the height of the first notice sent plus `D`; without a notice it never takes effect. | |
+| AO4 | Within the delay the currently pinned grant key can cancel. A cancellation is a statement `swarma-root-cancel/1` with the members `schema`, `root_name` and `pending_sha256`, in this order, signed over `SHA-256("swarma-root-cancel-v1" \|\| statement bytes)`. The loader accepts it from any channel, because its signature authenticates it. It then discards the pending pin and records the cancellation. A cancellation that arrives at or after `effective_height` changes nothing. | |
+| AO5 | An overwrite that a rotation statement of section 5, signed by the pinned key, carries takes effect at once, as today. The old key has agreed, and nothing remains to cancel. | |
+| AO6 | The pending pin and the record of notices and cancellations live where the agent's OS user cannot write, like the pin itself (section 1). A process of that user can write neither, nor shorten the delay. | |
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S51-1 | On Alisa's host the administrator writes a pending pin with a delay of 1008 blocks; the loader sends the notice; nobody cancels: the pin takes effect at `effective_height` | The same pin with a delay of 144 blocks: `PIN_PENDING_INVALID`. A pin of which no notice was sent: it never takes effect. Until `effective_height` the loader keeps the current pin. |
+| S51-2 | Alisa's pinned grant key signs `swarma-root-cancel/1` for the pending pin one block before `effective_height`: the pin is discarded and the cancellation recorded | The same cancellation at `effective_height`: nothing changes. A cancellation signed by Karl's key: ignored. An overwrite that a rotation statement of the pinned key carries: in effect at once, with no delay (AO5). |
+
+What the rules give and what they leave:
+
+- **A replaced administrator account is seen before it counts.** Whoever
+  takes the administrator account can write a pending pin, but not hide it:
+  the owner is told for seven days, and the old key can cancel.
+- **A lost grant key no longer locks a host.** Without the key no rotation
+  statement can be signed. The administrator writes a pending pin, and after
+  the delay it takes effect, because nobody cancels.
+- **A thief of the pinned grant key can cancel every overwrite.** When the
+  key is stolen and not lost, the rules give the thief a veto on recovery by
+  overwrite. The draft proposes that a cancellation does not count once the
+  root name's confirmed value no longer carries the cancelling key after a
+  change that the name owner signed (LIP-0008 section 5.2). The cold
+  name-owner key then outranks the grant key. Neither owner has decided
+  this (open questions).
+- **The notice is only as good as its channel.** A deployment whose notice
+  channel the attacker controls has no notice. AO3 then still holds the pin
+  for the delay, and nothing tells the owner.
+
+Under Draft [LIP-0029](LIP-0029-owner-control.md), configuration moves to
+the owner's L2 devices. Whether an L2 device of the old pin's owner may
+cancel, beside or in place of the pinned grant key, is open.
 
 ## 6. Certificate statements
 
@@ -339,3 +388,9 @@ Ivan Oparin, as the author of that paper.
   configuration statement and a rotation.
 - Adoption, vectors, and the relation of these fixed prefixes to the tagged
   hashes that LIP-0008 section 8 plans for v4.
+- **The overwrite of section 5.1.** The delay `D`, proposed as 1008 blocks;
+  the channel of the notice; whether a cancellation by a grant key that the
+  name owner has since replaced counts (the decision says the old key can
+  cancel, and the draft proposes an exception); whether an L2 device of
+  LIP-0029 can cancel; the code `PIN_PENDING_INVALID`; and the co-author's
+  agreement.

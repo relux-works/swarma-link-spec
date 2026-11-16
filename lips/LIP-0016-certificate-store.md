@@ -30,6 +30,11 @@ under a decision of 2026-11-15 that awaits the co-author's agreement, the
 store holds no statement for an owner's own devices: the device list pinned in
 the owner's name replaces it for them.
 
+Section 3.1 holds Draft text, under a decision of 2026-11-16 that awaits the
+co-author's agreement, under which the head of the set lives in the issuer's
+name value as `swarma-certs` (LIP-0010 section 11), the anchor and its chain
+of spends go, and the mempool no longer counts.
+
 ## Motivation
 
 Key bindings and configuration statements (LIP-0015) do not fit a name
@@ -122,6 +127,47 @@ One anchor transaction anchors one head. A batch of heads in one
 transaction would save fees for an operator of many issuers. It needs one
 commitment over several heads and one input for each issuer's chain of
 spends, and it is left to a later proposal.
+
+### 3.1. The head in the name (Draft, 2026-11-16)
+
+Under the decision of LIP-0010 section 11 the store has one mechanism with
+every other statement set: its head is the member `swarma-certs` of the
+issuer's name value, and the last head confirmed in the active chain counts.
+The text is written optimistically; the co-author's agreement is pending, and
+until it is given sections 2, 3 and 5 stand.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| CH1 | The head document is the head of section 2 with members 1 to 7 only, in that order, and without a signature. `swarma-certs` pins its `seq` and the SHA-256 of its exact octets (LIP-0010 SH1). The name-owner key, which signs the name update, authenticates it. | |
+| CH2 | No anchor of section 3 is made, and action `0x06` is not used. | |
+| CH3 | In section 5, steps 2, 4 and 5 are replaced by two steps. 2: the confirmed value of `issuer_name` on the reader's own node carries `swarma-certs` (LIP-0010 SH3 and SH6); the fetched head hashes to its `sha256`, its `seq` equals the pinned `seq`, its `issuer_name` and `network` are the name's and the reader's, and `issuer_key` equals the grant key that the name yields. 4: the pinned `seq` is not lower than the highest that the reader journaled for this issuer (SH5). Steps 1, 3, 6 and 7 stay. | 2: `HEAD_PIN`; 4: `HEAD_ROLLBACK` |
+| CH4 | A pending name update gives no head. A record that a new head adds or revokes takes effect at that head's confirmation, at every reader alike. | |
+
+The two consequences that change:
+
+- **The gap after a change of the grant key closes.** One name update can
+  carry the new grant key and the new head together, so no height exists at
+  which the name's grant key and the head disagree. That update changes
+  `swarma`, and on v4 it is a break (LIP-0008 section 5.2).
+- **A revocation waits for a block.** Under section 5, step 5, a newer head
+  in the mempool made the old one fail at once. Under CH4 a revocation by a
+  later statement takes effect at the confirmation of the head that lists it.
+  A stop that must act from the mempool is a seal spend (LIP-0008 sections
+  5.1 to 5.3).
+
+The Link book, §3.12 «Хранилище заявлений», describes the anchor of section
+3 and counts a spend in the mempool at step 5 («ни в блоке, ни в мемпуле»),
+and says that statements do not go into the name value. The statements still
+do not: only the head does. Its §9.2 puts the head of an organization's state
+into the organization's name value, and its §9.4 says that after a
+reorganisation the state is recomputed and that an urgent revocation goes by
+a separate name update or a seal spend. Section 3.1 follows §9.2 and §9.4;
+§3.12 is an update for the book once agreed.
+
+The alternative of this LIP, "the head in the issuer's name value", is
+therefore the decided form. Its cost is the one stated there: every change
+of the set is a name update, signed by the cold key, on v3 with the outage
+of LIP-0029 O3.10, and 101 bytes of the value (LIP-0010 section 11).
 
 ## 4. Providers
 
@@ -253,7 +299,10 @@ for it.
 ## Open questions
 
 - The key that controls the output of a head. This LIP names the output
-  and no key for it.
+  and no key for it. Under section 3.1 no such output exists.
+- Under section 3.1: whether the head keeps a signature by the grant key
+  beside the pin of the name, which the draft drops; and the co-author's
+  agreement.
 - How a reader learns where the store of an issuer is. Today a provider is
   addressed by configuration.
 - A head for several issuers, with the organization identity.

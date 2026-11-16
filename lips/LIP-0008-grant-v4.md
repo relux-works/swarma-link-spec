@@ -767,6 +767,94 @@ chain; one process relabelled as new is not a newcomer.
 | S6-10 | v3: a confirmed change of the landlord's grant key closes for a verifier that had seen the earlier generation | v3: a pending change refuses without closure. |
 | S6-11 | A verifier with an intact journal | A verifier whose journal was deleted does not admit until its owner starts it anew, and reports no witness state. |
 
+### 5.3. The emergency brake on v4 (Draft, 2026-11-16)
+
+Ivan Oparin decided, as recorded by the lead on 2026-11-16, that v4 has an
+emergency brake whose window before confirmation and after a reorganisation
+the text states, and that a UTXO of a cold wallet is reserved for the fees of
+an emergency name update. The text is written optimistically: the co-author's
+agreement is pending, as it is for J6 (section 5.2), on which it rests. It
+builds on the platform book, chapter 22, «Остановка одной подписью», and on
+the device seals of LIP-0029 section 8. The runbook belongs to the book.
+
+The brake adds no new kind of stop. It names the stops of v4 that one owner
+can start without the cooperation of the party it stops, and it states for
+each when it takes effect. Like the book's stop, each is one signature or a
+signature made in advance, none is undone by a rollback, and resumption is a
+separate act.
+
+| What is stopped | Act | Key, or what is prepared | Section |
+| --- | --- | --- | --- |
+| A stolen device of the owner, at the owner's own executors | The spend of the device's seal | A spend prepared in advance and held by the other devices | LIP-0029 O8.1 to O8.4 |
+| One grant | The spend of its seal | The transaction recorded before issuance (section 11.3) | 5.1 |
+| Every grant of the issuer, those signed by a thief of the grant key included | The break of the issuer name | The name-owner key, with the fee from the reserve of EB1 | 5.2 |
+
+**The window.** Each act takes effect at a verifier that has validated its
+transaction, and not at one that has not.
+
+| Verifier | Before the transaction confirms | After a reorganisation that removes it |
+| --- | --- | --- |
+| A witness: it validated the transaction in its mempool or in a block, and journaled the closure | Closed from first sight (5.1, J6.1, LIP-0029 O8.3) | Stays closed (5.1, J6.2, LIP-0029 O8.4) |
+| A verifier whose node has not yet received the transaction | Admits | Admits until its node receives the transaction |
+| A newcomer that starts after the transaction left every mempool it can read | Admits until the transaction confirms: the seal is unspent and the walk of section 3 finds no break | Admits again until the transaction confirms again |
+
+The window before confirmation is the time until the transaction is in a
+block of the active chain; the fee decides it. After a reorganisation it is
+the time until the transaction is mined again; the rebroadcast of EB5 and the
+fee decide it. Neither is bounded by this text. The Link book, §5.4 «Сколько
+ждать блока», gives the model for a transaction that enters the first block
+after it is sent: that block comes within 7 minutes in half of the cases,
+30 minutes in 95% and 46 minutes in 99%, and nothing bounds it from above;
+«Трату в мемпуле видит только нода, до которой она дошла».
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| EB1 | An issuer of v4 grants MUST keep a reserve: at least one confirmed UTXO of a cold wallet, controlled by a key that no hot service holds, and used for nothing but the fee of an emergency name update of its issuer name. | none at a verifier |
+| EB2 | The break that the brake uses spends the confirmed name output and the reserve, and no other input, signed with `SIGHASH_ALL` without `ANYONECANPAY` (J6.3, J6.6). Its change pays the cold wallet. | none at a verifier; the issuer's tool refuses to build |
+| EB3 | Once the reserve has been spent, the issuer restores it before it issues another v4 grant. | none at a verifier |
+| EB4 | The fee of the break is raised through its change output: a child transaction paid from the cold wallet raises the fee of the package. A break signed in advance, which fixes its fee, uses the same route. | none at a verifier |
+| EB5 | Until the act confirms, and again after a reorganisation that removes it, the issuer's monitor broadcasts the break, the recorded seal spends and the prepared device-seal spends again while their inputs are unspent (J6.6). Once an input is spent elsewhere, the issuer signs a new transaction on the outputs that are then confirmed. | none at a verifier |
+| EB6 | An act of the brake is never undone. After a break the issuer continues under a new grant key (J6.7), and a stopped grant comes back only as a new grant with a new seal. | `ISSUER_NAME_CLOSED`, and the closures of 5.1 and LIP-0029 O8.4 |
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S53-1 | Alisa's tool builds the break on her confirmed name output with the reserve as its only other input; Bob's verifier sees it in its mempool and closes her grants; a reorganisation removes it, and Bob still refuses | Karl's verifier, started after the break left every mempool and before it confirmed, admits and reports no break; it refuses once the break confirms. A break with a fee input that a hot key can spend: Alisa's tool refuses to build it (EB2). |
+| S53-2 | The break's change pays the cold wallet, and a child from the cold wallet raises the fee of the package | After the reserve was spent, Alisa's tool refuses to issue a v4 grant until a new reserve is confirmed (EB3). A closed grant is never admitted again, whatever the chain later shows (EB6). |
+
+The draft proposes one more point, which no owner has decided. The issuer
+keeps a break signed in advance: the name-owner key signs it over the
+current confirmed name output and the reserve, with a new grant key, and the
+owner's L2 devices hold it, as they hold the prepared spends of device seals
+(LIP-0029 O8.2). It is signed again after every operation of the name,
+because each spends the output on which it stands. Whoever holds it can stop
+every grant of the issuer and can do nothing else, as with a prepared seal
+spend. Then the brake needs no cold key at hand.
+
+The brake bounds the following and no more:
+
+- **No verifier that never saw the act is bound by it** until it confirms,
+  and a newcomer is not bound by it again after a reorganisation until it
+  confirms again. The reserve and the rebroadcast shorten both windows, and
+  nothing closes them.
+- **The order of the acts in an emergency** is the book's runbook and not a
+  rule of this section. A stolen device needs its seal spent, a stolen grant
+  key needs the break, and a stopped agent needs the recorded seal spends
+  of its grants.
+- **The local stop of the book** (chapter 22, «Остановка одной подписью»;
+  §6.6.2 and §7.12, «Общий стоп») halts the owner's own services at once and
+  closes nothing at a foreign verifier. The brake closes grants on chain and
+  halts no service. The two are used together and neither replaces the
+  other. The book's asymmetry holds for both: one signature stops, and
+  resumption is a separate act («Один честный участник должен суметь
+  остановить подозрительную работу», §22.5). curator-spec CIP-0011 revision 6
+  gives the operator's phone key and an execution stop, `host_stop`, on one
+  machine, and no stop of grants.
+- **The Link book** calls the change of the grant key the emergency brake
+  for a leaked hot key (§3.9, «аварийным тормозом»), and §4.9.3 says that on
+  v4 a reorganisation can undo the name rule but not a seal spend seen in the
+  mempool. J6 and this section close that difference at a witness. The book
+  says nothing of a reserve or of fees; EB1 to EB4 are new.
+
 ### 6. Freshness and operation risk (decided design)
 
 Node health, history freshness and operation risk are separate signals. A healthy
@@ -1146,6 +1234,11 @@ the revocable-only seal under the Witness profile on Namecoin, with vectors.
 They are that draft's proposals, and each point stays open until both owners
 accept it.
 
+Section 11.4 holds Draft text, under a decision of 2026-11-16 that awaits the
+spec review and the co-author's agreement, under which the grant itself
+carries the seal binding and this endorsement is no longer made. Until both,
+this section stands.
+
 ### 11.3. The issuer shows that it can spend the seal
 
 A seal that its issuer cannot spend is a grant that nobody can revoke. A
@@ -1171,6 +1264,77 @@ that day: it shows that the key works and is a reserve for revocation, not
 a guarantee of one. And the journal now holds a transaction that ends a
 grant, so it is kept like the other records of the signer, outside an
 agent's reach.
+
+### 11.4. The seal binding in the grant (Draft, 2026-11-16)
+
+Ivan Oparin decided, as recorded by the lead on 2026-11-16, that the separate
+seal-key endorsement of section 11.2 is dropped if it is redundant, and that
+v4 has a child-seal key from its first version (LIP-0014 section 11.1). The
+text is written optimistically: the co-author's agreement is pending, and the
+spec review is asked to confirm the argument below. Until both, section 11.2
+and LIP-0024 stand.
+
+**The argument.** The endorsement is redundant when every fact that it
+signs is already signed, by the same key, in the grant that it serves. The
+eight members of section 11.2, against a v4 grant that carries the seal
+public key:
+
+| Member of the endorsement | Where the grant holds it | What the endorsement adds |
+| --- | --- | --- |
+| Issuer pin | The grant binds the issuer pin (section 3) | Nothing. LIP-0024 E3.1 row 7 only checks that the two are equal. |
+| Network and genesis | The grant's chain, `genesis` (LIP-0020) | Nothing. |
+| Profile | The grant's construction profile and its seal (sections 1.1 and 11) | Nothing, once the grant states the kind of seal. |
+| Outpoint | The grant names the outpoint of its seal (section 9; section 11.2 step 4) | Nothing. |
+| Seal public key | Not in the grant today | The one new fact. The grant can carry it: the seal transaction is fixed before the grant is signed (section 9). |
+| Script | Fixed by the profile and the key: step 2 of section 11.2 requires the single-key script of the profile for that key, and step 1 reads the script on the verifier's node | Nothing beyond the profile and the key. |
+| Reference | The grant itself | Nothing. |
+| Signature | The grant's own signature, BIP-340 by the same grant key (section 8) | A second signature by the same key, at the same time, over a subset of what the first signs. |
+
+Checked for a case in which the endorsement would still carry something:
+
+1. **A seal bound before its grant.** None. Section 9 fixes the seal
+   transaction before the grant is signed, the reference of the endorsement
+   is the grant (LIP-0024 E2.1), and the issuance preparation is signed by
+   nobody (LIP-0020).
+2. **A seal whose key the grant's signer does not choose: a child's seal.**
+   A child is signed by the delegation key (LIP-0014 J4.1), and today the
+   same key endorses the child's seal, so a thief of it endorses a seal of
+   its own (LIP-0014 section 11.1). An endorsement cannot help there, because
+   its signer is the thief. The child-seal key named in the parent, which the
+   grant key signs, closes the case without any endorsement (LIP-0014 CS1 to
+   CS6).
+3. **A single-use seal.** Its two branches need two keys, and its output
+   profile is open (section 11.1). When that profile is written, the grant
+   names both keys. No separate object is needed.
+4. **Other readers of the endorsement.** The watch-only import of a seal
+   under hardened indices (section 11.1), the parent check of LIP-0014 J4.3
+   (a) and the seal output of LIP-0023 take the key and the script from the
+   grant.
+5. **Domain separation.** The grant has a signing domain of its own (section
+   8). No object remains from which the endorsement's domain kept it apart.
+6. **Disclosure.** No rule shows an endorsement without its grant.
+
+The endorsement is therefore redundant on v4, and it is dropped. The order of
+section 11.2 is kept: the script is compared on the verifier's node, the
+signature is verified under the pinned issuer, and only then is a spend
+classified as the issuer's.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| SB1 | A v4 grant states its seal: the outpoint, the kind of seal under its construction profile, and the seal public key. For a child the seal public key is the child-seal key of its parent (LIP-0014 CS2). The bytes come with the v4 bytes (LIP-0020). | |
+| SB2 | A verifier accepts the seal only when its own node supplies the output at the outpoint, and that output's script equals, byte for byte, the single-key script of the grant's construction profile for the grant's seal public key. The profile and the kind of seal must be ones that the verifier supports. | `SEAL_OUTPUT`, `SEAL_SCRIPT`, `SEAL_PROFILE` (LIP-0024 section 3) |
+| SB3 | Only after SB2 and the grant's signature does a verifier classify a validated spend of the output as the issuer's, and close the grant under section 5.1. An output that no accepted grant names as its seal closes nothing when it is spent. | |
+| SB4 | No object `swarma-seal-endorsement/1` is made or read on v4. Once agreed, LIP-0020 removes the type from its registry. LIP-0024 keeps its section 1 (the seal script) and section 5 (custody), and its section 2 and its vectors are withdrawn. | |
+
+Sections 11, 11.1 and 11.3 do not change: one key for each seal, the
+derivation, and the issuer's proof before issuance that it can spend the seal.
+`SEAL_SCRIPT_KEY` and `SEAL_BINDING` of LIP-0024 have no case left, because
+the script is derived from the grant's key and nothing outside the grant
+speaks of the grant.
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S114-1 | Alisa's grant to Bob names outpoint `o`, a revocable-only seal under profile W and seal key `k`; Karl's verifier reads at `o` the witness key hash of `k`: accepted, and a validated spend of `o` closes the grant | The node reads at `o` the script of another key: `SEAL_SCRIPT`. No output at `o`: `SEAL_OUTPUT`. The grant says profile L at a verifier configured for W: `SEAL_PROFILE`. A grant without the seal key, shown with a valid endorsement: not accepted, and the endorsement is not read (SB4). |
 
 ### 12. Invocation and bounded issuance-capability chains
 
@@ -1582,6 +1746,17 @@ saw the change: that verifier keeps refusing.
 - **The name rule as an emergency stop** (a gap found in review). Section
   5.2 states the case and holds Draft text for it, under a decision that
   awaits the co-author's agreement (J6).
+- **The brake of section 5.3.** The size of the reserve of EB1 and the fee
+  level that it must cover; whether Namecoin miners select a break and its
+  child by the fee rate of the package, which EB4 assumes and nobody has
+  measured; whether to keep a break signed in advance (the draft's
+  proposal), and who holds it; the fee of a prepared device-seal spend
+  (LIP-0029), which EB4 could raise only if that spend has an output to the
+  cold wallet.
+- **The seal binding of section 11.4.** The spec review's confirmation that
+  the endorsement is redundant, and the co-author's agreement; until both,
+  section 11.2 and LIP-0024 stand. The members of the grant that state the
+  kind of seal and its key come with the v4 bytes.
 - Whether the issuer rule of section 3 should also require that the bound
   owner wrote the `swarma` value in force, as LIP-0014 section 7.1 requires
   of a notary's name. No attack on an issuer is claimed: its registration

@@ -31,6 +31,12 @@ This LIP proposes the octets:
   proposal that awaits an owner's choice (section 5);
 - vectors (section 6).
 
+Draft text of 2026-11-16 in LIP-0008 section 11.4, which awaits the spec
+review and the co-author's agreement, finds the endorsement redundant: the
+grant carries the seal key, and the same grant key signs it. Once agreed,
+section 2 of this LIP and its vectors are withdrawn, and sections 1 and 5
+stay (LIP-0008 SB4). Until then this LIP stands as written.
+
 Where the seal key is kept is not decided, and this LIP does not decide it.
 Beyond the five points of section 5 the provisioning and custody of the
 seal account stay open, and so do the seal of a child grant and the

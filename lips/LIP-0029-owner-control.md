@@ -281,6 +281,15 @@ answer removed both from the pinned document, and section 7 holds the policy.
 | O3.7 | `swarma-devices` gives no grant authority. A Link reader of grants does not read it, and LIP-0010 section 1 holds for grants as written. Only an own executor and an own key holder read it, for owner control. | |
 | O3.8 | An update that changes only `swarma-devices` changes neither the owner nor `swarma`, and ends no v4 grant (LIP-0008 section 3). | |
 
+[LIP-0010](LIP-0010-name-value.md) section 11 holds Draft text of 2026-11-16,
+which awaits the co-author's agreement, under which `swarma-devices` is the
+first head of a statement set, read like every other. Under its SH6 a
+duplicate or fold alias of the member gives no device list
+(`DEVICE_PIN_INVALID` at own executors) and no longer refuses the whole value,
+which narrows O3.5. Under its SH4 the list's `owner` and `network` must be
+the name's and the executor's, a check that step 5 of section 11 gains. Under
+its SH3 an update of the member counts only once confirmed, as S29-9 has it.
+
 O3.7 amends LIP-0010 in one point: section 1 names `swarma` and `nostr` as the
 members that Link reads, and section 8 says that a further entry has "a shape
 of its own in this LIP". `swarma-devices` is a third member that Link reads,
@@ -417,6 +426,11 @@ types, their tags and their signature profiles enter it only through a
 reviewed change of that specification, which Swarma Envelope owns. Until then
 no verifier admits them, and this LIP is a request to that change. The
 conflicts with its section 2.4 are listed under "Reconciliation".
+
+[LIP-0013](LIP-0013-trust-contract.md) section 3.4 holds Draft text of
+2026-11-16 that adds a fourth body kind, `authority-frame/1`, signed by the
+key holder of an agent (FE1, FE2). It enters `swarm-envelope/2` by the same
+reviewed change.
 
 ### 6. Levels and the level of a launch
 

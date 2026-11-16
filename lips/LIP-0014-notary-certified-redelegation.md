@@ -2024,7 +2024,9 @@ parent and held by the delegating operator apart from the signer, is a
 profile option and no part of the first v4 version. With it the operator
 could spend the seal of a child that a thief of the delegation key signed.
 It costs one more key and a change of the endorsement rule of LIP-0008
-section 11.1 for children.
+section 11.1 for children. Section 11.2 holds Draft text, under a decision of
+2026-11-16 that awaits the co-author's agreement, that puts this key into the
+first v4 version.
 
 A sketch that is not decided derives the delegation key of each parent
 from the seed of the operator's signer, as seal keys are derived (LIP-0008
@@ -2046,6 +2048,59 @@ the channel key signs children:
 | S4-6 | A new live parent with a new delegation key, after the old parent's seal was spent | A fresh child signed with the old key under the closed parent: `PARENT_NOT_LIVE`, at a verifier whose node shows the spend. |
 | S4-7 | v3: a child issued by the landlord's grant key on a valid kind-8186 request, with a complete bundle | v3: a child signed by any other key refuses; a v4 delegation key gives nothing on v3. |
 | S4-8 | A recipient by key with no name: the operator of its key holder runs the delegation signer, and its children verify | Treating that parent as portable through a name, and refusing it for lack of a name, are both wrong. |
+
+### 11.2. The child-seal key (Draft, 2026-11-16)
+
+Ivan Oparin decided, as recorded by the lead on 2026-11-16, that v4 has a
+separate child-seal key from its first version: it is neither the grant key
+nor the delegation key. This replaces the point of J4, decided on
+2026-11-14, that made the key a profile option outside the first version.
+The text is written optimistically; the co-author's agreement is pending,
+and until it is given section 11.1 stands.
+
+The key closes the case of section 11.1 in which a thief of the delegation
+key signs a child with a seal of its own, so that the delegating operator
+has no seal of that child to spend. Under CS2 every child's seal pays a key
+that the parent names and the thief does not hold. LIP-0008 section 11.4 uses
+the same key to drop the seal-key endorsement for children: the parent, which
+the grant key signs, fixes the key, and the child names only its outpoint.
+
+| # | Rule | Refusal |
+| --- | --- | --- |
+| CS1 | An issue capability MUST name one child-seal key, beside its delegation key (J4.1). The principal signs it with the parent, and the grantee's consent covers it. Each parent has a child-seal key of its own. Its form is the form of a seal key (LIP-0020 section 3), and its bytes are fixed with the v4 bytes. | A parent without one is unusable as a parent: every child refuses as `CHILD_SEAL_KEY` |
+| CS2 | Every child of the parent has a revocable-only seal whose script is the single-key script of the parent's construction profile for the child-seal key, and the child names that seal's outpoint (LIP-0008 SB1). The verifier reads the script on its own node (LIP-0008 SB2). | A child whose seal key is another key: `CHILD_SEAL_KEY`; a script that does not match: `SEAL_SCRIPT` |
+| CS3 | Parent checks, as in J4.3 (a), by the 32-byte x coordinate. The child-seal key MUST differ from the issuer's grant key; from the delegation key of the same parent; from `P`'s request key, or the owner key of the recipient's name; from the owner key bound for the issuer's name; from the owner key pinned for each notary; and from the key of `P`'s own seal. | `P` is unusable as a parent, and every child refuses as `DELEGATE_KEY_REUSE` |
+| CS4 | The child-seal key is held by the delegating operator apart from the signing service of J4.4: not by that service and not under the delegating agent's OS user. The signing service holds no private child-seal key. | none at a verifier |
+| CS5 | A validated spend of a child's seal is the delegating side's revocation of that child, and closes it under LIP-0008 section 5.1 (SB3). One transaction may spend the seals of several children of one parent. | The child refuses under the closure of LIP-0008 section 5.1 |
+| CS6 | Replacing the child-seal key requires a new parent, as J4.6 has it for the delegation key. | none at a verifier |
+
+What it leaves:
+
+- **One address for the children of a parent.** Every child's seal pays the
+  same script, so a chain observer links the children of one parent through
+  their seals. A party that sees the grants learns nothing new, because each
+  child names its parent. A per-child key derived from a key named in the
+  parent would remove the link; it is not proposed (open questions).
+- **A thief of the child-seal key** spends the seals of the children of that
+  parent early, which closes them, and takes the seal amounts. It signs no
+  child and no grant.
+- **A thief of the delegation key** still signs children within the rows of
+  the parent, and each of them can now be revoked by the delegating side.
+  The stops of section 11.1 stay.
+
+The Link book still lists the key as a profile option outside the first
+edition of v4 (§3.8, the row «Ключ печатей дочерних доверенностей, версия 4»;
+§10.3), and §4.9.9 «Подтверждение ключа печати» describes the endorsement
+that LIP-0008 section 11.4 drops. Both are updates for the book once agreed;
+the shape of the key in §3.8, held apart from the delegation service, is the
+one written here.
+
+Cases (child-seal key):
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S4-9 | A child whose seal pays the parent's child-seal key under the parent's profile, with an outpoint that the child names: admitted; a spend of it by the delegating operator closes the child | A child signed by the delegation key whose seal pays another key: `CHILD_SEAL_KEY`. A child whose named outpoint holds another script: `SEAL_SCRIPT`. |
+| S4-10 | A parent whose grant, delegation, request, notary owner, own seal and child-seal keys are all distinct | A parent whose child-seal key equals, one at a time, each of those keys, under either parity: `DELEGATE_KEY_REUSE` for every child. A parent with no child-seal key: `CHILD_SEAL_KEY` for every child. |
 
 ## 12. Vectors for the contract profile
 
@@ -2256,6 +2311,9 @@ for a property that its subsection lists as open.
 
 ### Other open questions
 
+- The child-seal key of section 11.2: its member name, its form among the v4
+  bytes, whether a per-child key derived from a key named in the parent
+  should replace one key for all children, and the co-author's agreement.
 - Canonical vectors for the request and for the attestation, whose values have
   no fixed form yet, and a published checker for the vectors of profile `/2`
   (section 12).

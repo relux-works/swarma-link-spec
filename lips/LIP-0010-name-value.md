@@ -58,6 +58,12 @@ duplicate or fold alias of it refuses the whole value as for `swarma` and
 `nostr`. Until the co-author agrees, sections 1 and 2 stand: a reader skips the
 member as one of the owner's.
 
+Section 11 holds Draft text, under a decision of 2026-11-16 that awaits the
+co-author's agreement, for one mechanism for every statement set of an owner:
+the head of the set in the owner's name value, read from the confirmed active
+chain only. `swarma-devices` is its first instance; under section 11 a defect
+of a head member refuses that set only, and no longer the whole value.
+
 ## Motivation
 
 The reference reader of the landlord profile compares the complete value with
@@ -494,6 +500,67 @@ second one that shares no code with the first; neither is published here, and
 both come from the author of this text. The vectors bind nothing until both
 owners accept the rules that they follow.
 
+### 11. Heads of statement sets (Draft amendment of 2026-11-16)
+
+Ivan Oparin decided, as recorded by the lead on 2026-11-16, that every
+statement set of an owner has one mechanism: the head of the set lives in the
+owner's name value, and the last head confirmed in the active chain counts;
+the mempool does not. The organization head of the Link book, chapter 9,
+«Организация из подписанных записей», is read the same way. The text is
+written optimistically: the co-author's agreement is pending, and until it is
+given sections 1 and 2 stand and LIP-0016 keeps its anchor.
+
+| Rule | Requirement | Refusal |
+| --- | --- | --- |
+| SH1 | The head of a statement set of an owner is one top-level member of the owner's name value, outside `swarma`: `{"seq":<seq>,"sha256":"<hex>"}`, exactly these two members in this order, compact. `seq` is a canonical positive integer, at most 9007199254740991, and `sha256` is 64 lowercase hex: the SHA-256 of the exact octets of the set's head document. | The set's own code; none for the value |
+| SH2 | The member names are registered here, each with the LIP that defines its head document: `swarma-devices`, whose head document is the device list (LIP-0029 section 3.2), and `swarma-certs`, whose head document is the head of LIP-0016 section 2. A new set is a section of a LIP that registers its member here. | |
+| SH3 | A reader takes a head only from the owner's name output that is confirmed in the active chain of its own node, after the last confirmed name operation. A pending name operation gives no head: it neither adds, replaces nor removes one until it confirms. | |
+| SH4 | The head document names the owner's `id/` name and the network, and its `seq` equals the pinned `seq`. A document that names another owner or another network, or whose octets do not hash to `sha256`, gives no verified set. | The set's mismatch code |
+| SH5 | A reader journals, outside the agents' write authority, the highest `seq` that it read for each set of each owner. A confirmed head with a lower `seq`, which a reorganisation can bring back, gives no verified set until the active chain again shows a head of at least that `seq`. | The set's rollback code |
+| SH6 | A reader matches a head member by exact name. A duplicate of it, or a member equal to it under Unicode simple case folding that is not that exact name, gives no verified set for that set, and leaves `swarma`, `nostr`, every other set and every grant as they read. | The set's own code |
+| SH7 | A head member gives no grant authority. A Link reader of grants does not read it, and an update that changes only head members changes neither the owner nor `swarma` and ends no v4 grant (LIP-0008 section 3; LIP-0029 O3.7 and O3.8). | |
+| SH8 | The deployment order of LIP-0029 O3.9 and the v3 cost of O3.10 hold for every head member: none is written before every verifier of the name runs a LIP-0010 reader, and every change of a head is a name update. | |
+
+| Case | Valid control | Refusal or invariant |
+| --- | --- | --- |
+| S11-H1 | Alisa's confirmed value carries `swarma-devices` with `seq` 4, and Bob's executor reads list 4 | A pending update to `seq` 5 that adds device `K`: `K` is unknown until the update confirms (SH3). After `seq` 5 confirmed and a reorganisation back to `seq` 4: no verified list, `DEVICE_LIST_ROLLBACK`, until a head of `seq` 5 or more confirms again (SH5). |
+| S11-H2 | The same value with `swarma-certs`: Bob's store reader verifies Alisa's set | A value with `swarma-devices` twice: no device list, and Alisa's v4 grants and her certificate set still read (SH6). A list whose `owner` is Karl's name, pinned in Alisa's value: no verified list (SH4). |
+
+A set without a verified head is no set: each LIP says what its readers then
+do. Under LIP-0029 an own executor refuses owner commands
+(`DEVICE_PIN_INVALID`, `DEVICE_LIST_MISMATCH`, `DEVICE_LIST_ROLLBACK`), and
+under LIP-0016 a store reader treats every subject of the issuer as unbound.
+
+What the rules give and what they cost:
+
+- **One reading for every set.** A reader of devices and a reader of
+  certificates see the same head at the same height, and neither depends on
+  a host that serves the files: a dropped record or an old set does not hash
+  to the head (LIP-0016 section 5).
+- **A pending head counts for nothing.** A new head counts only from its
+  confirmation, and the record that it adds or revokes takes effect then and
+  not before. Between broadcast and confirmation, and again after a
+  reorganisation that removes the update, readers keep the previous head, or
+  refuse under SH5. A stop that must act from the mempool is a seal spend
+  and not a head (LIP-0029 section 8; LIP-0008 sections 5.1 to 5.3).
+- **The name-owner key signs every change of a set.** It is the cold key, and
+  each change is a name update with its fee and, on v3, its outage (SH8).
+- **The name value fills.** With the sizes of section 8 and `seq` below 10,
+  `swarma-devices` adds 103 bytes and `swarma-certs` 101:
+
+| Value | Bytes without | With both heads | Left of 520 |
+| --- | ---: | ---: | ---: |
+| Landlord, no `nostr` | 100 | 304 | 216 |
+| Landlord, key string | 175 | 379 | 141 |
+| Landlord, NIP-05 object | 191 | 395 | 125 |
+| Landlord, NIP-05 object and one relay | 294 | 498 | 22 |
+
+Every row with `nostr` leaves less than the 150 bytes that section 8 keeps for
+the service declaration of LIP-0007. One member whose head document lists
+the heads of every set would cost about 103 bytes for any number of sets, and
+the name would then pin the device list through that document and not
+directly, against LIP-0029 decision 3. Both forms are open.
+
 ## Alternatives
 
 Keeping the exact-byte comparison of the whole value gives the simplest
@@ -573,6 +640,11 @@ controls; each rejected case leaves no binding and no closure:
 - Whether the notary shape needs a member for a second, pending key during a
   rotation.
 - Decision record, normative adoption and public vectors.
+- **Heads of statement sets (section 11).** One member for each set, as
+  written, or one member over every set, which fits the budget and pins the
+  device list only indirectly; the confirmation depth at which a reader takes
+  a new head; how a reader learns that an owner has no head of a set, as
+  opposed to a head it cannot read; and the co-author's agreement.
 
 ## Sources
 
