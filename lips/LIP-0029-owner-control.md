@@ -41,8 +41,9 @@ This LIP gives the owner a voice that the receivers check:
    number, in a member outside `swarma`. The list holds a record for each of
    the owner's devices: its key, the algorithm, a claimed presence flag, a
    level ceiling and a revocation seal (section 3).
-3. A device key is BIP-340 or P-256. P-256 is admitted because the Secure
-   Enclave holds no other curve. The envelope identifier and the replay journal
+3. A device key is BIP-340 or P-256, or an entry of the registry of section
+   3.6 (Draft of 2026-11-16). P-256 is admitted because the Secure Enclave
+   holds no other curve. The envelope identifier and the replay journal
    exclude the signature (section 4).
 4. One envelope format, `swarm-envelope/2`, with three typed body kinds: the
    owner command, the LIP-0013 instruction and the wallet request (section 5).
@@ -124,7 +125,7 @@ is pending. Decision 17 refines decision 15 and stands where the two differ.
 | --- | --- | --- |
 | 17 | The sender attaches the full list on change and on first contact with a peer; otherwise the envelope carries only the list hash. The receiver caches by hash. An unknown hash is refused with a named `LIST_UNKNOWN`, and the sender re-sends; the list is never silently fetched from an untrusted place. A Nostr replaceable event, parameterized, with a `d` tag for the device list and signed by the Nostr key in the name, is a real secondary channel. A storage service by grant comes later. | 3.5 |
 | 18 | An algorithm registry for device records. Each entry gives the key encoding, the signature encoding, the presence semantics and the highest level. The entries: Apple Secure Enclave P-256; FIDO2/WebAuthn (ES256 or EdDSA, with the UP and UV flags as signed presence, L2-capable); YubiKey PIV P-256 and P-384; TPM 2.0 P-256; Android Keystore/StrongBox P-256; Matrix device Ed25519 (L1, Olm-direct sessions only); XMPP OMEMO (XEdDSA Curve25519, L1); Signal identity (XEdDSA, L1, through a client API); Nostr BIP-340; OpenPGP Ed25519; SSH Ed25519 and sk-ecdsa (FIDO). Telegram secret chats and WhatsApp are not supported: no per-device signing identity that a verifier can use, or no client API. Only Matrix has a verifier in M5n; the other entries are reserved. | 3.6 |
-| 19 | The D2 signer threat model is accepted, with limits: a key without per-signature presence can be used by any code on that Mac, so it is L1 at most, within limits. The presence flag is a claim, not proof. A host console is not L2 when agents have shells on that host. L2 is strengthened: the key's access control is Secure Enclave `biometryCurrentSet` with no passcode fallback, so the key is invalidated when the enrolled fingers change; every signature needs a fresh authentication, with no `LAContext` reuse; the signer itself shows the fields before Touch ID; this is verified on a real Mac. Several L2 devices are allowed, each with its own record; a finger change invalidates that device's key, and the device is re-added by the slow, guarded add path. At least two L2 devices are recommended. | 3.6, 6, Honest limits |
+| 19 | The D2 signer threat model is accepted, with limits: a key without per-signature presence can be used by any code on that machine, so it is L1 at most, within limits. The presence flag is a claim, not proof. A host console is not L2 when agents have shells on that host. L2 is strengthened: the key's access control is Secure Enclave `biometryCurrentSet` with no passcode fallback, so the key is invalidated when the enrolled fingers change; every signature needs a fresh authentication, with no `LAContext` reuse; the signer itself shows the fields before Touch ID; this must be verified on a real Mac, as a qualification requirement. Several L2 devices are allowed, each with its own record; a finger change invalidates that device's key, and the device is re-added by the slow, guarded add path. At least two L2 devices are recommended. | 3.6, 6, Honest limits |
 
 The reviewer's answer adds one condition that the decision takes over with
 the rest: the model's process does not hold the right. Keys, tokens and
@@ -156,20 +157,31 @@ has decided one.
 8. Under decisions 15 and 17: the well-known path, the `d` tag value
    `swarma-device-list` of the Nostr event, the sender's record of what each
    receiver admitted, and that the secondary paths serve only a reader that
-   has no sender to ask (section 3.5). The kind of the Nostr event is open.
+   has no sender to ask (section 3.5). The kind of the Nostr event is open
+   within the parameterized replaceable range of NIP-01, 30000 to 39999.
    The code `LIST_UNKNOWN` is decision 17's; it replaces the draft's
    `DEVICE_LIST_UNAVAILABLE` of the earlier text of this date.
 9. Under decision 16: the value `matrix-ed25519` and the hex form of its key,
    `ceiling` exactly 1, the chain of OM2, the replay key of OM5, the member
    `swarma.owner_command`, the reading of a plain encrypted text as an L1
-   `instruct`, and the code `MESSENGER_UNAUTHENTICATED` (section 4.1).
+   `instruct`, which event and which part of it count (`m.room.message`
+   with `m.text`, `body` without the reply fallback; an edit and every other
+   event ignored), and the code `MESSENGER_UNAUTHENTICATED` (section 4.1).
 10. Under decision 14: that `k_D` is neither the device key nor any other
     key, and rules O8.8 to O8.10 (section 8.3).
 11. Under decision 18: the `alg` values and the encodings of the reserved
-    entries, and the code `DEVICE_ALG_UNSUPPORTED` (section 3.6).
-12. Under decision 19: that the conditions of O3.19 are rules for the owner's
-    signer, which a verifier cannot check; that an invalidated key leaves the
-    list by section 8 and returns by section 9 as a new device (O3.20).
+    entries, and the code `DEVICE_ALG_UNSUPPORTED`; the highest levels that
+    the decision does not state: 1 for PIV, TPM, Android, Nostr `bip340`,
+    OpenPGP and SSH Ed25519, and 2 for `ssh-sk-ecdsa`; UV, not UP, as the
+    flag that level 2 needs on a FIDO2 or sk-ecdsa signature (O6.2), where
+    the decision names "UP and UV flags as signed presence"; that a verifier
+    enforces the highest level per `alg` value and the lower per-entry levels
+    bind the owner's client (O3.16); and that `bip340` at 1 narrows decisions
+    4 and 11 for a BIP-340 key with claimed presence (section 3.6).
+12. Under decision 19: that the three properties of O3.19 are a qualification
+    of the owner's signer on a real Mac, which a verifier cannot check; that
+    an invalidated key leaves the list by section 8 and returns by section 9
+    as a new device (O3.20).
 
 ## What can be built from this LIP
 
@@ -183,13 +195,7 @@ has decided one.
 | Revocation by seal | No | The script of a device seal and the fee of `tx_revoke_D`; custody is decided by Figure 1 (open questions) |
 | The device-list check of a Matrix device: list bytes, the record of OM1 and the L1 ceiling | Yes | The co-author's agreement; a receiver that decrypts Megolm and makes the chain of OM2 itself |
 | A verifier for an entry of section 3.6 other than `matrix-ed25519`, `p256` and `bip340` | No | The entry leaves the reserved state: its encoding agreed, a verifier and vectors |
-| L2 by presence | No | A signer that meets O3.19, verified on a real Mac; no signer provider is qualified yet (Honest limits) |
-
-Staging, as relayed with decision 19 and no further: L1 from Element is M5n;
-L2 is the M5 signer. The rule that an unsigned message is ignored (decision 1)
-switches on at a deployment only after M5n works live, Ivan Oparin has tested
-it himself, and a break-glass path for lost devices is ready; until then a
-deployment observes and labels only.
+| L2 by presence | No | A signer qualified on a real Mac for the three properties of O3.19; no signer is qualified yet (Honest limits) |
 
 ## Motivation
 
@@ -425,9 +431,12 @@ No path adds a device. The pin comes from the name on the reader's own node
 drops the file, or a relay that withholds the event, delays the readers that
 rely on it and does nothing else. An event of a messenger device (section
 4.1) carries neither the list nor its hash, so its readers rely on their cache
-and the secondary paths. The kind of the Nostr event is open; a relay keeps
+and the secondary paths. The kind of the Nostr event is open within the
+parameterized replaceable range of NIP-01, 30000 to 39999; a relay keeps
 the latest event for the `d` tag, and a reader takes it only where its
-`content` hashes to the pin.
+`content` hashes to the pin. The owner therefore publishes the event after
+the name update that pins the list confirms; the domain path, keyed by
+`h(D)`, keeps older lists.
 
 #### 3.6. Algorithm registry and presence semantics (Draft, 2026-11-16)
 
@@ -443,12 +452,15 @@ unless the row says otherwise. "Signed presence" means that the signature
 itself covers a flag that the authenticator sets only with a person present;
 "claimed presence" means that the owner claims it in the record and the
 signature shows nothing. The highest level is the ceiling that a record of
-this entry may carry; O3.2 and O3.19 still apply.
+this entry may carry. A verifier enforces it per `alg` value, as the highest
+over the entries that share the value (O3.16); the lower level of an entry
+that shares its value binds the owner's client at enrolment, because a
+verifier cannot tell the entries apart. O3.2 and O3.19 still apply.
 
 | Entry | `alg` | Key encoding | Signature encoding | Presence semantics | Highest level |
 | --- | --- | --- | --- | --- | --- |
 | Apple Secure Enclave P-256 | `p256` | 33-byte compressed SEC1 point, 66 lowercase hex (section 3.1) | 64 bytes `r‖s`, low `s`, over SHA-256 (O4.2) | Claimed: the access control of O3.19 makes each signature need a fresh biometric authentication, which the verifier cannot see | 2, under O3.19 |
-| FIDO2/WebAuthn, ES256 or EdDSA | `fido2-es256`, `fido2-eddsa` | The COSE key of the credential: P-256 as the 33-byte compressed point, Ed25519 as 32 bytes; lowercase hex | The assertion: `authenticatorData` and `clientDataJSON` beside the signature, which is ES256 as 64 bytes `r‖s` or EdDSA as 64 bytes over `authenticatorData ‖ SHA-256(clientDataJSON)`; the `challenge` of `clientDataJSON` is the SHA-256 of the signing preimage | Signed: the flags byte of `authenticatorData`; UP (bit 0) is a touch, UV (bit 2) is a verified person. A record with `presence` `true` needs UV on every signature | 2, with UV |
+| FIDO2/WebAuthn, ES256 or EdDSA | `fido2-es256`, `fido2-eddsa` | The COSE key of the credential: P-256 as the 33-byte compressed point, Ed25519 as 32 bytes; lowercase hex | The assertion: `authenticatorData` and `clientDataJSON` beside the signature, which is ES256 as 64 bytes `r‖s`, low `s`, or EdDSA as 64 bytes, each over `authenticatorData ‖ SHA-256(clientDataJSON)`; the `challenge` of `clientDataJSON` is the SHA-256 of the signing preimage | Signed: the flags byte of `authenticatorData`; UP (bit 0) is a touch, UV (bit 2) is a verified person. A record with `presence` `true` needs UV on every signature | 2, with UV |
 | YubiKey PIV P-256 and P-384 | `p256`, `p384` | P-256 as above; P-384 as the 49-byte compressed SEC1 point, 98 lowercase hex | P-256 as O4.2; P-384 as 96 bytes `r‖s`, low `s`, over SHA-384 of the signing preimage | Claimed: a touch policy of the slot is set at enrolment and the PIN is cached; the signature shows neither | 1 |
 | TPM 2.0 P-256 | `p256` | As above | As O4.2 | None: a TPM key signs for any process with the authorization value | 1 |
 | Android Keystore and StrongBox P-256 | `p256` | As above | As O4.2 | Claimed: user authentication per use with invalidation on biometric enrolment is the counterpart of O3.19 and is not verified on a device | 1 until that check is done on a real device (open questions) |
@@ -457,7 +469,7 @@ this entry may carry; O3.2 and O3.19 still apply.
 | Signal identity | `signal-xeddsa` | The 32-byte Curve25519 identity key, 64 lowercase hex, read through a client API | XEdDSA, 64 bytes; the binding of a message to the identity key through a client API is open | None | 1 |
 | Nostr BIP-340 | `bip340` | 32-byte x-only key, 64 lowercase hex (section 3.1) | BIP-340, 64 bytes (O4.3) | None: a browser or client signer may ask the person, and the signature shows nothing | 1 |
 | OpenPGP Ed25519 | `openpgp-ed25519` | The 32-byte Ed25519 key of the key packet, 64 lowercase hex | The raw 64-byte Ed25519 signature over the signing preimage; an OpenPGP signature packet is not admitted until a profile reads it | Claimed where a hardware token holds the key; none otherwise | 1 |
-| SSH Ed25519 and sk-ecdsa (FIDO) | `ssh-ed25519`, `ssh-sk-ecdsa` | Ed25519 as 32 bytes; sk-ecdsa as the 33-byte compressed P-256 point; lowercase hex, from the OpenSSH key blob | Ed25519 as the raw 64-byte signature; sk-ecdsa as the OpenSSH signature with its flags byte and counter beside `r‖s` | Ed25519: none. sk-ecdsa: signed, the flags byte of the signature, as FIDO2 | Ed25519: 1. sk-ecdsa: 2, with UV |
+| SSH Ed25519 and sk-ecdsa (FIDO) | `ssh-ed25519`, `ssh-sk-ecdsa` | Ed25519 as 32 bytes; sk-ecdsa as the 33-byte compressed P-256 point; lowercase hex, from the OpenSSH key blob. The application string of an sk key, whose SHA-256 opens the signed data, is not in the record; where it goes is open | Ed25519 as the raw 64-byte signature; sk-ecdsa as the OpenSSH signature with its flags byte and counter beside `r‖s` | Ed25519: none. sk-ecdsa: signed, the flags byte of the signature, as FIDO2 | Ed25519: 1. sk-ecdsa: 2, with UV |
 
 Not supported:
 
@@ -469,15 +481,18 @@ Not supported:
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | O3.15 | Every `alg` of a device record is an `alg` value of this registry, and `key` has the key encoding of its entry. A value outside the registry refuses the list. | `DEVICE_LIST_INVALID` |
-| O3.16 | A verifier verifies the signatures of an entry under its signature encoding and takes the presence semantics and the highest level from the entry. A record whose `ceiling` exceeds the highest level of its entry refuses the list. | `DEVICE_LIST_INVALID` |
+| O3.16 | A verifier verifies the signatures of a record under the signature encoding of its `alg` value and admits a `ceiling` up to the highest level of that value, which is the highest over the entries that share it: 2 for `p256`, and for `fido2-es256`, `fido2-eddsa` and `ssh-sk-ecdsa` with UV on every L2 signature (O6.2); 1 for every other value. A record whose `ceiling` exceeds the highest level of its `alg` value refuses the list. The lower highest levels of the PIV, TPM and Android entries, which share `p256`, and the cap of O3.18 on a key without per-signature presence are rules for the owner's client: it enrols no record above the highest level of the entry that holds the key. A verifier cannot tell those entries apart and does not try. | `DEVICE_LIST_INVALID`; none at the verifier for the per-entry level |
 | O3.17 | Of the entries, only `matrix-ed25519` has a verifier in M5n (section 4.1). `p256` and `bip340` have the rules of section 4 and wait for the registration of section 5.4. Every other entry is reserved: it is registered so that a list may name it, and it has no verifier and no vector. A receiver without a verifier for the `alg` of a record admits the list and refuses every command of that device. | `DEVICE_ALG_UNSUPPORTED` |
-| O3.18 | The D2 signer threat model is accepted, with limits. A key without per-signature presence can be used by any code on that Mac, so a record of such a key has `ceiling` at most 1 and acts within the L1 limits of the executor's policy. The presence flag is a claim, not proof (O3.1, Honest limits). A host console is not L2 when agents have shells on that host (O6.3). | `DEVICE_LIST_INVALID` for a ceiling above the entry |
-| O3.19 | A record with `presence` `true` and `ceiling` 2 of the Secure Enclave entry is enrolled only for a key whose access control is `biometryCurrentSet` with no passcode fallback, so that the key is invalidated when the enrolled fingers change; whose every signature needs a fresh authentication, with no reuse of an `LAContext`; and whose signer shows the fields of the envelope itself before Touch ID (O1.5). The owner's client verifies these three on a real Mac before it enrols the record. A verifier reads only the record and cannot check them. | None at the verifier |
+| O3.18 | The D2 signer threat model is accepted, with limits. A key without per-signature presence can be used by any code on that machine, so a record of such a key has `ceiling` at most 1 and acts within the L1 limits of the executor's policy. The presence flag is a claim, not proof (section 3.1, `presence`; Honest limits). A host console is not L2 when agents have shells on that host (O6.3). | `DEVICE_LIST_INVALID` for a ceiling above the highest level of the `alg` value (O3.16); none at the verifier for the cap on a key without presence, which the owner's client applies at enrolment |
+| O3.19 | A record with `presence` `true` and `ceiling` 2 of the Secure Enclave entry is enrolled only for a key whose access control is `biometryCurrentSet` with no passcode fallback, so that the key is invalidated when the enrolled fingers change; whose every signature needs a fresh authentication, with no reuse of an `LAContext`; and whose signer shows the fields of the envelope itself before Touch ID (O1.5). A record of this kind is enrolled only through a signer that has been qualified on a real Mac for these three properties; the qualification is of the signer build, once, and not an act of the client at each enrolment. A verifier reads only the record and cannot check them. | None at the verifier |
 | O3.20 | An owner may hold several L2 devices, each with its own record and its own seal. When the enrolled fingers of a device change, its key is invalidated and signs nothing more; the device leaves the list by section 8 and returns, with a new key and a new seal, by the slow add path of section 9. At least two L2 devices are RECOMMENDED, so that one invalidated key leaves the owner an L2 device. | |
 
 A `p256` record says nothing about which of its four entries holds the key.
 The owner knows at enrolment and claims `presence` and `ceiling` from the
-entry; the verifier reads the claim. The FIDO2 and sk-ecdsa entries are the
+entry; the verifier reads the claim and enforces only the highest level of
+the value, 2 (O3.16). A PIV, TPM or Android key enrolled as `p256` with
+`presence` `true` and `ceiling` 2 passes every verifier; only the owner's
+client, at enrolment, refuses it. The FIDO2 and sk-ecdsa entries are the
 two whose presence a verifier sees in the signature, and they conflict with
 `swarm-envelope/2` section 2.4 until the reviewed change of section 5.4
 (Reconciliation, X16).
@@ -517,7 +532,7 @@ identity key is open.
 | OM3 | A session that the receiver did not receive as OM2 says gives no command: a session from `m.forwarded_room_key`, one restored from server-side key backup, one imported from a file, and one whose Olm sender the receiver cannot bind. The receiver never takes the device from the event's `sender`, from its `sender_key` or `device_id` fields, or from the homeserver. | `MESSENGER_UNAUTHENTICATED` |
 | OM4 | A plaintext event never counts. It is a message without an envelope and is ignored under O1.1. | Nothing |
 | OM5 | The replay journal of O4.5 keys the event by its Megolm session identifier and message index, which the session's signature covers. A pair already in the journal refuses. | `REPLAY` |
-| OM6 | The decrypted content gives the command. A member `swarma.owner_command` that holds the members of section 5.1 other than `type` and `device_list`, and those of section 5.2 with `level` `1`, gives that command. Without that member the event is an owner command with `level` 1, `action` `instruct` and `fields` `{}`, whose free text is its body: it starts or directs a run at L1 (O6.5) and defines no effect (O1.2, O1.3). | The codes of section 11 |
+| OM6 | The decrypted content gives the command. A member `swarma.owner_command` that holds the members of section 5.1 other than `type` and `device_list`, and those of section 5.2 with `level` `0` or `1`, gives that command. Without that member, only a decrypted event of type `m.room.message` with `msgtype` `m.text` counts: it is an owner command with `level` 1, `action` `instruct` and `fields` `{}`, whose free text is `body` with the reply fallback removed, which is every leading line that begins with `> ` up to the first empty line; `formatted_body` is not read. It starts or directs a run at L1 (O6.5) and defines no effect (O1.2, O1.3). An edit (`m.relates_to` with `rel_type` `m.replace`), every other `msgtype` and every other event type give no command and are ignored. | The codes of section 11; nothing for an ignored event |
 | OM7 | Section 11 applies with four changes. OM2, OM3 and OM5 take the place of steps 1, 7 and 11. Step 6 finds the record whose `key` equals the Ed25519 key of OM2 and whose `alg` is `matrix-ed25519`. Steps 2 and 3 apply only where OM6 gives `aud`, `iat` and `exp`; the room of OM2 stands in for `aud` otherwise. Step 5 compares `devices` only where OM6 gives it; otherwise the list that the receiver holds in its cache, or fetches under O3.13, hashes to the pin of step 4, and a receiver that holds and finds none refuses `LIST_UNKNOWN` (O3.14). A messenger event never carries `device_list`. | The codes of section 11 |
 
 Megolm signs every message with the session key of its originator, so a
@@ -636,7 +651,7 @@ reviewed change.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | O6.1 | The `level` of an owner command MUST NOT exceed the `ceiling` of its device. | `LEVEL_ABOVE_DEVICE` |
-| O6.2 | L2 is signed only by a key whose record has the presence flag and whose registry entry admits level 2 (section 3.6, O3.16, O3.19), or given at a separated human console. Where the entry carries presence in the signature, the flag of a verified person (UV) is on every L2 signature. | `LEVEL_ABOVE_DEVICE` |
+| O6.2 | L2 is signed only by a key whose record has the presence flag and whose `alg` value admits level 2 (section 3.6, O3.16, O3.19), or given at a separated human console. Where the entry carries presence in the signature, the flag of a verified person (UV) is on every L2 signature. | `LEVEL_ABOVE_DEVICE` |
 | O6.3 | A separated human console is a console of the executor's host under an OS account of a person, in which no agent has a shell and to whose input no agent's process can write. A console of a host where agents have shells is not L2, and an executor MUST NOT admit L2 from it. | `LEVEL_ABOVE_DEVICE` |
 | O6.4 | An action whose class the executor's policy assigns to a level above the command's `level` refuses. | `LEVEL_TOO_LOW` |
 | O6.5 | A launch inherits the level of the envelope that started it. The origin of a run that an owner command starts is that command's identifier and its `level` (extends LIP-0013 J7.1). A run that a run creates, and a run that is resumed, has the level of the run it comes from. | |
@@ -842,10 +857,10 @@ with S29.
 | S29-13 | An L2 command from a console of a human OS account without agent shells | The same command typed at a console of a host where agents have shells: `LEVEL_ABOVE_DEVICE`. |
 | S29-14 | Laptop `M` (no presence, ceiling 1) signs an L1 `instruct` that starts run `R` of agent `A`. The section for `X` that `A`'s key holder accepted assigns `land` to L2 and caps an L1 `spend` at 10000 sat a day. `R` asks for a v4 `spend` invocation of 4000 sat at `X` under `G`, which lists `land` and `spend`: signed | `R` asks for a `land` invocation at `X` under `G`, which its L1 row lists: `LEVEL_NOT_FOR_RUN`. A `spend` of 12000 sat: `LIMIT_OVER`. A third `spend` of 4000 sat on the same day: `LIMIT_OVER` (O6.11). A child run of `R`, or a caller that states L2 for `R`: the same refusals. |
 | S29-15 | Phone `P` (presence, ceiling 2) signs an L2 `instruct`; its run asks for a `land` invocation at `X` under `G`, within the L2 limits of `X`'s section: signed | The same run asks for a `spend` above the L2 limit: `LIMIT_OVER`. A `land` at executor `Z`, for which the key holder holds no section: `LEVEL_NOT_FOR_RUN` (O6.10). A policy section or a `swarma/device/revoke` for the run: nothing is signed (O6.12). A section for `X` with `seq` 6, after 7, sent to the key holder by `P`: `CONFIG_ROLLBACK`. The envelope of `X`'s own section, relayed by `X`: `NOT_FOR_ME`, because its `aud` is `X` (O6.9). |
-| S29-16 | `P`'s first command to `X` carries list 5 attached; `X` has no list cached, and Alisa's domain is down: admitted, and `X` caches list 5 (O3.12, O3.14). `P`'s next commands to `X` carry the hash alone: admitted from the cache. Alisa adds `K`, and `P`'s first command under list 6 to `X` carries list 6 attached: admitted | The attached octets with one added space: `DEVICE_LIST_MISMATCH`. A command under list 6 with the hash alone to Bob's executor `Y`, which Alisa's device never addressed, or to `X` before it saw list 6: `LIST_UNKNOWN`; `P` re-sends it with list 6 attached: admitted. A Nostr event with a list that the name does not pin: not taken (O3.11). A list fetched from a URL that the command names: not taken (O3.13). |
-| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm, and `X` holds list 5, cached from `P`'s envelope of S29-16, which hashes to the pin (OM7, step 5): an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: ignored. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. The same event at an executor with an empty cache, Alisa's domain down and no Nostr event for the `d` tag: `LIST_UNKNOWN`, and nothing to re-send, because the event carries no list. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
+| S29-16 | `P`'s first command to `X` carries list 5 attached; `X` has no list cached, and Alisa's domain is down: admitted, and `X` caches list 5 (O3.12, O3.14). `P`'s next commands to `X` carry the hash alone: admitted from the cache. Alisa adds `K`, and `P`'s first command under list 6 to `X` carries list 6 attached: admitted | The attached octets with one added space: `DEVICE_LIST_MISMATCH`. A command under list 6 with the hash alone to `V`, a second own executor of Alisa's that `P` never addressed, or to `X` before it saw list 6: `LIST_UNKNOWN`; `P` re-sends it with list 6 attached: admitted. The same command to Bob's executor `Y`: `DEVICE_LIST_MISMATCH` before any question of the cache, as S29-12 has it (O10.4). A Nostr event with a list that the name does not pin: not taken (O3.11). A list fetched from a URL that the command names: not taken (O3.13). |
+| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm, and `X` holds list 5, cached from `P`'s envelope of S29-16, which hashes to the pin (OM7, step 5): an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: ignored. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. The same event at an executor with an empty cache, Alisa's domain down and no Nostr event for the `d` tag: `LIST_UNKNOWN`, and nothing to re-send, because the event carries no list. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same text sent as a reply to the agent's proposal: the quoted lines of the fallback are not Alisa's words, and the instruction is "review branch fix-7" alone (OM6). An edit of that event, an `m.notice`, or a file event whose `body` is a file name: ignored, and the first instruction stands. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
 | S29-18 | `M`'s seal `S_M` pays a fresh `k_M`; `tx_revoke_M` is signed, `k_M` destroyed, and `P` and `K` hold the spend; `X`'s `gettxout` shows `S_M` unspent, and `M`'s command is admitted | `P` broadcasts `tx_revoke_M`; `M`'s next command: `DEVICE_REVOKED`. After a reorganisation that removes the block with `tx_revoke_M`: still `DEVICE_REVOKED`, because the closure is journaled (O8.4). |
-| S29-19 | Alisa's phone `P` and her laptop `M2` are both Secure Enclave records with presence and ceiling 2, each with its own seal, enrolled under O3.19. Alisa enrols a new finger on `P`: `P`'s key is invalidated and signs nothing more; `K` broadcasts `tx_revoke_P`, and Alisa adds `P` again with a new key and a new seal by section 9. Meanwhile `M2` signs her L2 commands (O3.20) | A record of a YubiKey PIV slot (`p256`, touch policy) with ceiling 2: `DEVICE_LIST_INVALID` (O3.16, O3.18). A record with `alg` `fido2-es256` at `X`, which has no verifier for it in M5n: the list is admitted and its command refuses `DEVICE_ALG_UNSUPPORTED` (O3.17). A record with `alg` `telegram`: `DEVICE_LIST_INVALID` (O3.15). An assertion of a `fido2-es256` record with presence whose flags byte has UP without UV: `LEVEL_ABOVE_DEVICE` at L2. |
+| S29-19 | Alisa's phone `P` and her laptop `M2` are both Secure Enclave records with presence and ceiling 2, each with its own seal, enrolled under O3.19. Alisa enrols a new finger on `P`: `P`'s key is invalidated and signs nothing more; `K` broadcasts `tx_revoke_P`, and Alisa adds `P` again with a new key and a new seal by section 9. Meanwhile `M2` signs her L2 commands (O3.20) | Alisa's client refuses to enrol a YubiKey PIV slot (`p256`, touch policy) at ceiling 2, because the highest level of the PIV entry is 1 (O3.16); a verifier cannot tell that record from `P`'s and would admit it, which is why the rule binds the client. A `p384` record with ceiling 2: `DEVICE_LIST_INVALID`, because the highest level of `p384` is 1 (O3.16). A record with `alg` `fido2-es256` at `X`, which has no verifier for it in M5n: the list is admitted and its command refuses `DEVICE_ALG_UNSUPPORTED` (O3.17). A record with `alg` `telegram`: `DEVICE_LIST_INVALID` (O3.15). An assertion of a `fido2-es256` record with presence whose flags byte has UP without UV, at an executor that has a FIDO2 verifier: `LEVEL_ABOVE_DEVICE` at L2 (O6.2); at `X` the same assertion refuses `DEVICE_ALG_UNSUPPORTED` at step 6. |
 
 ## Honest limits
 
@@ -864,9 +879,11 @@ The decision asks that these limits stand in the text and not be hidden.
   signs. O3.19 closes the first two at the signer, with `biometryCurrentSet`
   and no passcode fallback and with a fresh authentication for each
   signature, and asks the signer itself to show the fields; the verifier
-  still sees none of it. No signer provider is qualified for exact-content
-  presence (`swarm-envelope/2` section 4: "no signer provider is qualified
-  for A3"), and L2 by presence rests on the owner's enrollment until one is.
+  still sees none of it. No signer is qualified on a real Mac for the three
+  properties of O3.19, and none for exact-content presence
+  (`swarm-envelope/2` section 4: "no signer provider is qualified for A3");
+  L2 by presence rests on that qualification and on the owner's enrolment
+  until one is.
   Only the FIDO2 and sk-ecdsa entries of section 3.6 put a presence flag into
   the signature, and no verifier admits them yet.
 - **A host console is not L2 when agents have shells there.** An agent with a
@@ -1082,15 +1099,21 @@ Swarma Envelope once registered there.
 
 - **Decisions 14 to 19 (Draft, 2026-11-16).** The script of `S_D`, how the
   fee of `tx_revoke_D` is set and raised, and what it pays; the kind of the
-  Nostr event of O3.13 and the case of an owner without a NIP-05 domain; the
-  storage service under a grant as a third path; whether OMEMO 0.3
-  Curve25519 identity keys are admitted at all, and how an OMEMO or Signal
-  message is bound to the identity key; whether a messenger device may have
-  `ceiling` 0; the `alg` values and encodings of the reserved entries of
-  section 3.6, the hash of the P-384 preimage among them; whether a PIV slot
-  with a touch policy can reach L2; the Android counterpart of O3.19 on a
-  real device; a signal to a messenger sender whose list the reader lacks;
-  and the book's copy of Figure 1, which seat B writes in the same words.
+  Nostr event of O3.13, within 30000 to 39999, and the case of an owner
+  without a NIP-05 domain; the storage service under a grant as a third
+  path; whether OMEMO 0.3 Curve25519 identity keys are admitted at all, and
+  how an OMEMO or Signal message is bound to the identity key; whether a
+  messenger device may have `ceiling` 0; the `alg` values and encodings of
+  the reserved entries of section 3.6, the hash of the P-384 preimage and
+  the place of an sk key's application string among them; whether a PIV slot
+  with a touch policy can reach L2, which only the owner's client could
+  enforce (O3.16); whether a BIP-340 key in a hardware signer with claimed
+  presence may reach L2, which `bip340` at 1 denies; the Android counterpart
+  of O3.19 on a real device; a signal to a messenger sender whose list the
+  reader lacks; and the book's copy of Figure 1, which seat B writes in the
+  same words. "Olm-direct sessions only" of decision 18 is read as OM2 and
+  OM3 read it: a Megolm session received directly over Olm from the
+  originating device, not commands by Olm to-device messages alone.
 - **The co-author's agreement** to the nineteen decisions, written here
   optimistically, and the owners' acceptance of each point that the section
   "What is decided and what is proposed" lists as the draft's.

@@ -69,9 +69,10 @@ height its node reports at the first notice on a node that is caught up: out
 of initial block download and with no header more than `LAG` above its tip
 (LIP-0022 B2.3), taken as the greater of the tip and the best header. Until
 the node is caught up the loader keeps the current pin and records no
-anchor. A backdated pin, a late loader or a node that comes back behind the
-chain leaves the owner the whole delay (S51-3). A node without peers that
-reports a stale tip is stated as a limit. The currently
+anchor. A backdated pin, a late loader or a node that comes back in initial
+block download or with headers above its tip leaves the owner the whole delay
+(S51-3). A node that is behind and still passes that test, without peers or
+restarted before its headers sync, is stated as a limit. The currently
 pinned grant key can cancel until then with `swarma-root-cancel/1` (AO1 to
 AO6). The administrator account owns the pin and the loader's records, so
 whoever takes it can rewrite the pin directly; the section states this as a
@@ -124,18 +125,24 @@ signed presence, YubiKey PIV P-256 and P-384, TPM 2.0 P-256, Android
 Keystore/StrongBox P-256, Matrix device Ed25519, XMPP OMEMO, Signal identity,
 Nostr BIP-340, OpenPGP Ed25519, and SSH Ed25519 and sk-ecdsa; Telegram
 secret chats and WhatsApp are not supported, with the reason stated. Only
-Matrix has a verifier in M5n; the other entries are reserved, and a receiver
-without a verifier admits the list and refuses the device's commands
-(O3.15 to O3.17, `DEVICE_ALG_UNSUPPORTED`). The D2 signer threat model is
-accepted with limits: a key without per-signature presence is L1 at most,
-the presence flag is a claim, and a host console with agent shells is not
-L2. L2 is strengthened at the signer: `biometryCurrentSet` with no passcode
+Matrix has a verifier in M5n; the entries other than `p256` and `bip340` are
+reserved, and a receiver without a verifier admits the list and refuses the
+device's commands (O3.15 to O3.17, `DEVICE_ALG_UNSUPPORTED`). A verifier
+enforces the highest level per `alg` value, because it cannot tell the four
+`p256` entries apart; the lower level of a PIV, TPM or Android key binds the
+owner's client at enrolment (O3.16). The D2 signer threat model is accepted
+with limits: a key without per-signature presence is L1 at most, the
+presence flag is a claim, and a host console with agent shells is not L2. L2
+is strengthened at the signer: `biometryCurrentSet` with no passcode
 fallback, a fresh authentication for every signature without `LAContext`
-reuse, the fields shown by the signer itself, verified on a real Mac; several
-L2 devices each have a record, a finger change invalidates that device's key
-and the device returns by the slow add path, and two L2 devices are
-recommended (O3.18 to O3.20, O6.2). Case S29-19. The staging relayed with the
-decision is recorded in "What can be built" and nothing beyond it.
+reuse, the fields shown by the signer itself, and the signer qualified for
+these on a real Mac; several L2 devices each have a record, a finger change
+invalidates that device's key and the device returns by the slow add path,
+and two L2 devices are recommended (O3.18 to O3.20, O6.2). Case S29-19. OM6
+pins which Matrix event counts as a plain command: `m.room.message` with
+`m.text`, its `body` without the reply fallback; an edit and every other
+event are ignored. The staging relayed with decision 19 is not written into
+the LIP: it is a deployment matter, and O1.1 stands as written.
 
 Puts J10, J11 and J12 in force. Ivan Oparin decided them on 2026-11-15, and on
 2026-11-16 decided to put them in force without waiting for the co-author's
@@ -172,7 +179,17 @@ citation slips are corrected (§7.7, «Доставка памяти агент�
 review of 82c5eda (rev372 r2) found two more, fixed in this version: the
 anchor `h_first` of LIP-0015 AO3 could come from a lagging node and shorten
 the window, and OM7 of LIP-0029 left step 5 of the admission to refuse a
-plain encrypted text that carries no `devices` member.
+plain encrypted text that carries no `devices` member. The review of 4286c11
+(spec-r3) found four more, fixed in this version: case S29-16 admitted an
+owner command of Alisa's device at Bob's executor, against O10.4; the
+per-entry levels of the registry were written as verifier refusals, though a
+verifier cannot tell the entries of one `alg` apart, and S29-19 refused a
+record identical to its own control; a staging paragraph conditioned
+decision 1 without a decision; and the real-Mac check of O3.19 was written as
+an act of the client at enrolment instead of a qualification of the signer.
+Two of its notes are taken: the last sentence of AO3 no longer claims that
+every node behind the chain leaves the whole delay, and OM6 pins the event
+and the part of it that count.
 
 Reconciliation. The text cites:
 - the platform book: chapter 22 §22.5, chapter 6 §6.6.2, chapter 7 §7.7 and

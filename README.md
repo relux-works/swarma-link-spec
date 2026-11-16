@@ -629,7 +629,7 @@ book and curator-spec for the owners, defines no vector, and needs a reviewed
 change of `swarm-envelope/2` before any verifier admits its body kinds. Nothing
 of it is implemented, and until the co-author agrees the texts it revises stand.
 
-Version 0.1.51 adds Draft text for eight decisions of Ivan Oparin of
+Version 0.1.51 adds Draft text for eleven decisions of Ivan Oparin of
 2026-11-16, written optimistically: the co-author's agreement is pending, and
 until it is given every text that they revise stands. A v4 grant carries its
 seal key, so the separate seal-key endorsement is redundant, as the spec
@@ -646,8 +646,8 @@ reorganisation too, while the refusals that a reader journaled stay
 brake on v4 names its stops and their window before confirmation and after a
 reorganisation, and reserves a UTXO of a cold wallet for the fee of an
 emergency name update (LIP-0008 section 5.3). An administrator may overwrite
-the trust-root pin after a stated delay, counted from the loader's first
-notice, and the old key can cancel until the pin takes effect; an
+the trust-root pin after a stated delay, counted from the first notice that
+names the effect height, and the old key can cancel until the pin takes effect; an
 administrator account that rewrites the pin directly is outside the rule
 ([LIP-0015](lips/LIP-0015-trust-root-and-statements.md) section 5.1). The
 authority frame reaches the agent as a signed envelope from the key holder
@@ -662,9 +662,10 @@ and the owner's domain and a Nostr replaceable event are secondary paths
 presence, whose end-to-end encrypted events count only when bound to its
 session, never when forwarded, restored from backup or sent in plaintext
 (section 4.1); and an algorithm registry gives every device algorithm its
-encodings, its presence semantics and its highest level, with a strengthened
-L2 for Secure Enclave keys, of which only the Matrix entry has a verifier in
-M5n (section 3.6).
+encodings, its presence semantics and its highest level, enforced per
+algorithm value, with a strengthened L2 for Secure Enclave keys through a
+signer qualified on a real Mac, of which only the Matrix entry has a verifier
+in M5n (section 3.6).
 
 Version 0.1.51 also puts J10, J11 and J12 in force on Ivan Oparin's decision
 of 2026-11-16 not to wait for the co-author, whose answer is folded in by

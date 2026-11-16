@@ -487,8 +487,8 @@ names it as the holder or as the channel key.
   reserved and have no verifier. The record's presence flag is the owner's
   claim that the key signs only with a person present; it is not proven. A
   Secure Enclave key at ceiling 2 is enrolled under `biometryCurrentSet`
-  without passcode fallback and a fresh authentication per signature
-  (LIP-0029 O3.19).
+  without passcode fallback and a fresh authentication per signature, through
+  a signer qualified for this on a real Mac (LIP-0029 O3.19).
 - Signs: under Draft LIP-0029, `swarm-envelope/2` owner commands up to the
   record's ceiling, at the owner's own executors and at the key holders of
   the owner's agents; at ceiling 2 also the owner's executor policy sections
