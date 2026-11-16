@@ -39,6 +39,14 @@ grantee_name (optional Namecoin name, informative), contract_sha256, scope (clos
 not_after, seal {txid, vout}, budget (optional)`; BIP-340 signature by `issuer_key` over SHA-256 of those bytes;
 certificate id = SHA-256 of the signed envelope.
 
+**Issuance term (decision of 2026-11-16).** A grant's `not_after` MUST NOT
+be later than the issuer's name expiry, as observed at issuance, 36000 blocks
+from the last update. The issuer MUST refuse to sign otherwise
+([Decision 0004](../decisions/0004-reconciliation-closures.md), grant term).
+This is an issuance constraint; the existing window encoding stays unchanged.
+The conversion from block expiry to this draft's clock-time bound remains
+open, and this rule supplies no fixed seconds-per-block conversion.
+
 ## 3. Seal
 
 - One unspent output per grant, drawn from a pool of confirmed outputs the issuer created in advance at an address

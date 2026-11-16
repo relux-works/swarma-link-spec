@@ -124,6 +124,82 @@ that those sections mark as this draft's are proposals.
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
 
+### Owner decision proposals
+
+**The in-force profile stays at version 0.1.51.** J9 to J12 and their decided
+dependencies keep the classification in the public
+[decision map](https://github.com/relux-works/swarma-chain-lab/blob/0f50d9151cfdb9d46cebacec0fa229788d73fc4f/experiments/grant-v4/identity/R1-DECISIONS-051.md).
+The lead's relay of 2026-11-16 at 05:30Z requests the following proposals
+([Decision 0004](../decisions/0004-reconciliation-closures.md)). None takes
+effect before the owner's decision.
+
+Under the in-force profile, whole-parent atomic refusal (R1.5, R8.7) and
+whole-child composition remain unavailable. The profile checks fit only on
+independently established selected facts and does not establish their signed
+binding. One global ordinal is decided; its concrete traversal is proposed.
+Each landlord requires an independently established checkpoint. The four
+class checks keep their decided order, while the eight class strings remain
+local diagnostics with no normative taxonomy or inner-step precedence.
+
+The proposed bounds and witness range script, the landlord-value writer
+check, holder ordering, the exact-name shortcut, the guarantee of not reading
+an optional attestation, and the additional signer rules remain outside that
+in-force subset. In-force exact-name recipients without a certifier run the
+full decided class checks. These exclusions are unchanged by the proposals.
+
+#### Q1. Whole-parent atomic refusal
+
+**proposed, owner decision pending**
+
+For whole-parent admission, the verifier MUST check the complete signed
+parent against R8.1 to R8.3, R8.5, R8.6, R9.1, R10.1 and R10.2 before it
+admits an own request or any child. The parent MUST contain at least one
+group, each group at least one range, and the parent's encoded size MUST NOT
+exceed 65536 octets. This byte bound replaces the group, range and coin count
+caps proposed in R8.4. A failure anywhere refuses the whole parent under
+R8.7, with no partial admission or reservation. The selected row's chain
+reads remain those of R8.8; whole-parent refusal adds no chain read for an
+unselected row. A landlord-class recipient remains valid under R9.1, and a
+certifier remains optional only under R10.2. This text assigns no new code.
+
+#### Q2. Ordinal-to-row mapping
+
+**proposed, owner decision pending**
+
+The verifier MUST use the traversal of R8.3 and the selection of R8.8 to
+bind a child's ordinal to the signed group template, range and coin. It MUST
+check the ordinal bounds before reading a row, then count groups and ranges
+in their signed order and outputs in ascending index order, with the first
+row at ordinal 1. The selection changes neither the template's recipient
+constraint nor its certifier requirement. An out-of-range ordinal retains
+`CHILD_ORDINAL`.
+
+#### Q3. Class checkpoint derivation
+
+**proposed, owner decision pending**
+
+On v4 the verifier MUST derive every landlord-class checkpoint from the
+parent's committed recent block, as R9.2 proposes, and use that block in the
+history checks of R9.5. Neither the child nor its presenter may substitute
+another checkpoint. This rule also supplies the checkpoint for the full
+class checks of an exact-name recipient without a certifier under J9. It
+adds no separately signed checkpoint member and leaves the other proposed
+checks of section 9 at their existing status.
+
+#### Q4. Normative class refusal codes
+
+**proposed, owner decision pending**
+
+The verifier MUST report the eight class refusal codes already assigned by
+R9.4 to R9.9 and the finding-to-code table after R9.12, with the order of
+R9.9. The recipient-name proof still precedes the class checks. This adopts
+the class code taxonomy and its inner-step precedence only; the fifth step
+of R9.5, the exact-name shortcut and the other explicitly proposed checks
+remain outside the in-force subset until separately decided. A verifier
+reports no code for a check that its profile does not perform. None of the
+codes records a closure. The same taxonomy applies to decided class checks
+for a row without a certifier; it adds no attestation requirement.
+
 ## What can be built from this LIP
 
 | Part | Can be built now | Waits for |

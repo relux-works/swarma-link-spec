@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.1.52 — 2026-11-16
+
+Closes the specification-side reconciliation gaps in Decision 0004. Every
+LIP retains its status. J9 to J12 keep their version 0.1.51 classification;
+no historical protocol, tool, vector byte or vector outcome changes.
+
+LIP-0029 decision 1, section 1 and row X1, and LIP-0013 section 3.7 point 2
+carry the signed-at-minimum, encrypted-at-maximum rule: M0 delivers unsigned
+work but labels it, effects require a signature, and after M6 unsigned input
+is ignored. LIP-0029 states that a host is one node under chain rules and
+keeps its device-list protocol. Registry simplification inside a host and
+the other owner-open reconciliation questions stay open.
+
+LIP-0028 states the caller authority of today's proxy: the bearer holds the
+dispatcher-prepared run binding, issued upstream under J7, and on-use checks
+cover mode, window and account block without consulting the key holder or
+chain. LIP-0013 states plainly that a receiver cannot verify an origin and
+that the level holds at an honest key holder only.
+
+The authority frame arrives in a separate channel; its signature is NOT
+established by the corrected source. LIP-0013 withdraws the earlier claim
+of a decided signer and the dependent format and key. LIP-0029, the key
+registry, the README and the open-question index follow the correction.
+The version 0.1.51 changelog below records the superseded claim as history.
+
+LIP-0008 section 5.2 cites J6 grant closure at foreign verifiers separately
+from the platform project stop (section 22.5) and installation stop (section
+6.6.2). Section 5.3 follows those distinct mechanisms. Sections 3 and 7.1,
+and LIP-0003 section 2, limit issuance to issuer name expiry observed at
+issuance, 36000 blocks from the last update; the issuer refuses to sign
+beyond it. LIP-0003 leaves its clock-time conversion open. LIP-0008 section
+2.1 records the contract plus at least TEXT and EFFECT grants per hire.
+LIP-0006 section 1 records wallet request signing through Keymaker, with
+origin and operator-table checks, while keeping the existing wallet slice.
+
+LIP-0026 gives four explicit proposals, each marked "proposed, owner
+decision pending": whole-parent atomic refusal with the existing byte bound
+instead of count caps, ordinal-to-row mapping, class checkpoint derivation
+and normative class refusal codes. None is enabled in the in-force profile.
+The decision map at version 0.1.51 remains the boundary, and whole-parent
+and whole-child composition stay unavailable under it.
+
+Decision 0004 records completion of v4 and landing of the row-groups and
+session laboratories as prerequisites to freeze, without declaring either
+a freeze or a landing. Existing text already carries v4 seals, confirmed
+statement heads, the emergency brake, delayed anchor overwrite, shadow
+observation between owners, J10 to J12 and the night's device decisions;
+the reconciliation does not duplicate them. Book-only rows remain for the
+book round.
+
 ## 0.1.51 — 2026-11-16
 
 Adds Draft text for eleven decisions of Ivan Oparin of 2026-11-16: five that

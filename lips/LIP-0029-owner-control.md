@@ -24,19 +24,24 @@
 
 ## Summary
 
-An owner directs its agents today over the owner channel, and the channel
-carries no signature (LIP-0013 section 3.7, point 2). Whatever can write into
-that channel speaks as the owner. A run that the owner's command starts signs
-under the row that the operator writes for the owner's own work (LIP-0013
-J7.2), so a command that only starts work can end in a payment or a landing
-through the agent's own grants. And every statement of LIP-0015 is signed by the grant key, the key
-that issues grants to others.
+The chain rules apply inside one host too. The host is one node; a registry
+simplification inside a host remains an open question
+([Decision 0004](../decisions/0004-reconciliation-closures.md), one host).
+
+The owner channel carries work under the transition of section 1:
+unsigned work is delivered but labelled, and effects require a signature.
+J7.2 gives the owner's work a row at the key holder. Section 6 adds the
+level bound to that row and to the objects signed under the agent's own
+grants. LIP-0015 still puts statements on the grant key; section 10 moves
+the owner's statements to its devices.
 
 This LIP gives the owner a voice that the receivers check:
 
-1. Only a signed envelope counts. Free text directs work; an effect happens
-   only through typed fields that define it completely, and the executor's
-   gate compares them with the arguments it is about to use (section 1).
+1. Communication is signed at minimum and encrypted at maximum. During M0,
+   unsigned work is delivered but labelled; effects require a signature.
+   After M6, unsigned input is ignored. Free text directs work; an effect
+   happens only through typed fields that the executor's gate compares with
+   the actual arguments (section 1).
 2. The owner's name value pins the hash of a **device list**, with a version
    number, in a member outside `swarma`. The list holds a record for each of
    the owner's devices: its key, the algorithm, a claimed presence flag, a
@@ -92,7 +97,7 @@ this LIP; each is written out in the section that the last column names.
 
 | # | Decision | Section |
 | --- | --- | --- |
-| 1 | All communication counts only when signed, and an unsigned message is ignored. Free text inside a signed envelope directs work only. An effect happens only through typed fields that define it completely: repository, ref and exact revision; payee and amount. The executor's gate recomputes the actual arguments and compares them with the fields before any effect. The owner's client forms the fields and shows them; the executor's model does not. | 1 |
+| 1 | Signed at minimum, encrypted at maximum: use native encryption where possible. Transitional (M0): unsigned work is delivered but labelled; effects require a signature. After M6, unsigned input is ignored. Free text directs work only. An effect happens only through typed fields that define it completely: repository, ref and exact revision; payee and amount. The executor's gate recomputes the actual arguments and compares them with the fields before any effect. The owner's client forms the fields and shows them; the executor's model does not. | 1 |
 | 2 | The typed action registry is the action profiles of this specification: LIP-0006 and the v4 action profile of LIP-0008. A new action is a LIP section plus executor code. An unknown action class requires L2 or is refused. LIP-0008 section 12.4 stays reserved. | 2 |
 | 3 | The owner's name value pins the hash of the device list only, with a version number. The member sits outside `swarma`, so v4 grants are not ended by its changes. It is added only after every verifier runs the LIP-0010 reader, because the LIP-0004 reader refuses extra members. The v3 outage while a name update is pending is a known cost; v3 is the internal alpha. | 3.3, 3.4 |
 | 4 | A device record holds a label, the public key, the algorithm (BIP-340 or P-256; the verifier takes it from the record, never from the envelope), a presence flag (claimed, not proven), the level ceiling, and the outpoint of the revocation seal. | 3.1 |
@@ -126,6 +131,17 @@ is pending. Decision 17 refines decision 15 and stands where the two differ.
 | 17 | The sender attaches the full list on change and on first contact with a peer; otherwise the envelope carries only the list hash. The receiver caches by hash. An unknown hash is refused with a named `LIST_UNKNOWN`, and the sender re-sends; the list is never silently fetched from an untrusted place. A Nostr replaceable event, parameterized, with a `d` tag for the device list and signed by the Nostr key in the name, is a real secondary channel. A storage service by grant comes later. | 3.5 |
 | 18 | An algorithm registry for device records. Each entry gives the key encoding, the signature encoding, the presence semantics and the highest level. The entries: Apple Secure Enclave P-256; FIDO2/WebAuthn (ES256 or EdDSA, with the UP and UV flags as signed presence, L2-capable); YubiKey PIV P-256 and P-384; TPM 2.0 P-256; Android Keystore/StrongBox P-256; Matrix device Ed25519 (L1, Olm-direct sessions only); XMPP OMEMO (XEdDSA Curve25519, L1); Signal identity (XEdDSA, L1, through a client API); Nostr BIP-340; OpenPGP Ed25519; SSH Ed25519 and sk-ecdsa (FIDO). Telegram secret chats and WhatsApp are not supported: no per-device signing identity that a verifier can use, or no client API. Only Matrix has a verifier in M5n; the other entries are reserved. | 3.6 |
 | 19 | The D2 signer threat model is accepted, with limits: a key without per-signature presence can be used by any code on that machine, so it is L1 at most, within limits. The presence flag is a claim, not proof. A host console is not L2 when agents have shells on that host. L2 is strengthened: the key's access control is Secure Enclave `biometryCurrentSet` with no passcode fallback, so the key is invalidated when the enrolled fingers change; every signature needs a fresh authentication, with no `LAContext` reuse; the signer itself shows the fields before Touch ID; this must be verified on a real Mac, as a qualification requirement. Several L2 devices are allowed, each with its own record; a finger change invalidates that device's key, and the device is re-added by the slow, guarded add path. At least two L2 devices are recommended. | 3.6, 6, Honest limits |
+
+Decision 1 includes the owner correction of 2026-11-16, recorded in
+[Decision 0004](../decisions/0004-reconciliation-closures.md), signed
+communication. M0 is the current transitional rule, and M6 names the
+refuse-unsigned switch. The owner agenda's decision of 2026-11-16 at 01:45Z
+allows that switch only after the live messenger-device check, the owner's
+own test and break-glass; observe-only verification continues until then.
+This text supplies no deployment date. The device list of sections 3, 4 and
+8 stays in its existing format.
+The external replacement of that format was not accepted (Decision 0004,
+completion before freeze).
 
 The reviewer's answer adds one condition that the decision takes over with
 the rest: the model's process does not hold the right. Keys, tokens and
@@ -200,10 +216,11 @@ has decided one.
 ## Motivation
 
 **R4: the owner has no voice that a receiver checks.** Under LIP-0013
-section 3.7 an owner instructs its own agent "over the owner channel, as for
-any other work", without an envelope, and in shadow mode "only the owner
-directs" (section 3.4). Every process that can post into that channel, and
-every operator of the transport, speaks with the owner's authority. The key
+section 3.7 formerly let the owner instruct its agent without an envelope;
+point 2 now cites the labelled transition of section 1. In shadow mode
+"only the owner directs" (section 3.4). Every process that can post into an
+unsigned owner channel, and every operator of the transport, speaks with
+the owner's authority. The key
 holder then binds the run to "the owner's own command" (J7.1) and signs under
 the owner's row of its table (J7.2), which lists the grants of the owner's own
 work; the reviewer calls it the widest row. A command that
@@ -225,9 +242,9 @@ admits BIP-340 only puts the owner's strongest key outside the Enclave.
 
 ## Current state
 
-- LIP-0013 section 3.7, point 2: "An owner directs its own agent without an
-  envelope." J7.1 binds a run to "the owner's own command"; J7.2 gives the
-  owner's commands a row of their own. No level exists.
+- LIP-0013 section 3.7, point 2 cites section 1's labelled transition.
+  J7.1 binds a run to "the owner's own command"; J7.2 gives the owner's
+  commands a row of their own. Section 6 supplies the Draft level rules.
 - Key map, K6 (2026-11-14, agreement pending): an authority key of a person,
   named in each grant to the person, signs with presence per signature. The
   key registry has its entry, "Authority key of a person".
@@ -273,7 +290,7 @@ from that name. Every other executor is **foreign** to that owner.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O1.1 | An own executor and an own key holder MUST give effect to a message from or for the owner only when it carries a signed envelope of section 5 that passes section 11. A message without an envelope, or whose envelope fails, MUST be ignored: it directs no work, starts no run, changes no configuration and counts as no approval. | The code of the failed step; nothing for a message without an envelope |
+| O1.1 | Communication is signed at minimum and encrypted at maximum, using native encryption where possible. During M0, unsigned work is delivered but MUST be labelled as unsigned; it gives no authority for effects. An own executor and an own key holder MUST give effect only to a signed message admitted under this LIP. After M6, unsigned input MUST be ignored: it directs no work, starts no run, changes no configuration and counts as no approval. An envelope that fails section 11 gives no authority. | The code of the failed step; nothing for unsigned input |
 | O1.2 | Free text inside a signed envelope directs work only. It MUST NOT define, select or widen an effect (LIP-0006 section 7). | |
 | O1.3 | An effect happens only through the typed fields of its action class, and the fields MUST define the effect completely. A landing names the repository, the ref and the exact revision, which is a full commit identifier. A payment names the payee and the amount. A class whose fields leave a part of the effect to the executor is not admitted for an effect. | `FIELDS_INCOMPLETE` |
 | O1.4 | Before any effect the executor's gate MUST recompute the actual arguments of the operation it is about to perform, from the operation itself and not from the envelope, and compare them with the signed fields. Any difference refuses, and no effect follows. LIP-0014 J5.7 and J5.9 have this step for the owner's confirmation of one operation; O1.4 makes it the step of every effect. | `FIELDS_MISMATCH` |
@@ -530,7 +547,7 @@ identity key is open.
 | OM1 | A messenger device is an ordinary record of section 3.1, with its own seal. Its `alg` names the messenger's algorithm: `matrix-ed25519` for a Matrix device. Its `key` is the Ed25519 key that the device's signed device-keys object publishes as `ed25519:<device_id>`, in 64 lowercase hex; a reader decodes the unpadded base64 of the Matrix wire to compare bytes. Its `presence` is `false`, and its `ceiling` is `1`. | `DEVICE_LIST_INVALID` |
 | OM2 | An end-to-end encrypted Matrix room event counts as an owner command at level 1 when, and only when, the receiver binds it to the record's key through this chain: the event is `m.room.encrypted` with algorithm `m.megolm.v1.aes-sha2`; its Megolm message signature verifies under the Ed25519 key of its Megolm session; the receiver received that session as `m.room_key` in an Olm message from the Curve25519 identity key of the sending device; and that Curve25519 key is the one in the device-keys object that the record's Ed25519 key signs. The `room_id` of the decrypted payload equals the room that the deployment names as the owner's channel to this executor or key holder. | `MESSENGER_UNAUTHENTICATED` |
 | OM3 | A session that the receiver did not receive as OM2 says gives no command: a session from `m.forwarded_room_key`, one restored from server-side key backup, one imported from a file, and one whose Olm sender the receiver cannot bind. The receiver never takes the device from the event's `sender`, from its `sender_key` or `device_id` fields, or from the homeserver. | `MESSENGER_UNAUTHENTICATED` |
-| OM4 | A plaintext event never counts. It is a message without an envelope and is ignored under O1.1. | Nothing |
+| OM4 | A plaintext event never counts as an authenticated messenger command. O1.1 governs unsigned input: labelled work during M0, ignored after M6. It authorizes no effect. | Nothing |
 | OM5 | The replay journal of O4.5 keys the event by its Megolm session identifier and message index, which the session's signature covers. A pair already in the journal refuses. | `REPLAY` |
 | OM6 | The decrypted content gives the command. A member `swarma.owner_command` that holds the members of section 5.1 other than `type` and `device_list`, and those of section 5.2 with `level` `0` or `1`, gives that command. Without that member, only a decrypted event of type `m.room.message` with `msgtype` `m.text` counts: it is an owner command with `level` 1, `action` `instruct` and `fields` `{}`, whose free text is `body` with the reply fallback removed, which is every leading line that begins with `> ` up to the first empty line; `formatted_body` is not read. It starts or directs a run at L1 (O6.5) and defines no effect (O1.2, O1.3). An edit (`m.relates_to` with `rel_type` `m.replace`), every other `msgtype` and every other event type give no command and are ignored. | The codes of section 11; nothing for an ignored event |
 | OM7 | Section 11 applies with four changes. OM2, OM3 and OM5 take the place of steps 1, 7 and 11. Step 6 finds the record whose `key` equals the Ed25519 key of OM2 and whose `alg` is `matrix-ed25519`. Steps 2 and 3 apply only where OM6 gives `aud`, `iat` and `exp`; the room of OM2 stands in for `aud` otherwise. Step 5 compares `devices` only where OM6 gives it; otherwise the list that the receiver holds in its cache, or fetches under O3.13, hashes to the pin of step 4, and a receiver that holds and finds none refuses `LIST_UNKNOWN` (O3.14). A messenger event never carries `device_list`. | The codes of section 11 |
@@ -635,10 +652,9 @@ reviewed change of that specification, which Swarma Envelope owns. Until then
 no verifier admits them, and this LIP is a request to that change. The
 conflicts with its section 2.4 are listed under "Reconciliation".
 
-[LIP-0013](LIP-0013-trust-contract.md) section 3.4 holds Draft text of
-2026-11-16 that adds a fourth body kind, `authority-frame/1`, signed by the
-key holder of an agent (FE1, FE2). It enters `swarm-envelope/2` by the same
-reviewed change.
+The authority frame travels on the separate channel of
+[LIP-0013](LIP-0013-trust-contract.md) section 3.4. A signature on the frame
+is NOT established; no fourth signed body kind follows from that decision.
 
 ### 6. Levels and the level of a launch
 
@@ -842,7 +858,7 @@ with S29.
 
 | Case | Valid control | Refusal or invariant |
 | --- | --- | --- |
-| S29-1 | Alisa's phone `P` (`p256`, presence, ceiling 2) signs an L1 landing at `X` with repository, ref and revision; the gate finds the same commit: admitted | The same message without an envelope, in the owner channel: ignored, no run. The model of `X` rewrites `revision` before the gate: `FIELDS_MISMATCH`. |
+| S29-1 | Alisa's phone `P` (`p256`, presence, ceiling 2) signs an L1 landing at `X` with repository, ref and revision; the gate finds the same commit: admitted | The same message without an envelope, in the owner channel: during M0, delivered as labelled work with no landing; after M6, ignored with no run. The model of `X` rewrites `revision` before the gate: `FIELDS_MISMATCH`. |
 | S29-2 | An L1 payment with `to`, `amount_sat` and `fee_limit_sat` | The text says "pay Karl 5000", the fields name no payee: `FIELDS_INCOMPLETE`; the text never fills a field. |
 | S29-3 | Laptop `M` (`bip340`, no presence, ceiling 1) signs L1 | `M` signs L2: `LEVEL_ABOVE_DEVICE`. A list that gives `M` ceiling 2 without presence: `DEVICE_LIST_INVALID`. |
 | S29-4 | The record of `P` says `p256`; `P`'s envelope verifies under P-256 | A `bip340:` identifier whose 32 bytes equal the `x` of `P`'s key: no record has those key bytes, `DEVICE_UNKNOWN`; the verifier never tries BIP-340 on a record that says `p256`. |
@@ -858,7 +874,7 @@ with S29.
 | S29-14 | Laptop `M` (no presence, ceiling 1) signs an L1 `instruct` that starts run `R` of agent `A`. The section for `X` that `A`'s key holder accepted assigns `land` to L2 and caps an L1 `spend` at 10000 sat a day. `R` asks for a v4 `spend` invocation of 4000 sat at `X` under `G`, which lists `land` and `spend`: signed | `R` asks for a `land` invocation at `X` under `G`, which its L1 row lists: `LEVEL_NOT_FOR_RUN`. A `spend` of 12000 sat: `LIMIT_OVER`. A third `spend` of 4000 sat on the same day: `LIMIT_OVER` (O6.11). A child run of `R`, or a caller that states L2 for `R`: the same refusals. |
 | S29-15 | Phone `P` (presence, ceiling 2) signs an L2 `instruct`; its run asks for a `land` invocation at `X` under `G`, within the L2 limits of `X`'s section: signed | The same run asks for a `spend` above the L2 limit: `LIMIT_OVER`. A `land` at executor `Z`, for which the key holder holds no section: `LEVEL_NOT_FOR_RUN` (O6.10). A policy section or a `swarma/device/revoke` for the run: nothing is signed (O6.12). A section for `X` with `seq` 6, after 7, sent to the key holder by `P`: `CONFIG_ROLLBACK`. The envelope of `X`'s own section, relayed by `X`: `NOT_FOR_ME`, because its `aud` is `X` (O6.9). |
 | S29-16 | `P`'s first command to `X` carries list 5 attached; `X` has no list cached, and Alisa's domain is down: admitted, and `X` caches list 5 (O3.12, O3.14). `P`'s next commands to `X` carry the hash alone: admitted from the cache. Alisa adds `K`, and `P`'s first command under list 6 to `X` carries list 6 attached: admitted | The attached octets with one added space: `DEVICE_LIST_MISMATCH`. A command under list 6 with the hash alone to `V`, a second own executor of Alisa's that `P` never addressed, or to `X` before it saw list 6: `LIST_UNKNOWN`; `P` re-sends it with list 6 attached: admitted. The same command to Bob's executor `Y`: `DEVICE_LIST_MISMATCH` before any question of the cache, as S29-12 has it (O10.4). A Nostr event with a list that the name does not pin: not taken (O3.11). A list fetched from a URL that the command names: not taken (O3.13). |
-| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm, and `X` holds list 5, cached from `P`'s envelope of S29-16, which hashes to the pin (OM7, step 5): an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: ignored. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. The same event at an executor with an empty cache, Alisa's domain down and no Nostr event for the `d` tag: `LIST_UNKNOWN`, and nothing to re-send, because the event carries no list. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same text sent as a reply to the agent's proposal: the quoted lines of the fallback are not Alisa's words, and the instruction is "review branch fix-7" alone (OM6). An edit of that event, an `m.notice`, or a file event whose `body` is a file name: ignored, and the first instruction stands. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
+| S29-17 | Alisa's Matrix device `E` (`matrix-ed25519`, no presence, ceiling 1) sends an encrypted "review branch fix-7" to her owner room of `X`. The harness of `X` received the session from `E` over Olm, and `X` holds list 5, cached from `P`'s envelope of S29-16, which hashes to the pin (OM7, step 5): an L1 `instruct`, and the run it starts has level L1 | The same text as a plaintext event: labelled unsigned work during M0, ignored after M6, and never an authenticated messenger command. The same event, decrypted with a session from `m.forwarded_room_key` or from key backup: `MESSENGER_UNAUTHENTICATED`. The same event at an executor with an empty cache, Alisa's domain down and no Nostr event for the `d` tag: `LIST_UNKNOWN`, and nothing to re-send, because the event carries no list. A list that gives `E` ceiling 2 or presence: `DEVICE_LIST_INVALID`. A `swarma.owner_command` of `E` with `level` 2: `LEVEL_ABOVE_DEVICE`. The same text sent as a reply to the agent's proposal: the quoted lines of the fallback are not Alisa's words, and the instruction is "review branch fix-7" alone (OM6). An edit of that event, an `m.notice`, or a file event whose `body` is a file name: ignored, and the first instruction stands. The same session and message index again: `REPLAY`. An event that the homeserver labels as Alisa's but whose session binds to a device in no record: `DEVICE_UNKNOWN`. |
 | S29-18 | `M`'s seal `S_M` pays a fresh `k_M`; `tx_revoke_M` is signed, `k_M` destroyed, and `P` and `K` hold the spend; `X`'s `gettxout` shows `S_M` unspent, and `M`'s command is admitted | `P` broadcasts `tx_revoke_M`; `M`'s next command: `DEVICE_REVOKED`. After a reorganisation that removes the block with `tx_revoke_M`: still `DEVICE_REVOKED`, because the closure is journaled (O8.4). |
 | S29-19 | Alisa's phone `P` and her laptop `M2` are both Secure Enclave records with presence and ceiling 2, each with its own seal, enrolled under O3.19. Alisa enrols a new finger on `P`: `P`'s key is invalidated and signs nothing more; `K` broadcasts `tx_revoke_P`, and Alisa adds `P` again with a new key and a new seal by section 9. Meanwhile `M2` signs her L2 commands (O3.20) | Alisa's client refuses to enrol a YubiKey PIV slot (`p256`, touch policy) at ceiling 2, because the highest level of the PIV entry is 1 (O3.16); a verifier cannot tell that record from `P`'s and would admit it, which is why the rule binds the client. A `p384` record with ceiling 2: `DEVICE_LIST_INVALID`, because the highest level of `p384` is 1 (O3.16). A record with `alg` `fido2-es256` at `X`, which has no verifier for it in M5n: the list is admitted and its command refuses `DEVICE_ALG_UNSUPPORTED` (O3.17). A record with `alg` `telegram`: `DEVICE_LIST_INVALID` (O3.15). An assertion of a `fido2-es256` record with presence whose flags byte has UP without UV, at an executor that has a FIDO2 verifier: `LEVEL_ABOVE_DEVICE` at L2 (O6.2); at `X` the same assertion refuses `DEVICE_ALG_UNSUPPORTED` at step 6. |
 
@@ -975,7 +991,7 @@ Swarma Envelope instead of restating them. The revisions read are:
 | Same chapter, §6.6.2 "General stop" (lines 122–135), and ch. 7 §7.12 "General stop" (`07-zapusk-i-host-sessiy.md`, lines 179–183) | One operator command signed by the phone stops every service; only the operator's signature resumes; the keeper may hold a grant to stop. | No decision of this LIP gives the stop a level (X13). |
 | Same chapter, §6.7 "The owner's registry on the trust node" (lines 136–175) and §6.8 "Roles of the roots" (lines 176–191) | The owner's registry on a trust node stores keys, attestations and revocations; an operator root attests operator devices; revocations are root-signed snapshots. | A second anchor for the owner's devices (X3) and a second way to revoke them (X4). |
 | Ch. 22 §22.5 "Stop by one signature" (`22-effekty-ostanovka-federaciya.md`, lines 73–84) | A stop of the protocol by the key of one core node; resumption by a quorum. | A different mechanism, not changed here (X13). |
-| Ch. 24 §24.4 and §24.8 (`24-soobscheniya-i-most.md`, lines 56–78 and 109–126) | Assurance levels A0 to A3 for people's messages; an unsigned body is untrusted data; a transitional mode admits A0 and A1 commands within zones. | Decision 1 ignores an unsigned message; L0 to L2 have no stated mapping to A0 to A3 (X1, X11). |
+| Ch. 24 §24.4 and §24.8 (`24-soobscheniya-i-most.md`, lines 56–78 and 109–126) | Assurance levels A0 to A3 for people's messages; an unsigned body is untrusted data; a transitional mode admits A0 and A1 commands within zones. | Decision 1 carries the labelled M0 transition (X1); L0 to L2 still have no stated mapping to A0 to A3 (X11). |
 | Ch. 13 §13.4 (`13-doverennosti.md`, lines 68–70) | Actions are added at run time by signed `handler-manifest/1` and `action-namespace/1` records. | Decision 2 makes a new action a LIP section plus code (X2). |
 | curator-spec CIP-0011 revision 6, R-OPERATOR (`cips/CIP-0011-credential-broker-and-agent-users.md`, lines 24–26; §5, lines 126–153; §5.2, lines 136–141) | A presence-gated operator device key in the phone's secure element signs each exact act; the machine verifies against the pinned phone key; password `sudo` from a terminal is the fallback, widening included, with content confirmation; signature domain and bytes are unpublished. | The device class of this LIP. Conflicts: the pin at the machine (X3), the fallback for widening (X11), and the unstated relation between operator acts on one machine and owner commands to executors (X14). |
 | Link book §3.4 "Three keys of a participant and the agent's identity" (`link-book/ru/03-klyuchi.md`, lines 87–115) | Three keys of a participant; the LIP-0004 reader refuses an extra member. | O3.9. Device keys stand beside the three keys (X15). |
@@ -995,12 +1011,12 @@ book at `34abef2` they are §6.6, §6.6.1, §6.6.2 and §6.7 of chapter 6;
 chapter 5 is "An OS user per agent and the agent's network".
 
 **Conflicts for the owners.** The decisions and these sources disagree in the
-following points. This LIP writes the decisions and chooses none of the
-conflicts.
+following points. X1 records the correction of 2026-11-16. The remaining
+conflicts retain their existing open or proposed status.
 
 | # | Decision | Conflict |
 | --- | --- | --- |
-| X1 | 1 | The book keeps an unsigned body as untrusted data and admits A0 and A1 commands in a transitional mode (§24.4, §24.8); the Link book lets the owner task its agent without an envelope (§8.9); LIP-0013 section 3.7 point 2 says the same. Decision 1 ignores every unsigned message. |
+| X1 | 1 | Decided on 2026-11-16: signed at minimum, encrypted at maximum. Transitional (M0): unsigned work is delivered but labelled; effects require a signature; after M6, unsigned input is ignored. Section 1 and LIP-0013 section 3.7 point 2 carry this rule; the Link book section 8.9 requires the same correction. The level mapping of X11 remains open. |
 | X2 | 2 | The book registers actions at run time by signed records (§13.4). `swarm-envelope/2` section 4.1 refuses an unknown operation outright and has no branch for L2. |
 | X3 | 3, 4, 6 | Three anchors for the owner's devices: a phone key pinned at the machine (book §6.6; CIP-0011 §5.2), an operator root that attests devices in the owner's registry (book §6.7, §6.8), and the device list in the name. `swarm-envelope/2` section 2.1 says that device trust comes from the operator root "not a second device-key pin list". |
 | X4 | 5 | The book revokes in the registry by root-signed snapshots (§6.7). A P-256 device cannot sign a Namecoin spend, so a prepared spend is signed in advance by a secp256k1 key, with its fee fixed at signing (Link book §4.9.10). |
@@ -1117,8 +1133,9 @@ Swarma Envelope once registered there.
 - **The co-author's agreement** to the nineteen decisions, written here
   optimistically, and the owners' acceptance of each point that the section
   "What is decided and what is proposed" lists as the draft's.
-- **The conflicts X1 to X15** of the section "Reconciliation", which the
-  owners decide; above all X3, the anchor of the owner's devices, and X10,
+- **The remaining conflicts X2 to X15** of the section "Reconciliation",
+  which the owners decide; X1 is corrected above. Above all X3, the anchor
+  of the owner's devices, and X10,
   the registration of the body kinds in Swarma Envelope or a new version name.
 - **An unknown action class (decision 2).** Reading (a), written in O2.3: the
   class requires L2, and below L2 it is refused. Reading (b): the executor

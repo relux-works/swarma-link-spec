@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.51
+**Version:** 0.1.52
 
 **Date:** 2026-11-16
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.51
+## Draft profiles and design decisions in v0.1.52
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -126,9 +126,10 @@ Decisions of 2026-11-11 by Ivan Oparin change three rules of the v4 draft.
 The issuer name is bound by its registration and owner key: a grant lives
 while the name's updates change neither the owner nor `swarma`, the verifier
 walks the name's history through its transaction index on the active chain,
-and a renewal closes nothing. One hire is one grant for the whole term in blocks, with the hour
-as a limit and payment period only. A counted payment whose block is
-displaced is awaited for `N` blocks while it stays valid, and the grant is
+and a renewal closes nothing. A grant covers the whole term in blocks, with
+the hour as a limit and payment period only. The hire decision of 2026-11-15
+requires a contract plus at least TEXT and EFFECT grants (LIP-0008 section
+2.1). A counted payment whose block is displaced is awaited for `N` blocks while it stays valid, and the grant is
 revoked when the same coins are spent differently. The co-author's agreement
 is pending; no implementation follows these rules yet.
 
@@ -609,8 +610,8 @@ of J9 is implemented.
 Version 0.1.50 adds [LIP-0029](lips/LIP-0029-owner-control.md), Draft text for
 thirteen decisions that Ivan Oparin accepted on 2026-11-15 on owner control
 (R4), written optimistically: the co-author's agreement was not awaited and is
-pending. Only a signed envelope counts; free text directs work, and an effect
-happens only through typed fields that the executor's gate compares with the
+pending. Section 1 now carries the labelled M0 transition of 2026-11-16;
+free text directs work, and an effect happens only through typed fields that the executor's gate compares with the
 actual arguments. The owner's name value pins, outside `swarma`, the hash and
 version of a device list whose records hold a key, its algorithm (BIP-340 or
 P-256), a claimed presence flag, a level ceiling and a revocation seal. The
@@ -650,8 +651,8 @@ the trust-root pin after a stated delay, counted from the first notice that
 names the effect height, and the old key can cancel until the pin takes effect; an
 administrator account that rewrites the pin directly is outside the rule
 ([LIP-0015](lips/LIP-0015-trust-root-and-statements.md) section 5.1). The
-authority frame reaches the agent as a signed envelope from the key holder
-and never as a marker in the text stream
+authority frame reaches the agent in a separate channel; a signature on it
+is NOT established (corrected in version 0.1.52)
 ([LIP-0013](lips/LIP-0013-trust-contract.md) section 3.4). In
 [LIP-0029](lips/LIP-0029-owner-control.md), Figure 1 shows the device seal in
 the words of the decision (section 8.3); the sender attaches the device list
@@ -675,6 +676,29 @@ amendment: groups of rows, the landlord class
 row without a certifier (J9) is therefore admitted through the checks of a
 class, where 0.1.49 admitted none. Nothing of version 0.1.51 is implemented,
 and no vector outcome changes.
+
+Version 0.1.52 records the specification-side reconciliation closures in
+[Decision 0004](decisions/0004-reconciliation-closures.md). LIP-0029 and
+LIP-0013 carry signed-at-minimum, encrypted-at-maximum communication, with
+unsigned work delivered but labelled during M0, effects only with a
+signature, and unsigned input ignored after M6. Chain rules also apply
+inside one host, which is one node. The LIP-0029 device list stays in its
+existing format. The authority frame arrives in a separate channel, with
+its signature unestablished; the dependent frame format and key are
+withdrawn. LIP-0008 and LIP-0003 limit issuance to the issuer name expiry
+observed at issuance. LIP-0008 records the hire split and distinguishes grant
+closure from project and installation stops. LIP-0006 records wallet request
+signing through Keymaker, and LIP-0028 states today's bearer authority and
+on-use checks.
+
+LIP-0026, "Owner decision proposals", gives one proposed text for each of
+whole-parent atomic refusal, ordinal-to-row mapping, class checkpoint
+derivation and normative class refusal codes. Each is proposed, owner
+decision pending. The in-force profile stays exactly at its version 0.1.51
+classification, and whole-parent checks remain unavailable. Completion of
+v4 and landing of the laboratories precede freeze; no freeze is declared.
+Every LIP remains Draft, and no historical protocol byte, tool or vector
+outcome changes.
 
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.

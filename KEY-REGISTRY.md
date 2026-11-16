@@ -102,7 +102,6 @@ and wait for the owners' confirmation.
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
 | Wallet money keys | high | LIP-0006 and the key map, in use |
 | Agent-controlled wallet key | high | LIP-0006, security consequences; its provisioning is open |
-| Frame key of a key holder | high | LIP-0013 section 3.4 (FE2), Draft of 2026-11-16, agreement pending |
 | Moderator key | medium | LIP-0011, Draft |
 | Transport keys | low | Key map, in use in the rental profile |
 | Model bearer of a slot | high | Key map, in use in the rental profile |
@@ -456,7 +455,9 @@ names it as the holder or as the channel key.
 - Published: in no name. One instance of the wallet service pins it as its
   one grantee key, and each request names it (LIP-0006 sections 1 and 2).
 - Holder: the client of the wallet service, which is the agent's own
-  process.
+  process in the implemented wallet v1 profile. The decided successor
+  signing path moves the request key into Keymaker and checks the run
+  origin and the operator's table (LIP-0006 section 1).
 - Signs: the action requests of the wallet service v1 profile, under the
   domain `swarma-action-v1`: `spend` and `budget` under a grant, and the
   actions `balance`, `history` and `receive`, which need no grant.
@@ -725,24 +726,6 @@ until that agreement.
 - Recovery: no refill, the remaining balance moved, and a new key. The
   refill limits and the revocation of this tier are open.
 - Source: LIP-0006, security consequences and open questions.
-
-**Frame key of a key holder**
-
-- Owner: the operator of the agent's key holder.
-- Published: pinned for the harness of each run by the launcher that the
-  key holder trusts (LIP-0013 FE6).
-- Holder: the key holder, outside the agent's OS user.
-- Signs: authority frames, the body kind `authority-frame/1`, one for each
-  instruction admitted at step 7 (LIP-0013 FE1 to FE3). No grant, event,
-  invocation, consent, owner command or transaction.
-- Danger: high. A frame tells the agent on whose authority it works.
-- Leak: the thief makes frames for instructions that were never admitted,
-  so the agent works under terms that no grant gave. It reaches no effect
-  that step 9 or an effect service refuses, and signs nothing else.
-- Recovery: a new frame key, pinned again by the launcher for every run.
-- Source: LIP-0013 section 3.4, Draft, written optimistically under a
-  decision of Ivan Oparin recorded on 2026-11-16; the co-author's agreement
-  is pending. Its algorithm and custody are open.
 
 **Moderator key**
 

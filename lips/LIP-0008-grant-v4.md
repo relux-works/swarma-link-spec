@@ -274,10 +274,16 @@ can bypass this service's rental accounting.
 
 This section records the decision of 2026-11-11 by Ivan Oparin.
 
-One hire is one grant. Its window covers the whole agreed term in block
-heights (section 7.1): about 13,000 blocks for three months at the nominal
-ten minutes. The chain holds one issuance record for the hire. The hire ends
-at `not_after_height`, or earlier when the issuer spends the seal.
+Each grant covers the whole agreed term in block heights (section 7.1):
+about 13,000 blocks for three months at the nominal ten minutes. Each grant
+has its issuance record and ends at `not_after_height`, or earlier when the
+issuer spends its seal.
+
+The hire decision of 2026-11-15 revises the earlier one-grant description:
+a hire is a contract plus at least two grants, a TEXT grant and an EFFECT
+grant ([Decision 0004](../decisions/0004-reconciliation-closures.md), hire).
+TEXT governs the agent's work; EFFECT authorizes effects under the machine
+checks of LIP-0006 section 7. These labels add no wire member or action.
 
 A shorter interval, such as an hour, is not a grant window. It is a period:
 a term of a typed limit ("so many requests per period") and of payment ("so
@@ -335,6 +341,13 @@ provisioned verifier pins MUST bind the same registration and owner key. A
 name string alone is insufficient: after expiry, a new registration cannot
 inherit the old issuer's authority, even under the same spelling or owner
 key. Expired names refuse without waiting for another registration.
+
+**Issuance term (decision of 2026-11-16).** A grant's `not_after` MUST NOT
+be later than the issuer's name expiry, as observed at issuance, 36000 blocks
+from the last update. The issuer MUST refuse to sign otherwise
+([Decision 0004](../decisions/0004-reconciliation-closures.md), grant term).
+On v4 this bounds `not_after_height` (section 7.1). A later renewal does not
+extend the signed window.
 
 The grant lives while the name's updates change neither the owner nor the
 `swarma` member. At every admission the verifier walks the history of the
@@ -608,6 +621,12 @@ of it, and each point stays open until both owners accept it.
 
 ### 5.2. Observed owner break of the issuer name and durable closure
 
+J6 closes an issuer's grants at foreign verifiers that observe the break.
+The platform book's project stop (section 22.5) and installation stop
+(section 6.6.2) are separate mechanisms; neither is this grant closure
+([Decision 0004](../decisions/0004-reconciliation-closures.md), grant
+closure and stops).
+
 Accepted by Ivan Oparin on 2026-11-13 (J6); the co-author's agreement is
 pending. Every rule of this section is Draft text, for v4 only. Until the
 co-author agrees the text in force stands, under which the name rule stops
@@ -774,14 +793,15 @@ emergency brake whose window before confirmation and after a reorganisation
 the text states, and that a UTXO of a cold wallet is reserved for the fees of
 an emergency name update. The text is written optimistically: the co-author's
 agreement is pending, as it is for J6 (section 5.2), on which it rests. It
-builds on the platform book, chapter 22, «Остановка одной подписью», and on
-the device seals of LIP-0029 section 8. The runbook belongs to the book.
+uses J6 for grant closure and the device seals of LIP-0029 section 8 for
+device revocation. The separate project and installation stops are cited in
+section 5.2. The runbook belongs to the book.
 
 The brake adds no new kind of stop. It names the stops of v4 that one owner
 can start without the cooperation of the party it stops, and it states for
-each when it takes effect. Like the book's stop, each is one signature or a
-signature made in advance, none is undone by a rollback, and resumption is a
-separate act.
+each when it takes effect. Each act uses one signature or a signature made
+in advance. A witness keeps its closure through a rollback, and resumption
+is a separate act.
 
 | What is stopped | Act | Key, or what is prepared | Section |
 | --- | --- | --- | --- |
@@ -846,15 +866,13 @@ The brake bounds the following and no more:
   rule of this section. A stolen device needs its seal spent, a stolen grant
   key needs the break, and a stopped agent needs the recorded seal spends
   of its grants.
-- **The local stop of the book** (chapter 22, «Остановка одной подписью»;
-  §6.6.2 and §7.12, «Общий стоп») halts the owner's own services at once and
-  closes nothing at a foreign verifier. The brake closes grants on chain and
-  halts no service. The two are used together and neither replaces the
-  other. The book's asymmetry holds for both: one signature stops, and
-  resumption is a separate act («Один честный участник должен суметь
-  остановить подозрительную работу», §22.5). curator-spec CIP-0011 revision 6
-  gives the operator's phone key and an execution stop, `host_stop`, on one
-  machine, and no stop of grants.
+- **The platform project stop** (section 22.5) stops the protocol by the
+  key of one core node, with resumption by a quorum. The **installation
+  stop** (section 6.6.2; also section 7.12) halts the owner's services.
+  Neither closes grants at a foreign verifier. J6 closes grants at a
+  verifier that observes the break and halts no service. curator-spec
+  CIP-0011 revision 6 gives the operator's phone key and the execution
+  stop `host_stop` on one machine, with no stop of grants.
 - **The Link book** calls the change of the grant key the emergency brake
   for a leaked hot key (§3.9, «аварийным тормозом»), and §4.9.3 says that on
   v4 a reorganisation can undo the name rule but not a seal spend seen in the
@@ -919,6 +937,8 @@ proposal and stays open until both owners accept it.
 The signed window of a v4 grant is a pair of block heights,
 `not_before_height` and `not_after_height`, next to the committed recent block.
 These are logical names; their encoding needs fixtures like every other field.
+At issuance `not_after_height` MUST NOT exceed the issuer name expiry
+observed at issuance, under the issuance-term rule of section 3.
 
 1. Both heights MUST be present, finite non-negative integers with
    `not_before_height < not_after_height`. The window is half-open:

@@ -449,58 +449,19 @@ until it starts again. Terms written there would outlive a spent seal and a
 closed window, and they would stand beside every message, whether a grant
 admitted it or not.
 
-The decision leaves open how a frame is made and carried. Whether it is
-signed, whether it ever leaves the executor and who else may see it are not
-decided. The draft proposes the simplest form: a frame that is local to the
-executor, unsigned and shown to nobody else. A signed handoff from outside
-the agent's write boundary would meet the decision as well. Also open are
-the encoding of the frame, the channel by which the gate hands it to the
-agent's run, how a deployment shows that the agent cannot write it, and
-what the frame carries at each executor of a v4 grant. A frame does not
-make an agent keep to its terms: it tells the agent what they are, and the
-checks of step 9 bound the effects.
+**The frame's channel (correction of 2026-11-16).** The authority frame
+arrives in a separate channel. A signature on it is NOT established
+([Decision 0004](../decisions/0004-reconciliation-closures.md),
+authority-frame correction). The earlier claim of a decided signer and the
+format and frame key derived from that claim are withdrawn. A marker,
+header or quoted frame in the text stream gives no authority. Rules 1 to 6
+above retain their proposal status.
 
-**The frame as a signed envelope (Draft, 2026-11-16).** Ivan Oparin decided,
-as recorded by the lead on 2026-11-16, that the authority frame reaches the
-agent as a signed envelope from the key holder, and never as a marker in the
-text stream. This answers two of the open points of the paragraph above, that
-a frame is signed and by whom, and replaces the draft's proposal of an
-unsigned local frame. The text is written optimistically: the co-author's
-agreement is pending, and until it is given the paragraph above stands. The
-Link book, §6.13 «Договор и полномочия», describes the frame and says
-nothing of its signer or carrier.
-
-| Rule | Requirement | Refusal |
-| --- | --- | --- |
-| FE1 | A frame is an envelope of `swarm-envelope/2` with the body kind `authority-frame/1`, beside the three kinds of LIP-0029 section 5. Its body holds the members of the table above, the `event_id` of the admitted instruction, the run's origin (J7.1) and the members of LIP-0029 section 5.1. Its encoding and tag come with that registration (LIP-0029 section 5.4). | |
-| FE2 | The key holder of the agent whose run receives the frame signs it with its frame key. The frame key signs frames only: no grant, no event, no invocation, no consent, no owner command and no transaction. A frame is not one of the operations of J7.5, so no run can ask for one. | Nothing is signed |
-| FE3 | The key holder signs a frame only from the gate's record of an admission at step 7, for the run that J7.6 creates for that instruction, and binds the frame to that run's origin. It signs one frame for one admitted instruction. | Nothing is signed |
-| FE4 | The frame reaches the run on the run's channel of J7.4, as a message of its own type, and never inside the text of a message, a tool result, a file or a prompt. Before the agent sees it, the harness of the run verifies the signature under the frame key that the launcher pinned for that run, and that the frame's origin is the run's. It then presents the frame apart from the text stream. A frame that fails is not presented, and the instruction stays data. | The instruction stays data |
-| FE5 | Text in the stream that looks like a frame, such as a marker, a header, a tag or a quoted envelope, is data and gives no authority. The standing rule of rule 5 names the frame by its channel and its signature, never by a string. | |
-| FE6 | The launcher that the key holder trusts (J7.4) pins the frame key for the harness when it creates the run, outside the agent's write authority. | |
-| FE7 | The harness presents each frame once in a run. A frame whose `event_id` it already presented in that run, or whose origin is another run's, is not presented. | |
-
-| Case | Valid control | Refusal or invariant |
-| --- | --- | --- |
-| S3-4F | Bob's instruction to Alisa's agent is admitted at step 7 under grant `G`; the key holder signs one frame for the new run, and the harness verifies it under the pinned frame key and presents it apart from the text | The same frame pasted into the body of Karl's message: data (FE5). A frame signed by the agent's own key: not presented (FE2, FE4). The same frame a second time in the run, or one whose origin is another run's: not presented (FE7). |
-
-Read-only, rule 3, now has a check: the agent's process holds no frame key,
-so a frame that it writes does not verify. Rules 1 to 6 stand, with the key
-holder signing what rule 1 has the gate build. The gate and the key holder are
-both outside the agent's write boundary, and J7.1 already has the key holder
-read the gate's record of step 7.
-
-What it leaves: the harness verifies, and a harness that the agent can
-replace verifies nothing (J7.8, a deployment rule). The frame still informs
-the model and does not bind it, and step 9 still bounds the effects. The
-platform book treats memory in the same way (chapter 11, «Доставка памяти
-агенту»): a separate channel, and «Подпись службы удостоверяет конверт, но не
-повышает полномочий вложенного текста». Chapter 7, «Очередь и вопросы
-среды», takes a marker in an echo as evidence of delivery and not of
-authority, and chapter 8, «Один владелец дома», keeps the agent's bounding
-instructions outside its write area; FE4 and FE5 are the same line for the
-frame. The Link book, §10.4, records the unsigned local frame that this text
-replaces, an update for the book once agreed.
+The frame's encoding and signature remain open, as do whether it leaves the
+executor, who else may see it, the interface of the separate channel, how a
+deployment shows that the agent cannot write the frame, and the frame at
+each executor of a v4 grant. A frame tells the agent the admitted terms;
+the checks of step 9 bound effects.
 
 A refusal is reported as its code only. The executor does not reveal grant
 contents, ledger state or the reason a key was refused beyond the code.
@@ -633,7 +594,11 @@ orchestrator's instruction lists the child and not the standing grant; that
 is what makes that motivation hold.
 
 What the gate gives, it gives at an honest key holder on the agent's host:
-a run cannot obtain the identity's signature under a grant that the
+the level holds at an honest key holder only, and a receiver cannot verify
+an origin. J7.7 gives the receiver no origin proof. This states the local
+limit ([Decision 0004](../decisions/0004-reconciliation-closures.md), origin
+and level) and adopts no platform section 13.5 run-right model. A run cannot
+obtain the identity's signature under a grant that the
 operator did not give to the run's origin; a first consent can be signed,
 and only for a contract that the operator listed; and the key has no other
 signing path. Six things stay open:
@@ -732,8 +697,12 @@ not the owner:
 
 1. The principal issues the trust grant to an agent of the other owner. The
    grant's `grantee_key` is that agent's key.
-2. The other owner instructs that agent over the owner channel, as for any
-   other work. An owner directs its own agent without an envelope.
+2. The other owner instructs that agent over the owner channel under
+   LIP-0029 section 1: signed at minimum, encrypted at maximum. During M0,
+   unsigned work is delivered but labelled; effects require a signature.
+   After M6, unsigned input is ignored. This is the transitional rule of
+   2026-11-16 ([Decision 0004](../decisions/0004-reconciliation-closures.md),
+   signed communication).
 3. The agent signs the envelope of section 3.1 with its key. The key holder
    releases the signature under the gate of section 3.6: the origin of the
    run is the owner's command, and the operator's table lists the grant
@@ -760,14 +729,14 @@ sent a message, and it is no authority either.
 
 [LIP-0029](LIP-0029-owner-control.md) holds Draft text, written
 optimistically under a decision of 2026-11-15 that awaits the co-author's
-agreement, that revises point 2: only a signed envelope counts, so the owner
-directs its own agent by an owner command signed by a device of the owner's
-device list, and an unsigned message is ignored. The same text moves the
+agreement, for the owner command signed by a device of the owner's device
+list. Its section 1 carries the transitional rule now cited by point 2;
+after M6, unsigned input is ignored. The same text moves the
 envelope of section 3.1 into `swarm-envelope/2` as the body kind
 `instruction/1`, and requires the ref and the revision of a landing beside the
 repository. It replaces the authority key of a person, which this section
-names, by the owner's device keys. Until the co-author agrees this section
-stands as written.
+names, by the owner's device keys. Apart from point 2's transitional
+correction, this section retains its existing agreement boundary.
 
 ## 4. Vectors and reference checker
 
@@ -880,4 +849,4 @@ protocol text and a conformance change that names the vector set.
 | T8 | Nonce journal key: the nonce alone, or the pair of signer and nonce | The nonce alone, as the kind-8183 precedent does. |
 | T9 | Leaving enforcing mode: who may return an executor to shadow mode, and what happens to admitted instructions not yet in effect? | Either owner at any time, since it only removes authority; admitted work not yet in effect goes back to the owner. Undecided. |
 | T10 | A gap found in review: a grant is issued to a key, and every run of the agent that holds the key can act under it. Section 3.6 states the case. | Section 3.6, decided by Ivan Oparin on 2026-11-14 (J7): the service that holds the agent's key signs a run's objects only under what its operator listed for the origin of that run. This adds no record to the chain. The co-author's agreement is pending. |
-| T11 | The authority frame of section 3.4: whether it is signed, whether it leaves the executor and who else may see it; its encoding; the channel by which the admission gate hands it to the agent's run; and how a deployment shows that the agent cannot write it | The draft proposed a frame that is local and unsigned, in a deployment profile. Draft text of 2026-11-16 (FE1 to FE7, the co-author's agreement pending) decides that it is signed by the key holder and reaches the run as an envelope on the run's channel, never in the text stream. Still open: whether it leaves the executor and who else may see it, its encoding, the frame key's algorithm and custody, and the frame at each executor of a v4 grant. |
+| T11 | The authority frame of section 3.4: its signature, encoding, recipients and separate-channel interface; how a deployment shows that the agent cannot write it; the frame at each executor of a v4 grant | The frame arrives in a separate channel. A signature on it is NOT established (Decision 0004, authority-frame correction). The frame's rules retain their Draft or proposal status. |

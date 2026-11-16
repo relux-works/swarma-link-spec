@@ -155,6 +155,14 @@ upstream model service, lies with the proxy (key registry). LIP-0008 section 5
 therefore asks that a model proxy verifies the presentation, the signed limits,
 the validity and the seal against its own view of the chain.
 
+On each use, the caller's authority at today's proxy is the
+dispatcher-prepared run binding held by its bearer. J7 issues that binding
+upstream of the proxy. The proxy re-checks mode, window and account block on
+use. It checks neither the key holder nor the chain at that point
+([Decision 0004](../decisions/0004-reconciliation-closures.md), caller
+authority). T4.5 adds the service's own proof-path check before each
+reservation; that check describes the proposed session service.
+
 The key holder has the same gap from its side. Under LIP-0013 section 3.6 it
 signs for a run only under the grants that its table lists for the origin of
 that run, and J7.8 names the credential that acts without a signature of the
