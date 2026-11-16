@@ -13,10 +13,40 @@ checker of `vectors/LIP-0020/grant-v4.json`.
 line. Exit 0: every vector gives its expected result. Exit 1: a finding.
 Exit 2: a usage or input error.
 
+One implementation computed the vector file: this one. The generator, the
+reader and the checker stand in this file and share its code, so `check`
+shows that the file is what this reader gives and nothing more. The
+expected results of the groups `valid`, `invalid` and `compound` were
+stated by hand in the generator, from the text of section 11, and this
+reader decided each of them again. An independent implementation must
+recompute, from `signed_form_hex` and `context` alone and with none of
+this code:
+
+- for every vector of `valid`: that the pipeline reads it, and its typed
+  digest, its identifier, its content address, the verification of its
+  signature under the key of the place, and the witness key hash script
+  of its seal key;
+- for every vector of `invalid` and of `compound`: the first refusal of
+  the pipeline, as a code;
+- for every vector of `undetermined`: nothing that binds it. Section 11
+  carries the rule of such a vector as a proposal of another LIP and does
+  not determine whether a reader judges it. This reader judges every rule
+  of W11.10 and refuses these vectors as GRANT_DELEGATE; the file states
+  `refused` and no code, and `check` accepts any refusal there and
+  compares no code. A reader that does not judge the rule reads the same
+  octets as a well-formed parent.
+
+`check` does not hold a refused vector against its valid neighbour: it
+checks that the neighbour is a valid vector, and the statement that the
+two differ in one defect is the generator's.
+
 Only the Python standard library is used. Nothing reads a network, a node,
 a clock or a key file. The signer accepts the public test scalars of the
 vector file and nothing else; it runs in variable time and is no signer
-for real keys.
+for real keys. `check` is more than a reader: before it reads the file it
+runs the calibration of the generator, which signs three stated values
+with public test scalars. It reads at most 16777216 octets of a vector
+file and decodes no vector above twice the largest size of a grant.
 """
 
 import hashlib
@@ -25,6 +55,10 @@ import sys
 
 GRANT_TYPE = "swarma-grant/4"
 MAX_GRANT = 65536
+MAX_VECTOR = 2 * MAX_GRANT
+MAX_FILE = 16777216
+REFUSED = "refused"
+UNDETERMINED = "not determined by this version"
 MAX_DEPTH = 16
 MAX_NUMBER = 9007199254740991
 MAX_INDEX = 4294967295
@@ -659,6 +693,14 @@ def check_shape(g):
 
 
 def check_delegate(g):
+    """Every rule of W11.10, the proposal rules included.
+
+    W11.10 marks three points as proposals of other LIPs that a reader need
+    not judge: the witness key hash of a range script, every rule on `stop`
+    in rule 5, and rule 8. This reader judges them and reports them under
+    the same code. The vector file states no code for them (the group
+    `undetermined`), and `check` compares none.
+    """
     d = g.get("delegate")
     if d is None:
         return
@@ -790,14 +832,25 @@ DERIVED = ("typed_digest", "grant_id", "content_address", "seal_script")
 
 
 def verify_file(data):
-    """Returns a list of (vector id, 'PASS' or a finding)."""
+    """Returns a list of (vector id, 'PASS' or a finding).
+
+    For a vector of `undetermined` no code is compared: any refusal passes.
+    """
     out = []
     grants = {}
-    vectors = data["valid"] + data["invalid"] + data["compound"]
+    unfixed = data["undetermined"]
+    determined = data["valid"] + data["invalid"] + data["compound"]
+    vectors = determined + unfixed
     known = {v["id"] for v in vectors}
     valid_ids = {v["id"] for v in data["valid"]}
+    unfixed_ids = {v["id"] for v in unfixed}
+    lone = set(data["no_neighbour"])
+    single = {v["id"] for v in data["invalid"] + unfixed}
     for v in vectors:
         findings = []
+        if len(v["signed_form_hex"]) > 2 * MAX_VECTOR:
+            out.append((v["id"], "signed_form_hex is longer than the checker reads"))
+            continue
         octets = bytes.fromhex(v["signed_form_hex"])
         if "signed_form" in v and v["signed_form"].encode("utf-8") != octets:
             findings.append("signed_form differs from signed_form_hex")
@@ -814,7 +867,12 @@ def verify_file(data):
             got = "ok"
         except Refusal as r:
             g, got = None, r.code
-        if got != v["expect"]:
+        if v["id"] in unfixed_ids:
+            if v["expect"] != REFUSED or v.get("code") != UNDETERMINED:
+                findings.append("an undetermined vector states an outcome or a code")
+            if got == "ok":
+                findings.append("expect a refusal, reader gives ok")
+        elif got != v["expect"]:
             findings.append("expect %s, reader gives %s" % (v["expect"], got))
         if (v["expect"] == "ok") != (v["id"] in valid_ids):
             findings.append("group")
@@ -832,15 +890,22 @@ def verify_file(data):
                 findings.append("payload")
         elif any(name in v for name in DERIVED):
             findings.append("a refused vector states a derived value")
-        if "valid_neighbour" in v and v["valid_neighbour"] not in valid_ids:
-            findings.append("valid_neighbour")
+        if "valid_neighbour" in v:
+            if v["valid_neighbour"] not in valid_ids or v["id"] in lone:
+                findings.append("valid_neighbour")
+        elif v["id"] in single and v["id"] not in lone:
+            findings.append("a refused vector names no valid neighbour")
         out.append((v["id"], "PASS" if not findings else "; ".join(findings)))
     listed = {x for rule in data["rules"] for x in rule["vectors"]}
     out.append(("rules", "PASS" if listed <= known else
                 "names an unknown vector: %s" % sorted(listed - known)))
-    codes = {v["expect"] for v in vectors} - {"ok"}
+    codes = {v["expect"] for v in determined} - {"ok"}
     out.append(("codes_exercised", "PASS" if codes == set(data["codes_exercised"]) else
                 "differs from the codes of the vectors"))
+    absent = {x["code"] for x in data["not_exercised"]}
+    out.append(("not_exercised", "PASS" if not (absent & codes) and lone <= single else
+                "names a code that a vector exercises, or a vector outside `invalid` "
+                "and `undetermined`"))
     return out
 
 
@@ -1012,6 +1077,45 @@ def base_parent():
     return g
 
 
+def unlimited_group(index):
+    """A group of one row for an exact name, without a certifier and
+    without a limit. Its coin is the output `index` of the coins b."""
+    return {"template": {"executor": row_executor(),
+                         "recipient": {"name": "id/lip0020-agent",
+                                       "owner": key("agent-owner")},
+                         "limits": [], "no_certifier": True},
+            "ranges": [plain_range(TX_COINS_B, index, 1)]}
+
+
+def exact_parent():
+    """A parent that pins no notary and has no pool: one group of one row."""
+    g = base_parent()
+    g["delegate"]["notaries"] = []
+    g["delegate"]["pools"] = []
+    g["delegate"]["groups"] = [unlimited_group(7)]
+    return g
+
+
+def bound_parent():
+    """The base parent at three largest counts: four notaries, 16 groups and
+    16 ranges in its second group. Its rows sum to 680 for the one limit key,
+    5 of 60 and 19 of 20, and its pool of 700 leaves room for one more row
+    of 20, so that a 17th range breaks the count and nothing else."""
+    g = base_parent()
+    d = g["delegate"]
+    d["notaries"] = [notary_pin()] + [
+        dict(notary_pin(), name="id/lip0020-notary-%s" % c) for c in "bcd"]
+    d["pools"] = [limit(*REQUESTS, "700", HOUR)]
+    d["groups"][1]["ranges"] += [plain_range(TX_COINS_B, 10 + j, 1) for j in range(15)]
+    d["groups"] += [unlimited_group(100 + i) for i in range(14)]
+    return g
+
+
+# The amount of the wrap vector: five rows of it and four rows of 20 sum to
+# 2^64 + 4, which a sum in 64 bits reads as 4.
+WRAP_AMOUNT = (2 ** 64 + 4 - 4 * 20) // 5
+
+
 def base_child(parent_id):
     g = base_root()
     del g["issuer"]
@@ -1037,7 +1141,7 @@ def signed(payload, signer="issuer", aux=ZERO_AUX):
 
 class Builder:
     def __init__(self):
-        self.valid, self.invalid, self.compound = [], [], []
+        self.valid, self.invalid, self.compound, self.undetermined = [], [], [], []
         self.rules = {}
 
     def _entry(self, vid, rules, claim, octets, expect, context):
@@ -1071,8 +1175,18 @@ class Builder:
 
     def bad(self, vid, rules, claim, octets, expect, neighbour, context=None):
         v = self._entry(vid, rules, claim, octets, expect, context)
-        v["valid_neighbour"] = neighbour
+        if neighbour is not None:
+            v["valid_neighbour"] = neighbour
         self.invalid.append(v)
+
+    def unfixed(self, vid, rules, claim, octets, judged, neighbour):
+        """A vector whose rule section 11 carries as a proposal: the file
+        states that a reader which judges the rule refuses, and no code."""
+        v = self._entry(vid, rules, claim, octets, REFUSED, None)
+        v["code"] = UNDETERMINED
+        v["judged"] = judged
+        v["valid_neighbour"] = neighbour
+        self.undetermined.append(v)
 
     def both(self, vid, rules, claim, octets, defects, expect, context=None):
         v = self._entry(vid, rules, claim, octets, expect, context)
@@ -1147,17 +1261,9 @@ def build():
               "has two ranges with their stop coins; the second states that it has no certifier "
               "and names the class of the issuer's own landlord. The pool of 380 is exactly "
               "5 rows of 60 and 4 rows of 20.", parent)
-    exact = base_parent()
-    exact["delegate"]["notaries"] = []
-    exact["delegate"]["pools"] = []
-    exact["delegate"]["groups"] = [
-        {"template": {"executor": row_executor(),
-                      "recipient": {"name": "id/lip0020-agent", "owner": key("agent-owner")},
-                      "limits": [], "no_certifier": True},
-         "ranges": [plain_range(TX_COINS_B, 7, 1)]}]
     b.ok("grant-v-04", ["W11.5", "W11.7", "W11.10"],
          "A parent that pins no notary: one group without a certifier whose recipient is an "
-         "exact name, with no limit and therefore no pool.", exact)
+         "exact name, with no limit and therefore no pool.", exact_parent())
     child = base_child(v3["grant_id"])
     v5 = b.ok("grant-v-05", ["W11.2", "W11.8"],
               "A child of grant-v-03 for the row of ordinal 1, signed by the delegation key of "
@@ -1186,6 +1292,11 @@ def build():
          "The parent of grant-v-03 without a child-seal key. The document is well formed. "
          "Under LIP-0014 CS1 it is unusable as a parent: every child of it refuses as "
          "CHILD_SEAL_KEY at its admission, which is no step of this pipeline.", keyless)
+    b.ok("grant-v-11", ["W11.5", "W11.6"],
+         "The parent of grant-v-03 at three largest counts: four notaries, 16 groups, and 16 "
+         "ranges in its second group. Each of the 14 further groups has one row for an exact "
+         "name, without a certifier and without a limit. The rows sum to 680, 5 of 60 and 19 "
+         "of 20, and the pool of 700 leaves room for one more row of 20.", bound_parent())
 
     # ---- refused, one defect -------------------------------------------
     def root_with(change):
@@ -1195,6 +1306,21 @@ def build():
 
     def parent_with(change):
         g = base_parent()
+        change(g)
+        return g
+
+    def exact_with(change):
+        g = exact_parent()
+        change(g)
+        return g
+
+    def bound_with(change):
+        g = bound_parent()
+        change(g)
+        return g
+
+    def sized_with(change):
+        g = sized_parent(MAX_GRANT)
         change(g)
         return g
 
@@ -1229,7 +1355,8 @@ def build():
     bad(["W3.2", "W11.2"],
         "The stand-in of the vector prim-grant-01 of wire-vectors.json: a payload that holds "
         "`type` alone, under its valid signature. Before the grant had members a reader "
-        "refused these octets as WIRE_TYPE.", signed({"type": GRANT_TYPE}), "WIRE_MEMBER")
+        "refused these octets as WIRE_TYPE. The payload lacks every other member, so the "
+        "vector names no valid neighbour.", signed({"type": GRANT_TYPE}), "WIRE_MEMBER", None)
     bad(["W3.2", "W11.2"], "A member that the schema does not list: the `grantee_name` of v3.",
         signed(root_with(setp(["grantee_name"], "id/lip0020-recipient"))), "WIRE_MEMBER")
     bad(["W3.2", "W11.2"], "No `seal`.", signed(root_with(setp(["seal"], DROP))), "WIRE_MEMBER")
@@ -1244,8 +1371,13 @@ def build():
         "grant-v-02")
     bad(["W11.3"], "A grant whose own recipient is a class. A class stands in a template alone.",
         signed(root_with(setp(["recipient"], {"class": [issuer_pin()]}))), "WIRE_MEMBER")
-    bad(["W11.2"], "A grant with `issuer` and with `parent` and `ordinal`.",
-        signed(root_with(lambda g: g.update(parent=v3["grant_id"], ordinal=1))), "WIRE_MEMBER")
+    child_issuer = base_child(v3["grant_id"])
+    child_issuer["issuer"] = dict(issuer_pin(), grant_key=key("issuer"))
+    bad(["W11.2"],
+        "The child of grant-v-05 with the member `issuer`: a grant with `issuer` and with "
+        "`parent` and `ordinal`.",
+        signed(child_issuer, "delegation"), "WIRE_MEMBER", "grant-v-05",
+        {"parent": "grant-v-03"})
     child_delegate = base_child(v3["grant_id"])
     child_delegate["delegate"] = base_parent()["delegate"]
     bad(["W11.2", "W11.5"], "A child that carries a right of re-delegation.",
@@ -1269,11 +1401,8 @@ def build():
         signed(parent_with(setp(t1 + ["no_certifier"], False))), "WIRE_MEMBER", pv)
     bad(["W11.7"], "A certifier that is the empty string.",
         signed(parent_with(setp(t0 + ["certifier"], ""))), "WIRE_MEMBER", pv)
-    null_certifier = signed(base_parent()).replace(
-        b'"certifier":"id/lip0020-notary"', b'"certifier":null', 1)
-    bad(["W1.4", "W11.7"],
-        "A certifier that is `null`. The signature is not valid for these octets.",
-        null_certifier, "WIRE_VALUE", pv)
+    bad(["W1.4", "W11.7"], "A certifier that is `null`.",
+        signed(parent_with(setp(t0 + ["certifier"], None))), "WIRE_VALUE", pv)
 
     bad(["W2.1", "W11.1"], "A height in the string form.",
         signed(root_with(setp(["not_after_height"], "252560"))), "WIRE_MEMBER")
@@ -1287,32 +1416,35 @@ def build():
         signed(root_with(setp(["seal", "outpoint", "vout"], 4294967296))), "WIRE_INTEGER")
     bad(["W11.6"], "A range with the count 0.",
         signed(parent_with(setp(r10 + ["count"], 0))), "WIRE_INTEGER", pv)
-    bad(["W11.6"], "A range of 4097 coins.",
-        signed(parent_with(setp(r10 + ["count"], 4097))), "WIRE_INTEGER", pv)
+    bad(["W11.6"],
+        "A range of 4097 coins: the first range of grant-v-08, which has no limit and "
+        "therefore no pool to exceed.",
+        signed(sized_with(setp(["delegate", "groups", 0, "ranges", 0, "count"], 4097))),
+        "WIRE_INTEGER", "grant-v-08")
 
-    def many_groups(g):
-        one = g["delegate"]["groups"][1]
-        g["delegate"]["groups"] = [
-            dict(one, ranges=[plain_range(TX_COINS_B, 100 + i, 1)]) for i in range(17)]
-        g["delegate"]["notaries"] = []
-    bad(["W11.6"], "17 groups.", signed(parent_with(many_groups)), "WIRE_MEMBER", pv)
-
-    def many_ranges(g):
-        g["delegate"]["groups"][1]["ranges"] = [
-            plain_range(TX_COINS_B, 100 + i, 1) for i in range(17)]
-    bad(["W11.6"], "A group of 17 ranges.", signed(parent_with(many_ranges)), "WIRE_MEMBER", pv)
-    bad(["W11.6"], "A right of re-delegation without a group.",
-        signed(parent_with(setp(["delegate", "groups"], []))), "WIRE_MEMBER", pv)
+    bv = "grant-v-11"
+    bad(["W11.6"], "17 groups: the parent of grant-v-11 with one more group of one row.",
+        signed(bound_with(lambda g: g["delegate"]["groups"].append(unlimited_group(114)))),
+        "WIRE_MEMBER", bv)
+    bad(["W11.6"],
+        "A group of 17 ranges: the second group of grant-v-11 with one more range of one "
+        "coin. The pool still holds the rows.",
+        signed(bound_with(lambda g: g["delegate"]["groups"][1]["ranges"].append(
+            plain_range(TX_COINS_B, 25, 1)))), "WIRE_MEMBER", bv)
+    bad(["W11.6"],
+        "A right of re-delegation without a group: the parent of grant-v-04 without its "
+        "one group.",
+        signed(exact_with(setp(["delegate", "groups"], []))), "WIRE_MEMBER", "grant-v-04")
     bad(["W11.6"], "A group without a range.",
         signed(parent_with(setp(["delegate", "groups", 1, "ranges"], []))), "WIRE_MEMBER", pv)
-
-    def five_notaries(g):
-        g["delegate"]["notaries"] = [
-            dict(notary_pin(), name="id/lip0020-notary-%d" % i) for i in range(5)]
-        g["delegate"]["groups"][0]["template"]["certifier"] = "id/lip0020-notary-0"
-    bad(["W11.5"], "Five notaries.", signed(parent_with(five_notaries)), "WIRE_MEMBER", pv)
-    bad(["W11.7"], "A class without a landlord.",
-        signed(parent_with(setp(t1 + ["recipient"], {"class": []}))), "WIRE_MEMBER", pv)
+    bad(["W11.5"], "Five notaries: the parent of grant-v-11 with one more pin.",
+        signed(bound_with(lambda g: g["delegate"]["notaries"].append(
+            dict(notary_pin(), name="id/lip0020-notary-e")))), "WIRE_MEMBER", bv)
+    bad(["W11.7"],
+        "A class without a landlord: the class of the first template of grant-v-08, "
+        "emptied. The template names a certifier.",
+        signed(sized_with(setp(["delegate", "groups", 0, "template", "recipient"],
+                               {"class": []}))), "WIRE_MEMBER", "grant-v-08")
     bad(["W11.1"], "An owner key that begins with 04.",
         signed(root_with(setp(["issuer", "owner"], "04" + key("issuer-owner")[2:]))), "WIRE_MEMBER")
     bad(["W11.1"], "A seal key in uppercase hexadecimal.",
@@ -1390,15 +1522,14 @@ def build():
     bad(["W11.10"], "A pool of 379 for rows that sum to 380.",
         signed(parent_with(setp(d + ["pools", 0, "amount"], "379"))), "GRANT_DELEGATE", pv)
 
-    def wrap(g):
-        g["delegate"]["pools"][0]["amount"] = "20"
-        g["delegate"]["groups"][0]["template"]["limits"][0]["amount"] = "4611686018427387904"
-        g["delegate"]["groups"][0]["ranges"] = [certified_range(TX_COINS_A, 0, 4, 0)]
-        g["delegate"]["groups"][1]["ranges"] = [plain_range(TX_COINS_B, 0, 1)]
+    if 5 * WRAP_AMOUNT + 4 * 20 != 2 ** 64 + 4 or WRAP_AMOUNT > MAX_AMOUNT:
+        raise ValueError("wrap amount")
     bad(["W11.10", "W2.4"],
-        "Four rows of 2^62 and one row of 20 against a pool of 20. The sum is 2^64 + 20: "
-        "a reader that adds in 64 bits gets 20 and admits the parent.",
-        signed(parent_with(wrap)), "GRANT_DELEGATE", pv)
+        "The amount of the first template raised from 60 to %d. Five rows of it and four "
+        "rows of 20 sum to 2^64 + 4 against the pool of 380: a reader that adds in 64 bits "
+        "gets 4 and admits the parent." % WRAP_AMOUNT,
+        signed(parent_with(setp(t0 + ["limits", 0, "amount"], str(WRAP_AMOUNT)))),
+        "GRANT_DELEGATE", pv)
     bad(["W11.10"], "Two pools with one key.",
         signed(parent_with(lambda g: g["delegate"]["pools"].append(
             limit(*REQUESTS, "380", HOUR)))), "GRANT_DELEGATE", pv)
@@ -1434,36 +1565,69 @@ def build():
         signed(parent_with(setp(t0 + ["recipient"], {
             "class": [issuer_pin(), dict(landlord_b_pin(), name="id/lip0020-issuer")]}))),
         "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "A range of a template with a certifier that states no stop coins.",
-        signed(parent_with(setp(r00 + ["stop"], DROP))), "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "A range of a template without a certifier that states stop coins.",
-        signed(parent_with(setp(r10 + ["stop"], {"txid": TX_STOPS, "first": 100,
-                                                 "script": stop_script()}))),
+    bad(["W11.10"],
+        "A range whose last coin would have the index 4294967296: the range of the second "
+        "group with its first coin at 4294967293.",
+        signed(parent_with(setp(r10 + ["first"], MAX_INDEX - 2))), "GRANT_DELEGATE", pv)
+    bad(["W11.10"],
+        "Two ranges of one transaction that share the output 2: the second range of the "
+        "first group with its first coin at 2.",
+        signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1, "first"], 2))),
         "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "A range whose last coin would have the index 4294967296.",
-        signed(parent_with(setp(["delegate", "groups", 1, "ranges"],
-                                [plain_range(TX_COINS_B, MAX_INDEX - 2, 4)]))),
-        "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "A range script that pays a key hash and no witness key hash.",
-        signed(parent_with(setp(r10 + ["script"], "76a914" + coin_script()[4:] + "88ac"))),
-        "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "Two ranges of one transaction that share the output 2.",
-        signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1],
-                                certified_range(TX_COINS_A, 2, 2, 3)))), "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "A range that holds the seal of the parent.",
-        signed(parent_with(setp(["delegate", "groups", 1, "ranges"],
-                                [plain_range(TX_SEAL, 0, 4)]))), "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "Stop coins that are coins of another range.",
-        signed(parent_with(setp(r00 + ["stop"], {"txid": TX_COINS_B, "first": 3,
-                                                 "script": stop_script()}))),
-        "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "Stop coins that begin at the output after the seal of the parent.",
-        signed(parent_with(setp(r00 + ["stop"], {"txid": TX_SEAL, "first": 1,
-                                                 "script": stop_script()}))),
-        "GRANT_DELEGATE", pv)
-    bad(["W11.10"], "Two runs of stop coins that share the output 2.",
-        signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1, "stop", "first"], 2))),
-        "GRANT_DELEGATE", pv)
+    bad(["W11.10"],
+        "A range that holds the seal of the parent: the range of the second group in the "
+        "seal transaction.",
+        signed(parent_with(setp(r10 + ["txid"], TX_SEAL))), "GRANT_DELEGATE", pv)
+
+    # ---- refused, one defect, document step on the octets of a grant ----
+    whole = signed(root)
+    bad(["W1.2"], "grant-v-01 without its last octet, the closing brace of the signed form.",
+        whole[:-1], "WIRE_JSON")
+    twice = whole.replace(b'"type":"swarma-grant/4"}',
+                          b'"type":"swarma-grant/4","type":"swarma-grant/4"}', 1)
+    if twice == whole:
+        raise ValueError("duplicate")
+    bad(["W1.3"],
+        "The member `type` twice in the payload of grant-v-01, with one value. The signature "
+        "is that of grant-v-01.", twice, "WIRE_DUPLICATE")
+    fraction = setp(["not_after_height"], 252560.0)
+    control = setp(["executor", "name"], "id/lip0020-\x01executor")
+    bad(["W1.4"], "A height with a fraction: `not_after_height` is written 252560.0.",
+        signed(root_with(fraction)), "WIRE_NUMBER")
+    bad(["W1.5"], "An executor name that holds the escape of U+0001.",
+        signed(root_with(control)), "WIRE_STRING")
+
+    # ---- refused by a reader that judges a proposal rule; no code -------
+    u = [0]
+
+    def unfixed(claim, octets, judged):
+        u[0] += 1
+        b.unfixed("grant-u-%02d" % u[0], ["W11.10"], claim, octets, judged, pv)
+
+    presence = ("W11.10 rule 5: a range has `stop` exactly where its template names a "
+                "certifier (LIP-0027 H1.1, LIP-0014 J9.4)")
+    script = ("W11.10 rule 5: the script of a range is a witness key hash (LIP-0026 R8.2, "
+              "R3.1)")
+    place = ("W11.10 rule 8: no output is a stop coin of two rows, and no stop coin is a "
+             "coin of a row, the seal of the parent or the output after it (LIP-0027 H1.3)")
+    unfixed("A range of a template with a certifier that states no stop coins.",
+            signed(parent_with(setp(r00 + ["stop"], DROP))), presence)
+    unfixed("A range of a template without a certifier that states stop coins.",
+            signed(parent_with(setp(r10 + ["stop"], {"txid": TX_STOPS, "first": 100,
+                                                     "script": stop_script()}))), presence)
+    unfixed("A range script that pays a key hash and no witness key hash.",
+            signed(parent_with(setp(r10 + ["script"], "76a914" + coin_script()[4:] + "88ac"))),
+            script)
+    unfixed("Stop coins that are coins of another range: the stop coins of the first range "
+            "in the transaction of the coins of the second group.",
+            signed(parent_with(setp(r00 + ["stop", "txid"], TX_COINS_B))), place)
+    unfixed("Stop coins that begin at the output after the seal of the parent.",
+            signed(parent_with(setp(r00 + ["stop"], {"txid": TX_SEAL, "first": 1,
+                                                     "script": stop_script()}))), place)
+    unfixed("Two runs of stop coins that share the output 2: the stop coins of the second "
+            "range with their first coin at 2.",
+            signed(parent_with(setp(["delegate", "groups", 0, "ranges", 1, "stop", "first"],
+                                    2))), place)
 
     # ---- compound -------------------------------------------------------
     c = [0]
@@ -1515,14 +1679,49 @@ def build():
          "A child with a window whose heights are equal, signed by the request key.",
          signed(dict(child, not_after_height=200010), "recipient"),
          ["CHILD_SIGNER", "GRANT_SHAPE"], "CHILD_SIGNER", {"parent": "grant-v-03"})
+    absent = setp(["recent_block"], None)
+    both(["W9.2"],
+         "A height with a fraction and, later in the octets, the member `type` twice. A "
+         "repeated name is reported before a number, wherever each stands.",
+         signed(root_with(fraction)).replace(
+             b'"type":"swarma-grant/4"}',
+             b'"type":"swarma-grant/4","type":"swarma-grant/4"}', 1),
+         ["WIRE_NUMBER", "WIRE_DUPLICATE"], "WIRE_DUPLICATE")
+    both(["W9.2"],
+         "A height with a fraction and, later in the octets, a recent block that is `null`. "
+         "Inside W1.4 a `null` is reported before a number.",
+         signed(root_with(two(fraction, absent))),
+         ["WIRE_NUMBER", "WIRE_VALUE"], "WIRE_VALUE")
+    both(["W9.2"],
+         "An executor name that holds the escape of U+0001 and, later in the octets, a "
+         "recent block that is `null`.",
+         signed(root_with(two(control, absent))),
+         ["WIRE_STRING", "WIRE_VALUE"], "WIRE_VALUE")
+    both(["W9.2"],
+         "An executor name that holds the escape of U+0001 and, later in the octets, a "
+         "height with a fraction.",
+         signed(root_with(two(control, fraction))),
+         ["WIRE_STRING", "WIRE_NUMBER"], "WIRE_NUMBER")
+    both(["W9.2"],
+         "A space after the first colon and, later in the octets, an executor name that "
+         "holds the escape of U+0001. W1.6 comes last.",
+         signed(root_with(control)).replace(b'{"payload":', b'{"payload": ', 1),
+         ["WIRE_NOT_CANONICAL", "WIRE_STRING"], "WIRE_STRING")
 
     vectors = b.valid + b.invalid + b.compound
-    order = ["W1.1", "W1.4", "W1.6", "W2.1", "W2.2", "W2.3", "W2.4", "W3.1", "W3.2", "W3.3",
-             "W3.5", "W3.6", "W3.7", "W5.1", "W5.2", "W5.3", "W5.4", "W5.5", "W6.1", "W6.2",
-             "W6.3", "W6.4", "W9.1", "W9.3"] + ["W11.%d" % i for i in range(1, 11)]
+    order = ["W1.1", "W1.2", "W1.3", "W1.4", "W1.5", "W1.6", "W2.1", "W2.2", "W2.3", "W2.4",
+             "W3.1", "W3.2", "W3.3", "W3.5", "W3.6", "W3.7", "W5.1", "W5.2", "W5.3", "W5.4",
+             "W5.5", "W6.1", "W6.2", "W6.3", "W6.4", "W9.1", "W9.2", "W9.3"] + \
+            ["W11.%d" % i for i in range(1, 11)]
     unknown = sorted(set(b.rules) - set(order))
     if unknown:
         raise ValueError("rules without a place: %s" % unknown)
+    exercised = sorted({v["expect"] for v in vectors} - {"ok"})
+    if {x["code"] for x in NOT_EXERCISED} & set(exercised):
+        raise ValueError("a code is listed as not exercised and has a vector")
+    if [v["id"] for v in b.invalid + b.undetermined
+            if "valid_neighbour" not in v] != NO_NEIGHBOUR:
+        raise ValueError("the vectors without a neighbour are not those of NO_NEIGHBOUR")
     return {
         "schema": "swarma-link-spec/lip-0020-grant-vectors/1",
         "lip": "LIP-0020",
@@ -1542,26 +1741,84 @@ def build():
             "largest_output_index": MAX_INDEX, "largest_amount": str(MAX_AMOUNT),
         },
         "rules": [{"rule": r, "vectors": b.rules[r]} for r in order if r in b.rules],
-        "codes_exercised": sorted({v["expect"] for v in vectors} - {"ok"}),
+        "codes_exercised": exercised,
+        "not_exercised": NOT_EXERCISED,
+        "no_neighbour": NO_NEIGHBOUR,
         "valid": b.valid,
         "invalid": b.invalid,
         "compound": b.compound,
+        "undetermined": b.undetermined,
     }
 
 
 NOTE = (
     "Vectors for the members of `swarma-grant/4` (LIP-0020 section 11). Each vector is the "
     "signed form of a grant; `signed_form_hex` is the vector, and `signed_form`, where it is "
-    "given, only shows the same octets. `expect` is `ok` or the first refusal of the pipeline "
-    "of a signed object (W9.1 with W11.8 to W11.10). A vector with `context.parent` is read "
-    "with that vector as the parent that the reader already read; `context.reference` is an "
-    "identifier that another object states for the grant. A refused vector of `invalid` holds "
-    "one defect and names a valid neighbour; unless its claim says otherwise, its signature is "
-    "valid for the octets shown. A vector of `compound` holds several defects on purpose. "
-    "Keys are public test scalars and belong to nobody; signatures are made by the default "
-    "signing algorithm of BIP-340 with the stated auxiliary randomness. No vector reads a "
-    "chain: nothing here shows that a name, a coin, a seal or a block exists."
+    "given, only shows the same octets. In the groups `valid`, `invalid` and `compound`, "
+    "`expect` is `ok` or the first refusal of the pipeline of a signed object (W9.1 with "
+    "W11.8 to W11.10), for a reader that judges the rules that W11.10 marks as judged by "
+    "every reader. A vector with `context.parent` is read with that vector as the parent "
+    "that the reader already read; `context.reference` is an identifier that another object "
+    "states for the grant. A refused vector of `invalid` holds one defect and names a valid "
+    "neighbour that differs from it in that defect: in one member of the payload, in octets "
+    "outside the payload, or in the context. Where the defect is a property of the parent, "
+    "the child names another parent, and its member `parent` and the context change "
+    "together. The vectors of `no_neighbour` name none. Unless its claim says otherwise, the "
+    "signature of a refused vector is valid for the octets shown. A vector of `compound` "
+    "holds several defects on purpose and has no neighbour; the statement of one defect "
+    "does not cover it. A vector of `undetermined` is a parent that breaks one rule which "
+    "section 11 carries as a proposal of another LIP, named in `judged`, and nothing else. "
+    "Its outcome is `refused`, code not determined by this version: a reader that judges "
+    "the rule refuses the parent, this version fixes no code for that refusal, and a "
+    "checker accepts any refusal and compares no code. This version does not determine "
+    "that a reader judges the rule: one that does not reads the same octets as a "
+    "well-formed parent, and the vector does not bind it. `not_exercised` lists the "
+    "refusal codes that section 11 names and no vector of this file exercises, each with "
+    "the reason and with the place where it is exercised. The file was computed by one "
+    "implementation, tools/grantv4/grantv4.py, whose reader also checked it. An "
+    "independent implementation recomputes, from `signed_form_hex` and `context` alone, "
+    "the outcome of every vector of `valid`, `invalid` and `compound`, and for a valid "
+    "vector its typed digest, its identifier, its content address, its signature under the "
+    "key of the place and the script of its seal key. Keys are public test scalars and "
+    "belong to nobody; signatures are made by the default signing algorithm of BIP-340 "
+    "with the stated auxiliary randomness. No vector reads a chain: nothing here shows "
+    "that a name, a coin, a seal or a block exists."
 )
+
+# The vectors of `invalid` and `undetermined` that name no valid neighbour.
+NO_NEIGHBOUR = ["grant-i-05"]
+
+# Refusal codes that section 11 names and that no vector of the file holds.
+_ADMISSION = ("The pipeline of W11.8 never reports it. It is a check of an admission, and "
+              "this file states results of the pipeline alone. ")
+NOT_EXERCISED = [
+    {"code": "CHILD_ORDINAL",
+     "why": _ADMISSION + "The pipeline reads an `ordinal` of any value of its form; the "
+            "ordinal is held against the rows of the parent at admission (LIP-0026 R2.1, "
+            "R8.8).",
+     "exercised": "vectors/LIP-0026/rows-vectors.json and "
+                  "vectors/LIP-0026/groups-vectors.json, on stated facts and not on the "
+                  "octets of a grant."},
+    {"code": "CHILD_SEAL_KEY",
+     "why": _ADMISSION + "A parent without a child-seal key is read (grant-v-10), and so is "
+            "a child of it; the child refuses at its admission (LIP-0014 CS1, CS2, "
+            "agreement pending).",
+     "exercised": "No vector of this repository. LIP-0014 section 11.2 states the cases "
+                  "S4-9 and S4-10."},
+    {"code": "DELEGATE_KEY_REUSE",
+     "why": _ADMISSION + "A parent whose delegation key or child-seal key repeats another "
+            "of its keys is read; every child of it refuses at its admission (LIP-0014 "
+            "J4.3 (a), CS3, agreement pending).",
+     "exercised": "No vector of this repository. LIP-0014 sections 11.1 and 11.2 state the "
+                  "cases S4-2a and S4-10."},
+    {"code": "SEAL_PROFILE",
+     "why": _ADMISSION + "The pipeline checks the form of `seal.construction` and of "
+            "`seal.kind` and not their values; whether a verifier supports them depends on "
+            "its configuration (LIP-0008 SB2).",
+     "exercised": "vectors/LIP-0024/endorsement-vectors.json, for the profile of a seal-key "
+                  "endorsement and not for the member `seal` of a grant. No vector holds a "
+                  "grant with an unsupported profile."},
+]
 
 BASE = {
     "note": "The primitives below are not repeated here. These vectors rest on them.",
@@ -1637,7 +1894,10 @@ def main(argv):
     if len(argv) == 3 and argv[1] == "check":
         try:
             with open(argv[2], "rb") as f:
-                data = json.loads(f.read().decode("utf-8"))
+                raw = f.read(MAX_FILE + 1)
+            if len(raw) > MAX_FILE:
+                raise ValueError("the file has more than %d octets" % MAX_FILE)
+            data = json.loads(raw.decode("utf-8"))
             calibrate()
             results = verify_file(data)
         except (OSError, ValueError, KeyError, TypeError) as e:

@@ -217,9 +217,20 @@ What section 11 fixes:
   codes report the rules that a reader judges on the octets of one grant,
   in a fixed order: `GRANT_SHAPE` for the window, the action set and the
   own limits, and `GRANT_DELEGATE`, the code that LIP-0026 R1.5 left to the
-  members of the grant, for the rules of a parent's rows, pools, coins and
-  stop coins. `WIRE_INTEGER` also reports an integer below the smallest
-  value of its member, and `WIRE_KEY` an output key that is no point.
+  members of the grant, for the rules of a parent's rows, pools and coins.
+  `WIRE_INTEGER` also reports an integer below the smallest value of its
+  member, and `WIRE_KEY` an output key that is no point.
+- Which rules of a parent every reader judges. W11.10 names, for each of
+  its rules, the decision or the form of section 11 that gives it: the
+  order of the delegable actions and of the notaries, one pool for a limit
+  key and the exact sum against it (J12), distinct coins that are not the
+  seal (J12), a class without a repeated name (J10), and a row without a
+  certifier only for the issuer's own landlord (J9). Three points are
+  carried as proposals of their LIPs and are not determined by this
+  version: the witness key hash of a range script, every rule on the stop
+  coins of a range, and the placement of stop coins. A reader need not
+  judge them, and their code is fixed only with them. What a verifier
+  reads of a parent at admission stays with proposal Q1 of LIP-0026.
 
 Agreement pending, and carried in the octets so that they do not change
 when the answer comes: section 11 as a whole; the delegation key that signs
@@ -232,33 +243,61 @@ Chosen by section 11 where no decision gives a form, marked in its table
 `issuer.grant_key` in the payload; one executor for the own scope of a
 grant; `delegate` present or absent in place of a member `depth`; the two
 members for a certifier; the place of the stop coins of a group; the order
-of `actions`; the two codes.
+of `actions`; the two codes. Marked NEW: the smallest count of one group
+and one range, in LIP-0020 and in LIP-0026 alike; and that a reader of a
+document refuses on the rules of W11.10 which a decision gives, which
+awaits the owners' line.
 
-Not decided and left open: the counts 16, 16 and 4096, which the schema
-takes as bounds while proposal Q1 of LIP-0026 would keep the size alone;
+The bounds have one status. The largest counts of 16 groups, 16 ranges and
+4096 coins and the size of 65536 octets are decided limits of J12, and
+LIP-0020 W11.6 and LIP-0026 R8.4 both state them as bounds of the schema;
+LIP-0026 no longer calls them proposed.
+
+Not decided and left open: proposal Q1 of LIP-0026, which would keep the
+size alone and drop the three counts, and until it is decided the counts
+bind; the three proposal points of W11.10;
 the registries of action names and of limit kinds; the octets of a scope
 text on v4 and of typed constraints such as a ref, a payee or a list of
 targets; a v4 code for a child that is wider than its parent in chain,
 actions or window; the key that assents to a child's contract; the seal of
 a single-use grant.
 
-`vectors/LIP-0020/grant-v4.json` holds 99 vectors: 10 valid signed grants,
-81 refusals with one defect and a valid neighbour each, and 8 with several
-defects for the order of refusals, over 15 codes. Among them are a parent of
-exactly 65536 octets and the same parent with one octet more, a pool that
-its rows exceed only when the sum is computed beyond 64 bits, and the
-stand-in octets of the earlier vectors, which a reader of grants now
-refuses as `WIRE_MEMBER`. `tools/grantv4/grantv4.py`, in Python with the
-standard library alone, is a reader of section 11 with the generator and
-the checker of the file. One implementation computed the values; no second
-one has recomputed them. No vector reads a chain.
+`vectors/LIP-0020/grant-v4.json` holds 109 vectors: 11 valid signed grants;
+79 refusals with one defect each, over 19 codes together with the next
+group, which are all the codes that the pipeline of a grant reports; 13
+with several defects for the order of refusals; and 6 whose outcome is
+"refused, code not determined by this version". Each refusal with one
+defect names a valid neighbour that differs from it in that defect and in
+nothing else; one, the stand-in octets of the earlier vectors, which a
+reader of grants now refuses as `WIRE_MEMBER`, names none and says so. The
+statement of one defect does not cover the vectors with several defects.
+The six undetermined vectors are parents that break one proposal point of
+W11.10 and nothing else: a reader that judges the point refuses, the file
+states no code, the checker accepts any refusal, and a reader that does
+not judge the point reads them as well-formed parents. Among the vectors
+are a parent of exactly 65536 octets and the same parent with one octet
+more, a parent at 16 groups, 16 ranges and four notaries beside the same
+parent with one more of each, a pool that its rows exceed only when the
+sum is computed beyond 64 bits, and four document defects on the octets of
+a grant. Four codes that section 11 names have no vector in the file,
+because the pipeline never reports them: `CHILD_ORDINAL`, `CHILD_SEAL_KEY`,
+`DELEGATE_KEY_REUSE` and `SEAL_PROFILE`. Section 12 says for each where it
+is exercised; `CHILD_SEAL_KEY` and `DELEGATE_KEY_REUSE` have no vector in
+this repository.
+
+`tools/grantv4/grantv4.py`, in Python with the standard library alone, is a
+reader of section 11 with the generator and the checker of the file. The
+file was computed by that one implementation, whose reader also checked
+it; no second one has recomputed it. Section 12 and the header of the tool
+state what an independent implementation must recompute. No vector reads a
+chain.
 
 LIP-0026, LIP-0008, LIP-0014, LIP-0021, LIP-0023 and LIP-0027 point to the
 new section where they called the octets of a grant, of a row, of a pin, of
 the profile pin or of a stop coin open, and change no rule. LIP-0026 says
-that `GRANT_DELEGATE` is the code that R1.5 left open and that the schema's
-use of the numbers of R8.4 does not decide its proposal Q1. The README and
-the open-question index follow.
+that `GRANT_DELEGATE` is the code that R1.5 left open, states the four
+numbers of R8.4 as decided bounds of the schema, and says that this does
+not decide its proposal Q1. The README and the open-question index follow.
 
 ## 0.1.52 — 2026-11-16
 

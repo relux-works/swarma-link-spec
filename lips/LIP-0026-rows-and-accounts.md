@@ -121,8 +121,9 @@ decision says and marks what this draft adds.
 | J10. Landlord class | The recipient constraint of a row has a third form beside a key and a name: a list of landlords, each pinned like a notary. A child of such a row names its recipient by name, and the executor makes four checks in a fixed order, the last of which asks who wrote the value of that name. In force since version 0.1.51 | 9 |
 | J9. No certifier inside one owner | A child needs an attestation only where its row names a certifier. A row without one is valid only where its recipient is limited to the issuer's own landlord. Across owners a certifier stays mandatory. Decided and agreed by both owners on 2026-11-15 | 10 |
 
-The bounds of section 8, the refusal codes of sections 9 and 10, and every rule
-that those sections mark as this draft's are proposals.
+The refusal codes of sections 9 and 10 and every rule that those sections mark
+as this draft's are proposals. The four largest numbers of section 8 are no
+proposal: J12 fixes them, and R8.4 states them as bounds.
 
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
@@ -144,10 +145,12 @@ Each landlord requires an independently established checkpoint. The four
 class checks keep their decided order, while the eight class strings remain
 local diagnostics with no normative taxonomy or inner-step precedence.
 
-The proposed bounds and witness range script, the landlord-value writer
+The witness range script, the landlord-value writer
 check, holder ordering, the exact-name shortcut, the guarantee of not reading
 an optional attestation, and the additional signer rules remain outside that
-in-force subset. In-force exact-name recipients without a certifier run the
+in-force subset. The four bounds of R8.4 are decided limits of J12 and, since
+version 0.1.53, bounds of the grant's schema (LIP-0020 W11.6); the smallest
+count of one group and one range in R8.4 is marked NEW there and here. In-force exact-name recipients without a certifier run the
 full decided class checks. These exclusions are unchanged by the proposals.
 
 #### Q1. Whole-parent atomic refusal
@@ -159,7 +162,7 @@ parent against R8.1 to R8.3, R8.5, R8.6, R9.1, R10.1 and R10.2 before it
 admits an own request or any child. The parent MUST contain at least one
 group, each group at least one range, and the parent's encoded size MUST NOT
 exceed 65536 octets. This byte bound replaces the group, range and coin count
-caps proposed in R8.4. A failure anywhere refuses the whole parent under
+caps of R8.4, which bind until the owner decides this proposal. A failure anywhere refuses the whole parent under
 R8.7, with no partial admission or reservation. The selected row's chain
 reads remain those of R8.8; whole-parent refusal adds no chain read for an
 unselected row. A landlord-class recipient remains valid under R9.1, and a
@@ -602,16 +605,19 @@ distinct, ranges do not overlap, no coin is the seal of the parent, and every
 coin is confirmed at or below the recent block of the parent. A verifier checks
 only the group and the range of its child, on signed octets.
 
-The decision names the numbers of R8.4 as proposed bounds. This draft adds the
-order of the count in R8.3, the witness key hash of R8.2, which follows R3.1,
-and the rules R8.9 and R8.10 for the two signers.
+The decision fixes the four largest numbers of R8.4: 16 groups, 16 ranges in a
+group, 4096 coins in a range and 65536 octets. They are decided limits, and
+R8.4 and LIP-0020 W11.6 state them with one status, as bounds of the schema of
+a grant. This draft adds the order of the count in R8.3, the witness key hash
+of R8.2, which follows R3.1, the smallest count of one group and one range in
+R8.4, and the rules R8.9 and R8.10 for the two signers.
 
 | Rule | Requirement |
 | --- | --- |
 | R8.1 | A parent states its rows as a list of groups. A group has one template and a list of ranges. The template states four things: the executor, as R1.1 states it; the recipient constraint (section 9); the limits of each row of the group, under R1.2; and the certifier of the rows of the group, or that they have none (section 10). |
 | R8.2 | A range states a transaction id, a first output index, a count of at least 1 and a script. Its coins are the outputs of that transaction from the first index on, as many as the count, and the script of each of them is the script of the range. The index of the last coin is at most 4294967295. The script is a witness key hash, as R3.1 asks of a coin. |
 | R8.3 | Each coin of a range is one row, with the template of its group. The rows of a parent are counted group by group in the order of the groups, inside a group range by range in the order of the ranges, and inside a range by ascending output index. The ordinal of a row is its position in that count, from 1. The number of rows of a parent is the sum of the counts of all its ranges. |
-| R8.4 | Proposed bounds: a parent has at least one and at most 16 groups, a group at least one and at most 16 ranges, and a range at most 4096 coins. The largest size of a parent is 65536 octets. |
+| R8.4 | Bounds of the schema (J12): a parent has at most 16 groups, a group at most 16 ranges, and a range at most 4096 coins. The largest size of a parent is 65536 octets. A document outside these bounds is no grant (LIP-0020 W11.6). **NEW**, stated by no decision: a parent has at least one group, and a group at least one range. |
 | R8.5 | A parent states one pool amount for every limit key that a template limits. For each key, the sum over the groups of the number of rows of the group times the amount of its template for that key is at most the pool, and the sum is an exact integer sum. A key that no template limits has no pool. |
 | R8.6 | No coin belongs to two rows: two ranges of one parent that state the same transaction id have index intervals that do not meet. No coin is the seal of the parent. |
 | R8.7 | A parent that does not meet R8.1 to R8.6, R9.1, R10.1 or R10.2 is refused as a whole, as R1.5 says: it admits no child and no request of its own. |
@@ -663,13 +669,16 @@ Three points were open under this section until version 0.1.53. LIP-0020
 section 11 answers them in the octets of the grant, and one of them stays
 open as a question of this LIP:
 
-- **The bounds.** The four numbers of R8.4 are proposals of this LIP, and
-  neither owner has fixed one here. LIP-0020 W11.6 takes them as bounds of
-  the member schema of `swarma-grant/4`: a document with more than 16
-  groups, with more than 16 ranges in a group, with more than 4096 coins in
-  a range or with more than 65536 octets is no well-formed grant. Proposal
-  Q1 of this LIP, which would keep the size alone, is not decided by that.
-  If the owner accepts it, the three counts leave the schema by amendment.
+- **The bounds.** The four largest numbers of R8.4 are decided limits of
+  J12. R8.4 and LIP-0020 W11.6 state them with one status, as bounds of the
+  member schema of `swarma-grant/4`: a document with more than 16 groups,
+  with more than 16 ranges in a group, with more than 4096 coins in a range
+  or with more than 65536 octets is no well-formed grant. The smallest
+  count of one group and one range is marked NEW in both places. Proposal
+  Q1 of this LIP, which would keep the size alone, is not decided by that
+  and stays the open question: until the owner decides it the counts bind,
+  and if the owner accepts it, the three counts leave the schema by
+  amendment.
 - **The stop coins of a group.** LIP-0014 section 10.1 (J2.7) and LIP-0027
   give each row with a certifier a stop coin of its own. The decision on
   groups names no place for them. LIP-0020 W11.6 places them: a range of a
@@ -1179,10 +1188,12 @@ They change no vector of section 7.
   without it, and it is folded in by amendment. The admission of a child of a
   row without a certifier (section 10) rests on J9, which both owners agreed,
   and on J10 and J11, which only Ivan Oparin has decided.
-- **The four bounds of R8.4** and a bound on the landlords of a class.
-  LIP-0020 W11.6 takes the four numbers as bounds of the grant's schema and
-  states no bound on the landlords of a class; proposal Q1 is still before
-  the owner.
+- **Proposal Q1 against the counts of R8.4**, and a bound on the landlords
+  of a class. The four largest numbers of R8.4 are decided limits (J12) and
+  bounds of the grant's schema here and in LIP-0020 W11.6, which states no
+  bound on the landlords of a class. Proposal Q1, which would drop the
+  three counts, is still before the owner, and the smallest count of one
+  group and one range is marked NEW.
 - **The stop coins of a group** whose template names a certifier (section
   8). LIP-0020 W11.6 gives them a place in a range, which no owner has
   decided.

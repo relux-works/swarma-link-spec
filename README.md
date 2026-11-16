@@ -754,12 +754,18 @@ text in force on Ivan Oparin's order of 2026-11-16 that Grant v4 does not
 wait; the co-author's agreement has not been given, and the co-author's
 answer is folded in by amendment. It carries the rules of LIP-0008, LIP-0014,
 LIP-0026 and LIP-0027 in octets and changes none of them, and it says where
-it chose a form that no decision gives. The 99 vectors of
+it chose a form that no decision gives. The four bounds are decided limits
+(J12) with one status in LIP-0020 and LIP-0026. For each rule of a parent
+the section says which decision gives it; three points on range scripts and
+stop coins are carried as proposals that a reader need not judge. The 109
+vectors of
 [`vectors/LIP-0020/grant-v4.json`](vectors/LIP-0020/grant-v4.json) hold
 signed grants, and [`tools/grantv4`](tools/grantv4/grantv4.py) reads and
-recomputes them. No vector reads a chain, nothing of it is implemented in
-the reference laboratory, and no second implementation has recomputed the
-file. Every LIP remains Draft, and no earlier vector changes.
+recomputes them. Six of them state "refused, code not determined by this
+version", for those three points. No vector reads a chain, nothing of it is
+implemented in the reference laboratory, and one implementation computed
+the file: no second one has recomputed it. Every LIP remains Draft, and no
+earlier vector changes.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
@@ -804,7 +810,7 @@ serif print theme; HTML is an intermediate artifact in the release workspace.
 | Go 1.26, `tools/trustcheck` | LIP-0013 reference checker: `go -C tools/trustcheck run . check ../../vectors/LIP-0013/trust-vectors.json` | One `PASS`/`FAIL` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result, 1 on a mismatch, 2 on a usage or input error. |
 | Go 1.26, `tools/trustcheck` | Regenerate the LIP-0013 vectors: `go -C tools/trustcheck run . gen > vectors/LIP-0013/trust-vectors.json` | The vector file, byte for byte deterministic; review it as a diff. |
 | Go 1.26, `tools/trustcheck` | Checker self-tests: `go -C tools/trustcheck test ./...` | Test result on stdout: BIP-340 vector 0 reproduced, generator equal to the committed file, planted defects caught. |
-| Python 3, `tools/grantv4` | Reader of a v4 grant and checker of its vectors (LIP-0020 sections 11 and 12): `python3 -I tools/grantv4/grantv4.py check vectors/LIP-0020/grant-v4.json` | One `PASS` or `FINDING` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result and its stated values, 1 on a finding, 2 on a usage or input error. |
+| Python 3, `tools/grantv4` | Reader of a v4 grant and checker of its vectors (LIP-0020 sections 11 and 12): `python3 -I tools/grantv4/grantv4.py check vectors/LIP-0020/grant-v4.json` | One `PASS` or `FINDING` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result and its stated values, 1 on a finding, 2 on a usage or input error. For the six vectors of the group `undetermined` any refusal passes and no code is compared. The checker shares its code with the generator: it shows that the file is what this one reader gives. |
 | Python 3, `tools/grantv4` | Regenerate the grant vectors: `python3 -I tools/grantv4/grantv4.py gen > vectors/LIP-0020/grant-v4.json` | The vector file, byte for byte deterministic. The generator writes nothing when its reader disagrees with a stated expectation; review the file as a diff. |
 
 Source review precedes tagging and rendering. This repository has no general

@@ -899,7 +899,10 @@ that its own text gives it: decided by both owners, in force on one owner's
 decision, or Draft with the co-author's agreement pending. Where a rule that
 is still pending needs a member, the member is here, so that the octets of
 version `/4` do not change when the answer comes. Where the section had to
-choose a name or a form that no decision gives, section 11.12 says so.
+choose a name or a form that no decision gives, section 11.12 says so. One
+shape that LIP-0008 permits has no octets here: several executors under
+signed partitions for the own scope of one grant (LIP-0008 section 4). W11.4
+gives a grant one executor, and a second executor takes a second grant.
 Neither owner has reviewed the octets member by member, and no verifier
 implements them: `tools/grantv4` reads a grant for the vectors of section 12
 and admits nothing.
@@ -1046,6 +1049,12 @@ one list have the same key. `limits` may be empty: a request that consumes
 a key for which the grant states no limit meets a ceiling of 0 (LIP-0026
 R5.2).
 
+A list of limits has no required order, and neither have `pools` and the
+landlords of a class. Two payloads that differ only in the order of such a
+list are both well formed, and they are two payloads with two identifiers.
+Only `actions` and `notaries` have one encoding for one set. An issuer's
+tool that wants one identifier for one set of limits orders them itself.
+
 The texts of a limit are identifiers. Their registry, the meaning of each
 kind, its unit, its period and its arithmetic come with the type profile of
 the kind (LIP-0008 section 2; LIP-0018 section 2), and none exists yet. A
@@ -1117,11 +1126,22 @@ The actions, the limits, the pools and the landlords of a class have no
 largest count of their own; the size of the signed form bounds them. A
 parent has at most 256 ranges and 1,048,576 rows.
 
-The three counts and the size are the four numbers of LIP-0026 R8.4. Here
-they are bounds of the schema: a document outside them is no grant. LIP-0026
-proposal Q1 would keep the size alone and drop the counts. It awaits the
-owner, and this section does not decide it; if it is accepted, the counts
-leave the schema by amendment.
+The largest counts of 16 groups, 16 ranges and 4096 coins and the largest
+size of 65536 octets are the four numbers of LIP-0026 R8.4. They are decided
+limits: the decision on groups (J12), in force since version 0.1.51, fixes
+them. Here and in LIP-0026 they have one state, bounds of the schema, and a
+document outside them is no grant. Proposal Q1 of LIP-0026 would keep the
+size alone and drop the three counts. It awaits the owner and changes
+nothing until the owner decides: until then the counts bind every reader. If
+it is accepted, the counts leave the schema by amendment.
+
+Three numbers of the table come from no decision on groups. The smallest
+count of one group and of one range is **NEW**: J12 does not state it,
+LIP-0026 R8.4 marks it NEW as well, and proposal Q1 asks for it. The largest
+count of four notaries is LIP-0014 D3, agreed by both owners. The nesting of
+16 levels is the proposal of W1.1. The smallest count of one coin is the
+count of LIP-0026 R8.2, and the smallest count of one landlord is that of
+R9.1.
 
 #### 11.7. The template
 
@@ -1208,30 +1228,50 @@ W11.10. LIP-0026 R1.5 refuses a parent that breaks a rule of its rows and
 leaves the code to the members of the grant. The code is `GRANT_DELEGATE`.
 These are the rules that a reader judges on the signed octets of a parent
 alone. All of them report the one code, so their order shows only where a
-reader explains its refusal:
+reader explains its refusal. The column "Judged" says whether every reader
+of this section judges the rule, and which decision or text gives it:
 
-| # | Rule | From |
-| --- | --- | --- |
-| 1 | `delegate.actions` stands in ascending order and repeats no text | W11.5 |
-| 2 | No two entries of `pools` have the same key | LIP-0026 R8.5 |
-| 3 | `notaries` stands in ascending order of its names and repeats no name | LIP-0014 section 2 |
-| 4 | For each group, in the order of the groups: no two limits of the template have the same key (R1.2); no two landlords of a class have the same name (R9.1); a `certifier` is the `name` of an entry of `notaries` (R10.1); a template with `no_certifier` has a recipient that is a name with its owner key, or a class of exactly one landlord whose `name`, `registration` and `owner` equal those of `issuer` (R10.2) | LIP-0026 |
-| 5 | For each range of that group, in the order of the ranges: `first` plus `count` minus 1 is at most 4294967295, and `script` is a witness key hash, the octets `00 14` and 20 further octets (R8.2, R3.1); the range has `stop` exactly where the template names a certifier (LIP-0027 H1.1, LIP-0014 J9.4); `stop.first` plus `count` minus 1 is at most 4294967295, and `stop.script` is a witness key hash (H1.2) | LIP-0026, LIP-0027 |
-| 6 | The keys of `pools` are exactly the keys that a template limits. For each key the sum, over the groups, of the number of rows of the group times the amount of its template is at most the pool. The sum is an exact integer sum (W2.4) | LIP-0026 R8.5 |
-| 7 | No output is a coin of two rows: two ranges with one `txid` have index intervals that do not meet. No coin is the outpoint of `seal` | LIP-0026 R8.6 |
-| 8 | No output is a stop coin of two rows. No stop coin is a coin of a row, the outpoint of `seal`, or the output after it in the same transaction | LIP-0027 H1.3 |
+| # | Rule | From | Judged |
+| --- | --- | --- | --- |
+| 1 | `delegate.actions` stands in ascending order and repeats no text | W11.5 | By every reader. The form of the member in W11.5 |
+| 2 | No two entries of `pools` have the same key | LIP-0026 R8.5 | By every reader. W11.4 for a list of limits; J12 gives a limit key one pool |
+| 3 | `notaries` stands in ascending order of its names and repeats no name | LIP-0014 section 2 | By every reader. The form of the member in W11.5 |
+| 4 | For each group, in the order of the groups: no two limits of the template have the same key (R1.2); no two landlords of a class have the same name (R9.1); a `certifier` is the `name` of an entry of `notaries` (R10.1); a template with `no_certifier` has a recipient that is a name with its owner key, or a class of exactly one landlord whose `name`, `registration` and `owner` equal those of `issuer` (R10.2) | LIP-0026 | By every reader. W11.4 for the limits of a template; J10 for a class (R9.1); W11.7 for the name of the certifier; J9, agreed by both owners, for a template without a certifier (LIP-0014 J9.1 and J9.2) |
+| 5 | For each range of that group, in the order of the ranges: `first` plus `count` minus 1 is at most 4294967295, and `script` is a witness key hash, the octets `00 14` and 20 further octets (R8.2, R3.1); the range has `stop` exactly where the template names a certifier (LIP-0027 H1.1, LIP-0014 J9.4); `stop.first` plus `count` minus 1 is at most 4294967295, and `stop.script` is a witness key hash (H1.2) | LIP-0026, LIP-0027 | The index of the last coin: by every reader. A coin is an output, and no output has a higher index (W11.1; R8.2 under J12). The witness key hash of `script` and every point on `stop`: proposals, see below |
+| 6 | The keys of `pools` are exactly the keys that a template limits. For each key the sum, over the groups, of the number of rows of the group times the amount of its template is at most the pool. The sum is an exact integer sum (W2.4) | LIP-0026 R8.5 | By every reader. J12: the pool bounds the sum, and a key that no row limits has no pool |
+| 7 | No output is a coin of two rows: two ranges with one `txid` have index intervals that do not meet. No coin is the outpoint of `seal` | LIP-0026 R8.6 | By every reader. J12 |
+| 8 | No output is a stop coin of two rows. No stop coin is a coin of a row, the outpoint of `seal`, or the output after it in the same transaction | LIP-0027 H1.3 | Proposal, see below |
 
 The sum of rule 6 can pass 2^64 - 1 while every amount is within its bound.
 A reader adds exactly and refuses; it never wraps.
 
-The order and the code are fixed here. The rules themselves are rules of
-the LIPs that the table names, and each keeps the state that it has there.
-In particular this section does not decide proposal Q1 of LIP-0026, the
-refusal of a whole parent before any child or own request is admitted: a
-verifier under the profile in force judges the rules that its profile
-holds, and a reader that judges a rule of this table and finds it broken
-reports `GRANT_DELEGATE`. The witness key hash of rule 5 and the rules of
-LIP-0027 are proposals of their LIPs.
+A rule that every reader judges is a rule of this section, in force with
+it. A reader that reads a parent through the pipeline of W11.8 judges each
+of them, and a parent that breaks one refuses as `GRANT_DELEGATE`. The
+decision or the text that the column names gives the rule; this section
+adds the code, the place of the rule in step 9 and the order of the table.
+
+Three points of the table are proposals of their LIPs, and this section
+carries them without deciding them: the witness key hash of a range script
+in rule 5 (LIP-0026 R3.1 and R8.2, which that LIP keeps outside its subset
+in force); every point of rule 5 on `stop`, its presence, the index of its
+last coin and its script (LIP-0027 H1.1 and H1.2; the place of the stop
+coins is chosen by W11.6); and rule 8 (LIP-0027 H1.3). This version does not
+determine that a reader judges them. A reader that judges one of them and
+finds it broken refuses the parent; `GRANT_DELEGATE` is the code that this
+section proposes for that refusal, and it is fixed with the rule, when the
+owners accept it. A reader that does not judge them reads a parent that
+breaks one of them, and nothing else, as a well-formed parent. No vector of
+section 12 states a code for such a parent.
+
+The result of the pipeline is a statement about a document. It does not say
+what a verifier must have read before it admits a child or a request of the
+parent's own. That is the question of proposal Q1 of LIP-0026, the refusal
+of a whole parent at admission, and this section does not decide it: under
+the profile in force a verifier checks the group and the range of its child
+(LIP-0026, "Owner decision proposals"), and a verifier that has read the
+whole parent through this pipeline knows more than that profile asks. The
+vectors of section 12 state the result of the pipeline and no admission.
 
 One rule on the octets of a parent has its code elsewhere. The delegation
 key and the child-seal key differ from each other and from the other keys
@@ -1297,13 +1337,14 @@ owners may change each of them.
 | `pools` | LIP-0026 R8.5 (J12) | In force since version 0.1.51 |
 | `notaries` as at most four pins, sorted | LIP-0014 D3 and J3.1, both agreed by both owners; LIP-0026 R10.1 | Decided; the order follows LIP-0014 section 2 |
 | `groups`, `template`, `ranges` and the members of a range | J12, as LIP-0026 section 8 states it | In force since version 0.1.51; the member names are chosen here |
-| The counts 16, 16 and 4096 and the size 65536 | LIP-0026 R8.4 | Named with J12; LIP-0026 marks them as proposed, and its proposal Q1 would drop the counts |
-| At least one group and one range | LIP-0026 R8.4 | Proposed there |
+| The counts 16, 16 and 4096 and the size 65536 | J12, as LIP-0026 R8.4 states it | Decided limits, in force since version 0.1.51; bounds of the schema here and there. Proposal Q1 of LIP-0026 would drop the three counts and awaits the owner |
+| At least one group and one range | LIP-0026 R8.4 | **NEW**, here and there: no decision states the number |
 | The three forms of a recipient constraint | J10, LIP-0026 R9.1 | In force since version 0.1.51 |
 | `certifier` or `no_certifier`, one of them always | J9, LIP-0014 J9.1 and LIP-0026 R10.1: a row states its certifier or states that it has none | Decided by both owners; the two members are the form chosen here |
 | `stop` of a range | LIP-0014 J2.7, LIP-0027 H1.1: one stop coin for each row with a certifier | Agreement pending. No decision places the stop coins of a group; the place is chosen here |
 | No member for holders | LIP-0010 section 10 | In force since version 0.1.51; the hash-pinned list since version 0.1.53 |
-| `GRANT_SHAPE`, `GRANT_DELEGATE` | LIP-0026 R1.5 leaves the code of a refused parent to the members | Chosen here |
+| `GRANT_SHAPE`, `GRANT_DELEGATE` | LIP-0026 R1.5 leaves the code of a refused parent to the members | Chosen here. For the three proposal points of W11.10 the code is proposed with the rule |
+| The rules of W11.10 that every reader judges | The decisions and texts that the table of W11.10 names for each | **NEW** as rules of a reader: that a reader of a document refuses on them is said here, and it awaits the owners' line. What a verifier reads at admission stays with proposal Q1 of LIP-0026 |
 
 #### 11.13. An example
 
@@ -1376,25 +1417,97 @@ transaction ids and the recent block name no transaction and no block.
 ### 12. Vectors of the grant
 
 [`vectors/LIP-0020/grant-v4.json`](../vectors/LIP-0020/grant-v4.json)
-holds 99 vectors for section 11. Each is the signed form of a grant
-with the result of the pipeline of W11.8: `ok`, or the first refusal.
+holds 109 vectors for section 11. Each is the signed form of a grant. In
+three of its four groups a vector states the result of the pipeline of
+W11.8, `ok` or the first refusal, for a reader that judges the rules which
+W11.10 gives to every reader. Those results do not depend on the three
+proposal points of W11.10: every valid vector meets them, and each vector
+of `invalid` and `compound` is refused by a step or a rule that stands
+apart from them.
 
 | Group | Vectors | What a checker does |
 | --- | --- | --- |
-| `valid` | 10 | Reads the grant and recomputes its typed digest, its identifier, its content address and the witness key hash script of its seal key |
-| `invalid` | 81 | Reads the grant and reports the stated code. Each holds one defect and names a valid neighbour |
-| `compound` | 8 | Reads a grant with several defects and reports the one that the order of W9.1, W9.3 and W11.8 to W11.10 puts first |
+| `valid` | 11 | Reads the grant and recomputes its typed digest, its identifier, its content address and the witness key hash script of its seal key |
+| `invalid` | 79 | Reads the grant and reports the stated code. Each holds one defect, and each but `grant-i-05` names a valid neighbour |
+| `compound` | 13 | Reads a grant with several defects and reports the one that the order of W9.1, W9.2, W9.3 and W11.8 to W11.10 puts first |
+| `undetermined` | 6 | Reads a parent that breaks one proposal point of W11.10 and nothing else. The stated outcome is "refused, code not determined by this version"; a checker accepts any refusal and compares no code |
 
 The valid vectors are a root grant by key and one by name, two parents, a
 child of the first parent under the delegation key, one payload under two
 signatures, a grant without an action and without a limit, a parent without
-a child-seal key, and a parent of exactly 65536 octets with 16 groups of 16
+a child-seal key, a parent of exactly 65536 octets with 16 groups of 16
 ranges, a range of 4096 coins and a range that ends at the output index
-4294967295. The refused vectors exercise 15 codes. `grant-i-05` holds the
-octets that the vectors of section 10 use as a stand-in for a grant, a
+4294967295, and a parent of ordinary size with four notaries, 16 groups and
+a group of 16 ranges. The vectors of `invalid` and `compound` exercise 19
+codes: every code that the pipeline of a grant reports. `grant-i-05` holds
+the octets that the vectors of section 10 use as a stand-in for a grant, a
 payload with `type` alone under a valid signature: a reader of grants now
 refuses them as `WIRE_MEMBER`. `grant-i-01` is the largest parent with one
 octet more.
+
+**One defect and a valid neighbour.** A vector of `invalid` holds one
+defect, and its neighbour is a valid vector that differs from it in that
+defect and in nothing else: in one member of the payload, which may be an
+object or a list entry; in octets outside the payload; or in the context.
+Where the defect is a property of the parent that a child names, the child
+names another parent, so its member `parent` and the context change
+together. A vector that passes a largest count is its neighbour with one
+more entry or one more coin, and no further rule fails behind the count:
+the pool of the neighbour holds the added row. One vector names no
+neighbour, and the file
+lists it under `no_neighbour`: `grant-i-05`, which lacks every member but
+`type` and is kept because the earlier vectors use its octets. Unless its
+claim says otherwise, the signature of a vector of `invalid` is valid for
+its octets; where the octets have no canonical payload, or name no key
+under which a signature verifies, the claim says so. The statement of one
+defect does not cover the group `compound`: its vectors hold several
+defects on purpose and have no neighbour. The checker does not hold a vector
+against its neighbour. It checks that the neighbour is a valid vector, and
+that the two differ in one defect is the generator's statement, which a
+reviewer reads in the generator.
+
+**The group `undetermined`.** Its six vectors are the parent of `grant-v-03`
+with one change each: a range with a certifier that states no stop coins, a
+range without a certifier that states them, a range script that is no
+witness key hash, and three placements of stop coins that rule 8 excludes.
+Each breaks one proposal point of W11.10, which the vector names under
+`judged`, and nothing else. This version does not determine whether a
+reader judges that point. A reader that judges it refuses the parent, and
+the file states `refused` and no code, because the code is fixed only with
+the rule. A reader that does not judge it reads the same octets as a
+well-formed parent; the vector does not bind that reader, and its `ok` is
+no defect. Two conforming readers therefore differ on these six vectors,
+and on no vector that states a code. The reader of `tools/grantv4` judges
+all three points and reports `GRANT_DELEGATE`.
+
+**Codes without a vector.** Section 11 names four refusal codes that the
+pipeline of W11.8 never reports. Each is a check of an admission, and the
+file states results of the pipeline alone, so no vector of it can exercise
+them; the file lists them under `not_exercised`.
+
+| Code | Why no vector of the file exercises it | Where it is exercised |
+| --- | --- | --- |
+| `CHILD_ORDINAL` | The pipeline reads an `ordinal` of any value of its form. The ordinal is held against the rows of the parent at admission (LIP-0026 R2.1, R8.8) | `vectors/LIP-0026/rows-vectors.json` and `groups-vectors.json`, on stated facts and not on the octets of a grant |
+| `CHILD_SEAL_KEY` | A parent without a child-seal key is read (`grant-v-10`), and so is a child of it. The child refuses at its admission (LIP-0014 CS1, CS2, agreement pending) | In no vector of this repository. LIP-0014 section 11.2 states the cases S4-9 and S4-10 |
+| `DELEGATE_KEY_REUSE` | A parent whose delegation key or child-seal key repeats another of its keys is read. Every child of it refuses at its admission (LIP-0014 J4.3 (a), CS3, agreement pending) | In no vector of this repository. LIP-0014 sections 11.1 and 11.2 state the cases S4-2a and S4-10 |
+| `SEAL_PROFILE` | The pipeline checks the form of `seal.construction` and of `seal.kind` and not their values. Whether a verifier supports them depends on its configuration (LIP-0008 SB2) | `vectors/LIP-0024/endorsement-vectors.json`, for the profile of a seal-key endorsement and not for the member `seal` of a grant |
+
+A vector for one of the four would be a pair of grants that the pipeline
+reads, with one check of an admission after it. No text of this version
+fixes the place of these checks among the reads of an admission, and two of
+them rest on rules whose agreement is pending, so such a vector would state
+an outcome that this version does not determine. They come with the vectors
+of an admission. Section 11.11 also names `SUBJECT_MISMATCH`,
+`CHILD_ACTIONS_WIDER` and `CHILD_WINDOW_NOT_NESTED`; they are codes of the
+v3 contract profile, this section assigns none of them to v4, and they have
+no vector here.
+
+The document step has four vectors on the octets of a grant beside those of
+section 10: a signed form that stops before its last octet (`WIRE_JSON`), a
+member twice (`WIRE_DUPLICATE`), a height with a fraction (`WIRE_NUMBER`)
+and a name with the escape of a control character (`WIRE_STRING`). Five
+compound vectors hold two such defects each and fix the order of W9.2 on a
+grant.
 
 The file rests on primitives that it does not repeat: the document rules,
 the integer forms, the typed digest and the signatures of
@@ -1423,13 +1536,36 @@ have no vector here.
 
 [`tools/grantv4/grantv4.py`](../tools/grantv4/grantv4.py) is a reader of
 section 11 in Python, with the generator and the checker of the file; it
-uses the standard library alone. The values were computed by that one
+uses the standard library alone. The file was computed by that one
 implementation. Its signer and its typed digest are calibrated on three
 values of earlier vector files, the expected refusals were stated by hand in
-the generator, and the reader decided each of them again. No second
-implementation has recomputed the file, and the text, the reader and the
-vectors come from one author, so an error of understanding that they share
-is in the vectors.
+the generator, and the reader decided each of them again. The generator,
+the reader and the checker share one code, so a run of the checker shows
+that the file is what this reader gives and nothing more. For the group
+`undetermined` the checker does not repeat the generator: it compares no
+code and accepts any refusal. On that path the tool is more than a reader:
+before it reads the file it runs the calibration of the generator, which
+signs three stated values with public test scalars. It reads a bounded
+vector file and decodes no vector above twice the largest size of a grant.
+
+No second implementation has recomputed the file, and the text, the reader
+and the vectors come from one author, so an error of understanding that
+they share is in the vectors. An independent implementation recomputes,
+from the octets and the context of each vector alone and with none of this
+code:
+
+- for every valid vector, that the pipeline reads it, and its typed digest,
+  its identifier, its content address, the verification of its signature
+  under the key of the place, and the witness key hash script of its seal
+  key;
+- for every vector of `invalid` and `compound`, the first refusal as a
+  code;
+- for the group `undetermined`, nothing that binds it: it reports what it
+  reads, a refusal where it judges the proposal point and `ok` where it
+  does not.
+
+Until such an implementation agrees, the stated values rest on one
+computation.
 
 ## Alternatives
 
@@ -1615,9 +1751,22 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   table of sources marks: the member names, `issuer.grant_key` in the
   payload, one executor for the own scope, the two members for a certifier,
   the place of the stop coins of a group, and the two codes.
-- **The counts of a parent.** W11.6 takes 16 groups, 16 ranges and 4096
-  coins as bounds of the schema. LIP-0026 marks the same numbers as
-  proposed, and its proposal Q1 would keep the size of 65536 octets alone.
+- **The counts of a parent.** The largest counts of 16 groups, 16 ranges
+  and 4096 coins and the size of 65536 octets are decided limits (J12) and
+  bounds of the schema, in W11.6 and in LIP-0026 R8.4 alike. Open are
+  proposal Q1 of LIP-0026, which would keep the size alone, and the
+  smallest count of one group and one range, which is marked NEW.
+- **The proposal points of W11.10**: the witness key hash of a range
+  script, the rules on `stop` and rule 8. Until the owners accept them, no
+  version determines that a reader judges them, and their six vectors
+  state no code (section 12).
+- **The owners' line on the rules of W11.10 that every reader judges.**
+  Each is given by a decision or by a form of section 11; that a reader of
+  a document refuses on them is said in W11.10 and marked NEW in section
+  11.12. What a verifier reads of a parent at admission is proposal Q1.
+- **Vectors of an admission** for `CHILD_ORDINAL`, `CHILD_SEAL_KEY`,
+  `DELEGATE_KEY_REUSE` and `SEAL_PROFILE` on the octets of grants. The last
+  three have no vector on a v4 grant anywhere (section 12).
 - **The registries of action names and of limit kinds**, with the meaning
   of a period (LIP-0007, LIP-0018; LIP-0008 sections 2 and 12.3). Until
   they exist the texts of a grant are identifiers without a list.
