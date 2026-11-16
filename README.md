@@ -972,6 +972,23 @@ changes; the vector set of the LIP is
 described and not built. Every LIP remains Draft, and nothing of it
 is implemented.
 
+A further draft has no version yet.
+[LIP-0030](lips/LIP-0030-action-profile-agent-session.md) proposes action
+profile no. 1, an agent session on a host: the first profile that would give
+a v4 grant an action at an executor. The executor is the service of a host
+that starts the run of an agent and keeps it. The draft proposes three action
+texts, to start, to renew and to stop a session, and four limit kinds, each
+with the registry section that it would fill; it adds no member to the grant.
+It states, in one table, where each field of a start and of a kept session
+lives: in the grant, in the host's policy, as a derived value, or as a check
+of the executor. A session has a lease in block heights and no clock; the
+executor checks the proof path again at every new tip, ends a session when
+its journal gains a durable record that refuses the path or when the heights
+run out, and suspends it on a refusal that leaves no record. Every rule is
+marked as restating a cited text, as proposed, or as open; twelve questions
+for the owners carry options and a recommendation. It defines no octets and
+no vectors, and nothing of it is implemented.
+
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
 section 7 states the rule for words in a grant: text always governs an

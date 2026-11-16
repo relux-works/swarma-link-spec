@@ -83,6 +83,37 @@ a certifier inside one owner (J9, 2026-11-15). Issuance by the operator's
 signer is implemented first. The signer service capability still does not
 authorize arbitrary sub-delegation.
 
+## Action profile no. 1: an agent session on a host
+
+[LIP-0030](lips/LIP-0030-action-profile-agent-session.md), Draft. Every rule
+of it is marked as restating a cited text, as proposed there, or as open, and
+neither owner has decided one. One row for each open point; the identifiers
+are those of its section
+[Open questions](lips/LIP-0030-action-profile-agent-session.md#open-questions).
+
+| Question | Location and boundary |
+| --- | --- |
+| Q1. Whom `recipient` names under the profile | LIP-0030 section 2.1 and table row A.3. Options: the agent for which the session runs, with the gate of the key holder (LIP-0013 J7) deciding who may ask; or the party that asks. The draft recommends the agent. |
+| Q2. The service type of the three actions | LIP-0030 section 2.2. LIP-0018 section 3 asks every leaf for its type, and none is accepted. Options: the candidate `slot.station` of LIP-0007 section 1, or a new type. The draft recommends the candidate; either way it is an amendment of LIP-0007. |
+| Q3. The form of the action names and of the limit kinds | LIP-0030 sections 2.2 and 2.3. The proposed names carry a dot inside a segment (`swarma/session.start`); LIP-0008 section 12.3 leaves the grammar open, and LIP-0029 section 8.2 writes slashes alone. "Session" is also the word of LIP-0028 for a bearer session. The draft recommends slashes and a segment that tells the two apart. |
+| Q4. Whether start, renew and stop end in an effect or are work | LIP-0030 section 2.2. As an effect, the service refuses a grant whose terms carry a text (LIP-0006 section 7) and a run at L0 gets no signature for a start (LIP-0029 O6.7 (a)). The draft recommends work, bounded by the limits. |
+| Q5. The model budget of a session | LIP-0030 section 2.3 and table row B.7. The grant-side proposal names a limit `swarma/gateway.units` in the grant of the session; the draft lists it, gives it no arithmetic and recommends a second grant whose executor is the model service (LIP-0008 section 4; LIP-0020 W11.4). |
+| Q6. Who restarts a crashed process | LIP-0030 AS4.6 and table row B.3. Options: a signed start request that names the session, or a restart by the host without a request. The draft recommends the signed request; the other has no request identity for its debit (LIP-0026 R5.7). |
+| Q7. A session across two grants | LIP-0030 AS1.2 and AS6.5. Options: a session ends with its grant, or a renew request under a successor grant rebinds it. The draft recommends the first for the first version, at the cost of one restart in a term. |
+| Q8. A session whose keep check is refused without a durable record | LIP-0030 AS5.5 and case S30-K2. Options: suspended until its lease end; also stopped when the age of the tip reaches the cutoff of LIP-0022 B3.6; or ended at once. While the node receives no block the lease end is never reached. The draft recommends suspension and asks the owners about the cutoff. |
+| Q9. The largest delay of the watch | LIP-0030 AS5.2, AS5.3 and the table of delays. A keep check at every new tip is proposed; the interval of the mempool read is open, as the interval between observations is in LIP-0022. No number before a run on a host. |
+| Q10. Whether a start request binds a hash of the first text | LIP-0030 table row A.6. The draft recommends a hash on the model of `text_sha256` in LIP-0029 section 5.2, from which the executor decides nothing. |
+| Q11. The owner and a session | LIP-0030 section 5. Whether a session that an owner starts at an own executor needs a grant (recommended: yes, the command is the origin at the key holder); the level of a stop command, open in LIP-0029; and what happens to a session whose origin is a command of a device that was revoked later. |
+| Q12. A stop request while the observation is refused | LIP-0030 section 5. Options: admitted like any invocation, so that a refused stop ends nothing (LIP-0028 T5.5), or admitted on its signature alone. The draft recommends the first. |
+| N1. Octets of the three requests and of their receipt | LIP-0030 section 2.2; LIP-0020 gives the invocation and the receipt no members. The arguments are logical fields. |
+| N2. A v4 code for an undefined action text, an undefined limit kind, a window that the tip lies outside and a wrong executor | LIP-0030 section 8; LIP-0008 section 4, steps 2 and 4, name none in version 0.1.53. The draft assigns none. |
+| N3. The texts of `resource` and `unit` of the three limit kinds | LIP-0030 section 2.3; LIP-0020 W11.4. Not proposed as octets. |
+| N4. How the executor obtains the contract of a grant, and a contract profile that requires the configuration hash | LIP-0030 table row A.4; LIP-0017 section 8; LIP-0018 section 1; LIP-0019. |
+| N5. The key holder's record of a run that the signed request creates | LIP-0030 section 4; LIP-0013 J7.1 binds a run "when the run is created". |
+| N6. A journal of the session service that is started anew | LIP-0030, "Security consequences"; LIP-0028 T5.8 and LIP-0025 section 7 have the rules for other journals. |
+| N7. Single-use grants under the profile | Not treated. |
+| N8. Limits with a period | LIP-0030 section 2.3: none of the three kinds has one. |
+
 ## Reconciliation proposals and limits
 
 | Question | Location and boundary |
