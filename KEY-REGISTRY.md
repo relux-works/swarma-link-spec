@@ -649,11 +649,15 @@ of that child.
   coins of each row. Since version 0.1.54 the service keeps a reservation
   ledger: for one place of one parent it makes one signature, ever, with a
   durable record before it signs (LIP-0014 J4.4 (a) to J4.4 (g); an owner
-  decision of 2026-11-16). A key stands in one ledger with one writer. A
+  decision of 2026-11-16). A key stands in one ledger with one writer, and
+  the ledger is one chain that also holds the audit which is proof. A
   ledger that is lost, rolled back or forked holds every place of every
-  parent whose key the service holds, and a key that signed before it came
-  under a ledger enters with every place held. No verifier can observe
-  that duty.
+  parent whose key the service holds, and a key that the ledger does not
+  show from its making, one that signed before it came under a ledger
+  included, has every place held for good. Two duties stay with the
+  operator, because the service cannot see their breach: the head of the
+  chain stands where no restore of the host reaches it, and the key exists
+  in one custody (beside J4.6). No verifier can observe that duty.
 - Signs: the child grants of that one parent and nothing else. It differs
   from every other key on the path.
 - Danger: high.

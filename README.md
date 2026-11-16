@@ -794,18 +794,27 @@ a stop between the signature and its record included, holds the place as
 `PLACE_HELD`: the service does not retry, and it answers with no new key
 and no other place. A held place has two exits, each a reconciliation by
 the operator that never uses the delegation key: it confirms a signature
-that the service itself recorded, or it proves from the ledger and the
-audit that the key was never used, which frees the place. Where neither is
-proved the place stays held for ever. The ledger has one writer and is a
-chain whose head the service keeps outside it; a ledger that is absent,
-rolled back or forked is lost and holds every place of every parent whose
-delegation key the service holds, until it is restored whole or the
-operator starts a new one by a recorded act, with those places held unless
-proved unused. The section states all of this as one table of states and
-events, from which its rules, codes and cases are read. The duty is one
-that no verifier can observe,
+that the service itself wrote into the ledger, or it proves that the key
+was never used, over the whole life of the key from its making, which
+frees the place. Where neither is proved the place stays held for ever.
+The ledger has one writer and is one chain whose head the service keeps
+outside it. The audit that is proof stands in that chain, as part of each
+entry; an operational audit beside it proves nothing. Every write is a
+mark, then the entry, then the kept head, and each partial outcome has one
+state; the service appends nothing beyond an entry that the kept head does
+not cover before it has recorded the hold of that place in the chain. A
+ledger that is absent, rolled back or forked is lost and holds every place
+of every parent whose delegation key the service holds, until it is
+restored whole or the operator starts a new one by a genesis, with those
+places held for good. A key that the ledger does not show from its making
+has every place held. A restore of the whole host that reaches the kept
+head is a loss that the service cannot find by itself; keeping the head
+out of that reach, and a key in one custody, is the operator's duty. The
+section states all of this as one table of states and events, from which
+its rules, codes and cases are read. The duty is one that no verifier can
+observe,
 and it proves nothing to a consumer; the two codes are answers of the
-service to its caller and no codes of a verifier. Cases S4-11 to S4-26 and a
+service to its caller and no codes of a verifier. Cases S4-11 to S4-30 and a
 plan of vectors stand in the same section, and no vector of it exists. The
 second decision, of the same day, is a statement of terms: a v4 grant keeps
 block heights and has no clock member, a calendar interval is converted to

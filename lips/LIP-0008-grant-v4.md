@@ -1003,9 +1003,9 @@ mirrored term. A date is never an admission input. Ivan Oparin decided on
 2026-11-16, as the lead relayed it, that a v4 grant keeps block heights and
 has no clock member: an interval that the parties state in calendar time is
 converted to heights at issuance and written into the grant, the parent of
-a child included, and a clock check that an issuer or its signing service
-makes before it signs is that issuer's own rule, no member of a grant and
-no step of the checks that the verifiers of a grant share.
+a child included, and a clock check that an issuer makes before it signs
+is that issuer's own rule, whatever part of the issuer runs it, no member
+of a grant and no step of the checks that the verifiers of a grant share.
 
 The invocation keeps its own short interval in signed clock time, `iat` and
 `exp` (section 12.5); Ivan Oparin decided this on 2026-11-11. One request

@@ -40,7 +40,11 @@ J4.4. J4.5 to J4.7 keep their numbers.
   deleted, and a place for which the key was used never takes another
   signature. A signing call of unknown outcome and a signature that fails
   the service's own verification hold the place: such octets are never
-  released, and the service never signs again for the place.
+  released, and the service never signs again for the place. Between the
+  reservation and the use of the key the service repeats the checks of
+  J4.4 on the parent and the row. A place is `signed` only when every
+  write of the result is durable: its mark, its entry and the kept head
+  over that entry.
 - **Replay (J4.4 (d)).** The same parent, place and intent are answered
   with the stored octets of the signature and never with a new signature,
   whose octets would differ under the auxiliary randomness of BIP-340. A
@@ -48,56 +52,79 @@ J4.4. J4.5 to J4.7 keep their numbers.
   closed or whose window has ended, and for a caller that is no longer on
   the list, it discloses nothing.
 - **Conflict (J4.4 (e)).** Another intent for the same parent and place
-  refuses with a code that is not retryable, in every state of the record,
-  and no signature exists.
+  refuses with a code that is not retryable, in every state of the record
+  or of an open mark, and no signature exists.
 - **Held (J4.4 (f)).** An interrupted write, a write whose outcome is
   unknown, and a stop of the service between the reservation and the
   durable result, the moment between the signature and its record
-  included, hold the place. Every write is announced by a mark that is
-  durable outside the ledger before the write, so a failed or torn write
-  leaves a trace. The service does not retry, releases no signature for
+  included, hold the place. Every write is one entry in one order: a mark
+  that is durable outside the ledger, then the entry, then the kept head.
+  Each partial outcome has one state: a mark that did not land leaves
+  nothing; a write that ends after its mark leaves the place held under
+  the open mark, and an entry that stands whole beyond the kept head is
+  evidence only and is never completed by the service; a mark or a kept
+  head that cannot be read loses the ledger. The service appends nothing
+  beyond an open mark: it first records the hold of that place as an
+  entry of the chain, moves the kept head, and only then writes for
+  another place. The service does not retry, releases no signature for
   the place and answers with no new key and no other place. A held place
   has two exits, each a reconciliation by the operator that never uses the
   delegation key and takes no octets from outside the service: it confirms
-  a signature that the service itself recorded, or it proves from the
-  ledger and the audit that the key was never used, which returns the
-  place to "no record". Where neither is proved the place stays held for
-  ever. The creating request and a reconciliation are fenced against each
-  other. The ledger has one fenced writer and is a chain whose head the
-  service keeps outside it; a ledger that is absent, rolled back, forked or
-  not continuing the kept head is lost, and a lost ledger holds every
-  place of every parent whose delegation key the service holds, a parent
-  first seen after the loss included, until the complete ledger is
-  restored or the operator makes a genesis that the audit records. A new
-  ledger starts with every place of every such parent held unless proved
-  unused; for a parent that stays held the way forward is a new parent
-  with a new key.
-- **Audit and capacity (J4.4 (g)).** Every reservation, use of the key,
-  result, refusal and act of the operator is audited, and so are a replay
-  that is answered from the stored octets and a refusal by the checks of
-  J4.4. The entry of a use of the key is durable before the signer is
-  called, and a signature is released only after its audit entry is
-  durable. The room for a reservation, its result and their entries is
+  a signature that the service itself wrote into the ledger, or it proves
+  that the key was never used, which returns the place to "no record".
+  That proof covers the whole life of the key, from its making, and
+  exists only in a chain that is continuous from the making of the key: a
+  key that was not made under the ledger, or that the service held when a
+  new ledger was started, has every place held, and no reconciliation
+  frees one. Where neither is proved the place stays held for ever. The
+  creating request and a reconciliation are fenced against each other.
+  The ledger has one fenced writer and is one chain whose head the service
+  keeps outside it; a ledger that is absent, rolled back, forked or not
+  continuing the kept head is lost, and a lost ledger holds every place of
+  every parent whose delegation key the service holds, a parent first seen
+  after the loss included, until the complete ledger is restored or the
+  operator makes a genesis, whose entry names the loss that it ends. A new
+  ledger starts with every place of every such parent held, with no
+  exception; the way forward is a new parent with a new key. A restore of
+  the whole host that puts back the ledger and the kept head together is a
+  lost ledger that the service cannot find by itself: to keep the kept
+  head out of that reach, and to keep a key in one custody, are duties of
+  the operator.
+- **Audit and capacity (J4.4 (g)).** The audit is two. The proof-bearing
+  audit stands in the chain of the ledger, under the kept head, and has
+  the ledger's contract: an entry carries its record and its audit entry
+  as one, and the chain holds the entry of a key, a reservation, a use of
+  the key, a result, a reconciliation and a genesis, and nothing else.
+  Only these are read as proof. The operational audit stands apart: the
+  refusals by the checks of J4.4, every finding that the ledger is lost,
+  and the other answers of the service. It is bounded, proves nothing,
+  and a write to it that fails changes no state of a place. The entry of
+  a use of the key is durable before the signer is called, and a
+  signature is released only after the entry of its result is durable
+  under the kept head. The room for the three writes of a request is
   secured before any mark; a refusal for want of room holds no place, and
   a write that fails after its mark does.
 
 The section states the ledger as one table of states: for each of the four
-states of a place and for a lost ledger, and for each of 23 events, the
+states of a place and for a lost ledger, and for each of 38 events, the
 next state, the use of the key, the answer and the code, with the pairs
-that cannot occur marked as such. The rules, the cases and the vector plan
-are read from it, and the order of the steps of one request is fixed
-beside it: the caller and the checks of J4.4 first, then the continuity of
-the ledger, then the place.
+that cannot occur marked as such. The three writes of a request are taken
+apart by their last durable component, and the recording of a hold, the
+restore, the genesis and the entry of a key are events of the table. The
+rules, the cases and the vector plan are read from it, and the order of
+the steps of one request is fixed beside it: the caller and the checks of
+J4.4 first, then the continuity of the ledger, then the place.
 
 Two codes are new, `PLACE_CONFLICT` (J4.4 (e), not retryable) and
 `PLACE_HELD` (J4.4 (f), not retryable as a request to sign; the same request
 asked again reads the record; it is also the answer for every intent under
-a lost ledger). They are answers of the signing service to
+a lost ledger and for a place of a key whose whole life the ledger does not
+show). They are answers of the signing service to
 its caller and stand in LIP-0014 section 11.1 alone: no verifier reports
 them and no pipeline of LIP-0020 section 9 holds them. The existing closed
 sets state no place that is taken or held, which the section says.
 
-Cases S4-11 to S4-26 are new. S4-11 to S4-17 are the first signature, the
+Cases S4-11 to S4-30 are new. S4-11 to S4-17 are the first signature, the
 exact replay with the same stored octets, another payload for the same
 place, a stop after the reservation and before the signature, a stop after
 the signature and before the record of the result, a second parent with
@@ -107,10 +134,14 @@ verification, which holds the place and is neither released nor repeated.
 S4-18 to S4-26 are the two exits of a held place, the fence between the
 creating request and a reconciliation, a reservation write that fails, two
 requests together, two writers, a lost ledger, the genesis, and room and
-audit. A vector plan follows them and holds no vector: the intent, the
-replay, the conflict, the independence of keys, the answer on a held place
-and under a lost ledger, the order of the checks, the outcomes of a
-reconciliation and the start of a new ledger can become deterministic
+the two audits. S4-27 to S4-30 are an entry beyond the kept head while
+another place is asked for, the write of the result by its last durable
+component, a key that signed before it came under the ledger, and the
+second check. A vector plan follows them and holds no vector: the intent,
+the replay, the conflict, the independence of keys, the answer on a held
+place and under a lost ledger, the partial outcomes of a write, the order
+of the checks, the outcomes of a reconciliation and the start of a new
+ledger can become deterministic
 vectors of a transition, in a file of their own,
 `vectors/LIP-0014/ledger-vectors.json`; the order of record and signature,
 the stops, the failed write, the fence, concurrent requests, two writers,
@@ -118,18 +149,23 @@ the continuity check, the room and the audit are behavioural and belong to
 the qualification of a service on its real store.
 
 The section "Decisions recorded" of LIP-0014 gains the decision, and its
-open questions gain what the text leaves open, each with its clause: a
-second check between the reservation and the use of the key, the payload
-in the record, a record `signed` whose octets do not verify when read, the
-authentication of the operator's act, the form of the marks and of the
-kept head, a key that arrives from another custody, the audit entry of a
-refusal that cannot be written, separate codes for a request still served
-and for a lost ledger, the interface and the octets of the codes, and the
-entries of the ledger on the form of LIP-0025. Three questions are not
-among them, because the table of states answers them: the exit of a held
-place for which the key was never used, the place of a request that ends
-with the key unused, and a replay under a closed parent. The key registry
-names the duty in the entry of the delegation key.
+open questions gain what the text leaves open, each with its clause: the
+window after the second check, the payload in the record, a record
+`signed` whose octets do not verify when read, the authentication of the
+operator's act, the form of the marks and of the kept head and where the
+kept head stands against a restore of the host, a proof from outside the
+chain for a key whose life the ledger does not show, single custody, a
+mark of a use that stayed open, the contents and the bound of the
+operational audit, separate codes for a request still served and for a
+lost ledger, the interface and the octets of the codes, and the entries
+of the ledger on the form of LIP-0025. Other questions are not among
+them, because the table of states answers them: the exit of a held place
+for which the key was never used, the place of a request that ends with
+the key unused, a replay under a closed parent, the store of the audit
+that is proof, an entry beyond the kept head beside the service of other
+places, the reach of the proof of an unused key, and the partial outcomes
+of a write. The key registry names the duty in the entry of the
+delegation key.
 
 ### The window of a v4 grant keeps heights
 
