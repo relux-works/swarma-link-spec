@@ -4,9 +4,13 @@
 - **Created:** 2026-11-14
 - **Affects:** the bytes that every signed object of Grant v4 shares: the
   canonical form, integers, types, signing digests, identifiers, the consent
-  of both parties and the issuance commitment
+  of both parties and the issuance commitment; and, since version 0.1.53,
+  the members of the grant itself
 - **Builds on:** LIP-0008 sections 3.1, 7.1, 8, 8.1 and 9, and LIP-0005;
-  relates to LIP-0004, LIP-0013, LIP-0014, LIP-0017, LIP-0018 and LIP-0019
+  for the members of the grant also LIP-0008 sections 3, 4, 11.4 and 12.2,
+  LIP-0014 sections 8.3, 9.1, 10.1, 11.1 and 11.2, LIP-0021 section 2,
+  LIP-0026 and LIP-0027; relates to LIP-0004, LIP-0013, LIP-0017, LIP-0018
+  and LIP-0019
 
 ## Summary
 
@@ -30,14 +34,18 @@ This LIP proposes the bytes of that layer, which every v4 object shares:
 - what an issuance anchor commits to, and its frame (section 8);
 - the pipelines of a reader, their order and their refusal codes (section
   9);
-- vectors for all of it (section 10).
+- vectors for all of it (section 10);
+- since version 0.1.53, the members of a v4 grant, root and child, with the
+  right of re-delegation, its groups, templates and ranges, the bounds and
+  the refusals (section 11), and their vectors (section 12).
 
-Three objects are complete here: the assent of a party to a contract, the
-consent event of a recipient and the issuance preparation. The registry
-reserves an identifier and a digest for five more types and gives them no
-member: the grant, the invocation, the receipt, the seal-key endorsement and
-a successor of the notary attestation. No reader accepts a payload of those
-five until the proposal that fixes its meaning gives it members.
+Four objects are complete here: the assent of a party to a contract, the
+consent event of a recipient, the issuance preparation and, since version
+0.1.53, the grant. The registry reserves an identifier and a digest for four
+more types and gives them no member: the invocation, the receipt, the
+seal-key endorsement and a successor of the notary attestation. No reader
+accepts a payload of those four until the proposal that fixes its meaning
+gives it members.
 
 ## What is decided and what is proposed
 
@@ -49,9 +57,17 @@ earlier or later is no substitute. The second makes a consent bound and
 single-use, with a largest age of 72 hours at issuance. Section 7 states
 both and says what the draft adds to carry them.
 
-Every other rule of this LIP is the draft's proposal. Neither owner has
-decided a byte of it, and nothing of it is implemented. The owners accept or
-change these bytes through this LIP, under LIP-0001.
+Every other rule of sections 1 to 10 is the draft's proposal. Neither owner
+has decided a byte of it, and nothing of it is implemented. The owners accept
+or change these bytes through this LIP, under LIP-0001.
+
+Section 11, the members of `swarma-grant/4`, is text in force since version
+0.1.53. On 2026-11-16 Ivan Oparin ordered, as the lead relayed it, that Grant
+v4 does not wait. Its members are therefore written as text in force and not
+as a proposal, without waiting for the co-author's agreement, which has not
+been given; the co-author's answer is folded in by amendment. The section
+opens with what that means for each rule that it carries, and its table
+"Where each member comes from" names every form that no decision gives.
 
 The requirements that the proposal meets are Draft text of LIP-0008: a type
 and a version inside the signed bytes, one tagged digest for each type, one
@@ -70,8 +86,8 @@ The table says which open point of LIP-0008 each section answers.
 
 | Open point of LIP-0008 | Proposed here |
 | --- | --- |
-| "Exact versioned bytes, signature domain, commitment/consent encoding" | Sections 1, 3, 4, 7 and 8, for the layer that all objects share. The members of five types stay open |
-| "typed-hash registry" and "per-field JCS integer/string schemas" | Sections 2, 3 and 4. The form of each integer member is fixed with its type, so for the five open types it is open with them |
+| "Exact versioned bytes, signature domain, commitment/consent encoding" | Sections 1, 3, 4, 7 and 8, for the layer that all objects share, and section 11 for the grant. The members of four types stay open |
+| "typed-hash registry" and "per-field JCS integer/string schemas" | Sections 2, 3 and 4. The form of each integer member is fixed with its type: for the grant in section 11, and for the four open types it is open with them |
 | "Signed metadata envelope, canonical object-ID preimages/signature inclusion, strict signature wire representation" | Sections 3 (W3.7), 5 and 6 |
 | "cross-version journal bindings" | Section 6 states what an identifier alone may not do. The journal key of a request comes with the members of the invocation |
 | "how the consent event's NIP-01 `created_at`, which stays in seconds, relates to the window" | Section 7.4 |
@@ -82,11 +98,12 @@ The table says which open point of LIP-0008 each section answers.
 | --- | --- | --- |
 | The reader of canonical bytes, the two integer forms, the typed digest, signatures, the signed form and identifiers (sections 1 to 6) | Yes | The owners' acceptance |
 | The assent, the consent event, the issuance preparation and its frame (sections 7 and 8), as octets and as checks on stated inputs | Yes | The contract identifier is taken as 32 given octets: its preimage is open in LIP-0017 section 2. The reads on a node need the ownership profile of LIP-0008 section 3, which is open |
-| A parser of a grant, an invocation, a receipt, an endorsement or the successor attestation | No | The members of each, as the next table says |
+| A reader of a grant: its members, its signature, and the rules that need its octets alone (section 11) | Yes | The co-author's answer. The admission of a grant needs the reads on a node of the profiles that section 11.11 names |
+| A parser of an invocation, a receipt, an endorsement or the successor attestation | No | The members of each, as the next table says |
 
 | Type | Its members wait for |
 | --- | --- |
-| `swarma-grant/4` | The encoding of the issuer pin and of an owner key (LIP-0008 section 3), of the recipient modes (section 3.1), of the executor (section 4), of the limits and their kinds (section 2 and LIP-0018), of the window and the recent block (sections 7 and 7.1) and of the seal with its construction profile (sections 1.1, 9 and 11); for a parent and a child, the rows (LIP-0014 section 9.1), and the delegation key and the issue capability (LIP-0014 section 11.1, LIP-0008 section 12.2), whose rules await the co-author |
+| `swarma-grant/4` | Nothing: section 11 gives the members. Open beside them are the registries of action names and of limit kinds (LIP-0007, LIP-0018), the seal of a single-use grant (LIP-0008 section 11.1) and the key that assents to a child's contract (section 7.1) |
 | `swarma-invocation/1` | The action table and the types of its arguments (LIP-0007, LIP-0008 sections 12.1 and 12.3), the encoding of the proof path (section 12.2) and the journal key of a request |
 | `swarma-receipt/1` | What a receipt states about an effect, for each action (LIP-0018 section 3) |
 | `swarma-seal-endorsement/1` | The seal profile and the form of a seal key and of its script (LIP-0008 sections 11.1 and 11.2) |
@@ -94,7 +111,8 @@ The table says which open point of LIP-0008 each section answers.
 
 Until a type has members, no reader supports it, and a payload of that
 type refuses as `WIRE_TYPE` (W3.1). Nothing in this LIP, and no vector,
-makes a payload that holds only `type` a valid object.
+makes a payload that holds only `type` a valid object: for the grant such a
+payload refuses as `WIRE_MEMBER` since version 0.1.53.
 
 ## Motivation
 
@@ -136,7 +154,10 @@ consent by any key. LIP-0008 lists the point as open.
   and section 8.1 states the requirements on identifiers and signatures.
   Both leave the bytes open.
 - `tools/trustcheck` recomputes the vectors of LIP-0013 and nothing of
-  Grant v4. The reference laboratory holds no v4 code.
+  Grant v4. When this LIP was written the reference laboratory held no v4
+  code. Since then it holds experiments for the layer of sections 1 to 9 on
+  stated facts, and no reader of a grant. `tools/grantv4` reads a grant of
+  section 11 and recomputes the vectors of section 12.
 
 ## Proposal
 
@@ -213,9 +234,10 @@ unsigned bits. A type that needs more states its own bound.
 Which members take the string form is decided with each type. The rule of
 thumb in the table is the draft's: whatever can be summed without a natural
 ceiling takes the string form, so that no later asset or price forces a
-change of form. The three objects that are complete here hold one integer
-member, an output index, in the number form, and no rule of this LIP
-computes with an integer.
+change of form. The assent, the consent event and the preparation hold one
+integer member, an output index, in the number form. The grant holds both
+forms (section 11), and its rule W11.10 is the one rule of this LIP that
+computes with integers.
 
 ### 3. Types and the registry
 
@@ -235,13 +257,14 @@ the script that they pay, and for a script that hashes a compressed key the
 parity of that key decides which script it is. The form of such a key comes
 with the ownership and seal profiles of LIP-0008 sections 3 and 11. W3.6
 says nothing about it, and no reader of this LIP turns such a key into an
-x-only key.
+x-only key. In a grant every such key has the compressed form of LIP-0021
+O2.1, which W11.1 calls an output key.
 
 The registry:
 
 | Type | Object | Use of its digest | Signed by | Members |
 | --- | --- | --- | --- | --- |
-| `swarma-grant/4` | A v4 grant, root or child (LIP-0008 section 1) | Signature | For a root grant the issuer's grant key. For a child the rule in force names the parent's recipient key, and Draft text of LIP-0014 section 11.1 names the delegation key of the parent (J4, awaiting the co-author's agreement) | None yet |
+| `swarma-grant/4` | A v4 grant, root or child (LIP-0008 section 1) | Signature | For a root grant the issuer's grant key. For a child the delegation key of the parent (W11.8; LIP-0014 J4, awaiting the co-author's agreement) | Section 11, complete |
 | `swarma-invocation/1` | A signed invocation (LIP-0008 section 12.1) | Signature | The request key of the final grant, or the key that its recipient's name yields for the channel | None yet |
 | `swarma-receipt/1` | The receipt of an executor for an effect | Signature | The executor's key | None yet |
 | `swarma-seal-endorsement/1` | The endorsement of a seal key (LIP-0008 section 11.2) | Signature | The issuer's grant key | Named by meaning in LIP-0008 section 11.2; none here |
@@ -249,9 +272,9 @@ The registry:
 | `swarma-issuance/1` | The issuance preparation | Commitment | Nobody; the anchor transaction authenticates it | Section 8, complete |
 | `swarma-notary-attestation/2` | The successor of the attestation of LIP-0014 section 6.1 | Signature | The notary's attestation key | None yet |
 
-The largest size is 1024 octets for the signed form of an assent and 2048
-octets for an issuance preparation. A type without members states its
-largest size with them.
+The largest size is 1024 octets for the signed form of an assent, 2048
+octets for an issuance preparation and 65536 octets for the signed form of
+a grant (W11.6). A type without members states its largest size with them.
 
 Draft [LIP-0024](LIP-0024-seal-endorsement.md) proposes the members of
 `swarma-seal-endorsement/1`, with its largest size, its codes and its
@@ -260,12 +283,13 @@ vectors. The entry above stands until both owners accept them.
 Draft text of 2026-11-16 in LIP-0008 section 11.4 (SB4), which awaits the
 spec review and the co-author's agreement, puts the seal key into
 `swarma-grant/4` and removes `swarma-seal-endorsement/1` from this registry
-once agreed. Until then the entry stands.
+once agreed. Until then the entry stands. Section 11 carries the seal key in
+the grant, as that text asks (the member `seal`, W11.2), and no rule of
+section 11 reads an endorsement.
 
-The entries of the grant and of the endorsement name the root case. Who
-signs a child's grant, who endorses the seal of a child and who assents to a
-child's contract are questions of LIP-0014 sections 9.1 and 11.1, and the
-registry settles none of them.
+W11.8 says who signs a child's grant, and W11.2 with LIP-0014 CS2 whose key
+the seal of a child pays. Who assents to a child's contract is a question of
+LIP-0014 section 11.1 that stays open (section 7.1).
 
 One object of this profile is a Nostr event and no entry of the registry:
 the consent event of section 7.2. It keeps the wire form and the identifier
@@ -419,10 +443,10 @@ of a signed object (section 9) and then checks, in this order:
 | `party` is the key that the profile of the contract names for the party that issues the grant | `ASSENT_PARTY` |
 
 Until a v4 contract profile says otherwise, the key of the issuing party of
-a root grant is the issuer's grant key, as in the v3 profiles (LIP-0017
-section 1). For a child grant the point is open: Draft text of LIP-0014
-section 11.1 lets the delegation key sign child grants and nothing else, so
-that key cannot sign an assent.
+a root grant is the issuer's grant key, the member `issuer.grant_key` of the
+grant (W11.2), as in the v3 profiles (LIP-0017 section 1). For a child grant
+the point is open: Draft text of LIP-0014 section 11.1 lets the delegation
+key sign child grants and nothing else, so that key cannot sign an assent.
 
 An assent gives no authority and opens no window. It says that a key agreed
 to a contract.
@@ -656,7 +680,10 @@ anchor binds them, because a preparation with another outpoint has another
 commitment. Nobody signs the preparation, and nobody needs to transport it:
 whoever holds the four inputs builds the same octets. From the signed grant
 come its identifier and its signature; its chain, its contract hash and the
-mode of its recipient are members of the grant, which has none yet.
+mode of its recipient are the members `genesis`, `contract` and `recipient`
+of the grant (section 11). The request key of W7.5 is `recipient.key`, the
+name and the owner key of W7.6 are `recipient.name` and `recipient.owner`,
+and the recent block of W7.6 is the block of `recent_block`.
 
 W8.3. The preparation states the signature of each signed part beside what
 identifies the part, and each of those signatures is the signature of the
@@ -719,7 +746,7 @@ document that an earlier step refuses.
 
 | Class | Used for | Steps, in order |
 | --- | --- | --- |
-| Signed object | An assent, and every signed type of the registry once it has members | 1. The document: W1.1 to W1.6 on the signed form, in the order of W9.2. 2. The signed form: exactly `payload` and `signature` (W5.3). 3. The `type` (W3.1, W3.3, W3.4). 4. The members of the payload, in the order of W9.3. 5. The encoding of the signature (W5.2). 6. The key of the place (W5.5). 7. The signature (W5.1, W5.2). 8. References to the object and from it (W6.3). 9. The rules of the object: for an assent, W7.2 |
+| Signed object | An assent, a grant, and every other signed type of the registry once it has members | 1. The document: W1.1 to W1.6 on the signed form, in the order of W9.2. 2. The signed form: exactly `payload` and `signature` (W5.3). 3. The `type` (W3.1, W3.3, W3.4). 4. The members of the payload, in the order of W9.3. 5. The encoding of the signature (W5.2). 6. The key of the place (W5.5). 7. The signature (W5.1, W5.2). 8. References to the object and from it (W6.3). 9. The rules of the object: for an assent, W7.2; for a grant, W11.9 and W11.10. W11.8 states the points of these steps that are a grant's own |
 | Unsigned payload | An issuance preparation that is read from stored octets | 1. The document, in the order of W9.2. 2. The `type`. 3. The members, in the order of W9.3. No step concerns a signature |
 | Nostr event | A consent event | The five steps of W7.4. Sections 1 to 6 do not apply: the event has its own wire form, no `type` and no signed form, and its size, its spelling and the encoding of its keys and of its signature are all part of step 1 |
 | Issuance | A presentation that is held against its anchor | The six steps of W9.4 |
@@ -740,14 +767,15 @@ payload, at every depth, has exactly the names of its list (`WIRE_MEMBER`).
 Then the values, in the order in which the canonical bytes hold them: each
 has the form of its member (`WIRE_MEMBER`), and an integer is within the
 bound of its member (`WIRE_INTEGER`). Then the signing keys among the
-members are points of the curve (`WIRE_KEY`).
+members are points of the curve (`WIRE_KEY`), and so are the output keys of
+a grant (W11.1).
 
 W9.4. An issuance is checked in six steps, and the first that fails gives
 the refusal.
 
 | Step | Check | Refusal |
 | --- | --- | --- |
-| 1 | The signed grant, through the pipeline of a signed object | The codes of that pipeline. The step has no content until the grant has members |
+| 1 | The signed grant, through the pipeline of a signed object, with W11.8 to W11.10 | The codes of that pipeline, `GRANT_SHAPE` and `GRANT_DELEGATE`; for a child also the codes of W11.8 |
 | 2 | The inputs: the mode of the grant and the presence of the evidence outpoint (W8.4) | `ISSUANCE_MODE` |
 | 3 | The issuer's assent, through the pipeline of a signed object, and then W7.2 | The codes of that pipeline, `ASSENT_BINDING`, `ASSENT_PARTY` |
 | 4 | The consent event, through the five steps of W7.4, with the evidence outpoint for a grant by name | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` |
@@ -773,9 +801,9 @@ The codes:
 | `WIRE_STRING` | A string with a code point below U+0020 or an unpaired surrogate |
 | `WIRE_NOT_CANONICAL` | Octets that differ from the serialization of the parsed value |
 | `WIRE_TYPE` | No `type`, a `type` that the reader does not support, or another type than the place requires |
-| `WIRE_MEMBER` | A member that the schema does not list, a missing member, or a value in another form |
-| `WIRE_INTEGER` | A string-form integer outside its grammar, or an integer above the bound of its member |
-| `WIRE_KEY` | A signing key that is no point of the curve |
+| `WIRE_MEMBER` | A member that the schema does not list, a missing member, or a value in another form, a list outside its count included |
+| `WIRE_INTEGER` | A string-form integer outside its grammar, or an integer above the bound of its member or below its smallest value |
+| `WIRE_KEY` | A signing key, or an output key of a grant, that is no point of the curve |
 | `WIRE_SIGNATURE_FORM` | A signature that is not 128 lowercase hexadecimal characters |
 | `WIRE_SIGNATURE` | A signature that does not verify |
 | `WIRE_ID` | A reference that differs from the recomputed identifier |
@@ -783,9 +811,13 @@ The codes:
 | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` | The five steps of W7.4, with two codes for its third step |
 | `CONSENT_AGE`, `CONSENT_CONSUMED` | At the issuer alone: a consent older than 72 hours (W7.8); a consent that was used (W7.9) |
 | `ISSUANCE_MODE`, `ISSUANCE_FRAME`, `ISSUANCE_COMMITMENT` | W8.4, W8.5 and W8.6 |
+| `GRANT_SHAPE` | A grant whose window, action set or own limits break a rule of W11.9 |
+| `GRANT_DELEGATE` | A parent whose right of re-delegation breaks a rule of W11.10 |
 
-A refusal of this section records no closure. Every code is new, and none
-replaces a code of an earlier format.
+A refusal of this section records no closure. Every code of the table is
+new, and none replaces a code of an earlier format. The pipeline of a child
+also reports three codes of LIP-0014, with the meaning that they have
+there: `CHILD_SIGNER`, `CHAIN_DEPTH` and `NOT_DELEGABLE` (W11.8).
 
 ### 10. Vectors
 
@@ -827,10 +859,14 @@ refuses under the code of its spelling; and every read on a node (W7.6).
 Two things about the file are limits and not defects of a reader that
 finds them. The keys are the published test keys of BIP-340 and belong to
 nobody. And the stand-in for a grant, octets that hold `type` alone, is
-used as three given values and never as a grant: a reader of grants refuses
-those octets as `WIRE_TYPE` today, and as `WIRE_MEMBER` once a grant has
-members. Vectors of whole grants, invocations and receipts come with their
-members.
+used as three given values and never as a grant. When the file was made a
+reader of grants refused those octets as `WIRE_TYPE`; since version 0.1.53
+a grant has members, and such a reader refuses them as `WIRE_MEMBER`
+(section 12, `grant-i-05`). The file itself does not change. Vectors of
+whole grants are in section 12; those of invocations and receipts come with
+their members. Two properties that the list `rules` of the file marks as
+not covered have vectors in section 12: a number where the string form is
+required (W2.1), and arithmetic at a bound (W2.4).
 
 No checker for these vectors is in this repository. The values were
 computed by one implementation and recomputed, with the expected refusals,
@@ -840,6 +876,560 @@ implementation in Swift that consumes the same vectors on its own, and it
 says that the agreement of two implementations is not the oracle. That
 holds for these vectors: they bind nothing until both owners accept the
 rules that they follow.
+
+### 11. The members of `swarma-grant/4`
+
+Until version 0.1.52 the registry gave the grant an identifier, a digest and
+no member, so no reader could accept a v4 grant and no vector could hold one.
+This section gives the grant its members: every member with its form, the
+two member sets of a root grant and of a child, the right of re-delegation
+with its groups, templates and ranges, the bounds, and the refusals with
+their order. Section 12 holds the vectors.
+
+**In force since version 0.1.53.** On 2026-11-16 Ivan Oparin ordered, as the
+lead relayed it, that Grant v4 does not wait; the completion of v4 stands
+before its freeze
+([Decision 0004](../decisions/0004-reconciliation-closures.md)). The members
+of the grant are therefore written here as text in force and not as a
+proposal, without waiting for the co-author's agreement, which has not been
+given; the co-author's answer is folded in by amendment. The section decides
+no meaning. It carries, in octets, what LIP-0008, LIP-0014, LIP-0024, LIP-0026
+and LIP-0027 state for a v4 grant, and each of those rules keeps the state
+that its own text gives it: decided by both owners, in force on one owner's
+decision, or Draft with the co-author's agreement pending. Where a rule that
+is still pending needs a member, the member is here, so that the octets of
+version `/4` do not change when the answer comes. Where the section had to
+choose a name or a form that no decision gives, section 11.12 says so.
+Neither owner has reviewed the octets member by member, and no verifier
+implements them: `tools/grantv4` reads a grant for the vectors of section 12
+and admits nothing.
+
+A grant is a signed object of this registry. A root grant is signed by the
+grant key of its issuer. A child is signed by the delegation key that its
+parent names. A root grant that carries the member `delegate` gives the
+right of re-delegation and is called a parent.
+
+#### 11.1. Forms
+
+W11.1. Every member of a grant has one of these forms.
+
+| Form | Octets | Refusal |
+| --- | --- | --- |
+| Hash | 64 lowercase hexadecimal characters (W3.5). A transaction id and a block hash stand in the byte order in which a node prints them | `WIRE_MEMBER` |
+| Signing key | The x-only key of W3.6: a key under which a BIP-340 signature verifies | `WIRE_MEMBER` for the form; `WIRE_KEY` for a value that is no x coordinate of a point |
+| Output key | A key that controls an output: 66 lowercase hexadecimal characters, of which the first two are `02` or `03` and the other 64 are the x coordinate of a point of the curve. It is the form of an owner pin (LIP-0021 O2.1) | `WIRE_MEMBER` for the form; `WIRE_KEY` for a value in that form whose coordinate is on no point |
+| Text | A string of 1 to 255 characters, each from U+0020 to U+007E | `WIRE_MEMBER` |
+| Short text | A text of at most 32 characters | `WIRE_MEMBER` |
+| Outpoint | An object with exactly `txid`, a hash, and `vout`, an integer in the number form from 0 to 4294967295 | `WIRE_MEMBER`; `WIRE_INTEGER` for a `vout` above the bound |
+| Script | Lowercase hexadecimal, an even number of characters from 2 to 200 | `WIRE_MEMBER` |
+| Height | An integer in the number form, from 0 to 9007199254740991 | `WIRE_MEMBER` for a string; a number above the bound already refuses in the document step (`WIRE_NUMBER`) |
+| Amount | An integer in the string form, from 0 to 18446744073709551615 | `WIRE_MEMBER` for a number; `WIRE_INTEGER` for the grammar and the bound (W2.3) |
+| List | An array. Where the schema states a smallest or a largest count, a list outside it refuses | `WIRE_MEMBER` |
+
+An object has exactly the members that its list states (W3.2). Where this
+section gives an object alternative lists, it has exactly the members of one
+of them. An integer below the smallest value that its member states refuses
+as one above the largest does, as `WIRE_INTEGER`.
+
+A signing key and an output key are two forms, and no reader converts one
+into the other. A request key, an executor key, a grant key and a delegation
+key sign, and they are signing keys. An owner key, a seal key and a
+child-seal key control outputs, and the script that they pay commits to
+their parity (LIP-0024 E1.2, LIP-0021 section 3), so they are output keys.
+Where a rule compares keys of the two forms, it compares x coordinates
+(LIP-0021 O2.3).
+
+A text holds printable ASCII and nothing else. A name with another octet has
+no grant in this profile, as it has no consent (W7.3).
+
+#### 11.2. The payload
+
+W11.2. The payload of a grant has the members of this table. The column
+"In" says whether a member belongs to a root grant, to a child, or to both.
+A payload that has the member `parent` is read under the list of a child,
+and every other payload under the list of a root grant.
+
+| Member | Form | In | Meaning |
+| --- | --- | --- | --- |
+| `type` | string | both | `swarma-grant/4` |
+| `genesis` | hash | both | The chain of the grant: the hash of its genesis block, as in an assent (W7.1) |
+| `contract` | hash | both | The identifier of the one contract that the grant binds (LIP-0017 section 5) |
+| `issuer` | object with exactly `name`, `registration`, `owner` and `grant_key` | root | The issuer, as LIP-0008 section 3 binds it |
+| `issuer.name` | text | | The exact name of the issuer |
+| `issuer.registration` | outpoint | | The transaction and the output that first registered that name |
+| `issuer.owner` | output key | | The owner key of that name |
+| `issuer.grant_key` | signing key | | The grant key. The signature of the signed form verifies under it (W11.8) |
+| `parent` | hash | child | The identifier of the parent (W6.4) |
+| `ordinal` | integer in the number form | child | The ordinal of the child's row. The schema states no bound of its own: an ordinal of 0, or one above the number of rows of the parent, is a well-formed member and refuses as `CHILD_ORDINAL` (LIP-0026 R2.1) |
+| `recipient` | object | both | The recipient, in one of two modes (W11.3) |
+| `executor` | object with exactly `name`, a text, and `key`, a signing key | both | The executor: a service name with its pinned public key (W11.4) |
+| `actions` | list of texts | both | The closed action set (W11.4) |
+| `limits` | list of limits | both | The own limits of the grant (W11.4) |
+| `not_before_height` | height | both | The first height of the window (LIP-0008 section 7.1) |
+| `not_after_height` | height | both | The height at which the window has closed: the window is half-open |
+| `recent_block` | hash | both | The hash of the committed recent block (LIP-0008 section 7; LIP-0022 section 4) |
+| `seal` | object with exactly `construction`, `kind`, `outpoint` and `key` | both | The seal of the grant (LIP-0008 section 11.4, SB1) |
+| `seal.construction` | short text | | The construction profile of LIP-0008 section 1.1. The first profile writes `W` |
+| `seal.kind` | short text | | The kind of seal. The first profile writes `revocable-only` |
+| `seal.outpoint` | outpoint | | The transaction and the output index of the seal |
+| `seal.key` | output key | | The seal public key. In a child it is the child-seal key of the parent (LIP-0014 CS2) |
+| `delegate` | object (W11.5) | root, optional | The right of re-delegation. A root grant without the member gives none |
+
+A child has no `issuer` and no `delegate`. Its authority comes from its
+parent, whose issuer is the root of the path, and a path has two links
+(LIP-0014 D7), so a child gives no right of re-delegation. A grant with
+`issuer` and `parent`, a child with `delegate` and a child without `ordinal`
+all refuse as `WIRE_MEMBER`.
+
+The grant states the hash of its recent block and no height. A verifier
+reads the height `R` of that block on its own node (LIP-0022 B4.2), and a
+second place for it in the grant could only disagree with the first.
+
+A reader of this section checks the form of `seal.construction` and of
+`seal.kind` and not their values. Whether a verifier supports the profile
+and the kind that a grant states is the check of LIP-0008 SB2, with the
+code `SEAL_PROFILE`, at admission. The profile still comes from the
+verifier's own configuration (LIP-0023 C1.1): the member lets a verifier
+refuse a grant that was built for another profile, and it selects nothing.
+
+A grant carries nothing beside these members. In particular it has:
+
+- no descriptive member, and no recipient name as metadata (LIP-0008
+  sections 3.1 and 12.3). The `grantee_name` of v3 is an unlisted member
+  and refuses;
+- no text and no hash of a text. Words that govern an agent's work stand
+  in the contract, which `contract` binds (LIP-0017 section 1; LIP-0006
+  section 7). The v4 octets that carry a scope text along a path are open
+  (LIP-0014 section 3.4), and this section gives them no member;
+- no typed constraint of an action beyond its limits: no list of targets,
+  repositories, refs or payees. LIP-0008 section 2 and LIP-0014 section 3.4
+  expect such members from the type profiles, and none defines one yet;
+- no member for the owner's devices or for a statement key. The device
+  list is pinned in the owner's name outside `swarma` and gives no grant
+  authority, and there is no statement key (LIP-0029 O3.7, O10.5);
+- no holder of a landlord. A class names landlords (W11.7), and the holders
+  of a landlord are read at each admission from the list that the
+  landlord's name pins, as LIP-0010 section 10 says;
+- no stated identifier of itself, and no height of its recent block.
+
+#### 11.3. The recipient
+
+W11.3. `recipient` has exactly one of two member lists (LIP-0008 section
+3.1):
+
+| Mode | Members | Meaning |
+| --- | --- | --- |
+| By key | exactly `key`, a signing key | The request key |
+| By name | exactly `name`, a text, and `owner`, an output key | The exact name and the owner key of that name. The request key is read from the name at every admission and is no member |
+
+An object with `key` and a name, an object with neither, and a name without
+its owner key refuse as `WIRE_MEMBER`. That is rule 1 of LIP-0008 section
+3.1 as a rule of the schema.
+
+#### 11.4. The executor, the actions and the limits
+
+W11.4. A grant names one executor for its own scope, and its own limits
+belong to that executor (LIP-0008 section 4).
+
+`actions` is a list of texts in ascending order of their octets, without a
+repeated text, so that one action set has one encoding. The list may be
+empty; such a grant authorizes no action. Which texts name an action is for
+the action registry (LIP-0007; LIP-0008 section 12.3), which is open. A
+reader of this section compares texts and knows no action; an executor
+refuses an action that its profile does not define.
+
+A limit is an object with exactly `kind`, `resource` and `unit`, each a
+text, and `amount`, an amount; it may also have `period`, a text. The key
+of a limit is all of its members but the amount (LIP-0026 R1.2). A limit
+without `period` and a limit with one have different keys. No two limits of
+one list have the same key. `limits` may be empty: a request that consumes
+a key for which the grant states no limit meets a ceiling of 0 (LIP-0026
+R5.2).
+
+The texts of a limit are identifiers. Their registry, the meaning of each
+kind, its unit, its period and its arithmetic come with the type profile of
+the kind (LIP-0008 section 2; LIP-0018 section 2), and none exists yet. A
+verifier refuses the admission that an unknown kind affects; the document
+with it is still a well-formed grant. A kind whose amount is a floor, as
+the required confirmation depth, takes the same members.
+
+#### 11.5. The right of re-delegation
+
+W11.5. `delegate` has exactly these members; `child_seal_key` may be
+absent:
+
+| Member | Form | Meaning |
+| --- | --- | --- |
+| `key` | signing key | The delegation key: only it signs the children of this parent (LIP-0014 J4.1) |
+| `child_seal_key` | output key | The child-seal key: the seal of every child pays it (LIP-0014 CS1, CS2). A parent without the member is a well-formed grant and unusable as a parent: every child of it refuses as `CHILD_SEAL_KEY` at its admission (CS1) |
+| `actions` | list of texts, ascending and without a repeated text | The actions that a child may receive |
+| `pools` | list of limits | One pool for every limit key that a template limits (LIP-0026 R8.5). The `amount` of an entry is the pool |
+| `notaries` | list of at most 4 pins | The notaries that the parent pins (LIP-0014 D3, J3.1), in ascending order of their names and without a repeated name. A pin is an object with exactly `name`, a text, `registration`, an outpoint, and `owner`, an output key |
+| `groups` | list of 1 to 16 groups | The rows, as groups (W11.6) |
+
+The member is present or absent, and it has no member `depth`: a root grant
+with `delegate` is a parent, and no other grant is. It has no checkpoint
+either: on v4 the recent block of the grant takes that place (LIP-0014
+section 2).
+
+`notaries` may be empty. A parent none of whose templates names a certifier
+pins no notary (LIP-0026 R10.1).
+
+#### 11.6. Groups, ranges and the bounds
+
+W11.6. A group is an object with exactly `template` (W11.7) and `ranges`, a
+list of 1 to 16 ranges. A range has these members:
+
+| Member | Form | Meaning |
+| --- | --- | --- |
+| `txid` | hash | The transaction of the coins of the range |
+| `first` | integer in the number form, 0 to 4294967295 | The output index of its first coin |
+| `count` | integer in the number form, 1 to 4096 | The number of its coins. Each coin is one row |
+| `script` | script | The script of every coin of the range |
+| `stop` | object with exactly `txid`, a hash, `first`, an integer from 0 to 4294967295, and `script`, a script | Only in a group whose template names a certifier: the stop coins of the range |
+
+The stop coins of a range are the outputs of the transaction `stop.txid`
+from the index `stop.first` on, as many as the `count` of the range, each
+with the script `stop.script`. The stop coin of the coin at the position
+`i` of the range is the stop coin at the position `i`. Each row of a group
+with a certifier therefore has a stop coin of its own, as LIP-0014 J2.7 and
+LIP-0027 H1.1 ask, and a range states it once, as it states its coins.
+
+An array keeps its order (section 1). The order of `groups` and of the
+`ranges` of a group in the octets is the signed order in which LIP-0026
+R8.3 counts the rows, and the coins of a range stand in ascending order of
+their output index. A change of that order is another payload with another
+identifier.
+
+The bounds of a grant are these:
+
+| Bound | Value | Refusal |
+| --- | --- | --- |
+| The signed form of a grant | 65536 octets | `WIRE_SIZE` |
+| Nesting (W1.1) | 16 levels. The deepest member of a grant, the registration of a landlord of a class, stands at the tenth | `WIRE_SIZE` |
+| Groups of a parent | 1 to 16 | `WIRE_MEMBER` |
+| Ranges of a group | 1 to 16 | `WIRE_MEMBER` |
+| Coins of a range | 1 to 4096 | `WIRE_INTEGER` |
+| Notaries of a parent | 0 to 4 | `WIRE_MEMBER` |
+| Landlords of a class | at least 1 | `WIRE_MEMBER` |
+
+The actions, the limits, the pools and the landlords of a class have no
+largest count of their own; the size of the signed form bounds them. A
+parent has at most 256 ranges and 1,048,576 rows.
+
+The three counts and the size are the four numbers of LIP-0026 R8.4. Here
+they are bounds of the schema: a document outside them is no grant. LIP-0026
+proposal Q1 would keep the size alone and drop the counts. It awaits the
+owner, and this section does not decide it; if it is accepted, the counts
+leave the schema by amendment.
+
+#### 11.7. The template
+
+W11.7. A template is an object with exactly `executor`, `recipient` and
+`limits`, and exactly one of `certifier` and `no_certifier`.
+
+| Member | Form | Meaning |
+| --- | --- | --- |
+| `executor` | as in W11.2 | The executor of every row of the group (LIP-0026 R8.1) |
+| `recipient` | object in one of three lists | The recipient constraint (LIP-0026 R9.1) |
+| `limits` | list of limits, as in W11.4 | The limits of each row of the group. The list may be empty |
+| `certifier` | text | The `name` of one entry of `notaries`: the certifier of the rows of the group |
+| `no_certifier` | the value `true` | The statement that the rows of the group have no certifier (LIP-0014 J9.1) |
+
+The recipient constraint has exactly one of three member lists: `key`, as
+in W11.3; `name` and `owner`, as in W11.3; or `class`, a list of at least
+one pin in the form of W11.5. A class stands in a template alone: the
+`recipient` of a grant itself is a key or a name (W11.3).
+
+A template says in so many octets whether its rows have a certifier. A
+template with neither member, and one with both, refuses as `WIRE_MEMBER`.
+So do `no_certifier` with any other value than `true` and a `certifier`
+that is the empty string, and `null` is no value at all (W1.4). No row is
+without a certifier because a member was left out.
+
+The form admits `no_certifier` beside any recipient constraint, and it
+decides nothing about it. A template without a certifier is valid only where
+its recipient is limited to the issuer's own landlord (LIP-0014 J9.2,
+LIP-0026 R10.2), and W11.10 refuses every other one. The encoding widens
+nothing of J9.
+
+#### 11.8. Who signs, and the pipeline
+
+W11.8. A grant is read through the pipeline of a signed object (W9.1), with
+these points for its steps:
+
+| Step | For a root grant | For a child |
+| --- | --- | --- |
+| 1. The document | The largest size is 65536 octets | The same |
+| 4. The members | The lists of W11.2 to W11.7, in the order of W9.3 | The same |
+| 6. The key of the place | `issuer.grant_key` of the payload | The `delegate.key` of the parent that the reader has already read through this pipeline. First `parent` equals the identifier that the reader recomputed from that parent (`WIRE_ID`); a child that is presented without its parent refuses with the same code. Then the parent is no child (`CHAIN_DEPTH`) and carries `delegate` (`NOT_DELEGABLE`) |
+| 7. The signature | `WIRE_SIGNATURE` | `CHILD_SIGNER` (LIP-0014 J4.1) |
+| 8. References | A reference to the grant from another object equals its identifier (`WIRE_ID`): the `grant_id` of a preparation (W8.1), the `parent` of a child | The same |
+| 9. The rules of the object | W11.9, then W11.10 | W11.9 |
+
+For a child the reference to its parent stands in step 6 and not in step 8,
+because that reference selects the key. A child that is signed by another
+key and presented with another parent refuses as `WIRE_ID`.
+
+The key of a root grant is a member of its payload, as the `party` of an
+assent is. The pipeline shows that the holder of that key signed the grant.
+That the key is the grant key of the pinned issuer is the issuer rule of
+LIP-0008 section 3, which a verifier checks on its node at admission, and no
+step of this pipeline replaces it.
+
+`CHILD_SIGNER`, `CHAIN_DEPTH` and `NOT_DELEGABLE` are codes of LIP-0014
+(J4.1 and section 4), used here with the meaning that they have there. A
+signature of a child that fails under the delegation key refuses as
+`CHILD_SIGNER`, whichever key made it: a reader cannot tell a signature by
+another key from one that verifies under none.
+
+A child is signed by the delegation key under LIP-0014 J4, a decision that
+awaits the co-author's agreement. This section carries it, as the first
+paragraphs say.
+
+#### 11.9. The rules of every grant
+
+W11.9. After its signature a grant meets these rules, in this order, or
+refuses as `GRANT_SHAPE`:
+
+| # | Rule | From |
+| --- | --- | --- |
+| 1 | `not_before_height` is lower than `not_after_height` | LIP-0008 section 7.1, rule 1 |
+| 2 | `actions` stands in ascending order of its octets and repeats no text | W11.4 |
+| 3 | No two entries of `limits` have the same key | LIP-0026 R1.2 |
+
+The rules that need a chain are no part of this list: that the window does
+not open below the recent block, that it does not pass the expiry of the
+issuer's name, and every rule of sections 3 to 7 of LIP-0008.
+
+#### 11.10. The rules of a right of re-delegation
+
+W11.10. LIP-0026 R1.5 refuses a parent that breaks a rule of its rows and
+leaves the code to the members of the grant. The code is `GRANT_DELEGATE`.
+These are the rules that a reader judges on the signed octets of a parent
+alone. All of them report the one code, so their order shows only where a
+reader explains its refusal:
+
+| # | Rule | From |
+| --- | --- | --- |
+| 1 | `delegate.actions` stands in ascending order and repeats no text | W11.5 |
+| 2 | No two entries of `pools` have the same key | LIP-0026 R8.5 |
+| 3 | `notaries` stands in ascending order of its names and repeats no name | LIP-0014 section 2 |
+| 4 | For each group, in the order of the groups: no two limits of the template have the same key (R1.2); no two landlords of a class have the same name (R9.1); a `certifier` is the `name` of an entry of `notaries` (R10.1); a template with `no_certifier` has a recipient that is a name with its owner key, or a class of exactly one landlord whose `name`, `registration` and `owner` equal those of `issuer` (R10.2) | LIP-0026 |
+| 5 | For each range of that group, in the order of the ranges: `first` plus `count` minus 1 is at most 4294967295, and `script` is a witness key hash, the octets `00 14` and 20 further octets (R8.2, R3.1); the range has `stop` exactly where the template names a certifier (LIP-0027 H1.1, LIP-0014 J9.4); `stop.first` plus `count` minus 1 is at most 4294967295, and `stop.script` is a witness key hash (H1.2) | LIP-0026, LIP-0027 |
+| 6 | The keys of `pools` are exactly the keys that a template limits. For each key the sum, over the groups, of the number of rows of the group times the amount of its template is at most the pool. The sum is an exact integer sum (W2.4) | LIP-0026 R8.5 |
+| 7 | No output is a coin of two rows: two ranges with one `txid` have index intervals that do not meet. No coin is the outpoint of `seal` | LIP-0026 R8.6 |
+| 8 | No output is a stop coin of two rows. No stop coin is a coin of a row, the outpoint of `seal`, or the output after it in the same transaction | LIP-0027 H1.3 |
+
+The sum of rule 6 can pass 2^64 - 1 while every amount is within its bound.
+A reader adds exactly and refuses; it never wraps.
+
+The order and the code are fixed here. The rules themselves are rules of
+the LIPs that the table names, and each keeps the state that it has there.
+In particular this section does not decide proposal Q1 of LIP-0026, the
+refusal of a whole parent before any child or own request is admitted: a
+verifier under the profile in force judges the rules that its profile
+holds, and a reader that judges a rule of this table and finds it broken
+reports `GRANT_DELEGATE`. The witness key hash of rule 5 and the rules of
+LIP-0027 are proposals of their LIPs.
+
+One rule on the octets of a parent has its code elsewhere. The delegation
+key and the child-seal key differ from each other and from the other keys
+of the parent, compared by x coordinate (LIP-0014 J4.3 (a), CS3): from
+`issuer.grant_key`, from `recipient.key` or `recipient.owner`, from
+`issuer.owner`, from the `owner` of every entry of `notaries` and from
+`seal.key`. A parent that breaks it is unusable as a parent, and every
+child of it refuses as `DELEGATE_KEY_REUSE` at its admission. The parent
+itself is still read.
+
+#### 11.11. Which rule reads which member
+
+The rules that admit a grant stand in other LIPs and read the members of
+this section. No rule of this table is changed here.
+
+| Rule | Members that it reads |
+| --- | --- |
+| The issuer rule (LIP-0008 section 3; LIP-0021 section 7.1) | `issuer.name`, `issuer.registration`, `issuer.owner`, `issuer.grant_key`, `recent_block` |
+| The window (LIP-0008 section 7.1) and the recent block (LIP-0022 section 4) | `not_before_height`, `not_after_height`, `recent_block` |
+| The seal (LIP-0008 SB2, SB3; LIP-0024 E1.2) and the linkage output (LIP-0023 C2.3) | `seal` |
+| The assent, the consent and the issuance (sections 7 and 8) | `genesis`, `contract`, `issuer.grant_key`, `recipient` |
+| A recipient by name (LIP-0008 section 3.1; LIP-0021 section 7.2) | `recipient.name`, `recipient.owner` |
+| The executor and the action (LIP-0008 section 4) | `executor`, `actions` |
+| The accounts of a request (LIP-0026 section 5) | `limits`; for a request under a child also the limits of the template of its row |
+| The row of a child (LIP-0026 R2.1 to R2.5, R8.3, R8.8) | `ordinal` of the child; `groups` of the parent with the `count` of each range; `executor`, `recipient` and `limits` of the child and of the template |
+| The coin of a row (LIP-0026 R3.2 to R3.4) | `txid`, `first` and `script` of the range; `seal.outpoint` of the child; `recent_block` of the parent |
+| The class and a row without a certifier (LIP-0026 sections 9 and 10) | `recipient.class` or `recipient.name` of the template; `issuer`; `recent_block` of the parent |
+| The notary of a child (LIP-0014 section 7.1) | `notaries`, `certifier`; `recent_block` of the parent as the checkpoint |
+| The signer and the seal of a child (LIP-0014 J4.1, J4.3, CS2, CS3) | `delegate.key`, `delegate.child_seal_key`; `seal.key` of the child |
+| The stop coin of a row (LIP-0027 section 2) | `stop` of the range; `seal.outpoint` of the child; `recent_block` of the parent |
+| A child within its parent (LIP-0008 sections 12.2 and 12.5) | `genesis`, `actions` and the window of the child; `genesis`, `delegate.actions` and the window of the parent |
+
+For the last row no text names a v4 code. LIP-0014 section 4 names
+`SUBJECT_MISMATCH`, `CHILD_ACTIONS_WIDER` and `CHILD_WINDOW_NOT_NESTED` for
+the contract profile of v3. Whether v4 takes them is an open question, and
+this section assigns none.
+
+#### 11.12. Where each member comes from
+
+The table names, for each choice of this section, the text that it carries.
+"Form chosen here" marks a name or a form that no decision gives; the
+owners may change each of them.
+
+| Choice | Carries | State of what it carries |
+| --- | --- | --- |
+| `genesis`, `contract` | LIP-0008 section 1; the same members of the assent (W7.1) | Draft |
+| `issuer` with name, registration and owner key | LIP-0008 section 3, decision of 2026-11-11 | Draft; the member names are those of LIP-0024 E2.1 |
+| `issuer.grant_key` in the payload | LIP-0008 section 3, rule 3 and section 5.2: a grant binds its issuer key; W5.5 | Form chosen here |
+| Owner keys, seal keys and the child-seal key as compressed keys | LIP-0021 O2.1; LIP-0024 E2.1, E2.3; LIP-0014 CS1 | Proposals of those LIPs |
+| `recipient` in two modes | LIP-0008 section 3.1, decision of 2026-11-10 | Draft |
+| One `executor` with name and key | LIP-0008 section 4; LIP-0026 R1.1 | Draft. That the own scope has one executor and no list of partitions is chosen here |
+| `actions`, sorted | LIP-0008 section 1; the order follows LIP-0014 section 2 | The order is chosen here |
+| A limit with kind, resource, unit, amount and period | LIP-0026 R1.2; LIP-0008 section 2 | Proposal of LIP-0026; the member names are chosen here |
+| An amount in the string form up to 2^64 - 1 | Section 2 | Proposal of this LIP |
+| The window as two heights | LIP-0008 section 7.1, decision of 2026-11-11; the names are its logical names | Draft |
+| `recent_block` as a hash without a height | LIP-0008 section 7; LIP-0022 B4.2 | Draft; the name is chosen here |
+| `seal` with profile, kind, outpoint and key; no endorsement | LIP-0008 section 11.4 (SB1), decision of 2026-11-16 | Draft, agreement pending. The names follow LIP-0024 E2.1 |
+| `parent` and `ordinal` of a child | LIP-0008 section 12.2; LIP-0014 J1.2, agreed by both owners | Decided; the names are chosen here |
+| `delegate` present or absent, without `depth` | LIP-0014 D7; W1.4 | Form chosen here |
+| `delegate.key` | LIP-0014 J4, decision of 2026-11-14, which names the member | Agreement pending |
+| `delegate.child_seal_key`, which may be absent | LIP-0014 CS1 and case S4-10, decision of 2026-11-16: a parent without the key is unusable as a parent | Agreement pending; the name is chosen here |
+| `delegate.actions` | LIP-0008 section 12.2; LIP-0014 section 2 | Draft |
+| `pools` | LIP-0026 R8.5 (J12) | In force since version 0.1.51 |
+| `notaries` as at most four pins, sorted | LIP-0014 D3 and J3.1, both agreed by both owners; LIP-0026 R10.1 | Decided; the order follows LIP-0014 section 2 |
+| `groups`, `template`, `ranges` and the members of a range | J12, as LIP-0026 section 8 states it | In force since version 0.1.51; the member names are chosen here |
+| The counts 16, 16 and 4096 and the size 65536 | LIP-0026 R8.4 | Named with J12; LIP-0026 marks them as proposed, and its proposal Q1 would drop the counts |
+| At least one group and one range | LIP-0026 R8.4 | Proposed there |
+| The three forms of a recipient constraint | J10, LIP-0026 R9.1 | In force since version 0.1.51 |
+| `certifier` or `no_certifier`, one of them always | J9, LIP-0014 J9.1 and LIP-0026 R10.1: a row states its certifier or states that it has none | Decided by both owners; the two members are the form chosen here |
+| `stop` of a range | LIP-0014 J2.7, LIP-0027 H1.1: one stop coin for each row with a certifier | Agreement pending. No decision places the stop coins of a group; the place is chosen here |
+| No member for holders | LIP-0010 section 10 | In force since version 0.1.51; the hash-pinned list since version 0.1.53 |
+| `GRANT_SHAPE`, `GRANT_DELEGATE` | LIP-0026 R1.5 leaves the code of a refused parent to the members | Chosen here |
+
+#### 11.13. An example
+
+The payload of the vector `grant-v-01`, with line breaks and indentation
+for display only:
+
+```json
+{
+  "actions": [
+    "example/instruct",
+    "example/review"
+  ],
+  "contract": "6e01e587b9931de4a32076d48cd9a64460d6fa0aeaac953e19201127a4d7afbf",
+  "executor": {
+    "key": "fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556",
+    "name": "id/lip0020-executor"
+  },
+  "genesis": "000000000062b72c5e2ceb45fbc8587e807c155b0da735e6483dfba2f0a9c770",
+  "issuer": {
+    "grant_key": "f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+    "name": "id/lip0020-issuer",
+    "owner": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13",
+    "registration": {
+      "txid": "5bc5c54e3b97b2214915d1e83786483a05a2928f0b9990f54bbd83e79170b22f",
+      "vout": 0
+    }
+  },
+  "limits": [
+    {
+      "amount": "1000",
+      "kind": "example/requests",
+      "period": "example/hour",
+      "resource": "example/model-a",
+      "unit": "request"
+    },
+    {
+      "amount": "18446744073709551615",
+      "kind": "example/tokens",
+      "resource": "example/model-a",
+      "unit": "token"
+    }
+  ],
+  "not_after_height": 252560,
+  "not_before_height": 200000,
+  "recent_block": "ec5f2fc0c0b09fa7fd89bbaf58cb99c411164cb6f8dc598dee59c8a5ebe7d195",
+  "recipient": {
+    "key": "dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659"
+  },
+  "seal": {
+    "construction": "W",
+    "key": "022f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01",
+    "kind": "revocable-only",
+    "outpoint": {
+      "txid": "13fb02c63c5edf9e5117361990df250714b1ef528afaac4896b273007c9df619",
+      "vout": 0
+    }
+  },
+  "type": "swarma-grant/4"
+}
+```
+
+Its identifier is
+`294f4517c58e44cf34b61900254c0d2acdf9801cc69492e322325f09d51c1062`, its
+typed digest is
+`10e12b7359f296bdc3b0288bb36fe845800bd8446e3652f8ed4e238da6f9b7f4`,
+and the signed form with the signature of that vector has 1464 octets. The
+names, the actions and the texts of the limits are placeholders, and the
+transaction ids and the recent block name no transaction and no block.
+
+### 12. Vectors of the grant
+
+[`vectors/LIP-0020/grant-v4.json`](../vectors/LIP-0020/grant-v4.json)
+holds 99 vectors for section 11. Each is the signed form of a grant
+with the result of the pipeline of W11.8: `ok`, or the first refusal.
+
+| Group | Vectors | What a checker does |
+| --- | --- | --- |
+| `valid` | 10 | Reads the grant and recomputes its typed digest, its identifier, its content address and the witness key hash script of its seal key |
+| `invalid` | 81 | Reads the grant and reports the stated code. Each holds one defect and names a valid neighbour |
+| `compound` | 8 | Reads a grant with several defects and reports the one that the order of W9.1, W9.3 and W11.8 to W11.10 puts first |
+
+The valid vectors are a root grant by key and one by name, two parents, a
+child of the first parent under the delegation key, one payload under two
+signatures, a grant without an action and without a limit, a parent without
+a child-seal key, and a parent of exactly 65536 octets with 16 groups of 16
+ranges, a range of 4096 coins and a range that ends at the output index
+4294967295. The refused vectors exercise 15 codes. `grant-i-05` holds the
+octets that the vectors of section 10 use as a stand-in for a grant, a
+payload with `type` alone under a valid signature: a reader of grants now
+refuses them as `WIRE_MEMBER`. `grant-i-01` is the largest parent with one
+octet more.
+
+The file rests on primitives that it does not repeat: the document rules,
+the integer forms, the typed digest and the signatures of
+[`wire-vectors.json`](../vectors/LIP-0020/wire-vectors.json) (section 10),
+and the primitive vectors of the reference laboratory
+([change 146](https://github.com/relux-works/swarma-chain-lab/pull/146),
+`experiments/grant-v4/vectors`), whose cases for the canonical form, for
+integers, for keys and for signatures a reader of grants must pass as well.
+One case of that laboratory changes with this section: its
+`memberless-type-0` reads the octets `{"type":"swarma-grant/4"}` as a signed
+grant and expects `WIRE_TYPE`, and under this section those octets refuse as
+`WIRE_MEMBER`, because they are no signed form (W5.3). No vector of
+`wire-vectors.json` changes: where it reads the stand-in, the place requires
+an assent, and the refusal stays `WIRE_TYPE`.
+
+The limits of the file are these. Keys are public test scalars: three are
+the secret keys of the BIP-340 test vectors 0, 1 and 2, the others are small
+integers, and none belongs to anybody. Every transaction id and the recent
+block are the SHA-256 of an ASCII label. Action names and the kinds,
+resources, units and periods of limits are placeholders, because no registry
+assigns them. No vector reads a chain, so none shows that a name, a coin, a
+seal or a block exists, and none admits a grant. The file holds no assent,
+no consent and no frame for its grants; sections 7 and 8 have their own
+vectors on a stand-in. The rules of LIP-0026 for a child against its row
+have no vector here.
+
+[`tools/grantv4/grantv4.py`](../tools/grantv4/grantv4.py) is a reader of
+section 11 in Python, with the generator and the checker of the file; it
+uses the standard library alone. The values were computed by that one
+implementation. Its signer and its typed digest are calibrated on three
+values of earlier vector files, the expected refusals were stated by hand in
+the generator, and the reader decided each of them again. No second
+implementation has recomputed the file, and the text, the reader and the
+vectors come from one author, so an error of understanding that they share
+is in the vectors.
 
 ## Alternatives
 
@@ -887,6 +1477,46 @@ rules that they follow.
   instead, so that a reader built on a parser that reports a syntax error
   and nothing else reaches the same code.
 
+The remaining alternatives concern section 11.
+
+- **A row without a certifier as an absent member.** A template would name
+  a certifier or name none. An issuer's tool that left the member out by
+  mistake would then sign a row that nobody certifies, and nothing in the
+  octets would show that it was meant. W11.7 asks for one of two members,
+  so that the statement of J9.1 is made in octets. A `null` or an empty
+  string in the place of the name would be a second spelling of the same
+  statement, and W1.4 has no `null`.
+- **One stop coin for a group.** A range would need no second run of
+  outputs. One spend would then close every row of the group, where
+  LIP-0014 J2.4a and LIP-0027 H1 keep a cause to the row that it concerns.
+  W11.6 gives each row its own stop coin and states them by range.
+- **A stop coin for each row as a list of outpoints.** It would allow stop
+  coins in any transactions. A group of 4096 rows would carry 4096
+  outpoints, more than 300 kilobytes, against a largest size of 65536
+  octets.
+- **A member `depth` in the right of re-delegation**, as profile `/2` has
+  it. With two links the member has two values, and the presence of
+  `delegate` already says which. A right with `depth` 0 would be a second
+  spelling of no right.
+- **The grant key from the issuer's name alone**, without
+  `issuer.grant_key`. The payload would be smaller by one key. A reader
+  could then verify no signature of a grant without a node, no vector could
+  hold a grant that verifies by itself, and the consent of the recipient,
+  which names the key that signs the grant (W7.3), could not be compared
+  with the grant on octets.
+- **One member list for a root grant and a child**, with members that are
+  empty where they do not apply. An absent member and an empty one would
+  then mean the same, which section 1 excludes for `null` for the same
+  reason.
+- **A list of own partitions for several executors.** LIP-0008 section 4
+  allows several executors under signed partitions. A row already is such
+  a partition for a child, and a second executor for the recipient itself
+  takes a second grant, which a hire has in any case (LIP-0008 section
+  2.1). One executor keeps the own account of a grant in one ledger.
+- **The script of a seal in the grant**, beside its key. LIP-0008 section
+  11.4 shows that the profile and the key fix the script, so a stated
+  script could only disagree with them.
+
 ## Security consequences
 
 - **What the layer gives.** A signature covers a type together with its
@@ -894,8 +1524,35 @@ rules that they follow.
   identifier. A reader that follows section 9 never repairs an object and
   never reports a later defect in place of an earlier one.
 - **What it does not give.** Canonical bytes say nothing about meaning.
-  Five of the seven types have no members, and until they have, no reader
+  Four of the seven types have no members, and until they have, no reader
   can accept one of them.
+- **A grant that is read is not a grant that is admitted.** The pipeline
+  of section 11 shows a well-formed document under a signature by the key
+  that the payload itself names. It reads no chain. Whether that key is the
+  grant key of the pinned issuer, whether the seal exists and is unspent,
+  whether the window is open and whether a row has its coin are decided at
+  admission, on the verifier's own node (section 11.11). A reader that
+  treats the result of W11.8 as authority admits a grant that anybody can
+  write.
+- **The identifier of a parent covers its rows.** A child names its parent
+  by the identifier of the payload, and the payload holds every group,
+  range and pool. A presenter cannot show a child against a parent with
+  other rows.
+- **No row is without a certifier by omission** (W11.7). The form still
+  admits the statement beside any recipient; only W11.10 refuses a row
+  without a certifier that reaches beyond the issuer's own landlord. A
+  verifier that reads the members and skips that rule widens J9.
+- **Bounds before meaning.** The size, the counts and the forms of section
+  11 are checked before any signature, on octets that anybody can send. A
+  parent of the largest size holds up to 1,048,576 rows in at most 256
+  ranges, and no rule of section 11 expands a range into its coins.
+- **Sums that pass 64 bits.** Rule 6 of W11.10 multiplies and adds amounts
+  that are each within 2^64 - 1. A reader that computes in 64 bits admits
+  a parent whose rows exceed its pool.
+- **Identifiers without a registry.** The actions and the kinds of limits
+  are texts that no registry assigns yet. Two issuers can write one
+  meaning in two spellings, and a verifier must refuse what its profile
+  does not define and never guess.
 - **Identifiers and state.** An identifier that leaves the signature out is
   stable under re-signing, which is what a reference needs. It is no
   defence against replay. A journal that keys a request by an object
@@ -930,6 +1587,12 @@ the conformance outline of LIP-0008 that concern typed domains, canonical
 bytes, exact integers, identifiers and strict signatures, as far as those
 rows need no object without members.
 
+Section 12 supplies the first vectors that hold a whole v4 grant. They
+cover the rows of that outline on the recipient modes and on a name carried
+as metadata, as far as octets decide them, and nothing that needs a chain,
+an executor or a journal. The reference laboratory's reader, which refuses
+every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
+
 ## Open questions
 
 - **The owners on the two decided points of section 7.** Ivan Oparin may
@@ -941,9 +1604,39 @@ rows need no object without members.
   exclusion of `null` and of code points below U+0020 (section 1); the
   depth of 16 and the largest sizes; the names of the seven types; the
   order of W9.2.
-- **The members** of the grant, the invocation, the receipt, the seal-key
-  endorsement and the successor attestation, with their vectors, and with
-  them the journal key of a request.
+- **The members** of the invocation, the receipt, the seal-key endorsement
+  and the successor attestation, with their vectors, and with them the
+  journal key of a request.
+- **The co-author's answer on section 11**, and on the three decisions
+  whose members it carries before their agreement: the delegation key (J4),
+  the stop coin of a row (J2) and the seal in the grant with the child-seal
+  key (LIP-0008 section 11.4, LIP-0014 section 11.2).
+- **The owners' review of the forms that section 11 chose**, which its
+  table of sources marks: the member names, `issuer.grant_key` in the
+  payload, one executor for the own scope, the two members for a certifier,
+  the place of the stop coins of a group, and the two codes.
+- **The counts of a parent.** W11.6 takes 16 groups, 16 ranges and 4096
+  coins as bounds of the schema. LIP-0026 marks the same numbers as
+  proposed, and its proposal Q1 would keep the size of 65536 octets alone.
+- **The registries of action names and of limit kinds**, with the meaning
+  of a period (LIP-0007, LIP-0018; LIP-0008 sections 2 and 12.3). Until
+  they exist the texts of a grant are identifiers without a list.
+- **A child that is wider than its parent allows.** No text names a v4
+  code for a child whose chain, actions or window do not lie inside those
+  of its parent (section 11.11).
+- **A scope text and typed constraints on v4.** The octets that carry a
+  text along a path (LIP-0014 section 3.4) and the machine members for a
+  ref, a revision, a payee or a list of targets have no source and no
+  member in section 11. Each is a new member, and so an amendment of this
+  section or a new version of the type.
+- **The target of a grant.** LIP-0008 section 1 lists a target beside the
+  executor bindings. Section 11 reads it as the executor that the grant
+  names and gives it no member of its own. Whether a grant needs a subject,
+  as an invocation has (LIP-0008 section 12.1), comes with the invocation.
+- **The seal of a single-use grant.** `seal` holds one key. A seal with
+  two branches needs two (LIP-0008 section 11.1), and its profile is open.
+- **A second implementation for the vectors of section 12**, and the
+  reader of the reference laboratory.
 - **The snapshot and the recent block.** The draft reads the issuance
   snapshot of the decision as the state at the grant's recent block, and it
   has the issuer commit the tip of its observation as that block (W7.6).

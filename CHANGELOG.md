@@ -2,6 +2,11 @@
 
 ## 0.1.53 — 2026-11-16
 
+This version holds two changes: the hash-pinned holders list of a landlord,
+and the members of the v4 grant.
+
+### The holders list
+
 Replaces the five-entry member `holders` of the landlord binding by a
 hash-pinned holders list, on an owner decision of 2026-11-16. The text is
 in force without the co-author's agreement, which has not been given; the
@@ -77,6 +82,102 @@ in the inline form, keep their bytes and outcomes.
 No vector of the list is published. LIP-0010 section 10.11 states what a
 vector set holds, with its refusal pairs; the length and the hash of the
 example in section 10.2 were computed by one implementation only.
+
+### The members of the v4 grant
+
+Gives the v4 grant its members. Until this version the registry of LIP-0020
+held `swarma-grant/4` with an identifier, a digest and no member, so no
+reader could accept a v4 grant and no vector could hold one. Every LIP stays
+a Draft. No earlier vector byte or vector outcome changes, and nothing of
+this version is implemented in the reference laboratory.
+
+LIP-0020 gains section 11, the members of `swarma-grant/4`, and section 12,
+its vectors. Section 11 is text in force: on 2026-11-16 Ivan Oparin ordered,
+as the lead relayed it, that Grant v4 does not wait, so the members are
+written as text in force and not as a proposal. The co-author's agreement
+has not been given, and the co-author's answer is folded in by amendment.
+The section carries in octets what LIP-0008, LIP-0014, LIP-0024, LIP-0026
+and LIP-0027 state for a v4 grant and changes no rule of them; each rule
+keeps the state that its own text gives it.
+
+What section 11 fixes:
+
+- Forms: a hash, a signing key (x-only), an output key (the compressed form
+  of an owner pin, for owner keys, seal keys and the child-seal key), text
+  of printable ASCII, an outpoint, a script, a height in the number form
+  and an amount in the string form up to 2^64 - 1.
+- Two member lists. A root grant has `issuer` (name, registration, owner
+  key and grant key) and may have `delegate`. A child has `parent` and
+  `ordinal` and neither of those. Both have `genesis`, `contract`,
+  `recipient`, `executor`, `actions`, `limits`, `not_before_height`,
+  `not_after_height`, `recent_block` and `seal`.
+- The recipient by key or by name, as exactly one of two member lists.
+- The seal with its construction profile, its kind, its outpoint and its
+  key in the grant; no endorsement is read.
+- The right of re-delegation: a delegation key, a child-seal key, the
+  delegable actions, one pool for each limit key that a template limits, at
+  most four pinned notaries, and 1 to 16 groups. A group is a template and
+  1 to 16 ranges; a range is a transaction id, a first index, a count of 1
+  to 4096 and a script. The signed form of a grant has at most 65536
+  octets.
+- The recipient constraint of a template in three forms: a request key, a
+  name with its owner key, or a class of pinned landlords. The grant holds
+  no holder of a landlord.
+- No certifier: a template has `certifier`, the name of a pinned notary, or
+  `no_certifier` with the value `true`, and never neither. A `null`, an
+  empty string and a missing member all refuse. The encoding widens nothing
+  of J9: a template without a certifier whose recipient is not limited to
+  the issuer's own landlord refuses as `GRANT_DELEGATE`.
+- Stop coins of a group: a range of a group with a certifier states a run
+  of stop coins, one for each of its coins.
+- The pipeline: a root grant verifies under `issuer.grant_key`, a child
+  under the delegation key of the parent that the reader already read
+  (`WIRE_ID`, `CHAIN_DEPTH`, `NOT_DELEGABLE`, then `CHILD_SIGNER`). Two new
+  codes report the rules that a reader judges on the octets of one grant,
+  in a fixed order: `GRANT_SHAPE` for the window, the action set and the
+  own limits, and `GRANT_DELEGATE`, the code that LIP-0026 R1.5 left to the
+  members of the grant, for the rules of a parent's rows, pools, coins and
+  stop coins. `WIRE_INTEGER` also reports an integer below the smallest
+  value of its member, and `WIRE_KEY` an output key that is no point.
+
+Agreement pending, and carried in the octets so that they do not change
+when the answer comes: section 11 as a whole; the delegation key that signs
+a child (LIP-0014 J4); the stop coin of a row (LIP-0014 J2, LIP-0027); the
+seal in the grant and the child-seal key (LIP-0008 section 11.4, LIP-0014
+section 11.2); and J10 to J12 as before. None blocks.
+
+Chosen by section 11 where no decision gives a form, marked in its table
+"Where each member comes from" and open to the owners: the member names;
+`issuer.grant_key` in the payload; one executor for the own scope of a
+grant; `delegate` present or absent in place of a member `depth`; the two
+members for a certifier; the place of the stop coins of a group; the order
+of `actions`; the two codes.
+
+Not decided and left open: the counts 16, 16 and 4096, which the schema
+takes as bounds while proposal Q1 of LIP-0026 would keep the size alone;
+the registries of action names and of limit kinds; the octets of a scope
+text on v4 and of typed constraints such as a ref, a payee or a list of
+targets; a v4 code for a child that is wider than its parent in chain,
+actions or window; the key that assents to a child's contract; the seal of
+a single-use grant.
+
+`vectors/LIP-0020/grant-v4.json` holds 99 vectors: 10 valid signed grants,
+81 refusals with one defect and a valid neighbour each, and 8 with several
+defects for the order of refusals, over 15 codes. Among them are a parent of
+exactly 65536 octets and the same parent with one octet more, a pool that
+its rows exceed only when the sum is computed beyond 64 bits, and the
+stand-in octets of the earlier vectors, which a reader of grants now
+refuses as `WIRE_MEMBER`. `tools/grantv4/grantv4.py`, in Python with the
+standard library alone, is a reader of section 11 with the generator and
+the checker of the file. One implementation computed the values; no second
+one has recomputed them. No vector reads a chain.
+
+LIP-0026, LIP-0008, LIP-0014, LIP-0021, LIP-0023 and LIP-0027 point to the
+new section where they called the octets of a grant, of a row, of a pin, of
+the profile pin or of a stop coin open, and change no rule. LIP-0026 says
+that `GRANT_DELEGATE` is the code that R1.5 left open and that the schema's
+use of the numbers of R8.4 does not decide its proposal Q1. The README and
+the open-question index follow.
 
 ## 0.1.52 — 2026-11-16
 

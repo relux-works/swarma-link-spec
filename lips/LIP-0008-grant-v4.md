@@ -1079,6 +1079,15 @@ identifier, the consent of both parties and the issuance commitment, with
 vectors. They are that draft's proposals, and each point stays open until
 both owners accept it.
 
+Since version 0.1.53 section 11 of that LIP gives the grant its members:
+the issuer pin and the grant key, the recipient in its two modes, the
+executor, the actions and the limits, the window, the recent block and the
+seal, and for a parent the right of re-delegation with its groups of rows.
+It is text in force on Ivan Oparin's order of 2026-11-16 that Grant v4 does
+not wait; the co-author's answer is folded in by amendment. It carries the
+rules of this LIP in octets and changes none of them, and the sentences of
+this LIP that call the bytes of a grant open are read with it.
+
 ### 9. Dependent issuance transactions and profile timing
 
 Let seal transaction T create both the grant seal and an additional output L.
@@ -1369,7 +1378,7 @@ classified as the issuer's.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| SB1 | A v4 grant states its seal: the outpoint, the kind of seal under its construction profile, and the seal public key. For a child the seal public key is the child-seal key of its parent (LIP-0014 CS2). The bytes come with the v4 bytes (LIP-0020). | |
+| SB1 | A v4 grant states its seal: the outpoint, the kind of seal under its construction profile, and the seal public key. For a child the seal public key is the child-seal key of its parent (LIP-0014 CS2). The bytes are the member `seal` of the grant (LIP-0020 section 11, W11.2). | |
 | SB2 | A verifier accepts the seal only when its own node supplies the output at the outpoint, and that output's script equals, byte for byte, the single-key script of the grant's construction profile for the grant's seal public key. The profile and the kind of seal must be ones that the verifier supports. | `SEAL_OUTPUT`, `SEAL_SCRIPT`, `SEAL_PROFILE` (LIP-0024 section 3) |
 | SB3 | Only after SB2 and the grant's signature does a verifier classify a validated spend of the output as the issuer's, and close the grant under section 5.1. An output that no accepted grant names as its seal closes nothing when it is spent. | |
 | SB4 | No object `swarma-seal-endorsement/1` is made or read on v4. Once agreed, LIP-0020 removes the type from its registry. LIP-0024 keeps its section 1 (the seal script) and section 5 (custody), and its section 2 and its vectors are withdrawn. | |
@@ -1809,7 +1818,8 @@ saw the change: that verifier keeps refusing.
   review confirmed on 2026-11-16 that the endorsement is redundant. Until the
   agreement, section 11.2, LIP-0024 and the texts that point to section 11.4
   stand. The members of the grant that state the
-  kind of seal and its key come with the v4 bytes.
+  kind of seal and its key are `seal.kind` and `seal.key` (LIP-0020 section
+  11), since version 0.1.53.
 - Whether the issuer rule of section 3 should also require that the bound
   owner wrote the `swarma` value in force, as LIP-0014 section 7.1 requires
   of a notary's name. No attack on an issuer is claimed: its registration

@@ -636,7 +636,10 @@ run on a node.
   which pending operations it holds and how the block of `R` is validated
   belong to the observation profile.
 - **The pin in the octets of a grant**, of a notary entry and of an agent's
-  pointer, and the code that reports a value which is no pin.
+  pointer, and the code that reports a value which is no pin. Since version
+  0.1.53 LIP-0020 section 11 places the pin in a v4 grant, in a notary entry
+  and in a landlord of a class, with `WIRE_MEMBER` for its form and
+  `WIRE_KEY` for its point (W11.1). An agent's pointer stays open.
 - **The octets of the `swarma` member.** The issuer rule compares them
   along the stretch, and no text says how they are cut out of a value.
 - **Other chains.** The profile is Namecoin's. Another chain has its own

@@ -258,7 +258,11 @@ executor explicitly; the rows of section 2 carry them.
 A right of re-delegation is the signed member `delegate` of a grant's terms. On
 v3 it is a member of the contract (section 3) and is bound through
 `contract_sha256`. On v4 it belongs to the signed scope; this LIP defines no v4
-bytes. It is an object with exactly these six members in this order:
+bytes. Since version 0.1.53 [LIP-0020](LIP-0020-grant-v4-wire-registry.md)
+section 11 defines them: the member `delegate` of `swarma-grant/4`, with the
+delegation key, the child-seal key, the delegable actions, the pools, the
+pinned notaries and the groups of rows. On v3 it is an object with exactly
+these six members in this order:
 
 | Member | Type | Rule |
 | --- | --- | --- |
@@ -1951,7 +1955,10 @@ Under this subsection the v4 issue capability carries one more member, the
 delegation key (`delegate.key`), an x-only key. The principal signs it with
 the parent, and the grantee's consent covers it. No name is read for it.
 Each parent has a delegation key of its own, which signs the children of
-that parent and of no other. Its bytes are fixed with the v4 bytes.
+that parent and of no other. Its bytes are fixed with the v4 bytes: the
+member `delegate.key` of LIP-0020 section 11 (W11.5), where a child that
+another key signed refuses as `CHILD_SIGNER` in the reader's pipeline
+(W11.8).
 
 | # | Rule | Refusal |
 | --- | --- | --- |
@@ -2346,7 +2353,10 @@ for a property that its subsection lists as open.
   revision (section 3.4); it is no part of the first version of v4, and
   nothing of it is defined.
 - The v4 bytes of the right of re-delegation, the delegation key of section
-  11.1 among them.
+  11.1 among them, are LIP-0020 section 11 since version 0.1.53. The v4
+  bytes that carry a text (section 3.4), and a v4 code for a child whose
+  actions or window are wider than its parent allows (section 4 names the
+  codes of profile `/2`), stay open.
 - Whether "across owners" in rule J9.3 also covers the owner of the
   delegator. J9.2 tests the recipient of the child, and case S9-K1 admits a
   row without a certifier in a parent whose recipient belongs to another

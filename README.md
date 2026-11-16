@@ -732,6 +732,30 @@ outcome changes.
 LIP-0004 also distinguishes the implemented V2 main issuance route and its
 offline test coverage from the regtest-only v1 route and mainnet qualification.
 
+Version 0.1.53 gives the v4 grant its members.
+[LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) section 11 states every
+member of `swarma-grant/4` with its form: the issuer pin and the grant key,
+the recipient by key or by name, one executor, the actions and the typed
+limits, the window in block heights, the recent block, and the seal with its
+key in the grant. A root grant may carry the right of re-delegation, with a
+delegation key, a child-seal key, pools, pinned notaries and at most 16
+groups of rows; a group is a template and at most 16 ranges of at most 4096
+coins, and a signed grant has at most 65536 octets. A template states its
+certifier or states in so many octets that it has none, and a range of a
+group with a certifier states a stop coin for each of its rows. A child
+names its parent and its ordinal and is signed by the parent's delegation
+key. Two codes are new, `GRANT_SHAPE` and `GRANT_DELEGATE`. The section is
+text in force on Ivan Oparin's order of 2026-11-16 that Grant v4 does not
+wait; the co-author's agreement has not been given, and the co-author's
+answer is folded in by amendment. It carries the rules of LIP-0008, LIP-0014,
+LIP-0026 and LIP-0027 in octets and changes none of them, and it says where
+it chose a form that no decision gives. The 99 vectors of
+[`vectors/LIP-0020/grant-v4.json`](vectors/LIP-0020/grant-v4.json) hold
+signed grants, and [`tools/grantv4`](tools/grantv4/grantv4.py) reads and
+recomputes them. No vector reads a chain, nothing of it is implemented in
+the reference laboratory, and no second implementation has recomputed the
+file. Every LIP remains Draft, and no earlier vector changes.
+
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
 section 7 states the rule for words in a grant: text always governs an
@@ -775,9 +799,14 @@ serif print theme; HTML is an intermediate artifact in the release workspace.
 | Go 1.26, `tools/trustcheck` | LIP-0013 reference checker: `go -C tools/trustcheck run . check ../../vectors/LIP-0013/trust-vectors.json` | One `PASS`/`FAIL` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result, 1 on a mismatch, 2 on a usage or input error. |
 | Go 1.26, `tools/trustcheck` | Regenerate the LIP-0013 vectors: `go -C tools/trustcheck run . gen > vectors/LIP-0013/trust-vectors.json` | The vector file, byte for byte deterministic; review it as a diff. |
 | Go 1.26, `tools/trustcheck` | Checker self-tests: `go -C tools/trustcheck test ./...` | Test result on stdout: BIP-340 vector 0 reproduced, generator equal to the committed file, planted defects caught. |
+| Python 3, `tools/grantv4` | Reader of a v4 grant and checker of its vectors (LIP-0020 sections 11 and 12): `python3 -I tools/grantv4/grantv4.py check vectors/LIP-0020/grant-v4.json` | One `PASS` or `FINDING` line per vector and a `SUMMARY` line on stdout; exit 0 only if every vector gives its expected result and its stated values, 1 on a finding, 2 on a usage or input error. |
+| Python 3, `tools/grantv4` | Regenerate the grant vectors: `python3 -I tools/grantv4/grantv4.py gen > vectors/LIP-0020/grant-v4.json` | The vector file, byte for byte deterministic. The generator writes nothing when its reader disagrees with a stated expectation; review the file as a diff. |
 
 Source review precedes tagging and rendering. This repository has no general
 executable conformance runner; `tools/trustcheck` checks only the LIP-0013
 draft vectors. Its one direct dependency is `github.com/btcsuite/btcd/btcec/v2`
 v2.3.5, the BIP-340 library the chain-lab v3 code uses; it reads no network,
-node, clock or key file.
+node, clock or key file. `tools/grantv4` checks only the grant vectors of
+LIP-0020 section 12. It uses the Python standard library alone, carries its
+own secp256k1 and BIP-340 arithmetic for the public test scalars of that
+file, and reads no network, node, clock or key file.

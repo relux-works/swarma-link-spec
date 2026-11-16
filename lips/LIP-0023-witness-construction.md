@@ -52,7 +52,7 @@ the text, it says so:
 | The seal transaction creates the seal and an additional output, the linkage output, and the anchor spends it (section 9) | The same, as a rule that a verifier checks for every grant, with the linkage output fixed as the output that follows the seal (C2.3) |
 | Two unconfirmed dependencies are permitted: the linkage output and a same-chain payment output (section 1.1) | The linkage output alone. An unconfirmed payment output refuses (C4.4) |
 | "The exact dependency and payment checks still need versioned fixtures" | Sections 3 and 4, with vectors, for the linkage |
-| The selected profile belongs to the authenticated chain context; "exact pin encoding and fixtures remain open" | A value of the verifier's authenticated configuration (C1.1). Its place in the octets of a grant stays open |
+| The selected profile belongs to the authenticated chain context; "exact pin encoding and fixtures remain open" | A value of the verifier's authenticated configuration (C1.1). Its place in the octets of a grant is `seal.construction` since version 0.1.53 (LIP-0020 W11.2); the member selects nothing |
 
 Every rule of this LIP is the draft's proposal. Neither owner has decided
 one. The reference laboratory implements a subset of the Witness profile
@@ -135,9 +135,11 @@ configuration, and nothing that a presenter sends selects it.
 | C1.1 | The verifier's authenticated configuration states the construction profile of the pinned chain, and for this profile the value is `W`. A missing value, any other value and the Legacy profile refuse. There is no fallback from one profile to another (LIP-0008 section 1.1). |
 | C1.2 | A witness in a transaction, a field of a presentation and the script of an output select no profile. |
 
-Where a grant will carry the pin of its construction profile is open
-(LIP-0008 section 1.1). Until that member exists, the verifier's
-configuration is the only place.
+Where a grant will carry the pin of its construction profile was open
+(LIP-0008 section 1.1). Since version 0.1.53 a grant states it in
+`seal.construction` (LIP-0020 W11.2). C1.1 and C1.2 stand: the verifier's
+configuration selects the profile, and a grant that states another one
+refuses under LIP-0008 SB2 as `SEAL_PROFILE`.
 
 ### 2. The two transactions
 

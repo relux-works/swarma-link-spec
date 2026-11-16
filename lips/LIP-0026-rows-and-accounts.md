@@ -41,8 +41,11 @@ This LIP proposes the first profile for rows on v4, on Namecoin:
 - vectors, among them a trace of one parent over three executors and a
   trace of direct requests beside the requests of siblings (section 7).
 
-It defines no octets of a row. The members of a v4 grant do not exist yet,
-and the rows come with them.
+It defines no octets of a row. Since version 0.1.53
+[LIP-0020](LIP-0020-grant-v4-wire-registry.md) section 11 defines them, with
+the members of a v4 grant: the right of re-delegation with its pools, its
+groups, their templates and their ranges. That section states which member
+each rule of this LIP reads and changes no rule of it.
 
 Sections 8 and 9 state two decisions of Ivan Oparin of 2026-11-15, in force
 since version 0.1.51: a parent states its rows in groups (J12), and a row may
@@ -205,7 +208,8 @@ for a row without a certifier; it adds no attestation requirement.
 | Part | Can be built now | Waits for |
 | --- | --- | --- |
 | The checks of sections 1 to 3 and the accounting of section 5, as functions of stated facts | Yes | The owners' acceptance |
-| A row as octets of a grant, and a reservation as an entry of a journal | No | The members of the grant and of an invocation (LIP-0020) |
+| A row as octets of a grant | Yes, since version 0.1.53 | LIP-0020 section 11 gives the members; the co-author's answer on it is pending |
+| A reservation as an entry of a journal | No | The members of an invocation (LIP-0020) |
 | The reads of the coin and of the anchor on a node | No | A run under LIP-0022 and LIP-0023 |
 | The row account in a signer | No | The owners' choice of the account, and the custody of v4 accounts, which is open (LIP-0024 section 5) |
 | An executor's ledger on a store | No | A store that is qualified under LIP-0014 J1.4; LIP-0025 proposes its form |
@@ -275,6 +279,11 @@ which limits, who certifies the child, and which coin its issuance spends.
 | R1.3 | A parent states one pool amount for every key that one of its rows limits. For each key, the amounts of the rows do not sum to more than the pool, and the sum is an exact integer sum. |
 | R1.4 | The coins of the rows of one parent are different outpoints, and none of them is the seal of the parent. |
 | R1.5 | A parent that does not meet R1.1 to R1.4 or R3.1 is refused as a whole: it admits no child and no request of its own. The refusal is one of the members of the grant and gets its code with them. |
+
+The code that R1.5 leaves to the members of the grant is `GRANT_DELEGATE`
+(LIP-0020 W11.10), which also fixes the order in which a reader reports the
+rules that it judges on the signed octets of a parent. That section does
+not change R1.5 or its state.
 
 The five things of R1.1 are the content that LIP-0014 section 9.1 decides
 for a v4 row. The outpoint and the script of the coin are this draft's way
@@ -627,7 +636,8 @@ consumes a countable resource meets a ceiling of 0 (R5.2).
 Under the bounds of R8.4 a parent has at most 256 ranges and at most 1,048,576
 rows, and a verifier finds a row by adding at most 256 counts. The largest size
 of 65536 octets is a number for LIP-0020, which gets it when the grant gets its
-members. No octets of a group are defined here.
+members. No octets of a group are defined here; since version 0.1.53 LIP-0020
+section 11 defines them.
 
 The number of coins that one transaction creates has a bound outside this
 profile. Namecoin Core relays a transaction of at most 400,000 weight units. A
@@ -649,15 +659,27 @@ spend every coin of the range that no child has spent yet, and void all those
 rows. It still issues nothing: a child needs the delegation key and, where the
 row has a certifier, an attestation.
 
-Three points stay open under this section:
+Three points were open under this section until version 0.1.53. LIP-0020
+section 11 answers them in the octets of the grant, and one of them stays
+open as a question of this LIP:
 
-- **The bounds.** The four numbers of R8.4 are proposals, and neither owner
-  has fixed one.
+- **The bounds.** The four numbers of R8.4 are proposals of this LIP, and
+  neither owner has fixed one here. LIP-0020 W11.6 takes them as bounds of
+  the member schema of `swarma-grant/4`: a document with more than 16
+  groups, with more than 16 ranges in a group, with more than 4096 coins in
+  a range or with more than 65536 octets is no well-formed grant. Proposal
+  Q1 of this LIP, which would keep the size alone, is not decided by that.
+  If the owner accepts it, the three counts leave the schema by amendment.
 - **The stop coins of a group.** LIP-0014 section 10.1 (J2.7) and LIP-0027
   give each row with a certifier a stop coin of its own. The decision on
-  groups names no place for them, and this draft proposes none.
-- **The octets** of a group, of a template and of a range, which come with
-  the members of the grant (LIP-0020).
+  groups names no place for them. LIP-0020 W11.6 places them: a range of a
+  group whose template names a certifier states a run of stop coins beside
+  its coins, one for each coin, as a transaction id, a first index and a
+  script. No owner has decided that place.
+- **The octets** of a group, of a template and of a range are LIP-0020
+  W11.5 to W11.7. A template states its certifier by one of two members,
+  `certifier` or `no_certifier`, and never by leaving a member out
+  (W11.7).
 
 ### 9. The landlord class (J10)
 
@@ -974,7 +996,10 @@ The limits of the two files are these. Transaction ids are placeholders, and
 the octets of signatures are placeholders that verify nothing. No vector reads
 a chain or holds an observation, a pending transaction as octets, a request or
 an attestation. The largest size of a parent has no vector. The refusal of a
-parent has no code, so a refused parent states a rule.
+parent has no code, so a refused parent states a rule. Both files stand as
+they were made. Since version 0.1.53 the vectors of LIP-0020 section 12 hold
+parents as octets, the largest size among them, and the code
+`GRANT_DELEGATE`.
 
 No checker for these vectors is in this repository. The expected outcomes were
 stated by hand, computed by one implementation and decided again by a second
@@ -1125,8 +1150,9 @@ They change no vector of section 7.
 - **The seal of a child and its linkage key.** Who creates the seal of a
   child, and so who signs which input of a child's anchor (LIP-0014
   section 11.1).
-- **The octets** of a row, of a pool and of a reservation entry, and the
-  key that identifies a request (LIP-0020 section 6).
+- **The octets** of a reservation entry, and the key that identifies a
+  request (LIP-0020 section 6). The octets of a row and of a pool are
+  LIP-0020 section 11 since version 0.1.53.
 - **Limits with a period, and kinds that are floors.** Each waits for its
   type profile.
 - **The place of the coin's checks** relative to the checks of the
@@ -1139,8 +1165,12 @@ They change no vector of section 7.
   row without a certifier (section 10) rests on J9, which both owners agreed,
   and on J10 and J11, which only Ivan Oparin has decided.
 - **The four bounds of R8.4** and a bound on the landlords of a class.
+  LIP-0020 W11.6 takes the four numbers as bounds of the grant's schema and
+  states no bound on the landlords of a class; proposal Q1 is still before
+  the owner.
 - **The stop coins of a group** whose template names a certifier (section
-  8).
+  8). LIP-0020 W11.6 gives them a place in a range, which no owner has
+  decided.
 - **Whether a change of `holders` should end an issuer's grants.** Closed
   in version 0.1.53 by an owner decision of 2026-11-16: it does not.
   The list is outside the member, pinned by hash (LIP-0010 section 10). The

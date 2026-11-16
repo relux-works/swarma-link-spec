@@ -482,7 +482,12 @@ nodes and on a real store.
 - **The attestation on v4**: its members, its anchor, the frame that states
   a cause, and whether an attestation may name a seal that is the stop coin
   of its row.
-- **The octets of a row**, with its stop coin, in a v4 grant.
+- **The octets of a row**, with its stop coin, in a v4 grant. Since version
+  0.1.53 LIP-0020 W11.6 gives them: a range of a group whose template names
+  a certifier states its stop coins as a transaction id, a first index and
+  a script, one stop coin for each coin of the range. No owner has decided
+  that place. H1.3 is rule 8 of LIP-0020 W11.10, with the code
+  `GRANT_DELEGATE` that H1.4 left to the members of the grant.
 - **Closures across replicas.** LIP-0008 section 5.1 leaves the propagation
   of a closure between replicas open, and so does this profile.
 - **The mark of a lost journal.** H3.3 has a journal stay lost across a restart
