@@ -123,7 +123,9 @@ decision says and marks what this draft adds.
 
 The refusal codes of sections 9 and 10 and every rule that those sections mark
 as this draft's are proposals. The four largest numbers of section 8 are no
-proposal: J12 fixes them, and R8.4 states them as bounds.
+proposal: J12 fixes them, and R8.4 states them as bounds. Nor is the order
+of the count of R8.3: it is in force since version 0.1.57 by the owner's
+decision of 2026-11-17, and section 8 states it.
 
 Nothing of this profile is implemented. The owners accept or change its
 rules through this LIP, under LIP-0001.
