@@ -1,12 +1,13 @@
 # LIP-0014 companion: proposals for the unresolved integration inputs
 
-- **Status:** PROPOSED. None of the choices below is in force by this file's
-  own word. It changes no existing rule, wire member, vector or implementation.
+- **Status:** PROPOSED integration choices, with the decided R8.3 count order
+  carried from the baseline. No choice takes effect by this file's own word.
+  It changes no existing rule, wire member, vector or implementation.
 - **Date:** 2026-11-17
-- **Source baseline:** version 0.1.56, commit
-  `48e1c2f7488d55350a20849578f8920656c02adb`.
-- **Scope:** the remaining identity, contract/profile, first-refusal and
-  ordinal-order inputs of the child issuer and its consumer.
+- **Source baseline:** version 0.1.57, commit
+  `819433846febb9404c11a5fcd1ba124770f7910b`.
+- **Scope:** identity, contract/profile, first-refusal and ordinal inputs
+  of the child issuer and its consumer, with their distinct decision states.
 
 This companion puts the integration choices in one place for agreement. It
 does not treat a recommendation, a release, an implementation's behaviour or
@@ -14,8 +15,9 @@ two readers agreeing as an owner's decision. The existing statements of
 status in LIP-0014 sections 8.4 to 8.7, LIP-0017 and LIP-0026 section 8 keep
 their meaning. A decision on one row below does not accept another row.
 
-The open Source-contract clauses are H1, T1, the action-profile mapping,
-O1 to O8, and the R8 count order. Invocation definitions belong to O2/O3;
+The open Source-contract clauses are H1, T1, the action-profile mapping
+and O1 to O8. The R8.3 count order is decided in version 0.1.57; the rest
+of LIP-0026 proposal Q2 remains proposed. Invocation definitions belong to O2/O3;
 the contract's issuing-party assent belongs to T1 and the profile. Actual
 custody, implementation, installation, native qualification and conformance
 remain separate requirements after textual agreement.
@@ -35,7 +37,7 @@ remain separate requirements after textual agreement.
 | O6 | LIP-0014 F21 and F7 part 7.6; LIP-0008 SB3 | PROPOSED | Acceptance of validated-spend classification relative to the two other blocs, as part of O1 |
 | O7 | LIP-0014 F13(b)/T10; LIP-0020 W11.10; LIP-0026 proposal Q1 | PROPOSED | Explicit decision on whole-parent admission, without silently changing the count bounds |
 | O8 | LIP-0014 F3 at ISSUE and I3; LIP-0022 B3.5/B3.6 | PROPOSED | Freshness source or owning decision assigns child signing to the proposed class |
-| R8 count order | LIP-0026 R8.3 and its status paragraph; LIP-0020 W11.6 | PROPOSED | Explicit acceptance of the count order; source publication alone is insufficient |
+| R8 count order | LIP-0026 R8.3 and section 8; LIP-0020 W11.6 | DECIDED — carried from 0.1.57 | Explicitly accepted by Ivan Oparin on 2026-11-17; this closes only the count order, not the remaining parts of Q2 |
 
 The register describes Source agreement, not a claim that the machine
 interfaces or complete signed conformance vectors already exist. Matching
@@ -44,7 +46,7 @@ revision, with its decision and exact source revision cited. Until then the
 existing open-clause behaviour continues, including the inability to finish
 F6 without the contract profile. No proposal here enables a private call.
 
-### 1.1 Reconciliation with version 0.1.56
+### 1.1 Carried baseline and the version 0.1.57 decision
 
 The following are carried from the baseline, rather than proposed again:
 
@@ -68,14 +70,16 @@ The following are carried from the baseline, rather than proposed again:
   settle H1's local home latch or the representation of a message-key
   pin in the name value.
 
-None of these changes closes a complete row of the register. Version
+Those version 0.1.56 changes closed no complete row of the register. Version
 0.1.56 also records two non-normative proposals in the
 [unresolved questions](../UNRESOLVED_QUESTIONS.md): assent using the
 delegator's existing signature on an equal parent/child contract, and a
 message-key pin in the agent's name value. Neither is an accepted T1 or
-identity interface. The R8.3 status contradiction remains open as stated
-in section 10. Landed text and proposed choices retain their distinct
-statuses; neither supplies implementation or conformance evidence.
+identity interface. Version 0.1.57 separately closes the R8.3 status
+contradiction by the explicit decision, as section 10 records. The other
+register rows and the rest of Q2 remain proposed. Landed text and proposed
+choices retain their distinct statuses; neither supplies implementation
+or conformance evidence.
 
 ## 2. Identity and contract-profile inputs — PROPOSED
 
@@ -364,19 +368,25 @@ another clock. It changes no block-height grant window, invocation
 `iat`/`exp` rule, local authority cutoff or source status of the proposed
 two-age measure. A local calendar limit is no public freshness substitute.
 
-## 10. R8 count order — PROPOSED
+## 10. R8 count order — DECIDED; remaining Q2 — PROPOSED
 
-Version 0.1.56's unresolved questions explicitly record the contradiction:
-LIP-0020 W11.6 states the order in force since version 0.1.53, while
-LIP-0026 section 8 says its explicit acceptance is pending and it binds
-no reader until then. Both texts remain unchanged. Recording the
-contradiction accepts neither the order nor a repair of its status.
+Ivan Oparin explicitly accepted the R8.3 count order on 2026-11-17.
+LIP-0026 section 8 states it in force since version 0.1.57, with the same
+order LIP-0020 W11.6 gives for the signed parent. The contradiction
+recorded in version 0.1.56 is closed, and its unresolved-question row is
+removed. This section carries that decision; it does not propose it again.
 
-Propose explicit acceptance of exactly R8.3: traverse groups in signed
-order, ranges of each group in signed order, and coins of a range by
-ascending output index. Count from 1 over the whole parent. The count is
-the exact sum of all range counts; each ordinal selects one group,
-template, range and outpoint together.
+The decided order traverses groups in signed order, ranges of each group
+in signed order, and coins of a range by ascending output index. Count
+from 1 over the whole parent. R8.3 gives the total as the exact sum of all
+range counts.
+
+The rest of Q2 is still **PROPOSED**: that a verifier binds the ordinal
+to the signed template, range and coin as one signed binding, and the
+wording of the bound check. The order decision accepts neither those
+parts nor Q1's whole-parent refusal, and does not change R8.4's bounds.
+Their existing source states remain; no whole-child composition or full
+conformance is established by this decision.
 
 Do not sort groups or ranges by transaction id, template or local storage
 order. Do not renumber after a row is used, stopped, held or closed. The
@@ -437,8 +447,9 @@ A future conformance harness must show that a bounded deliberate omission of ori
 
 ## 12. Adoption boundary
 
-This is a proposal for the Source-contract inputs only. A later decision
-must identify which clauses it accepts and the source revision that fixes
+Except for the decided count order carried in section 10, these remain
+proposals for the Source-contract inputs only. A later decision must
+identify which clauses it accepts and the source revision that fixes
 their exact text. Cross-check both sides after any accepted replacement;
 do not leave one side using a superseded proposed code or ordering.
 Unaffected clauses, byte formats and historical evidence keep their

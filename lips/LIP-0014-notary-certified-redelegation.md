@@ -1662,9 +1662,9 @@ section 8.5 points.
 
 The [Source-contract companion](LIP-0014-source-contract-proposals.md)
 collects proposed resolutions of these eight points, T1/profile inputs,
-identity latching and the R8 count order. It is a separate **PROPOSED**
-reading for agreement; it changes none of the open statuses or outcomes
-in this section until the corresponding source decision is accepted.
+identity latching, and carries the R8.3 count order as **DECIDED** in
+version 0.1.57. Its remaining choices and the rest of Q2 stay **PROPOSED**;
+it changes none of the other open statuses or outcomes in this section.
 
 ### 8.5. The order of the issuer's checks (J4.4)
 

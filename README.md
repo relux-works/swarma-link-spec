@@ -68,12 +68,13 @@ Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 ## Draft profiles and design decisions in v0.1.57
 
 The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
-collect proposed readings of the remaining identity, contract/profile,
-O1–O8 and ordinal-count inputs. Each remains **PROPOSED**, with an explicit
-acceptance condition and paired positive/forbidden cases. The companion
-carries version 0.1.56's decided corrections and worker-name rule as its
-baseline; those are not new proposals. It changes no existing rule, wire
-member or implementation, and supplies no native or end-to-end qualification.
+collect proposed readings of the remaining identity, contract/profile
+and O1–O8 inputs, with an acceptance condition and paired cases. These
+choices remain **PROPOSED**. The companion carries the R8.3 count order
+as **DECIDED** in version 0.1.57, alongside version 0.1.56's corrections
+and worker-name rule. The rest of Q2 stays proposed. It changes no existing
+rule, wire member or implementation, and supplies no native or end-to-end
+qualification.
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
