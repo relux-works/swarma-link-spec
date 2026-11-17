@@ -1,9 +1,9 @@
 # LIP-0031: Limit-kind profiles 1 — coins, model cost, model tokens
 
-- **Status:** Draft. Everything in this LIP is proposed; nothing in it is
-  in force by this text, and neither owner has decided a rule of it.
-  Section 5 is proposed with the owner's word pending, as that section
-  says.
+- **Status:** Draft. Everything in this LIP except section 5 is proposed;
+  nothing else in it is in force by this text.
+  Section 5 is decided: the owner approved it on 2026-11-17, as that
+  section says.
 - **Created:** 2026-11-17
 - **Affects:** the first three entries of the registry of limit kinds
   (LIP-0020 W11.14): what a limit of each kind counts, in which unit and
@@ -105,8 +105,7 @@ an answer, and the owners should look at them first:
 5. The settlement of sections 3 and 4 releases the difference between
    the reserved maximum and the actual consumption once the outcome is
    known. LIP-0026 R5.8 leaves that release to the type profile.
-6. Section 5 whole. It is proposed, and the owner's word on it is
-   pending.
+6. Section 5 whole is decided: Ivan Oparin approved it on 2026-11-17.
 
 Nothing of this profile is implemented. The owners accept or change
 its rules through this LIP, under LIP-0001.
@@ -365,12 +364,13 @@ fails the instance reserves nothing, as every refused request does.
 
 ### 5. Exhaustion and continuation
 
-**Proposed; the owner's word is pending.** The paragraph that follows
-is the one place that states what exhaustion and continuation are for
-the kinds of this LIP, and every other text points here: the README,
-the changelog and the unresolved questions. Until the owner decides
-it, no side is bound by it and the refusals of section 6 are the
-whole of what a full counter does.
+**Decided by the owner on 2026-11-17.** Ivan Oparin approved the rules
+of this section on 2026-11-17; the co-author's answer is folded in by
+amendment. The paragraph that follows is the one place that states what
+exhaustion and continuation are for the kinds of this LIP, and every
+other text points here: the README, the changelog and the unresolved
+questions. The open points listed under "What is decided and what is
+proposed" stay open inside it.
 
 When a counter of a grant reaches its ceiling — the whole-window
 account of a key, or the account of the instance that holds the
@@ -549,8 +549,8 @@ vectors are described and not built (section 7).
   co-author's agreement is pending on the decisions that sections 2
   to 4 build on, as LIP-0008 section 2 and LIP-0018 section 2 record
   them.
-- **Section 5, whole.** Exhaustion and continuation are proposed
-  with the owner's word pending. Open inside it: the carrier and the
+- **Section 5, whole.** Exhaustion and continuation are decided by the
+  owner (2026-11-17). Still open inside it: the carrier and the
   form of the report to the parent, how a delegating side learns of
   it without polling the executor, and the reading of its last
   clause — this draft states a new grant per period and limits with

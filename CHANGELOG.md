@@ -29,7 +29,7 @@ implemented.
   `SPEND_OVER`; the rest are codes that landed texts already name.
   The vector set is described and not built.
 - **Exhaustion and continuation (LIP-0031 section 5).** One
-  paragraph, proposed with the owner's word pending, states what a
+  paragraph, decided by the owner on 2026-11-17, states what a
   full counter does and how work continues; this entry, the README
   and the unresolved questions point to that paragraph and restate
   none of it.

@@ -938,8 +938,7 @@ token-accounting profile. The three kinds share the reading of
 and the pool of its parent (count times amount, LIP-0026 section 8),
 and the accounts of a period. Exhaustion and continuation stand in
 one paragraph, section 5 of the LIP, to which every other text
-points; the paragraph is proposed and the owner's word on it is
-pending. Two refusal codes are new, `LIMIT_UNSUPPORTED` and
+points; the owner decided the paragraph on 2026-11-17. Two refusal codes are new, `LIMIT_UNSUPPORTED` and
 `SPEND_OVER`; every other refusal takes a code that a landed text
 already names. LIP-0020 section 11.14 enters the three kinds in the
 registry of limit kinds, each proposed by version 0.1.58, LIP-0031;
