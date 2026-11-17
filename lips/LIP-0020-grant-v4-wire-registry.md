@@ -1612,7 +1612,7 @@ section 2; LIP-0018 section 2).
 | Registry | Entries in version 0.1.55 |
 | --- | --- |
 | Action identifiers | None. No text of this specification names a v4 action identifier: the names of LIP-0014 D12 are actions of the v3 contract profile, and the actions of the vectors of section 12 are placeholders |
-| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet |
+| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet. Version 0.1.58 proposes the first three entries, each proposed by version 0.1.58, [LIP-0031](LIP-0031-limit-kinds-1.md): `swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Each is a proposal of that LIP with the state of its header; a side that adopts no profile of it has no profile for the kind and judges it under rule 2 as before |
 
 | # | Rule | Refusal |
 | --- | --- | --- |
@@ -1636,7 +1636,12 @@ conforms to this specification refuses as `ACTION_UNDEFINED` every request
 that reaches rule 1, and a v4 grant has no effect at an executor. No limit
 kind is defined: a child that states a limit, and a child of a row whose
 template states one, refuses as `LIMIT_KIND_UNDEFINED` at every side, and
-only a pair without limits passes row F17. A kind whose amount is a floor
+only a pair without limits passes row F17. Since version 0.1.58 the three
+kinds of the registry above have a proposed profile, LIP-0031: at a side
+that runs it, a limit of one of those kinds is judged under that profile
+in row F17 and in row E2, and rule 2 refuses the kinds that still have no
+profile there; at a side that runs none, the sentence before stands
+whole. A kind whose amount is a floor
 takes the same members as a ceiling (W11.4); how a floor is compared is for
 its profile, and until that profile exists rule 2 refuses.
 

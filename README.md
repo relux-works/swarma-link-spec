@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.57
+**Version:** 0.1.58
 
 **Date:** 2026-11-17
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.57
+## Draft profiles and design decisions in v0.1.58
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -919,6 +919,37 @@ parent, by Ivan Oparin's explicit decision of 2026-11-17. LIP-0026
 section 8 and LIP-0020 W11.6 now give that order one state, and the
 contradiction recorded by version 0.1.56 is closed. No member of the
 grant, no tool and no vector octet changes.
+
+Version 0.1.58 adds [LIP-0031](lips/LIP-0031-limit-kinds-1.md), Draft
+text that proposes the first three limit-kind profiles for Grant v4:
+`swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Until a
+type profile defines a limit kind, a child that states a limit is
+neither signed nor admitted (LIP-0020 W11.14 rule 2), and LIP-0008
+section 2 names the kinds by meaning alone. The draft gives each kind
+every item that LIP-0018 section 2 lists: for coins an asset and
+payment-system identifier in atomic units, with a maximum for one
+spend, a maximum for a period and a total over the term including
+fees; for model cost a cumulative ceiling per period in an exact
+currency and scale, reserved at the maximum before a request and
+settled at the actual cost; for model tokens separate cumulative
+input and output ceilings per period under a named model and
+token-accounting profile. The three kinds share the reading of
+`period`, the comparison of a child against the template of its row
+and the pool of its parent (count times amount, LIP-0026 section 8),
+and the accounts of a period. Exhaustion and continuation stand in
+one paragraph, section 5 of the LIP, to which every other text
+points; the paragraph is proposed and the owner's word on it is
+pending. Two refusal codes are new, `LIMIT_UNSUPPORTED` and
+`SPEND_OVER`; every other refusal takes a code that a landed text
+already names. LIP-0020 section 11.14 enters the three kinds in the
+registry of limit kinds, each proposed by version 0.1.58, LIP-0031;
+the registry of action identifiers is untouched. Every rule is the
+draft's proposal, neither owner has decided one, and nothing of it is
+in force: a side that runs no profile of the LIP refuses the three
+kinds as before. No member of `swarma-grant/4` changes, and no octet
+of a tool or of a vector file changes; the vector set of the LIP is
+described and not built. Every LIP remains Draft, and nothing of it
+is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

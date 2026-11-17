@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.1.58 — 2026-11-17
+
+Adds Draft LIP-0031, the first three limit-kind profiles for Grant
+v4, and enters their kinds in the registry of LIP-0020 W11.14. Every
+rule of the new LIP is proposed; nothing of it is in force by this
+text, and neither owner has decided a rule of it. No member of
+`swarma-grant/4` changes, and no octet of a tool or of a vector file
+changes. Every LIP stays a Draft, and nothing of this version is
+implemented.
+
+- **Three limit kinds (LIP-0031).** Until a type profile defines a
+  limit kind, a child that states a limit is neither signed nor
+  admitted (LIP-0020 W11.14 rule 2). LIP-0008 section 2 lists the
+  kinds by meaning, and LIP-0018 section 2 lists what a proposal for
+  a kind states. LIP-0031 proposes a profile for each of
+  `swarma/coins` (asset and payment-system identifier, atomic unit,
+  maximum for one spend, maximum for a period, total over the term
+  including fees), `swarma/model-cost` (cumulative ceiling per
+  period, exact currency and scale, reserve the maximum and settle
+  the actual) and `swarma/model-tokens` (separate cumulative input
+  and output ceilings per period under a named model and
+  token-accounting profile), each with every item of LIP-0018
+  section 2, the comparison of a child against the template of its
+  row and the pool of its parent, and who meters on what evidence.
+  The kinds share one reading of `period` and one account for each
+  period instance. Two codes are new, `LIMIT_UNSUPPORTED` and
+  `SPEND_OVER`; the rest are codes that landed texts already name.
+  The vector set is described and not built.
+- **Exhaustion and continuation (LIP-0031 section 5).** One
+  paragraph, proposed with the owner's word pending, states what a
+  full counter does and how work continues; this entry, the README
+  and the unresolved questions point to that paragraph and restate
+  none of it.
+- **The registry of limit kinds (LIP-0020 W11.14).** The three
+  kinds enter the table, each proposed by version 0.1.58, LIP-0031.
+  At a side that runs a profile of that LIP the kind is judged under
+  it in rows F17 and E2; at a side that runs none, rule 2 refuses as
+  before. The registry of action identifiers is untouched, and no
+  rule, code placement or octet of section 11 changes beside the
+  entry.
+- **Unresolved questions.** Two rows: the limit-kind profiles, with
+  what they leave open, and exhaustion and continuation, which
+  points to LIP-0031 section 5. One clause of the row "Members of
+  `swarma-grant/4`" no longer says that section 11.14 states the
+  registries as empty.
+
 ## 0.1.57 — 2026-11-17
 
 Puts one owner decision in force and closes the contradiction that version
