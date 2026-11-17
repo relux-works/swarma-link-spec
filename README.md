@@ -1005,8 +1005,10 @@ signed request and orders no run while an earlier run's start outcome is
 unknown; that a host signs it alone under a restart grant is proposed and
 awaits the owner's yes. A lost
 session journal quarantines every slot of the host until the journal is
-restored and every end that fell due during the loss is applied, or the
-journal is started anew and the slot is cleared by the operator. Eleven
+started anew and the slot is cleared by the operator; in this profile a
+restored journal is no exit from quarantine, only evidence for the census,
+and a restore of a closure journal clears no mark for a closure that fell
+due unwritten. Eleven
 refusals of the base that have no v4 code are proposed as
 new codes. Every rule is marked as restating a cited text with the state of
 that text, as proposed, or as open; seven questions are the owners', each with
