@@ -3,8 +3,8 @@
 - **Status:** PROPOSED. None of the choices below is in force by this file's
   own word. It changes no existing rule, wire member, vector or implementation.
 - **Date:** 2026-11-17
-- **Source baseline:** version 0.1.55, commit
-  `1e58a9f91eba35ff19de25388031f0264c01eecc`.
+- **Source baseline:** version 0.1.56, commit
+  `48e1c2f7488d55350a20849578f8920656c02adb`.
 - **Scope:** the remaining identity, contract/profile, first-refusal and
   ordinal-order inputs of the child issuer and its consumer.
 
@@ -43,6 +43,39 @@ later accepted source text replaces only the corresponding proposal in one
 revision, with its decision and exact source revision cited. Until then the
 existing open-clause behaviour continues, including the inability to finish
 F6 without the contract profile. No proposal here enables a private call.
+
+### 1.1 Reconciliation with version 0.1.56
+
+The following are carried from the baseline, rather than proposed again:
+
+- **N1, the Repeat cross-references:** LIP-0014 sections 8.4 and 11.1
+  already identify J4.4 (c) and event 12 beside step 6. J4.4 keeps its
+  words; the checks named by step 6 govern that Repeat. This companion
+  proposes no alternative reading of those cross-references.
+- **N2, the child's own confirmed anchor at Repeat:** the new sentences
+  in sections 8.5 and 11.1 already require `ROW_COIN_REQUIRED`, a held
+  place and the operational audit/notice of event 39 when that anchor
+  spends the row coin between the two checks. The signer is not called
+  and no signature of this ledger exists. S4-30b, with S4-11, S4-30 and
+  S4-30a, states the control and neighbouring cases. Their audit limits
+  and behavioural qualification requirements remain those of the source.
+- **The entry-kind list:** section 11.1 now carries J4.4 (g)'s list
+  unchanged. No new kind or replacement row-ledger schema is proposed
+  here; O5 still concerns the separate grant-closure journal.
+- **Long-lived working-agent names:** the [key map](../KEY-MAP.md)
+  already requires their own `id/` names, like permanent roles. A
+  one-task executor named by key may remain key-only. This does not
+  settle H1's local home latch or the representation of a message-key
+  pin in the name value.
+
+None of these changes closes a complete row of the register. Version
+0.1.56 also records two non-normative proposals in the
+[unresolved questions](../UNRESOLVED_QUESTIONS.md): assent using the
+delegator's existing signature on an equal parent/child contract, and a
+message-key pin in the agent's name value. Neither is an accepted T1 or
+identity interface. The R8.3 status contradiction remains open as stated
+in section 10. Landed text and proposed choices retain their distinct
+statuses; neither supplies implementation or conformance evidence.
 
 ## 2. Identity and contract-profile inputs — PROPOSED
 
@@ -142,6 +175,9 @@ name the actual issuing party and its contract-signing key, purpose and
 verification evidence. J4.2's child-delegation key signs children only;
 neither it nor an arbitrary owner/root/request key supplies the missing
 assent by fallback. This paper selects no assent key or extra owner prompt.
+The alternative recorded by version 0.1.56, using the delegator's existing
+signature on an equal parent/child contract, remains non-normative. Its
+publication does not select it over the unresolved profile requirements.
 
 ### 2.4 Enrollment transaction boundary — PROPOSED
 
@@ -191,9 +227,10 @@ proposal does not publish a later code under a refused observation.
 
 At ISSUE, the service still makes only its existing pre-sign bloc (s)
 duty for the child: no anchor of that child exists. This ordering adds no
-requirement to build the child's anchor before signing it. The existing
-initial own-anchor exception for a row coin and the absence of that
-exception in Repeat concern a different coin and are unchanged.
+requirement to build the child's anchor before signing it. Row-coin
+checks are a separate, carried duty: the initial own-anchor exception
+and the Repeat refusal, hold and audit/notice follow the version 0.1.56
+baseline in section 1.1. They are outside the proposed seal-bloc order.
 
 ## 4. O2: request authentication — PROPOSED
 
@@ -328,6 +365,12 @@ another clock. It changes no block-height grant window, invocation
 two-age measure. A local calendar limit is no public freshness substitute.
 
 ## 10. R8 count order — PROPOSED
+
+Version 0.1.56's unresolved questions explicitly record the contradiction:
+LIP-0020 W11.6 states the order in force since version 0.1.53, while
+LIP-0026 section 8 says its explicit acceptance is pending and it binds
+no reader until then. Both texts remain unchanged. Recording the
+contradiction accepts neither the order nor a repair of its status.
 
 Propose explicit acceptance of exactly R8.3: traverse groups in signed
 order, ranges of each group in signed order, and coins of a range by

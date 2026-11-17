@@ -71,8 +71,9 @@ The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals
 collect proposed readings of the remaining identity, contract/profile,
 O1–O8 and ordinal-count inputs. Each remains **PROPOSED**, with an explicit
 acceptance condition and paired positive/forbidden cases. The companion
-changes no existing rule, wire member or implementation, and supplies no
-native or end-to-end qualification.
+carries version 0.1.56's decided corrections and worker-name rule as its
+baseline; those are not new proposals. It changes no existing rule, wire
+member or implementation, and supplies no native or end-to-end qualification.
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
