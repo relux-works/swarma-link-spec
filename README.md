@@ -977,9 +977,14 @@ A further draft has no version yet.
 profile no. 1, an agent session on a host: the first profile that would give
 a v4 grant an action at an executor. It defines the authority of a session
 and not the life of a process, which belongs to the station contract of the
-host. The executor is the service set of a host: a grant checker with the
-chain view and the closure journals, a dispatching service with the session
-journal and the accounts, and the key holder that binds each run. The
+host, now cited as station/1 version 1 where the draft names it: the
+station record and its one store, journal loss and its exits, the start
+fence, the restart order and the stop bounds are that contract's rows,
+cited and not redefined, and the profile keeps the grants, the paths, the
+verdicts and the debits. The executor is the service set of a host: a grant
+checker with the chain view and the closure journals, a dispatching service
+with the session journal and the accounts, and the key holder that binds
+each run. The
 checker hands the dispatching service a verdict with fixed content — under
 a restart grant it carries the cited path, whose accounts a restart debits,
 and the session's own path, whose result alone moves its state — owes the
@@ -1003,18 +1008,21 @@ started reads the tip, the clock and the journals again; its failure only
 refuses, ends nothing and consumes no start. A restart is a new run by a
 signed request and orders no run while an earlier run's start outcome is
 unknown; that a host signs it alone under a restart grant is proposed and
-awaits the owner's yes. A lost
-session journal quarantines every slot of the host until the journal is
-started anew and the slot is cleared by the operator; in this profile a
-restored journal is no exit from quarantine, only evidence for the census,
-and a restore of a closure journal clears no mark for a closure that fell
-due unwritten. Eleven
+awaits the owner's yes. A lost, fenced
+or restored station store puts every station of the host in that
+contract's `lost` and quarantines its slot; no restore is an exit and
+nothing is recorded as ended there, and the only exits are its two: the
+operator's re-provision of a name the key service has never bound, and the
+operator's teardown of a name with a live account to retirement, key
+bindings never being handed over. A restore of a closure journal still
+clears no mark for a closure that fell due unwritten. Eleven
 refusals of the base that have no v4 code are proposed as
 new codes. Every rule is marked as restating a cited text with the state of
 that text, as proposed, or as open; seven questions are the owners', each with
-options, costs and a recommendation, and the draft lists what it needs from
-the station contract of the host. It defines no octets and no vectors, and
-nothing of it is implemented.
+options, costs and a recommendation, and the draft lists what still stands
+open in the station contract and on its dispatcher seam, among it an
+exception for the halt class filed against LIP-0029. It defines no octets
+and no vectors, and nothing of it is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
