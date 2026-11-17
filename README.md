@@ -67,6 +67,13 @@ Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
 ## Draft profiles and design decisions in v0.1.57
 
+The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
+collect proposed readings of the remaining identity, contract/profile,
+O1–O8 and ordinal-count inputs. Each remains **PROPOSED**, with an explicit
+acceptance condition and paired positive/forbidden cases. The companion
+changes no existing rule, wire member or implementation, and supplies no
+native or end-to-end qualification.
+
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
 grants, optional social name metadata and separate discovery;

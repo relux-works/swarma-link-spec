@@ -1660,6 +1660,12 @@ service's own record of places are decided, and not by this table: they
 are the reservation ledger of section 11.1 (J4.4 (a) to J4.4 (g)), to which
 section 8.5 points.
 
+The [Source-contract companion](LIP-0014-source-contract-proposals.md)
+collects proposed resolutions of these eight points, T1/profile inputs,
+identity latching and the R8 count order. It is a separate **PROPOSED**
+reading for agreement; it changes none of the open statuses or outcomes
+in this section until the corresponding source decision is accepted.
+
 ### 8.5. The order of the issuer's checks (J4.4)
 
 One signing request has one order. It is the order of one request of
