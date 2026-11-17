@@ -886,13 +886,16 @@ Every LIP remains Draft, and nothing of it is implemented.
 Version 0.1.56 closes three findings on that step table and on the
 reservation ledger. The Amends list of section 8.4 names rule J4.4 (c) and
 event 12 beside step 6 of the order of one request, whose words step 6
-reads as naming the checks that it lists, and no other rule of J4.4 (a) to
-J4.4 (g) changes. Where the confirmed issuance anchor of a child spends
+reads as naming the checks that it lists, no rule of J4.4 (a) to
+J4.4 (g) changes its words, and event 12 keeps those words and gains one
+marked sentence. Where the confirmed issuance anchor of a child spends
 the coin of its row between step 1 and step 6, the repeat refuses as
 `ROW_COIN_REQUIRED` with the place held, and the service writes the entry
 of the operational audit and gives its operator the notice of event 39
-that a signature exists outside the ledger; case S4-30b states it. The
-entry-kind list of J4.4 (g) is carried unchanged into the text of the
+that a signature exists outside the ledger. The sentence is introduced
+with version 0.1.56 as normative text, in step 6 and in event 12 alike;
+case S4-30b states it. The entry-kind list of J4.4 (g) is carried
+unchanged into the text of the
 table of states where the kinds are referenced. The version also records
 the owner's decision of 2026-11-16 in the [key map](KEY-MAP.md): a
 long-lived working agent has an `id/` name of its own, a one-task executor

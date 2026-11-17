@@ -155,11 +155,11 @@ The scope of K2 follows Ivan Oparin's decision of 2026-11-14; the
 co-author's agreement is pending. Permanent roles have names: executors,
 notaries, keepers and public agents. By the owner's decision of 2026-11-16,
 a long-lived working agent has an `id/` name of its own, as a permanent
-role does. A one-task executor, an agent identity that serves a single
-task and that a grant names by key, may stay key-only and have no `id/`
-name. An agent that moves from a one-task executor to a long-lived working
-agent or to a permanent role
-keeps its key: the name is registered with that key in its value, and the
+role does. A one-task executor (not the executor role above), an agent
+identity that serves a single task and that a grant names by key, may
+stay key-only and have no `id/` name. An agent that moves from a one-task
+executor to a long-lived working agent or to a permanent role keeps its
+key: the name is registered with that key in its value, and the
 grants that name the key stay as they are. The alternative that is not
 taken gives every one-task identity a name, at the cost of one registration
 and its renewals per identity.

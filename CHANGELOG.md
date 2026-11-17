@@ -14,16 +14,18 @@ implemented.
   table of states beside step 6 of the order of one request, whose words
   "the checks of J4.4 on the parent and on the row" step 6 reads as naming
   the checks that it lists. The pointer after that order in section 11.1
-  states the same: no other rule of J4.4 (a) to J4.4 (g) changes, and rule
-  J4.4 (c) and event 12 keep their words.
+  states the same: no rule of J4.4 (a) to J4.4 (g) changes its words, rule
+  J4.4 (c) keeps its words, and event 12 keeps those words and gains one
+  sentence, as the next bullet states, marked there.
 - **The coin spent by the child's own anchor before the second check
   (LIP-0014 sections 8.5 and 11.1).** Where the confirmed issuance anchor
   of this child spends the coin of its row between step 1 and step 6, the
   repeat refuses as `ROW_COIN_REQUIRED` (event 12), the place is held and
   no signature of the ledger exists; the service also writes an entry of
   the operational audit and notifies its operator that a signature exists
-  outside the ledger, as in event 39. Case S4-30b states the case with
-  S4-11 as its control.
+  outside the ledger, as in event 39. The sentence is introduced with
+  version 0.1.56 as normative text, in step 6 and in event 12 alike, each
+  marked there. Case S4-30b states the case with S4-11 as its control.
 - **The kinds of entry (LIP-0014 section 11.1).** The entry-kind list of
   J4.4 (g) is carried, unchanged, into the text of the table of states
   where the kinds are referenced: the entry of a delegation key, a

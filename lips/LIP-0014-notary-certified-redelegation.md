@@ -1361,7 +1361,7 @@ Each row of the tables below has one of three states, and its column
 | --- | --- |
 | Carried | The row restates a text that landed in an earlier version. Its order, its codes and what a refusal leaves behind are those of that text. The row has the state of that text and no other: decided by both owners, carried for a reader of `swarma-grant/4` by LIP-0020 section 11, or the proposal of a draft that binds no reader until it is accepted |
 | **NEW** | The row decides something that no landed text decides. The cell gives the reason, and the open questions of this LIP name the choice for the owners |
-| **Amends** | The row changes what a landed sentence says, and that sentence is amended in place by the same change and marked there. There are four: the sentence of section 11.1 on the place of the child checks of J4.3 (b) (rows F11 and F23, pair Q18); case S4-9 of section 11.2 on the seal of a child (rows F12 and F21, rule T5); step 3 of the order of one request of section 11.1, which gains one branch (section 8.5, I9 and I10; event 39); and step 6 of that order, which names the checks that it repeats and their observation, with rule J4.4 (c) and event 12 of the table of states beside it, whose words "the checks of J4.4 on the parent and on the row" step 6 reads as naming those checks (section 8.5, I11 and the paragraph "The repeat"). Until the version lands, the reading in force of each is the text as version 0.1.54 has it |
+| **Amends** | The row changes what a landed sentence says, and that sentence is amended in place by the same change and marked there. Of version 0.1.55 there are four: the sentence of section 11.1 on the place of the child checks of J4.3 (b) (rows F11 and F23, pair Q18); case S4-9 of section 11.2 on the seal of a child (rows F12 and F21, rule T5); step 3 of the order of one request of section 11.1, which gains one branch (section 8.5, I9 and I10; event 39); and step 6 of that order, which names the checks that it repeats and their observation, with rule J4.4 (c) and event 12 of the table of states beside it, whose words "the checks of J4.4 on the parent and on the row" step 6 reads as naming those checks (section 8.5, I11 and the paragraph "The repeat"). Until the version lands, the reading in force of each is the text as version 0.1.54 has it. Beside step 6, version 0.1.56 amends event 12 and step 6 further by one sentence each, marked there as normative text, on the coin spent by the confirmed issuance anchor of this child; rule J4.4 (c) keeps its words |
 
 A row never states a second reading beside a landed one. Where two landed
 texts leave a point undecided between them, the row says so and names the
@@ -1773,14 +1773,15 @@ spent, by the anchor of this child or by anything else, refuses as
 confirmed issuance anchor of this child, the service also writes the entry
 of the operational audit and gives its operator the notice of event 39,
 that a signature exists outside this ledger; the place stays held, as event
-12 states, and no signature of this ledger exists for it. The cost of the
-amendment is one more read of the node
-for every signature: where the landed step read the parent and the row
-again, the service now also reads again the names, the journal of the
-child, the seal output and the tip for the child's window. Marked for the
-owners: the amendment of step 6 itself (**Amends**); that the repeat has an
-observation of its own, whose codes are those of F3 (**NEW**); and that the
-anchor exception of I9 does not hold in the repeat (**NEW**). A refusal of
+12 states, and no signature of this ledger exists for it (sentence added
+with version 0.1.56, as normative text). The cost of the amendment is one
+more read of the node for every signature: where the landed step read
+the parent and the row again, the service now also reads again the
+names, the journal of the child, the seal output and the tip for the
+child's window. Marked for the owners: the amendment of step 6 itself
+(**Amends**); that the repeat has an observation of its own, whose
+codes are those of F3 (**NEW**); and that the anchor exception of I9
+does not hold in the repeat (**NEW**). A refusal of
 the repeat is event 12
 whatever its code and whatever its mark, a pending read included: the
 place is held, and the exit is that of case S4-18. A service may read again
@@ -2743,17 +2744,17 @@ place is `signed` by that result as by the result of event 20, and the
 definition before this sentence, the release rule of the contract of the ledger,
 step 3 of the order of one request and event 5 read for it as they stand:
 a replay is answered with the stored octets, read from that result
-(sentence added with version 0.1.55). The kinds of entry are those of
-J4.4 (g), carried here unchanged: the entry of a delegation key; a
-reservation; a use of the key, in an entry that is durable before the
-signer is called; a result, which is `signed` or `held`, a failed
-verification, a signing call of unknown outcome and the hold of a write
-that did not complete included; a reconciliation, with its opening, its
-evidence and its outcome; and a genesis, which names the loss that it ends
-(list carried with version 0.1.56). `held`
-is a place under an open mark, under a record `held`, under a record
-`reserved` with no live claim, or a place of a delegation key whose whole
-life the ledger does not show. A mark is pending while the one writer makes
+(sentence added with version 0.1.55). `held` is a place under an open
+mark, under a record `held`, under a record `reserved` with no live
+claim, or a place of a delegation key whose whole life the ledger does
+not show. The kinds of entry are those of J4.4 (g), carried here
+unchanged: the entry of a delegation key; a reservation; a use of the
+key, in an entry that is durable before the signer is called; a result,
+which is `signed` or `held`, a failed verification, a signing call of
+unknown outcome and the hold of a write that did not complete included
+(J4.4 (c), J4.4 (f)); a reconciliation, with its opening, its evidence
+and its outcome; and a genesis, which names the loss that it ends (list
+carried with version 0.1.56). A mark is pending while the one writer makes
 its write in the live run. It is open once that write has ended without the
 kept head over its entry, and every mark that a start of the service finds
 is open. The first four columns suppose a usable ledger; the fifth is a
@@ -2790,7 +2791,7 @@ that key.
 | 9 | The write of the mark of a reservation fails, and the service shows that no mark landed | Unchanged. Key idle. Refused with no code, as in event 2; the same request may be asked again | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 |
 | 10 | The mark of a reservation is durable, and no whole entry stands beyond the kept head: the write of the entry failed or was torn | `held`, under the open mark. Key idle. `PLACE_HELD`. The resolution follows (event 27). The key was not used, and exit 30 is open | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 |
 | 11 | The mark of a reservation is durable and its entry is written whole, and the kept head, which can be read, has not moved over the entry | `held`, under the open mark: the one marked entry beyond the kept head. The service does not complete the write by itself, and the entry is evidence only. Key idle. `PLACE_HELD`. The resolution follows (event 27). The key was not used, and exit 30 is open | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 | Impossible, as in event 8 |
-| 12 | Between the reservation and the use of the key the service repeats the checks of J4.4 on the parent and on the row, and they refuse | Impossible, because no request holds a claim where no record is | `held`; the claim ends. Key idle: no mark and no entry of a use exists, and exit 30 is open. The refusal of J4.4, as in event 1, and no code of this section. Where the refusal is the coin of the row spent by the confirmed issuance anchor of this child, the refusal is `ROW_COIN_REQUIRED`, and the service writes an entry of the operational audit and notifies its operator that a signature exists outside this ledger, as in event 39; the place stays held | Impossible, because the claim ended when the result became durable | Impossible, because a held place has no claim | Impossible, because a lost ledger takes no reservation, so no request holds a claim; a request that was under way when the loss was found is event 34 |
+| 12 | Between the reservation and the use of the key the service repeats the checks of J4.4 on the parent and on the row, and they refuse | Impossible, because no request holds a claim where no record is | `held`; the claim ends. Key idle: no mark and no entry of a use exists, and exit 30 is open. The refusal of J4.4, as in event 1, and no code of this section. Where the refusal is the coin of the row spent by the confirmed issuance anchor of this child, the refusal is `ROW_COIN_REQUIRED`, and the service writes an entry of the operational audit and notifies its operator that a signature exists outside this ledger, as in event 39; the place stays held (sentence added with version 0.1.56, as normative text) | Impossible, because the claim ended when the result became durable | Impossible, because a held place has no claim | Impossible, because a lost ledger takes no reservation, so no request holds a claim; a request that was under way when the loss was found is event 34 |
 | 13 | The creating request ends with no mark of a use of the key durable: the caller is gone, the service ends the request, the write of that mark fails and the service shows that none landed, or the write cannot begin behind an open mark of another place (event 28) | Impossible, as in event 12 | `held`; the claim ends. Key idle: the signer was not called, no mark and no entry of a use exists, and exit 30 is open. `PLACE_HELD` | Impossible, as in event 12 | Impossible, as in event 12 | Impossible, as in event 12 |
 | 14 | The write of the use of the key succeeds: the mark, the entry of the use and the kept head over it are durable, in that order | Impossible, as in event 12 | Unchanged. The key counts as used for the place from this entry on, whether or not the signer is then called. The signer is called next, once. No answer yet | Impossible, as in event 12 | Impossible, as in event 12 | Impossible, as in event 12 |
 | 15 | The mark of a use of the key is durable, and the write ends before the kept head covers its entry, whichever component was the last that is durable, the mark or the entry | Impossible, as in event 12 | `held`, under the open mark; the claim ends. Key idle: the signer is not called, because it is called only under an entry of the use that the kept head covers. `PLACE_HELD`. The resolution follows (event 27). Exit 30 is closed, because the chain holds a mark of a use, and no signature was made: a reconciliation ends as event 32 | Impossible, as in event 12 | Impossible, as in event 12 | Impossible, as in event 12 |
@@ -2880,7 +2881,8 @@ and a later step is not reached where an earlier one refuses.
    confirmed issuance anchor of this child, the service writes an entry of
    the operational audit (J4.4 (g)) and notifies its operator that a
    signature exists outside this ledger, as in event 39; the refusal is
-   event 12 and the place is held. (Amended with version 0.1.55,
+   event 12 and the place is held (sentence added with version 0.1.56, as
+   normative text). (Amended with version 0.1.55,
    as a proposal of that version. Through version 0.1.54 the step read:
    "It repeats the checks of J4.4 on the parent and on the row (event
    12).")
@@ -2902,13 +2904,16 @@ Section 8.5 proposes, with version 0.1.55, the inner order of the checks of
 step 1, as its steps I0 to I9, and names the checks that step 6 repeats.
 The same version amends two steps of this order in place, each marked at
 its place: step 3, which gains the branch of event 39, and step 6, which
-names its checks and their observation. No other step of this order and no
-other rule of J4.4 (a) to J4.4 (g) changes; rule J4.4 (c) and event 12
-keep their words, and for step 6 those words name the checks that step 6
-lists, as the Amends list of section 8.4 states beside step 6. Until the
-version lands, steps 1, 3
-and 6 read as version 0.1.54 has them (sentence added with version 0.1.55,
-as a pointer; amended with version 0.1.56).
+names its checks and their observation. No other step of this order
+changes, and no rule of J4.4 (a) to J4.4 (g) changes its words; rule
+J4.4 (c) keeps its words, and for step 6 its words "the checks of J4.4 on
+the parent and on the row" name the checks that step 6 lists, as the
+Amends list of section 8.4 states beside step 6. Event 12 keeps those
+words; event 12 and step 6 each gain one sentence, marked there and
+introduced with version 0.1.56 as normative text, on the coin spent by
+the confirmed issuance anchor of this child. Until the version lands,
+steps 1, 3 and 6 and event 12 read as version 0.1.54 has them (sentence
+added with version 0.1.55, as a pointer; amended with version 0.1.56).
 
 **The contract of the ledger.** The contract is that of the ledger store of
 J1.4 (section 9.1), taken for this ledger; like that one it states duties
@@ -3298,7 +3303,7 @@ claimed:
 | S4-29 | Over the whole life of a key. Control: a key that the service made under this ledger, whose place is held as in S4-14, is freed as in S4-18 (events 37 and 30) | A key that signed one child for a place before it came under this ledger enters it (event 38). Every place of its parent is held; a request for the signed place and a request for any other place take `PLACE_HELD`, with whatever intent (event 7). The operator opens a reconciliation for the signed place: the chain of this ledger holds no use of the key for it, and nothing is proved (event 32). A service that frees the place because its own chain shows no use from the entry of the key onward fails: it would sign a second child for the place. So does one that enters as unused a key that arrives with a statement, a log or a copy of another ledger, and one that frees such a place at a genesis (S4-25). |
 | S4-30 | The second check. Control: S4-11, in which the checks pass both times | The parent is closed in the service's journal after the reservation is durable and before the write of the use of the key. The request ends with the refusal of J4.4 and no code of this section; the signer is not called, no mark and no entry of a use exists, and the place is held (event 12). A service that signs the child, which every verifier would refuse, fails. The place can be freed as in S4-18. A closure that comes after the second check still costs the place. |
 | S4-30a | A replay after publication (case added with version 0.1.55, as a proposal of that version). The request of S4-11 is asked again on the continuous ledger, after the confirmed issuance anchor of its child has spent the coin of its row. Step 1 passes, the check of the coin by that anchor alone (section 8.5, I9); the place has its record `signed`, and the answer holds the stored 64 octets, byte for byte, as in S4-12 (event 5). The service does not sign, appends nothing and sends no notice | The same request on a continuous ledger that holds no record and no open mark for the place, the coin of the row spent by the confirmed issuance anchor of this child: refused with no code; no signature exists, nothing is reserved, no mark is written, the chain is unchanged, and the operational audit holds the entry and the operator the notice that a signature exists outside this ledger (event 39). A service that takes the request for a first request and signs fails the case, although the child that it returns would verify: it would make a second signature for a place whose first one this ledger does not show. So does one that answers `PLACE_HELD` or `PLACE_CONFLICT`, or that reserves the place. With the same coin spent by any other transaction the request is refused in step 1 as before, with the code of that check and no notice (event 1). Under a lost ledger the same request takes `PLACE_HELD` in step 2 and no notice (event 4 in the last column, S4-24); for a place that is held with no intent recorded, after a genesis included, `PLACE_HELD` (event 7, S4-25); for a place with a record `reserved` or `held` of this intent, `PLACE_HELD` (event 5); and with another intent than the record, `PLACE_CONFLICT` (event 6). |
-| S4-30b | The coin spent by the child's own anchor between the two checks (case added with version 0.1.56). Control: S4-11, in which the coin of the row is unspent at step 1 and at step 6 and the signature is released | After the reservation is durable and before step 6, the confirmed issuance anchor of this child spends the coin of its row. The repeat refuses as `ROW_COIN_REQUIRED` (event 12); the signer is not called, no signature of this ledger exists, and the place is held. The service writes an entry of the operational audit and notifies its operator that a signature exists outside this ledger, as in event 39, where its store can take the entry. A service that signs, that answers with stored octets, or that gives no such entry and notice, fails the case. Run together with S4-30, where the second check refuses for another reason and no notice of event 39 is given, and with S4-30a, where the same spend is met at step 1 on a replay. |
+| S4-30b | The coin spent by the child's own anchor between the two checks (case added with version 0.1.56, as normative text). Control: S4-11, in which the coin of the row is unspent at step 1 and at step 6 and the signature is released | After the reservation is durable and before step 6, the confirmed issuance anchor of this child spends the coin of its row. The repeat refuses as `ROW_COIN_REQUIRED` (event 12); the signer is not called, no signature of this ledger exists, and the place is held. The service writes an entry of the operational audit and notifies its operator that a signature exists outside this ledger, as in event 39, where its store can take the entry. A service that signs, that answers with stored octets, or that gives no such entry and notice, fails the case. Run together with S4-30, where the second check refuses for another reason and no notice of event 39 is given, and with S4-30a, where the same spend is met at step 1 on a replay. |
 
 A vector plan goes with these cases. It is a plan and holds no vector; no
 file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
@@ -3315,7 +3320,7 @@ file of it exists, and `tools/grantv4` and `vectors/LIP-0020/` do not change.
 | A lost ledger answered (event 34; S4-24) | Deterministic for the answer alone | A ledger stated as lost, and requests that pass the checks: for the recorded intent, for another intent, for another place, for another parent and for a parent with no record at all, the answer is `PLACE_HELD` |
 | The outcomes of a reconciliation (events 30 to 32; S4-18, S4-19, S4-29) | Deterministic, on a stated chain and stated evidence | A held place with the entries of the chain from the entry of its key: a key that the chain shows from its making and no mark or entry of a use give "no record"; octets in a whole entry of the result that an entry of a hold binds, and that verify, give `signed`; octets marked as brought from outside or from the operational audit, a chain with a mark or an entry of a use, and a key that the chain does not show from its making give the state before. A vector states the transition and not how the evidence is gathered |
 | The start of a new ledger and the entry of a key (events 36 to 38; S4-25, S4-29) | Deterministic, on a stated list of keys | The keys that the service holds at a genesis: every place of each is held after it, and stays held under every stated reconciliation. The state of the places of a key that the service makes afterwards, and of a key that enters from elsewhere |
-| S4-11 and S4-30, the order of record, second check, entry of the use and signature | Behavioural only | No vector shows that a record was durable before the key was used. It takes the real service and its store |
+| S4-11, S4-30 and S4-30b, the order of record, second check, entry of the use and signature | Behavioural only | No vector shows that a record was durable before the key was used. It takes the real service and its store |
 | S4-14, S4-15, S4-15a, S4-21, S4-27 and S4-28, the stops, the failed verification and the failed writes | Behavioural only | A stop, a store that refuses or cuts a write after each of its components, or for S4-15a a signer whose output does not verify, is injected between two steps of a running service. A vector can state the answer on the state that is left, which is the rows "a held place answered" and "the partial outcomes of a write", and not that the service reaches that state |
 | S4-20, S4-22 and S4-23, the fence, two requests together and two writers | Behavioural only | They take concurrent requests, a second instance and a returning instance on the real store. A vector states neither the atomic step nor the token |
 | S4-24 to S4-26, the continuity check, the genesis as an act, the room and the two audits | Behavioural only | They are qualified on a real store, as the stores of J1.4 and of LIP-0025 are: that a restore of the ledger is found, that no ledger starts without the act, that a refusal for want of room comes before any mark, that both audits are outside the reach of the delegating agent, and that no answer and no state depends on the operational audit. A restore of the whole host is no case of the service: nothing at the service shows it |
