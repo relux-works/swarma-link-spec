@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.1.56 — 2026-11-17
+
+Closes three findings on the step table and the reservation ledger of
+version 0.1.55, records one owner decision on the names of working agents,
+and adds two proposals and one contradiction to the unresolved questions.
+No member of `swarma-grant/4` changes, and no octet of a tool or of a vector
+file changes. Every LIP stays a Draft, and nothing of this version is
+implemented.
+
+- **Step 6 and the words it reads (LIP-0014 sections 8.4 and 11.1).** The
+  Amends list of section 8.4 now names rule J4.4 (c) and event 12 of the
+  table of states beside step 6 of the order of one request, whose words
+  "the checks of J4.4 on the parent and on the row" step 6 reads as naming
+  the checks that it lists. The pointer after that order in section 11.1
+  states the same: no other rule of J4.4 (a) to J4.4 (g) changes, and rule
+  J4.4 (c) and event 12 keep their words.
+- **The coin spent by the child's own anchor before the second check
+  (LIP-0014 sections 8.5 and 11.1).** Where the confirmed issuance anchor
+  of this child spends the coin of its row between step 1 and step 6, the
+  repeat refuses as `ROW_COIN_REQUIRED` (event 12), the place is held and
+  no signature of the ledger exists; the service also writes an entry of
+  the operational audit and notifies its operator that a signature exists
+  outside the ledger, as in event 39. Case S4-30b states the case with
+  S4-11 as its control.
+- **The kinds of entry (LIP-0014 section 11.1).** The entry-kind list of
+  J4.4 (g) is carried, unchanged, into the text of the table of states
+  where the kinds are referenced: the entry of a delegation key, a
+  reservation, a use of the key, a result, a reconciliation and a genesis,
+  with the words of J4.4 (g) for each.
+- **Names of working agents (key map).** By the owner's decision of
+  2026-11-16 a long-lived working agent has an `id/` name of its own, as a
+  permanent role does; a one-task executor that a grant names by key may
+  stay key-only. The scope of K2 in the key map states the decision, and
+  the flow for registering an agent's identity applies to a long-lived
+  working agent as it does to a permanent role. No new member or field is
+  stated.
+- **Two proposals, in the unresolved questions alone.** Neither is
+  normative and neither binds a reader. The first: no new key assents to a
+  child's contract; the child's contract must equal the parent's, and the
+  delegator's existing signature on it counts. The second: the agent's
+  message key is pinned in the value of the agent's own `id/` name.
+- **Left open, with both texts as they are.** The order of the count of
+  LIP-0026 R8.3: LIP-0020 W11.6 states it in force since version 0.1.53,
+  and LIP-0026 section 8 states it proposed in force with the owner's
+  explicit acceptance pending. One line of the unresolved questions names
+  the contradiction and the two ways out. Neither text changes.
+
 ## 0.1.55 — 2026-11-16
 
 Proposes one step table for a v4 child, with the codes and the order of
