@@ -181,9 +181,9 @@ row at ordinal 1. The selection changes neither the template's recipient
 constraint nor its certifier requirement. An out-of-range ordinal retains
 `CHILD_ORDINAL`.
 
-One part of this proposal has a state of its own since version 0.1.55, the
-order of the count of R8.3; section 8 states it in one place, and it awaits
-the owner's explicit acceptance as the rest does. The other parts stay
+One part of this proposal is in force since version 0.1.57, by the
+owner's decision of 2026-11-17: the order of the count of R8.3; section 8
+states it in one place. The other parts stay
 proposed and await the owner: that a verifier binds the ordinal to the
 signed template, range and coin as one signed binding, and the wording of
 the bound check.
@@ -649,27 +649,22 @@ paragraph gives, the witness key hash
 of R8.2, which follows R3.1, the smallest count of one group and one range in
 R8.4, and the rules R8.9 and R8.10 for the two signers.
 
-**The order of the count: proposed in force by version 0.1.55, the owner's
-explicit acceptance pending.** This paragraph is the one place that states
-the state of the order of the count, and every other text points here:
+**The order of the count: in force since version 0.1.57, by the owner's
+decision of 2026-11-17.** This paragraph is the one place that states the
+state of the order of the count, and every other text points here:
 proposal Q2 above, LIP-0014 section 8.4 (row F13) and the changelog. The
 decision gives a parent one ordinal across groups and ranges, and an
-ordinal names a row only under an order. The order of R8.3 is this draft's
-addition: the groups in their signed order, the ranges of a group in their
-signed order, the coins of a range by ascending output index, counted from
-1. Since version 0.1.53 LIP-0020 W11.6 states the same order for the octets
-of a parent, as text in force. Version 0.1.55 proposes that the order of
-the count is in force with it. No owner decision on the order of the count
-is recorded: the owner's order of 2026-11-16 that Grant v4 does not wait
-covers the members of the grant, as LIP-0020 section 11 says, and is not
-cited for this order. Until the owner accepts it explicitly, the order
-binds no reader by the word of this draft, and it is the part of proposal
-Q2 that awaits that acceptance first. Two rules rest on it and need it
-fixed: the ordinal of a child (R2.1, R8.8; LIP-0014 section 8.4, row F13)
-and the record that a signer keeps for each coin with its ordinal (R8.9).
-Outside this LIP the place of the reservation ledger of the signing
-service rests on it as well (LIP-0014 J4.4 (a)), through the signed order
-of LIP-0020 W11.6.
+ordinal names a row only under an order. The order of R8.3 is: the groups
+in their signed order, the ranges of a group in their signed order, the
+coins of a range by ascending output index, counted from 1. LIP-0020 W11.6
+states the same order for the octets of a parent, in force since version
+0.1.53; since version 0.1.57 the two texts have one state. Ivan Oparin
+accepted the order explicitly on 2026-11-17. Two rules rest on it: the
+ordinal of a child (R2.1, R8.8; LIP-0014 section 8.4, row F13) and the
+record that a signer keeps for each coin with its ordinal (R8.9). Outside
+this LIP the place of the reservation ledger of the signing service rests
+on it as well (LIP-0014 J4.4 (a)), through the signed order of LIP-0020
+W11.6.
 The row rule of R8.3, that each coin of a range is one row with the
 template of its group, was in force before. The other additions of the
 paragraph above keep their state.

@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.56
+**Version:** 0.1.57
 
 **Date:** 2026-11-17
 
@@ -912,6 +912,13 @@ LIP-0020 W11.6 states in force and LIP-0026 section 8 states proposed in
 force with the owner's explicit acceptance pending, with the two ways
 out. No member of the grant, no tool and no vector octet changes. Every
 LIP remains Draft, and nothing of it is implemented.
+
+Version 0.1.57 puts in force the order in which
+[LIP-0026](lips/LIP-0026-rows-and-accounts.md) R8.3 counts the rows of a
+parent, by Ivan Oparin's explicit decision of 2026-11-17. LIP-0026
+section 8 and LIP-0020 W11.6 now give that order one state, and the
+contradiction recorded by version 0.1.56 is closed. No member of the
+grant, no tool and no vector octet changes.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

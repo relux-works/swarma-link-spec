@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.57 — 2026-11-17
+
+Puts one owner decision in force and closes the contradiction that version
+0.1.56 recorded. No member of `swarma-grant/4` changes, and no octet of a
+tool or of a vector file changes. Every LIP stays a Draft, and nothing of
+this version is implemented.
+
+- **The order of the count of rows (LIP-0026 R8.3 and section 8; LIP-0014
+  section 8.4, row F13).** Ivan Oparin accepted the order explicitly on
+  2026-11-17: the groups in their signed order, the ranges of a group in
+  their signed order, the coins of a range by ascending output index,
+  counted from 1. LIP-0026 section 8 now states the order in force since
+  this version, as LIP-0020 W11.6 has stated it for the octets of a parent
+  since version 0.1.53; row F13 points to that state. The rest of proposal
+  Q2 stays proposed.
+- **Unresolved questions.** The row "Order of the count of rows (R8.3)" is
+  removed: the owner's decision answers it.
+
 ## 0.1.56 — 2026-11-17
 
 Closes three findings on the step table and the reservation ledger of
