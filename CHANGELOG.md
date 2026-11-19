@@ -4,10 +4,11 @@
 
 Net change over 0.1.60: records three owner decisions on the contract
 seal as an amendment of Draft LIP-0017, registers its proposed refusal
-code, and inserts the contract-seal check in the existing admission order.
-The limit-kind profiles, agent-session action profile and child-issuer
-companion added in 0.1.58 to 0.1.60 are retained. No member of
-`swarma-grant/4` changes, and no octet of a tool or of a vector file
+codes, and inserts the bound/framework contract-seal check in the existing
+child admission order and LIP-0030 start admission. The limit-kind profiles
+added in 0.1.58 are retained; the agent-session profile and child-issuer
+companion of 0.1.59 and 0.1.60 carry the seal check and updated controls.
+No member of `swarma-grant/4` changes, and no octet of a tool or vector file
 changes. Every LIP stays a Draft, and nothing of this version is
 implemented.
 
@@ -19,7 +20,7 @@ adoption follows LIP-0001, and no earlier order is stretched to it. What
 is decided and what is this draft's form are stated apart in each place:
 the refusal without
 a confirmed seal, at the issuer's signing service and at every verifier,
-is decided; its code name, its place in the order tables, and the two
+is decided; the code names, their place in the order tables, and the two
 scope readings below are proposals of this version.
 
 - **The seal decides termination (LIP-0017, decision C10; section 5,
@@ -42,25 +43,34 @@ scope readings below are proposals of this version.
   commits to the parts other than the clauses (section 2), therefore
   commits to a seal that already exists.
 - **No grant without a contract seal (LIP-0017, decision C12; section 5,
-  rule 7; section 6, rule 6).** A grant MUST NOT be issued under a
-  contract without a confirmed seal. The issuer's signing service checks
+  rule 7; section 6, rule 6).** A v4 grant, and a grant under a framework
+  contract, MUST NOT be issued under a contract without a confirmed seal
+  (the scope of section 6). The landed minimal v3 path needs no contract
+  seal; whether C12 reaches it is open against C8. The signing service checks
   before it signs, and every verifier at admission, each on its own node
-  in its observation, that the contract names a seal and that the node
+  in its observation, that the bound contract and any named framework
+  each name a seal and that the node
   shows it confirmed as named: the named transaction confirmed in the
   active chain, an output at the named index, and its script octet for
   octet the named script. A contract that names no seal, or whose seal
   the node does not so show, is refused by both sides with no signature
-  and no closure. One code is new, `CONTRACT_SEAL_MISSING`, counted from
-  the table of LIP-0020 section 11.11. A seal that is confirmed as named
-  and then spent is not this code: it ends the contract under rules 1 and
+  and no closure. Two proposed codes are defined once in LIP-0020
+  section 11.11: `CONTRACT_SEAL_MISSING` for no seal named or a conclusive
+  node finding, and `CONTRACT_SEAL_UNAVAILABLE`, pending, for an unknown
+  transaction or read that proves nothing. Node knowledge is established
+  before a node finding; the bound seal is checked before the framework's.
+  A seal conclusively shown confirmed as named and then spent is neither
+  code: it ends the contract under rules 1 and
   2 of section 6, and its step, code and closure stay open. A read that
-  proves nothing is given no code; no side signs or admits on it.
+  proves nothing is pending, not proof of a missing seal; no side signs or
+  admits on it. Equal chain tips alone do not imply equal read availability.
 - **Scope, as this draft reads it.** LIP-0017 section 6 is for v4 grants
   and for framework contracts and says that Grant v3 does not change
   (decision C8). Sections 5 and 6 read C11 and C12 in that scope: a
   contract that a v4 grant binds and a framework contract MUST name a
   seal, a minimal contract that a v3 grant binds needs none here, and a
-  contract that no grant binds may have none, as the last row of
+  contract under which no grant is issued and which is not a framework
+  contract may have none, as the last row of
   section 7 has it. Whether the owner meant the ban for every grant, v3
   included, against C8, and whether C11 takes the seal-less contract
   away, are open and are stated in LIP-0017 and in the unresolved
@@ -72,7 +82,8 @@ scope readings below are proposals of this version.
   and no row is added: after the contract has recomputed to the
   identifier that both grants bind, and before the findings that wait
   for a v4 contract profile, both sides judge the confirmed contract
-  seal and refuse as `CONTRACT_SEAL_MISSING`. A document that names no
+  seals and distinguish `CONTRACT_SEAL_MISSING` from a pending
+  `CONTRACT_SEAL_UNAVAILABLE`. A document that names no
   seal is reported there and not under the open code of the profile
   findings. The part that version 0.1.55 numbered (c) — a valid contract
   of its profile, mirroring the terms of each grant — is part (d) since
@@ -83,7 +94,7 @@ scope readings below are proposals of this version.
   references in LIP-0031 and the child-issuer companion now name (d);
   the W11.14 limit-kind registry introduced in 0.1.58 is unchanged. The
   vectors
-  `step-f-39` to `step-f-41` are planned on stated facts, as every result
+  `step-f-39` to `step-f-49` are planned on stated facts, as every result
   at or after part (b) is, and none is generated; none is planned for a
   spent contract seal. Because part (c) reads a node, it stands in the
   repeat of step 6 of the order of one request (LIP-0014 section 11.1)
@@ -91,16 +102,27 @@ scope readings below are proposals of this version.
   principle of that step, every check of step 1 that reads a node or a
   journal, already reaches it, so only its enumerations, there and in
   row I11 of section 8.5, are amended in place and marked there.
+  I4 lists both seal codes; case S8-33 pairs a sound fresh-read control
+  with conclusive and unavailable framework-read failures in that repeat.
+- **The start verdict (LIP-0030 C6, N1 and section 6 list 3).** The
+  0.1.58 citation is extended to the 0.1.61 F6(c), T11 and Q28 amendment.
+  The root and child check both required contract seals; the child's
+  place is F6(c), while the root remains **P** with no proposed order
+  against other root checks. Seal refusals precede the session entry,
+  debit and start order. S30-73 to S30-77 pair controls with root, child,
+  framework, unavailable-read and post-clearance negatives. N12 leaves
+  the event and stop path for a spent contract seal open.
 - **The wire registry (LIP-0020 section 11.11).** A grant gives its
   contract seal through `contract` alone: no member of `swarma-grant/4`
   names it, which the table "Which rule reads which member" now states.
-  The new code is registered beside the codes of version 0.1.55, in the
-  state of W11.11. It is no fifth comparison of W11.11, which keeps its
-  four. For a root grant the duty and the code are the same (LIP-0017
-  section 6, rule 6), and no step table fixes its place among the checks
+  The new codes are registered beside the codes of version 0.1.55, in the
+  state of W11.11. They are no fifth comparison of W11.11, which keeps its
+  four. For a root grant the duty and the codes are the same (LIP-0017
+  section 6, rule 6), and no step table fixes their place among the checks
   of a root; none is proposed.
 - **Left open.** Every form that this version marks as its own:
-  the code name and its place; the two scope readings; how a node is read for the confirmation and the
+  the code names and their place; the two scope readings; framework
+  presentation and resolution; how a node is read for the confirmation and the
   script of a contract seal against one tip; the step, the code and the
   closure for a spent contract seal; and the scripts of the four
   termination clauses, with the rest of LIP-0017's open questions.

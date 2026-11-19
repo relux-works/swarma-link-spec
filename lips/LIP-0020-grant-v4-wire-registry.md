@@ -1373,7 +1373,7 @@ this section. No rule of this table is changed here.
 | The issuer rule (LIP-0008 section 3; LIP-0021 section 7.1) | `issuer.name`, `issuer.registration`, `issuer.owner`, `issuer.grant_key`, `recent_block` |
 | The window (LIP-0008 section 7.1) and the recent block (LIP-0022 section 4) | `not_before_height`, `not_after_height`, `recent_block` |
 | The seal (LIP-0008 SB2, SB3; LIP-0024 E1.2) and the linkage output (LIP-0023 C2.3) | `seal` |
-| The contract seal (LIP-0017 section 6, rule 6) | `contract` alone: no member of the grant names the contract seal, which the contract document that `contract` binds names; its confirmation and its script are read on the side's own node, and no grant member is compared |
+| The contract seal (LIP-0017 section 6, rule 6) | `contract` alone: its document names its own seal and, where applicable, one framework contract, whose document names its own seal. Both documents are presented or resolved and recompute to their identifiers; each seal's confirmation and script are read on the side's own node. No grant member names either seal or is compared by this check |
 | The assent, the consent and the issuance (sections 7 and 8) | `genesis`, `contract`, `issuer.grant_key`, `recipient` |
 | A recipient by name (LIP-0008 section 3.1; LIP-0021 section 7.2) | `recipient.name`, `recipient.owner` |
 | The executor and the action (LIP-0008 section 4) | `executor`, `actions` |
@@ -1388,8 +1388,8 @@ this section. No rule of this table is changed here.
 
 Before version 0.1.55 no text named a v4 code for the last row, and no rule
 said whether a child binds the contract of its parent. Version 0.1.55
-proposes both in W11.11. The table above is unchanged, and no member
-changes.
+proposes both in W11.11. That version changed no row of the member table;
+version 0.1.61 adds the contract-seal row. No member changes.
 
 W11.11 (proposed by version 0.1.55). A child lies within its parent in four
 comparisons of signed octets. Each is made by the signing service before
@@ -1460,8 +1460,8 @@ LIP-0014 section 8.4 for what a refusal leaves behind.
 | Code | What it reports | Step | Again | Defined by | State |
 | --- | --- | --- | --- | --- | --- |
 | `CHILD_CONTRACT_DIFFERS` | The member `contract` of a child differs from that of its parent | F5 | no | W11.11, rule 1 | New code, new rule |
-| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind | F6, part (a) | input | LIP-0014 section 8.4, rule T1 | New code, new rule |
-| `CONTRACT_ID` | The presented contract document does not recompute to the identifier that the grants bind (LIP-0017 section 2). Not computable until a v4 contract profile fixes the preimage | F6, part (b) | no | LIP-0014 section 8.4, rule T1 | New code, new rule |
+| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind, or, since the proposal of 0.1.61, for the framework identifier that document names | F6, part (a) | input | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework presentation added by 0.1.61 |
+| `CONTRACT_ID` | A presented document does not recompute to its required identifier: the bound contract to the identifier of the grants, and, since the proposal of 0.1.61, the framework contract to the identifier the bound document names (LIP-0017 section 2). Not computable until a v4 contract profile fixes the preimage | F6, part (b) | no | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework recomputation added by 0.1.61 |
 | `CHILD_NOT_LIVE` | A child that its own closure or its own window refuses: a journaled closure, a window that opens below its recent block, a window that has not opened, a window that has ended, a spent seal | F20, F21 | closed for a closure and a validated spend; state for the window | LIP-0014 section 8.4, rule T3 | New code for rules of LIP-0008 sections 5.1 and 7.1 |
 | `ACTION_UNDEFINED` | A request for an action that no type profile of the executor defines | E1 | no, under one profile | W11.14, rule 1 | New code for the rule of W11.4 |
 | `LIMIT_KIND_UNDEFINED` | A limit of a child or of its row whose kind has no type profile at the side; a request that consumes a kind without a profile | F17, part (b); E2 | no, under one set of profiles | W11.14, rule 2; LIP-0014 section 8.4, rule T9 | New code for the rule of W11.4 |
@@ -1482,25 +1482,27 @@ section 3.4, which reports the same relation between a child and its
 parent for a text hash. `CONTRACT_NOT_PRESENTED` reports a missing input
 and no finding about a contract.
 
-**Code of version 0.1.61.** One further code is registered here, for a
-checker, proposed with the row that reports it and reported by no
-pipeline of section 9. It is no fifth comparison of W11.11: the four
-above compare a child with its parent on their signed octets, and this
-one holds a grant, root or child, against the seal of the contract that
-it binds, which no member of the grant names. At the admission of a
-child it stands where the path is held against that one contract,
-between the recomputed identifier and the open findings that wait for a
-v4 contract profile (LIP-0014 section 8.4, row F6 and rule T11). For a
-root grant, LIP-0017 section 6, rule 6, states the same duty of the
-issuer's signing service and of every verifier and this table gives it
-the same code; no step table of a root admission fixes its place against
-the other checks of a root, and none is proposed here.
+**Codes of version 0.1.61.** Two further codes are defined here, for a
+checker, proposed with the row that reports them and reported by no
+pipeline of section 9. They are no fifth comparison of W11.11: the four
+above compare a child with its parent on their signed octets. This check
+holds a root or child against the seals of its bound contract and, where
+named, its framework contract, in that order. Both documents are presented
+or resolved and recomputed before any seal read. Within each seal check,
+no seal named refuses first without a node read; otherwise an inconclusive
+read is pending, and only a conclusive read judges confirmation, index
+and script. At a child this is F6(c), after document recomputation (b)
+and before the open profile findings (d) (LIP-0014 section 8.4, rule T11).
+For a root, LIP-0017 section 6, rule 6, states the same duty and codes;
+their place against other root checks remains open, including in
+LIP-0030 C6 (**P**, no root order proposed).
 
 | Code | What it reports | Step | Again | Defined by | State |
 | --- | --- | --- | --- | --- | --- |
-| `CONTRACT_SEAL_MISSING` | The contract that the grant binds names no contract seal, or the side's own node does not show the named seal confirmed as named in its observation: the named transaction not confirmed in the active chain, no output at the named index, or an output with another script than the contract names. A seal that is confirmed as named and spent is not this code, and its spend gets no step or code here. At an issuer no signature exists | F6, part (c) | no where the document names no seal; state where the node decides; no closure in either case | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The refusal, at the signing service and at every verifier, is decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17); the co-author agrees and leaves the judgement to Ivan. The code name and its step are new proposals of version 0.1.61 |
+| `CONTRACT_SEAL_MISSING` | The bound contract or its named framework contract names no seal; or a conclusive own-node read in this observation proves its named transaction not confirmed in the active chain (a held mempool-only transaction included), no output at the named index, or another script. An unknown transaction or inconclusive read never gives this code. A confirmed-as-named seal that is spent is not this code; its spend gets no step or code here. No signature or admission | F6, part (c) for a child; root place open | no where no seal is named; state for a conclusive node finding; no closure | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The refusal at both sides is decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17); the co-author agrees and leaves the judgement to Ivan. The code name and step are proposals of 0.1.61 |
+| `CONTRACT_SEAL_UNAVAILABLE` | A seal is named in the bound contract or its named framework contract, but the own-node read proves nothing about its confirmation, index or script, including a named transaction unknown to that node. It proves neither absence nor a spend, even when another node can read a confirmed-and-spent transaction. No signature or admission | F6, part (c) for a child, before classifying a node finding as missing; root place open | pending; no closure | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The code name, retry mark and step are proposals of 0.1.61; unavailable data permits no effect under LIP-0008 section 4, step 3 |
 
-The name is chosen against the same neighbours: it is not `SEAL_OUTPUT`,
+The names are chosen against the same neighbours: neither is `SEAL_OUTPUT`,
 `SEAL_SCRIPT` or `SEAL_PROFILE`, which report the seal that a grant itself
 names in its member `seal` (LIP-0008 SB2), and not `CONTRACT_ID` or
 `CONTRACT_NOT_PRESENTED`, which report the document. One name covers the
@@ -1807,10 +1809,11 @@ list
 `not_exercised` stand as they were made for version 0.1.53: not one octet
 of the file changes with version 0.1.55, and the list names the four codes
 of the table above and not the later ones. LIP-0014 section 8.7 plans the
-vectors of the steps. Version 0.1.61 adds `CONTRACT_SEAL_MISSING` to that
-list in the same state: a check of a signing and of an admission, which
-the pipeline reports not, with no vector here and its plan in LIP-0014
-section 8.7.
+vectors of the steps. Version 0.1.61 adds `CONTRACT_SEAL_MISSING` and
+`CONTRACT_SEAL_UNAVAILABLE` to the later codes that list does not name:
+checks of a signing and of an admission, which the pipeline reports not,
+with no vector here and their plan in LIP-0014 section 8.7. The file's
+`not_exercised` list is unchanged.
 
 The document step has four vectors on the octets of a grant beside those of
 section 10: a signed form that stops before its last octet (`WIRE_JSON`), a

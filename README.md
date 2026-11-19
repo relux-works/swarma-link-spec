@@ -1066,27 +1066,37 @@ every reader, renderer and user interface shows it from the seal script,
 never from prose, and a prose clause on termination ends nothing
 (section 5, rule 6; section 6, rule 7). Drafting a contract starts with
 creating its seal, which is confirmed before the contract is signed. And
-no grant is issued under a contract without a confirmed seal: the
-issuer's signing service checks before it signs and every verifier at
-admission, each on its own node, that the contract names a seal and that
-the node shows it confirmed with the named script, and both refuse
-without it. This draft names that refusal `CONTRACT_SEAL_MISSING` and
-puts it, for a v4 child, in part (c) of row F6 of
+in the scope of section 6, no v4 grant or grant under a framework contract
+is issued without the required confirmed seals. The issuer's signing
+service and every verifier check the bound contract and any framework it
+names, each on its own node. The draft distinguishes a missing seal proved
+by the document or a conclusive read (`CONTRACT_SEAL_MISSING`) from an
+unknown transaction or inconclusive read (`CONTRACT_SEAL_UNAVAILABLE`,
+pending); neither permits a signature or admission or records closure.
+The codes are defined once in LIP-0020 section 11.11. For a v4 child their
+check is part (c) of row F6 of
 [LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.4
-(rule T11, pair Q28, case S8-30), registered in
+(rule T11, pair Q28, cases S8-30 to S8-32), registered in
 [LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) section 11.11; the
 part that was (c), the valid contract and the mirror of a grant's terms,
-is part (d) since this version. The code name and that place are this
+is part (d) since this version. The code names and that place are this
 version's proposals; the refusal and its two sides are the decision. The
 draft reads the ban in the scope that section 6 already has, v4 grants
 and framework contracts, so Grant v3 does not change, and it keeps the
-contract that no grant binds free to have no seal; whether the decisions
+contract under which no grant is issued and which is not a framework
+contract free to have no seal; whether the decisions
 reach either is open and is stated in LIP-0017 and in
 [UNRESOLVED_QUESTIONS.md](UNRESOLVED_QUESTIONS.md). Also open: how a node
 is read for the confirmation and the script against one tip; the step,
 the code and the closure for a contract seal that is confirmed and then
 spent, which is never this code; and the place of the check at the
-admission of a root grant, for which no step table exists. No member of
+admission of a root grant, for which no step table exists. LIP-0030 C6,
+N1 and its borrowed-code table now carry the admission duty, with the
+child's F6(c)/T11/Q28 amendment and no proposed root order. Framework
+presentation/resolution and a contract-seal-driven end of an existing
+agent session remain open. The default stated facts and paired controls
+in both admission profiles include both required seals; their traces
+and planned vectors are not executed protocol conformance. No member of
 `swarma-grant/4` names a contract seal, no octet of a grant changes, and
 the vectors of the new part are planned on stated facts and not
 generated. Every LIP remains Draft, and nothing of this version is

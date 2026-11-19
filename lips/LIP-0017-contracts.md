@@ -33,8 +33,9 @@ reader from the seal's script and never from prose; drafting a contract
 starts with creating its seal; and no grant is issued under a contract
 without a confirmed seal (sections 5 and 6).
 
-The LIP records Ivan Oparin's decisions of 2026-11-14 and, since this
-amendment, of 2026-11-17. On C10 to C12, the co-author agrees and leaves
+The LIP records Ivan Oparin's decisions of 2026-11-14, for which the
+co-author's agreement is pending, and, since this amendment, of 2026-11-17.
+On C10 to C12, the co-author agrees and leaves
 the judgement to Ivan (source below). It proposes semantics without
 canonical bytes, and nothing of it is implemented.
 
@@ -76,8 +77,9 @@ identifier, the two action numbers, the checks of a reader and their order,
 the limit of one framework contract above a contract, and, in section 8,
 which contracts must carry the configuration hash and what a reader and a
 launcher refuse. Of the amendment of 2026-11-17 the same holds for its
-form: the name of the new refusal code, `CONTRACT_SEAL_MISSING` (section 6),
-its place in the order tables of LIP-0014 section 8.4 and LIP-0020
+form: the refusal codes `CONTRACT_SEAL_MISSING` and
+`CONTRACT_SEAL_UNAVAILABLE` (section 6), their place in the order tables of
+LIP-0014 section 8.4 and LIP-0020
 section 11.11, and the readings in sections 5 and 6 that state the scope
 of C11 and C12 against Grant v3 and against a contract without a grant,
 whose questions the open questions below name. The refusal itself, and
@@ -144,7 +146,7 @@ their bytes come with a profile (LIP-0018).
 | Clauses | An ordered list. A clause holds free text, or machine members, or both. |
 | Salts | One random value for the contract and one for each clause (section 2). |
 | Framework | Optional. The identifier of the one framework contract that this contract stands under (section 5). |
-| Seal | The contract's own seal (section 6). Required in a contract under which a v4 grant is issued and in a framework contract (decision C12); a contract that no grant binds may have none. Its script gives the contract's termination type, a machine member that a reader derives from the script (decision C10, section 6). |
+| Seal | The contract's own seal (section 6). Required in a contract under which a v4 grant is issued and in a framework contract (decision C12); a contract under which no grant is issued and which is not a framework contract may have none. Its script gives the contract's termination type, a machine member that a reader derives from the script (decision C10, section 6). |
 | Assent output | Optional. The output whose spend shows assent on chain (section 4). |
 | Configuration | The hash of the configuration manifest that the parties agreed on. The profile of a contract under which the platform starts an agent requires it; other contracts carry none (section 8). |
 
@@ -276,10 +278,14 @@ open.
    different things, the script decides what is shown and what ends the
    contract, and the prose binds the parties as text alone. A contract
    that names no seal has no termination type to show, and a reader MUST
-   NOT supply one from its prose.
+   NOT supply one from its prose. A stored type member that disagrees with
+   the script does not override the type derived from the script.
 7. **No grant without a contract seal.** By decision C12 of 2026-11-17 a
-   grant MUST NOT be issued under a contract without a confirmed seal.
-   Section 6 states the check, its scope and its refusal code: the
+   v4 grant, and a grant under a framework contract, MUST NOT be issued
+   under a contract without a confirmed seal (the scope of section 6).
+   A minimal contract of the landed v3 path still needs no contract seal;
+   whether C12 reaches v3 as well is open against decision C8.
+   Section 6 states the check, its scope and its refusal codes: the
    issuer's signing service makes it before it signs, and every verifier
    makes it at admission, each deterministically on its own node. A
    contract without a seal, or whose named seal the node does not show
@@ -297,8 +303,9 @@ contract names it.
 By decision C12 of 2026-11-17 a contract in the scope of this section —
 a contract under which a v4 grant is issued, and a framework contract —
 MUST name a seal of its own: an output, given by transaction, index and
-script, that is confirmed before the contract is signed. A contract that
-no grant binds MAY name one and MAY have none; whether decision C11 takes
+script, that is confirmed before the contract is signed. A contract under
+which no grant is issued and which is not a framework contract MAY name
+one and MAY have none; whether decision C11 takes
 that choice away is open (see "Open questions"). Grant v3 does not change,
 as the paragraph above says: a minimal contract that a v3 grant binds
 needs no contract seal under this section, and whether C12 is meant to
@@ -306,8 +313,8 @@ reach v3 as well, against decision C8, is open there too. By decision C11
 drafting a contract starts with creating its seal. In the scope above
 that is an order, not a style: the parties first create the seal output,
 whose script fixes the termination type below; the contract then names
-that output, and it is signed only once the output is confirmed, as a
-seal exists before its grant (LIP-0008 section 9). A contract therefore
+that output, and it is signed only once the output is confirmed, as
+decision C8 requires for the contract's own output. A contract therefore
 never waits for a seal that is still to be made, and its identifier,
 which commits to the parts other than the clauses (section 2), commits
 to a seal that already exists on the chain. The script of the seal is
@@ -352,28 +359,38 @@ output, a LIP-0005 frame with a new action:
    in the scope of this section is signed, the issuer's signing service
    MUST check, and at every admission every verifier MUST check, each on
    its own node and in the observation of that signing or admission, that
-   the contract that the grant binds names a contract seal and that the
-   seal is confirmed as named: the named transaction is confirmed in the
-   active chain, it has an output at the named index, and the script of
-   that output is, octet for octet, the script that the contract names.
-   The check is deterministic: the same contract document, read against
-   the same confirmed chain, gives the same answer at every side, and no
-   side takes the fact from the party that presents the grant or asks for
-   the signature. Where the contract names no seal, or the node shows no
-   such confirmed output, or the output's script is another script, the
-   signing service MUST NOT sign the grant and a verifier MUST refuse it,
-   both as `CONTRACT_SEAL_MISSING`. The name of the code is this draft's
-   proposal; the refusal, and that both sides make it, are the decision.
-   Its place at the admission of a v4 child is part (c) of row F6 of
-   LIP-0014 section 8.4, registered in LIP-0020 section 11.11; the place
-   is the draft's proposal of that amendment. The refusal records no
-   closure: nothing has ended, the contract was never in a state to carry
-   the grant. A seal that is confirmed as named and then spent is not
-   this code: it ends the contract under rules 1 and 2 above, whose
-   closure and code in an order table stay open below. A read that proves
-   nothing shows no confirmed seal either: no side signs or admits on its
-   strength, as unavailable data never permits an effect (LIP-0008
-   section 4, step 3), and this rule assigns it no code of its own.
+   the contract that the grant binds and, where it names one, its
+   framework contract each name a contract seal confirmed as named.
+   Both complete documents must be presented or resolved and recompute
+   to their respective identifiers before any seal is read. The form of
+   that presentation and resolution remains open below. The side checks
+   the bound contract first, then its framework contract. For each, a
+   seal is confirmed as named when the named transaction is confirmed in
+   the active chain, it has an output at the named index, and the script
+   of that output is, octet for octet, the script that its contract names.
+   No side takes these facts from the party that presents the grant or
+   asks for the signature. The same documents against the same confirmed
+   chain give the same answer and code where both nodes can read those
+   facts; equal chain tips alone do not imply equal availability.
+
+   The two refusal codes and their retry marks are defined once in
+   LIP-0020 section 11.11. For each contract, no seal named gives
+   `CONTRACT_SEAL_MISSING` without a node read. With a seal named, the
+   side first establishes whether its node read is conclusive. A named
+   transaction unknown to the node, or any read that proves nothing,
+   gives `CONTRACT_SEAL_UNAVAILABLE`, pending, and never establishes
+   absence. Only a conclusive read can give `CONTRACT_SEAL_MISSING` for
+   a transaction not confirmed in the active chain (mempool only
+   included), no output at the named index, or another script. In either
+   refusal the signing service MUST NOT sign and a verifier MUST NOT
+   admit; neither refusal records a closure. The code names and their
+   order are this draft's proposal; the refusal at both sides is C12.
+   At a v4 child this check is part (c) of row F6 of LIP-0014 section 8.4,
+   after both documents recompute in (b) and before the open profile
+   findings of (d). A confirmed-as-named seal that is spent is neither
+   refusal: it ends the contract under rules 1 and 2 above, whose step,
+   code and closure stay open below. An unavailable read of such a
+   transaction still proves nothing and is pending, not a missing seal.
 7. **The type that is shown (decision C10).** A reader, a renderer and a
    user interface derive the termination type from the script of the
    named seal, by the script forms of the contract's profile, and show
@@ -381,7 +398,7 @@ output, a LIP-0005 frame with a new action:
    prose states beside a seal of another type is not shown instead and
    not shown beside it as an alternative. The exact scripts of the four
    rows are open (see "Open questions"), so which script gives which row
-   is fixed with those scripts; until then no reader classifies a script
+   is fixed with those scripts. No reader classifies a script
    that its profile does not give a form, and it has no type to show for
    it. This rule assigns that case no code.
 
@@ -405,7 +422,7 @@ The scenarios show which objects each kind of contract uses:
 | Scenario | Parties | Contract | Grants under it | Who can end it |
 | --- | --- | --- | --- | --- |
 | Rental of an agent | A renter and the operator who rents the agent out | The booking contract, with the price, the period and the limits | At least a TEXT grant and an EFFECT grant, each for the whole term (LIP-0008 section 2.1) | By the contract seal, as its script states; the issuer also by the seal of each grant |
-| Trust between the agents of two owners | A principal and an agent of another owner | A trust contract (LIP-0013) | One grant; under LIP-0014 also child grants | The issuer, by the seal of the grant |
+| Trust between the agents of two owners | A principal and an agent of another owner | A trust contract (LIP-0013) | One grant; under LIP-0014 also child grants | On v4, by the contract seal as its script states; the issuer also by each grant's seal. On v3, the issuer by the grant's seal |
 | Services between two companies | Two companies | A framework contract for a year, anchored under section 3 | One grant for each order, each inside the year | Either company, when the termination clause says "either party" |
 | Employment | A company and a person | A framework contract for the employment | Grants that let the person, or the person's agent, act on the company's resources | The parties together, or an arbiter, when the clause says so |
 | An agreement without a grant | Alice and Bob | A contract with two signatures and an anchor | None | Nothing ends it early; it has no seal |
@@ -524,8 +541,11 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 | A contract of profile `/1` whose window equals the grant's | A `/1` contract with another window refuses as `CONTRACT_MISMATCH`, as today. |
 | A contract of three clauses; the second is disclosed with its salt and with the commitments of the other two, and the identifier recomputes | A changed clause, a wrong salt and commitments in another order do not recompute. |
 | A v4 grant under a contract whose seal is unspent | The contract seal spent, in the mempool or in a block: every grant under the contract refuses, while the seal of each grant is unspent. |
-| A v4 grant under a contract whose named seal is confirmed in the active chain with the named script: the signing service signs and a verifier passes this check | The contract names no seal; the named transaction is unconfirmed or unknown; it has no output at the named index; the output has another script: each refuses as `CONTRACT_SEAL_MISSING` at the signing service, with no signature, and at a verifier, with no closure. A seal confirmed as named and spent is not this code. |
-| A contract whose prose and whose seal script give the same termination type: the reader shows that type | Prose that names another type than the seal script: the reader shows the type of the script, and the prose ends nothing. A contract with no seal: no type is shown from its prose. |
+| A v4 grant under a presented, identifier-valid contract whose named seal is confirmed in the active chain with the named script: the signing service passes this check and a verifier passes it | No seal named; a held transaction only in the mempool; no output at the named index; another script: each gives `CONTRACT_SEAL_MISSING` at both sides, no signature and no admission or closure. A seal confirmed as named and spent is not this code. |
+| The same valid control with a conclusive own-node read of the named transaction | The named transaction is unknown to the node, including a pruned confirmed-and-spent transaction, or the read proves nothing: `CONTRACT_SEAL_UNAVAILABLE`, pending, no signature, admission or closure; never infer a missing seal or a spend from that read. |
+| The bound contract and its named framework contract are both presented, recompute, and each has its named seal confirmed as named | With the bound contract unchanged, the framework names no seal, has a held mempool-only transaction, no output at the named index, or another script: `CONTRACT_SEAL_MISSING`. Its named transaction is unknown: `CONTRACT_SEAL_UNAVAILABLE`, pending. Neither side signs or admits on any of these negatives; no closure. |
+| A minimal landed v3 contract without a framework and without a contract seal remains valid under its existing profile | Applying section 5 rule 7 to refuse that control is forbidden; removing the confirmed seal from an otherwise valid v4 contract instead gives `CONTRACT_SEAL_MISSING`. |
+| A contract whose prose and whose seal script give the same termination type: the reader shows that type | Prose or a stored type member that differs from the script never overrides it. With no seal, or a script outside every form of its profile, no type is shown and none is supplied from prose. This remains true after the four script forms are fixed. |
 | A termination frame that the signatures on the seal input cover | A frame in another transaction, and one that the signatures do not cover: the contract is ended by the spend, and the frame is no evidence. |
 | An anchor that spends the assent output that the contract names | An anchor that spends another output shows no assent on chain; the signatures of the contract stand. |
 | A grant under a contract that names a framework contract, all three windows nested | A contract whose window reaches outside its framework contract refuses, and so does a framework contract that names another one. |
@@ -556,7 +576,8 @@ None while this LIP is a Draft. A future vector set pairs these controls:
   contracts — so a minimal v3 contract needs no contract seal here. If
   the owner meant every grant, the v3 profiles change, and no text says
   how.
-- Whether decision C11 leaves a contract that no grant binds free to
+- Whether decision C11 leaves a contract under which no grant is issued
+  and which is not a framework contract free to
   have no seal, as the last row of section 7 has it, or takes that choice
   away, so that every contract is drafted from a seal and every contract
   has a termination type. Sections 5 and 6 state the first reading and
@@ -567,5 +588,14 @@ None while this LIP is a Draft. A future vector set pairs these controls:
   and no read for them, as the reads for other seals are open in their
   profiles.
 - Refunds at an early end, which LIP-0011 leaves to the contract.
+- How the full framework document is presented or resolved at signing
+  and admission, and how its identifier is recomputed with the bound
+  contract's under their accepted profiles. The requirement applies to
+  both documents; unavailable presentation or recomputation never permits
+  signing or admission. For a child, F6(a) and (b) carry these requirements;
+  no transport or canonical framework bytes are fixed here.
+- How a validated spend of either required contract seal ends an existing
+  LIP-0030 session, with its event, verdict, stop path and closure. C6 and
+  N1 carry the signing/admission check, not this session-ending event.
 - The bytes of a configuration manifest, how a launcher recomputes its
   hash, and the list of systems that an agent may use.
