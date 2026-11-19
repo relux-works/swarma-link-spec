@@ -198,7 +198,7 @@ Existing account-password custody for an explicitly selected daemon E2EE/UIA rou
 
 The journal's schema, transaction states, limits and nonsecret receipt preimage belong to the enrollment implementation contract; no octet schema is declared by these logical clauses. Prove bounds fit or refuse before the remote effect, never truncate. Buffer handling must state actual ownership/copies and cannot promise erasure of immutable strings, OS snapshots or memory outside its custody.
 
-The required session policy, the finite public write set, native management-code admission, the place and form of public publication, and the custody of the homeserver registration credential are not defined here. Until the owning keyvault interface defines the first four and the owners decide the last, no side completes P-ENROLL-1 and enrollment refuses before network submission.
+The required session policy, the finite public write set, native management-code admission, the place and form of public publication, and the custody of the homeserver registration credential are not defined here, and the owners have not decided the custody of the new account's token. Until the owning keyvault interface defines the first four and the owners decide the custody of the homeserver registration credential and of the new account's token (B2), no side completes P-ENROLL-1 and enrollment refuses before network submission.
 
 Replacement condition: accepted enrollment text in the owning keyvault interface, together with the owners' custody decision for the homeserver registration credential and the new account's token, replaces P-ENROLL-1 to P-ENROLL-4 in one revision that cites both sources. A build against these proposed clauses is not that acceptance.
 
