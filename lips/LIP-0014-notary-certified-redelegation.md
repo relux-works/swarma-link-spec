@@ -1468,7 +1468,7 @@ of a child is the row that its ordinal selects (LIP-0026 R8.3, R8.8).
 | F8 | The subject: `genesis` of `C` equals `genesis` of `P` | Signed octets | both | One chain along the path | `SUBJECT_MISMATCH` (rule T2) | no | The keys, the rows | Carried rule: LIP-0008 section 12.2, "The subject MUST remain constant". **NEW** code assignment and place (LIP-0020 W11.11, rule 4; rules T2 and T4; pair Q8) |
 | F9 | The keys of the parent, J4.3 (a): the delegation key differs, by x coordinate, from `issuer.grant_key`, from `recipient.key` or `recipient.owner`, from `issuer.owner`, from the `owner` of every entry of `notaries` and from `seal.key` of `P` | Signed octets of `P` | both | `P` is usable as a parent under J4.3 (a) | `DELEGATE_KEY_REUSE` | no | The child-seal key; the rows | Carried: J4.3 (a), which LIP-0020 section 11 carries for a reader of `swarma-grant/4`; the place is that of V7 (section 11.1) |
 | F10 | The child-seal key of the parent: first `delegate.child_seal_key` is present (CS1); then it differs, by x coordinate, from the delegation key and from the keys of F9 (CS3) | Signed octets of `P` | both | `P` names a child-seal key that no other role holds | CS1: `CHILD_SEAL_KEY`. CS3: `DELEGATE_KEY_REUSE` | no | The seal of `C`; the rows | Carried rules: CS1 and CS3, which LIP-0020 section 11 carries. **NEW**: the place and the inner order, the key present before it is compared (pairs Q9 and Q10) |
-| F11 | The keys of the child, J4.3 (b), as far as no attestation is read: the delegation key differs, by x coordinate, from `seal.key` of `C`, from `recipient.key` or `recipient.owner` of `C`, and then, where `P` names its recipient by name, from every channel key that the value of that name yields. That value is the one that part 7.3 of F7 read in this observation, and F11 makes no read of its own. The comparison with the attestation key of the row's notary stands in F23 | Signed octets of `P` and `C`; the value of the name of `P`'s recipient as part 7.3 read it | both | The delegation key holds no second role at this admission | `DELEGATE_KEY_REUSE`, without closure | no for the octets; state for a channel key | The rows; the attestation | Carried: J4.3 (b) at the place of V7. **Amends** section 11.1 for the one comparison that moves to F23 (pair Q18) |
+| F11 | The keys of the child, J4.3 (b), as far as no attestation is read: the delegation key differs, by x coordinate, from `seal.key` of `C`, from `recipient.key` or `recipient.owner` of `C`, and then, where `P` names its recipient by name, from every channel key that the value of that name yields. That value is the one that part 7.3 of F7 read in this observation, and F11 makes no read of its own. PROPOSED: Where that value yields no key for a channel under LIP-0010 section 4, the channel gives no key to compare, and the comparison passes. The sentence of LIP-0010 section 5, "every step that needs the agent key refuses", names the steps that authenticate under that key (A1; LIP-0008 section 3.1), and not this comparison. A value that a reader refuses under LIP-0010 section 2 (rules 1 and 2; decision D5) yields no set of keys: F11 refuses, records no closure, and the code is open (open point O9). The comparison with the attestation key of the row's notary stands in F23 | Signed octets of `P` and `C`; the value of the name of `P`'s recipient as part 7.3 read it | both | The delegation key holds no second role at this admission | `DELEGATE_KEY_REUSE`, without closure | no for the octets; state for a channel key; state, with the code open, for a value that is refused | The rows; the attestation | Carried: J4.3 (b) at the place of V7. **Amends** section 11.1 for the one comparison that moves to F23 (pair Q18) |
 | F12 | The seal key of the child, CS2 as far as octets decide it: `seal.key` of `C` equals `delegate.child_seal_key` of `P`, octet for octet, the parity octet included | Signed octets | both | The seal key that `C` states is the child-seal key of `P` | `CHILD_SEAL_KEY` | no | The rows; the script of the seal on a node (F21) | Carried: CS2 and LIP-0008 SB1, "for a child the seal public key is the child-seal key of its parent". **NEW** in two points (rule T5): CS2 is split between this row and F21, and the equality includes the parity octet. **Amends** case S4-9 of section 11.2, whose first refusal now names the key that the child states (rule T5) |
 | F13 | The row of the child, in two parts in this order. (a) The ordinal lies between 1 and the number of rows of `P`, the sum of the counts of all its ranges. No template is read before this. The ordinal then selects the group, the range and the coin (LIP-0026 R2.1, R8.3, R8.8). (b) The selected group and the selected range meet rules 4 and 5 of LIP-0020 W11.10: the template of that group, and that range with its `stop` | `ordinal` of `C`; the `count` of every range of `P`; for (b) the template of the selected group and the selected range | both | The row of `C` is known, and its group and its range are well-formed | (a) `CHILD_ORDINAL`. (b) `GRANT_DELEGATE`; a proposal point of rule 5 of W11.10 keeps its two outcomes. A finding of rules 2 and 6 to 8 of W11.10, whether or not octets of the selected group or range take part in it, and a finding of rules 4 and 5 in another group or range: open point O7 | no | Whether `C` fits the template (F14 to F18); the coin on a node | Carried for (a): the bound and its code are LIP-0026 R2.1 (J1.2). The order of the count that makes an ordinal name a row is that of R8.3; LIP-0026 section 8 states its state in one place: in force since version 0.1.57, by the owner's decision of 2026-11-17. LIP-0020 W11.6 states the same order for the octets of a parent. The selection of R8.8 is the text of proposal Q2 of LIP-0026, and that a verifier binds the ordinal to the signed template, range and coin as one signed binding is the other pending part of that proposal; the row has that state. For (b) the rules are carried: rules 4 and 5 of W11.10, which "every reader" of LIP-0020 section 11 judges, with the state that section gives them. **NEW** (rule T10): their place here at an admission, for the group and the range of the child alone, which is what the profile in force has a verifier check (LIP-0026 section 8) |
 | F14 | The executor of `C` is that of the template of its row: the same name and the same key (R2.2) | Signed octets | both | `C` names the executor of its row | `CHILD_AGENT_NOT_ALLOWED` | no | The recipient, the limits | Carried: LIP-0026 R2.2 and R2.5 (J1.2) |
@@ -1643,9 +1643,11 @@ A pair is called carried only where the cited sentence states the order.
 Every order that this subsection takes from the sequence of a list, or
 chooses, is marked **NEW** in its row and its pair.
 
-**Open points.** Eight points stay open. No case of section 8.6 and no
+**Open points.** Nine points stay open. No case of section 8.6 and no
 vector of section 8.7 may hold a defect, or a pair of defects, whose first
-code or whose verdict depends on one of them. For O1, O2, O3, O5 and O6
+code or whose verdict depends on one of them, except that `step-f-51`
+states only the proposed refusal at F11, not the code left open by O9.
+For O1, O2, O3, O5, O6 and O9
 the verdict is fixed, a refusal, and its code or its first code is not;
 for O4 no side completes the predicate; for O7 two outcomes conform; and
 for O8 the cutoff that a signing service applies is not determined.
@@ -1660,6 +1662,7 @@ for O8 the cutoff that a signing service applies is not determined.
 | O6 | The place of the classification of a validated spend of a seal (`CHILD_NOT_LIVE`, `PARENT_NOT_LIVE`; closed) against the blocs (w) and (i). LIP-0008 SB3 orders it after bloc (s) and the signature and against nothing else | F21; part 7.6 of F7 | The profile of the seal and the issuance, with O1 |
 | O7 | What a side does, at the admission of a child, with a finding of rules 2 and 6 to 8 of LIP-0020 W11.10, whether or not octets of the group or the range of the child take part in the finding, and with a finding of rules 4 and 5 in another group or range. A finding of rules 2 and 6 to 8 can be caused by the coin of the selected range itself, which is the outpoint of the seal, meets another range or shares its stop coin, and by the pool sum, which is taken over the selected group as well; it is held here all the same, and no row of this table judges it. Two outcomes conform until the owner decides proposal Q1 of LIP-0026: a side that judged the rule refuses in F13, part (b), as `GRANT_DELEGATE`, and a side that judges rules 4 and 5 for the group and the range of its child alone goes on. The two sides of one path may therefore differ on such a parent, a parent whose defect is the child's own coin included. LIP-0020 W11.10 leaves that question to the pending proposal and states two outcomes only for its two proposal points | F13, part (b); rule T10 | The owner's decision on proposal Q1 of LIP-0026 |
 | O8 | The class of action under which the signing service judges `TIP_AGE`. LIP-0022 B3.6 measures the age of the tip against the class of the action of a request, and at `ISSUE` there is no request | F3 at `ISSUE`; section 8.5, I3 | A line of LIP-0022 or of the owners on the class of signing a child |
+| O9 | The code when the reader refuses the value of the parent's recipient name under LIP-0010 section 2. The proposed verdict is refusal without closure, not a comparison with an empty set of keys | F11 | A decision on the refusal code |
 
 What the table does not decide: whether the key that signs children may run
 under the OS user of the delegating agent; which product holds the
@@ -1678,7 +1681,7 @@ are the reservation ledger of section 11.1 (J4.4 (a) to J4.4 (g)), to which
 section 8.5 points.
 
 The [Source-contract companion](LIP-0014-source-contract-proposals.md)
-collects proposed resolutions of these eight points, T1/profile inputs,
+collects proposed resolutions of O1 to O8, T1/profile inputs,
 identity latching and the enrollment boundary (section 2.4). For the state
 of the R8.3 count order, see LIP-0026
 section 8. The remaining LIP-0026 proposal Q2 stays **PROPOSED**. The
@@ -2036,6 +2039,8 @@ claim executable contract-profile or node-read coverage.
 | `step-f-47` | stated facts | Bound contract valid; the named framework's seal transaction is unknown, once per side; control beside each: that node conclusively reads both seals confirmed as named | `CONTRACT_SEAL_UNAVAILABLE`, pending; controls pass (c) | F6(c); S8-32 |
 | `step-f-48` | stated facts | Framework document not presented, then presented with a non-recomputing identifier; controls beside each: both documents presented and recomputing with confirmed-as-named seals | `CONTRACT_NOT_PRESENTED`; `CONTRACT_ID`; controls pass F6 | F6(a), (b); S8-32 |
 | `step-f-49` | stated facts | Bound seal absent plus unavailable framework read; bound read unavailable plus framework seal absent. Controls beside each: both seals confirmed as named | `CONTRACT_SEAL_MISSING`; `CONTRACT_SEAL_UNAVAILABLE`, pending; controls pass (c) | F6(c); bound contract before framework; S8-32 |
+| `step-f-50` | stated facts | The octet comparisons pass. Part 7.3 read the name of `P`'s recipient; its value is accepted with no `nostr` member and yields no channel key. Control: change only the value so that it yields the delegation key | PROPOSED: F11 passes for no key; key equal to the delegation key gives `DELEGATE_KEY_REUSE`, state, without closure | F11 |
+| `step-f-51` | stated facts | With the same passing octet comparisons and owner proof, the value has two top-level `nostr` members: the first holds a different valid key and the second holds the delegation key. Control: remove the second member | PROPOSED: F11 refuses the whole value, state, without closure; the code is open. The control passes F11 | F11; O9 |
 
 The vectors on octets need a second reader in the tool, after the pipeline:
 the steps F5 and F8 to F18 as functions of two grants that were read and,
@@ -2045,7 +2050,8 @@ they are. The vectors on stated facts wait for the forms of an observation
 and of a presentation, as the admission vectors of LIP-0020 section 12 do.
 
 No vector is planned for a defect or a pair that depends on one of the
-eight open points of section 8.4 (O1 to O8). None is planned for part (b)
+open points O1 to O8 of section 8.4. For O9, `step-f-51` states the
+refusal but does not assign or test a code. None is planned for part (b)
 of F13 either: a parent that breaks rule 4 or 5 of LIP-0020 W11.10 is
 refused as a document by the pipeline of LIP-0020 section 12, whose
 vectors hold such parents, and the vectors on octets of this plan hold
@@ -3755,7 +3761,7 @@ for a property that its subsection lists as open.
   bytes that carry a text (section 3.4) stay open. Version 0.1.55 proposes
   the v4 codes for a child whose chain, actions or window are wider than
   its parent allows (section 8.4, rows F8, F16 and F18).
-- Eight points that section 8.4 leaves open, O1 to O8 of its table of open
+- Nine points that section 8.4 leaves open, O1 to O9 of its table of open
   points: the order of the three blocs of the seal and the issuance against
   each other (row F21 and part 7.6 of F7); the code of a request that is
   not authenticated (A1); the codes, the inner order and the place of the
@@ -3768,8 +3774,9 @@ for a property that its subsection lists as open.
   the checks of the anchor and of the issuance (F21, part 7.6); what a
   side does with a finding of rules 2 and 6 to 8 of LIP-0020 W11.10, and
   with a finding of rules 4 and 5 outside the group and the range of the
-  child, which waits for proposal Q1 of LIP-0026 (F13, rule T10); and the class under which a signing service
-  judges `TIP_AGE` (F3). The vectors of section 8.7 are a plan, and none
+  child, which waits for proposal Q1 of LIP-0026 (F13, rule T10); the class under which a signing service
+  judges `TIP_AGE` (F3); and the code for a refused recipient name value
+  of the parent (F11). The vectors of section 8.7 are a plan, and none
   is generated.
 - The owners' acceptance of sections 8.4 to 8.7, which are a proposal of
   version 0.1.55 and in force by no word of this draft, and the co-author's

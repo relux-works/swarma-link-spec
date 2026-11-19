@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.64 — 2026-11-19
+
+Net change over 0.1.63: a PROPOSED clarification of LIP-0014 section 8.4,
+row F11. A channel that yields no key contributes no key to compare. A
+value that the reader refuses as a whole instead makes F11 refuse without
+closure; the code remains open (O9). Section 8.7 adds two planned vectors
+on stated facts, each with a control. Nothing is adopted and no wire
+member changes.
+
 ## 0.1.63 — 2026-11-19
 
 Net change over 0.1.62: revises only the PROPOSED enrollment boundary in
