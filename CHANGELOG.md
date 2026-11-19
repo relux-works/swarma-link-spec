@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.62 — 2026-11-19
+
+Net change over 0.1.61: makes the LIP-0014 source-contract companion's
+adoption boundary state that its remaining content is proposed and updates
+the companion date. No normative rule, wire member, vector or implementation
+changes.
+
 ## 0.1.61 — 2026-11-19
 
 Net change over 0.1.60: records three owner decisions on the contract

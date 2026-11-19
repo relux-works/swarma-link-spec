@@ -3,7 +3,7 @@
 - **Status:** PROPOSED integration choices. No choice takes effect by this
   file's own word.
   It changes no existing rule, wire member, vector or implementation.
-- **Date:** 2026-11-17
+- **Date:** 2026-11-19
 - **Source baseline:** version 0.1.57, commit
   `819433846febb9404c11a5fcd1ba124770f7910b`.
 - **Scope:** identity, contract/profile, first-refusal and ordinal inputs
@@ -424,10 +424,11 @@ A future conformance harness must show that a bounded deliberate omission of ori
 ## 12. Adoption boundary
 
 For the state of the R8.3 count order, see LIP-0026 section 8. The other
-content here concerns the Source-contract inputs only. A later decision must
-identify which clauses it accepts and the source revision that fixes
-their exact text. Cross-check both sides after any accepted replacement;
-do not leave one side using a superseded proposed code or ordering.
+content here remains proposed content for the Source-contract inputs only.
+A later decision must identify which clauses it accepts and the source
+revision that fixes their exact text. Cross-check both sides after any
+accepted replacement; do not leave one side using a superseded proposed
+code or ordering.
 Unaffected clauses, byte formats and historical evidence keep their
 existing status. No key creation, signing, journal initialization, host
 registration, service start, installation or deployment is authorized by

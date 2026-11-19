@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.61
+**Version:** 0.1.62
 
 **Date:** 2026-11-19
 
