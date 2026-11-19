@@ -6,12 +6,20 @@ Net change over 0.1.62: revises only the PROPOSED enrollment boundary in
 section 2.4 of the LIP-0014 Source-contract companion, its decision register,
 paired valid and forbidden controls, and the companion's indexes. It
 conforms the proposed registration authority to KEY-MAP K3, distinguishes
-homeserver accounts from ledger and OS accounts, keeps H1 records and
-station state outside the enrollment journal, and places the proposed
+homeserver accounts from ledger and OS accounts, bars the enrollment role
+from writing H1 records and the enrollment journal from writing station
+state, and places the proposed
 registration/create route inside the owning native custody executable.
 It states the owner-only closure of unresolved transactions, the refusal
 before network submission while owning inputs are undefined, and the
 accepted-source replacement condition.
+
+Review amendments to C1-C6 make C5's register closure require the owners'
+custody decision for both the registration credential and the new account's
+token, replace the dangling child-token reference with the new account's
+access token, and add three paired controls for H1 fidelity and unchanged
+H1/station state, owner-only closure, and refusal while owning inputs are
+undefined.
 
 B1 (adoption and home), B2 (custody of the homeserver registration credential
 and of the new account's token), B3 (the process boundary) and B4 (native
