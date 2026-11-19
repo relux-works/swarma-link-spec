@@ -881,7 +881,7 @@ version: `CHILD_CONTRACT_DIFFERS`, `CONTRACT_NOT_PRESENTED`, `CONTRACT_ID`,
 `CHILD_NOT_LIVE`, `ACTION_UNDEFINED` and `LIMIT_KIND_UNDEFINED`. Until a
 profile defines an action, a v4 grant has no effect at an executor, and
 until a profile defines a limit kind, a child that states a limit is
-neither signed nor admitted. Eight points stay open and are named there:
+neither signed nor admitted. Eight points stayed open in version 0.1.55:
 the order of the seal and the issuance blocs, the code of a request that
 is not authenticated, the checks of an invocation, the codes that follow
 the contract identifier, which wait for a v4 contract profile, the code of

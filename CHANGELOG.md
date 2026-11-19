@@ -4,10 +4,11 @@
 
 Net change over 0.1.63: a PROPOSED clarification of LIP-0014 section 8.4,
 row F11. A channel that yields no key contributes no key to compare. A
-value that the reader refuses as a whole instead makes F11 refuse without
-closure; the code remains open (O9). Section 8.7 adds two planned vectors
-on stated facts, each with a control. Nothing is adopted and no wire
-member changes.
+value refused as a whole under LIP-0010 section 2 makes F11 refuse
+without closure; the code remains open (O9). Section 8.7 adds two planned
+vectors on stated facts with controls. The open-points rule of section 8.4 admits
+`step-f-51` for the refusal alone, not its code. Nothing is adopted and
+no wire member changes.
 
 ## 0.1.63 — 2026-11-19
 
