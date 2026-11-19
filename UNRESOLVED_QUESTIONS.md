@@ -5,9 +5,9 @@ decision, protocol and conformance work follows LIP-0001.
 
 The [child-issuer integration companion](lips/LIP-0014-source-contract-proposals.md)
 records H1, T1, the action-profile mapping and O1–O8 as **PROPOSED**,
-clause by clause, and carries the R8.3 count order as **DECIDED** in
-version 0.1.57. Only that count order is closed; the rest of Q2 remains
-proposed. Other acceptance must name the affected clause and exact source text.
+clause by clause. For the state of the R8.3 count order, see LIP-0026
+section 8. The remaining LIP-0026 proposal Q2 remains proposed. Other
+acceptance must name the affected clause and exact source text.
 Invocation definitions stay with O2/O3 and contract-party assent with T1;
 native custody, implementation, adoption and conformance remain separate.
 

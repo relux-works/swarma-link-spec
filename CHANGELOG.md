@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.58 — Unreleased
+
+Corrects the references and version filing of the child-issuer integration
+companion. No LIP is adopted, and no implementation or conformance status
+changes.
+
+- The companion points to LIP-0026 section 8 for the state of the R8.3 count
+  order and names only the remaining LIP-0026 proposal Q2.
+- LIP-0014 section 8.4, README and the unresolved-questions paragraph use that
+  pointer instead of restating the order's state.
+- The companion's changes are filed under version 0.1.58; version 0.1.57 and
+  its published PDF remain unchanged.
+
 ## 0.1.57 — 2026-11-17
 
 Puts one owner decision in force and closes the contradiction that version
