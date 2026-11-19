@@ -4,7 +4,8 @@ Draft implementation descriptions do not adopt normative profiles. Their
 decision, protocol and conformance work follows LIP-0001.
 
 The [child-issuer integration companion](lips/LIP-0014-source-contract-proposals.md)
-records H1, T1, the action-profile mapping and O1–O8 as **PROPOSED**,
+records H1, T1, the action-profile mapping, the enrollment boundary (section 2.4),
+and O1–O8 as **PROPOSED**,
 clause by clause. For the state of the R8.3 count order, see LIP-0026
 section 8. The remaining LIP-0026 proposal Q2 remains proposed. Other
 acceptance must name the affected clause and exact source text.
@@ -13,6 +14,10 @@ native custody, implementation, adoption and conformance remain separate.
 
 | Question | Location and boundary |
 | --- | --- |
+| B1. Adoption and home | **OPEN** for the companion section 2.4 enrollment boundary. The owners decide the home and adoption under LIP-0001; the owning keyvault interface specification's owner decides the text. |
+| B2. Custody of the homeserver registration credential and of the new account's token | **OPEN** for the companion section 2.4 enrollment boundary. The owners decide both custody assignments. |
+| B3. The process boundary | **OPEN** for the companion section 2.4 enrollment boundary. One process inside the custody executable, or an accepted authenticated secret-channel contract; the keyvault specification's owner decides within B2. |
+| B4. Definition of native management-code admission and of the required session policy | **OPEN** for the companion section 2.4 enrollment boundary. The keyvault specification's owner decides. |
 | Adoption and coexistence of landlord, locator and action-service profiles | LIP-0004/0005/0006 remain Draft; historical v0.1 requirements and evidence retain their own meaning. |
 | Common action vocabulary versus wallet-specific encoding and limits | [LIP-0006 open questions](lips/LIP-0006-grant-gated-actions.md#open-questions); cross-language canonical rules and complete vectors precede normative interoperability claims. |
 | Further locator networks and endpoint discovery | [LIP-0005 open questions](lips/LIP-0005-op-return-locator.md#5-open); current closed name schemas do not acquire blob/tracker fields. |

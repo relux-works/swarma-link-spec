@@ -7,7 +7,8 @@
 - **Source baseline:** version 0.1.57, commit
   `819433846febb9404c11a5fcd1ba124770f7910b`.
 - **Scope:** identity, contract/profile, first-refusal and ordinal inputs
-  of the child issuer and its consumer, with their distinct decision states.
+  of the child issuer and its consumer, with their distinct decision states,
+  and the enrollment boundary of section 2.4.
 
 This companion puts the integration choices in one place for agreement. It
 does not treat a recommendation, a release, an implementation's behaviour or
@@ -15,8 +16,8 @@ two readers agreeing as an owner's decision. The existing statements of
 status in LIP-0014 sections 8.4 to 8.7, LIP-0017 and LIP-0026 section 8 keep
 their meaning. A decision on one row below does not accept another row.
 
-The open Source-contract clauses are H1, T1, the action-profile mapping
-and O1 to O8. For the state of the R8.3 count order, see LIP-0026 section 8.
+The open Source-contract clauses are H1, T1, the action-profile mapping, the enrollment boundary and O1 to O8.
+For the state of the R8.3 count order, see LIP-0026 section 8.
 The remaining LIP-0026 proposal Q2 remains proposed. Invocation definitions
 belong to O2/O3; the contract's issuing-party assent belongs to T1 and the
 profile. Actual custody, implementation, installation, native qualification
@@ -38,6 +39,7 @@ and conformance remain separate requirements after textual agreement.
 | O7 | LIP-0014 F13(b)/T10; LIP-0020 W11.10; LIP-0026 proposal Q1 | PROPOSED | Explicit decision on whole-parent admission, without silently changing the count bounds |
 | O8 | LIP-0014 F3 at ISSUE and I3; LIP-0022 B3.5/B3.6 | PROPOSED | Freshness source or owning decision assigns child signing to the proposed class |
 | R8 count order | LIP-0026 R8.3 and section 8; LIP-0020 W11.6 | See LIP-0026 section 8 for its state | The remaining LIP-0026 proposal Q2 is separate |
+| Enrollment | This companion section 2.4 with P-MAP-2/P-MAP-3 and P-NATIVE-1; KEY-MAP K3; LIP-0013 J7.7/J7.8 | PROPOSED | The owning keyvault interface accepts the enrollment transaction, native management-code admission and token custody; the owners decide the custody of the homeserver registration credential; a decision record names the accepted text and its source revision |
 
 The register describes Source agreement, not a claim that the machine
 interfaces or complete signed conformance vectors already exist. Matching
@@ -184,17 +186,21 @@ publication does not select it over the unresolved profile requirements.
 
 ### 2.4 Enrollment transaction boundary — PROPOSED
 
-**P-ENROLL-1 — authority before registration.** A dedicated admitted native enrollment role first latches the complete intended identity, origin, consumer binding, exact server/admin connection, fresh destination, explicit required session policy and finite public write set. It proves both current account-registration authority and current native management/operation authority before any remote account effect. Native release clients, messenger daemons and a same-Team signed program do not acquire management rights through a flag, environment variable, parent process, room membership or a general session grant. Unqualified or absent authority refuses before network submission.
+**P-ENROLL-1 — authority before registration.** In this section an account is a homeserver (Matrix) account, neither a ledger account of LIP-0026 R5.1/R5.2 nor the OS account of a slot (LIP-0030 AS1.3). A dedicated admitted native enrollment role first records, in its own enrollment journal, the identity and origin exactly as the H1 latch of section 2.2 returned them, the consumer binding, the exact homeserver and its registration connection, an account not yet registered (the destination), the required session policy and the finite set of public writes. It writes no H1 record (P-HOME-1) and makes no vault call for one (P-NATIVE-2). Before any remote account effect it proves two predicates: account-registration authority, which is an act of an owner (KEY-MAP K3: only an owner creates an identity, and an agent registers no identity for another agent), and native management-code admission of its caller as the owning keyvault interface defines it. Native release clients, messenger daemons and a same-Team signed program do not acquire management rights through a flag, environment variable, parent process, room membership or a general session grant. Unqualified or absent authority refuses before network submission.
 
-**P-ENROLL-2 — one original operation and no secret-bearing result.** Before registration the enrollment transaction durably binds its original native operation identity and immutable intended destination in a bounded nonsecret journal. There is at most one incomplete transaction for that destination. The separately admitted enrollment executable performs registration and native create in one process so the returned child access token passes from bounded owned memory directly to native create under the original operation. A two-process alternative requires its own authenticated secret-channel contract first. No token goes to argv, a room, prompt, generic result object, file store, journal, hash preimage for a public receipt, or fallback credential cache.
+**P-ENROLL-2 — one original operation and no secret-bearing result.** Before registration the enrollment transaction durably binds its original native operation identity and immutable intended destination in a bounded nonsecret journal. There is at most one incomplete transaction for that destination. Registration and native create run in one process, the owning native custody executable of section 2.5 (P-NATIVE-1), so the access token that the homeserver returns for the new account passes from bounded owned memory directly to native create under the original operation. An enrollment hook is an IPC client of that executable: it supplies no secret, receives none, and is the peer that P-ENROLL-3 rechecks. A route in which another process performs the registration is a two-process route; it requires its own authenticated secret-channel contract, accepted before it is built. No token goes to argv, a room, prompt, generic result object, file store, journal, hash preimage for a public receipt, or fallback credential cache.
 
 Existing account-password custody for an explicitly selected daemon E2EE/UIA route is a separate contract; it is not described as ephemeral when it is persistently held there. The child token cannot enter that password section. A new vault-backed enrollment must not reach the legacy Keychain recovery-password branch. This preserves the existing legitimate legacy path without making it a new enrollment fallback.
 
 **P-ENROLL-3 — reserve, recheck, commit, publish.** A valid finite local authorization durably reserves the exact intended operation before remote registration. An old reservation is not proof of current authority at commit: the native management service rechecks its actual peer, original principal/intent, current protected authorization, expiry/revocation and finite caps before custody and immediately before effect. Native create uses its existing create-only/expected-revision-zero contract and explicit required policy. Only an authenticated complete committed receipt for the exact original operation permits publication of public vault selection/identity/revision metadata. Publication is not the private commit itself.
 
-**P-ENROLL-4 — three independent uncertain outcomes.** A missing, malformed or mismatched registration response leaves the remote effect UNKNOWN; no second registration, login/reset, rotation or new account follows automatically. An uncertain native-create outcome is reconciled through the original operation under current scoped authority, never a new operation ID or alternate store. A committed private record with failed public publication permits only recovery of that public publication after exact reconciliation. No visible metadata, an absent operation response or lost token memory proves that an earlier effect did not happen. Exact supported replay returns the retained result without a second allowance or effect.
+**P-ENROLL-4 — three independent uncertain outcomes.** A missing, malformed or mismatched registration response leaves the remote effect UNKNOWN; no second registration, login/reset, rotation or new account follows automatically. An uncertain native-create outcome is reconciled through the original operation under current scoped authority, never a new operation ID or alternate store. A committed private record with failed public publication permits only recovery of that public publication after exact reconciliation. No visible metadata, an absent operation response or lost token memory proves that an earlier effect did not happen. Exact supported replay returns the retained result without a second allowance or effect. An UNKNOWN registration, an uncertain create that reconciliation under the original operation cannot settle, or a lost token leaves the transaction incomplete and its destination blocked. Only an explicit act of an owner (KEY-MAP K3), recorded in the journal with its evidence, closes it; any later registration, login, token reset or rotation is a new original operation with its own authority, reservation and destination, never a retry of the old one. The enrollment journal writes no station state; its mapping to the station/1 enrollment and account rows is OPEN (P-MAP-6).
 
 The journal's schema, transaction states, limits and nonsecret receipt preimage belong to the enrollment implementation contract; no octet schema is declared by these logical clauses. Prove bounds fit or refuse before the remote effect, never truncate. Buffer handling must state actual ownership/copies and cannot promise erasure of immutable strings, OS snapshots or memory outside its custody.
+
+The required session policy, the finite public write set, native management-code admission, the place and form of public publication, and the custody of the homeserver registration credential are not defined here. Until the owning keyvault interface defines the first four and the owners decide the last, no side completes P-ENROLL-1 and enrollment refuses before network submission.
+
+Replacement condition: accepted enrollment text in the owning keyvault interface, together with the owners' custody decision for the homeserver registration credential and the new account's token, replaces P-ENROLL-1 to P-ENROLL-4 in one revision that cites both sources. A build against these proposed clauses is not that acceptance.
 
 ### 2.5 Native custody and limits of evidence — PROPOSED
 
@@ -418,6 +424,11 @@ All scenarios below are proposed acceptance requirements, NOT_RUN. Each negative
 | Valid original register/create/publication transaction and exact supported replay | Lost registration/create reply, changed retry parameters or failed publication cannot issue a new ID, second account/key/allowance, credential fallback or false rollback |
 | Valid explicitly selected existing password/UIA path and new vault enrollment | The vault enrollment's legacy recovery-password branch is unreachable, with no token in password custody or a generic result/store |
 | Owning signed custody executable reaches its intended item | Generic/wrong/same-Team executable and IPC client direct reads fail at the actual ACL without trust weakening; a metadata-only H1 operation makes zero vault calls |
+| Owner-act registration authority with a current admitted caller | An agent-held or run-held authority, including a delegating agent's request for another agent's account, refuses before reservation and network submission (KEY-MAP K3) |
+| One incomplete transaction for a destination | A second transaction for the same destination refuses before reservation and network submission; the first is unchanged |
+| Authority current at reservation and at commit | Authority revoked, expired or over its cap between reservation and commit refuses at the recheck, before custody and effect; the reservation is not authority |
+| Authenticated complete committed receipt, then publication | Publication without that receipt, or with a receipt of another operation, publishes nothing |
+| Registration and create inside the one custody executable | A token handed across a process boundary with no accepted secret-channel contract: no such route exists; no token in IPC, argv or a result |
 
 A future conformance harness must show that a bounded deliberate omission of origin comparison, pre-remote authority, secret-result suppression or one-effect replay protection fails at the intended branch, then restore the valid control. Fixture success covers only its admitted fixture, not a live migrated vault or every installed home. No live account, real secret, user session or private key is used to satisfy these proposed checks.
 

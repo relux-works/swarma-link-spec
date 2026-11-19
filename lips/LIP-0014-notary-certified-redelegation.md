@@ -1678,8 +1678,9 @@ are the reservation ledger of section 11.1 (J4.4 (a) to J4.4 (g)), to which
 section 8.5 points.
 
 The [Source-contract companion](LIP-0014-source-contract-proposals.md)
-collects proposed resolutions of these eight points, T1/profile inputs and
-identity latching. For the state of the R8.3 count order, see LIP-0026
+collects proposed resolutions of these eight points, T1/profile inputs,
+identity latching and the enrollment boundary (section 2.4). For the state
+of the R8.3 count order, see LIP-0026
 section 8. The remaining LIP-0026 proposal Q2 stays **PROPOSED**. The
 companion changes no status or outcome in this section.
 
