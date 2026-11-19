@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.59
+**Version:** 0.1.60
 
 **Date:** 2026-11-19
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.59
+## Draft profiles and design decisions in v0.1.60
 The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
 collect **PROPOSED** choices for H1 (identity latch), T1 (contract profile),
 the action-profile mapping and the points O1 to O8 of LIP-0014 section 8.4.

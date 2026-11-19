@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.59 — 2026-11-19
+## 0.1.60 — 2026-11-19
 
 Adds a companion to LIP-0014, `lips/LIP-0014-source-contract-proposals.md`.
 It collects **PROPOSED** choices for H1 (identity latch), T1 (contract
@@ -12,6 +12,8 @@ forbidden cases.
 - LIP-0014 section 8.4, README and UNRESOLVED_QUESTIONS gain a pointer
   paragraph.
 - No LIP is adopted, and no rule, wire member, vector or implementation changes.
+
+## 0.1.59 — 2026-11-19
 
 Adds Draft LIP-0030, action profile no. 1, an agent session on a host.
 It proposes the authority that a v4 grant gives the host's service set,
