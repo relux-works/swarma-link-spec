@@ -1,8 +1,9 @@
 # LIP-0031: Limit-kind profiles 1 — coins, model cost, model tokens
 
-- **Status:** Draft. Section 5 is decided by the owner on 2026-11-17
-  and is in force in this version; the co-author's answer is folded in
-  by amendment. Every other rule of this LIP is proposed, neither
+- **Status:** Draft. The paragraph of section 5 that states the four
+  rules is decided by the owner on 2026-11-17 and is in force in this
+  version; the co-author's answer is folded in by amendment. Every
+  other rule of this LIP is proposed, neither
   owner has decided one, and nothing else in it is in force. The
   owner's requirement of 2026-11-17 that a period be expressible in
   clock time and, for chain coins, in blocks is recorded under "What
@@ -51,9 +52,10 @@ This LIP proposes the first three type profiles:
 - `swarma/model-tokens`: separate cumulative input and output token
   ceilings per period, under a named model and token-accounting profile
   (section 4);
-- exhaustion and continuation, in one paragraph to which every other
-  text points (section 5, decided by the owner on 2026-11-17 and in
-  force in this version; the rest of this list is proposed);
+- exhaustion and continuation, in the paragraph of section 5 that
+  states the four rules, to which every other text points (decided
+  by the owner on 2026-11-17 and in force in this version; the rest
+  of this list is proposed);
 - the refusal codes and their order (section 6), and the vector set
   that the profiles need, described and not built (section 7).
 
@@ -86,12 +88,13 @@ none of those texts and restates none of them; it cites them.
 | What a proposal for a limit kind states | LIP-0018 section 2 | One table for each kind (sections 2 to 4) |
 | A limit has `kind`, `resource`, `unit`, `amount` and, where its kind has one, `period`; the key of a limit is all of these but the amount | LIP-0020 W11.4; LIP-0026 R1.2 | The same members, with the texts of this LIP (L1) |
 | The pool bounds, for each key, the sum over the groups of the number of rows of the group times the amount of its template | LIP-0026 section 8 (J12); LIP-0020 W11.10 rule 6 | The same sum for the three kinds, which are ceilings (L2, L6) |
-| For one place of one parent the signing service MUST make one signature, ever | LIP-0014 J4.4 (a) | Section 5 builds continuation on it |
+| For one place of one parent the signing service MUST make one signature, ever | LIP-0014 J4.4 (a) | The PROPOSED reading relates continuation to it; section 5 states only the four decided rules |
 | Every period and term of a limit is expressible in clock time and, for chain coins, in blocks of that chain ("at most N coins per M blocks") | Owner requirement of 2026-11-17, recorded here | Two period families, counted in blocks and in clock seconds, with their instance arithmetic (L3, L7); states the item for every kind (sections 2 to 4). The requirement is decided; the texts and arithmetic that carry it are this draft's proposal |
-| Exhaustion and continuation: stop and report, without revocation; no top-up of an existing grant; continuation by a new grant on a new place; long-lived agents get limits per period, with a new grant per period | Decided by the owner on 2026-11-17; in force in this version, the co-author's answer folded in by amendment | Section 5 states the four rules and nothing beyond them. Its whole-window and instance accounts are terms of the proposals L3, L5 and L7 that carry the rules |
+| Exhaustion and continuation: stop and report, without revocation; no top-up of an existing grant; continuation by a new grant on a new place; long-lived agents get limits per period, with a new grant per period | Decided by the owner on 2026-11-17; in force in this version, the co-author's answer folded in by amendment | The paragraph of section 5 that states the four rules contains nothing beyond them. The separate PROPOSED reading has no interim force |
 
-Every rule of this LIP except section 5 is the draft's proposal, and
-neither owner has decided one. Five points are choices of this draft
+Every rule of this LIP except the paragraph of section 5 that states
+the four rules is the draft's proposal, and neither owner has decided
+one. Five points are choices of this draft
 where no text gives an answer, and the owners should look at them
 first:
 
@@ -122,9 +125,10 @@ first:
    the reserved maximum and the actual consumption once the outcome is
    known. LIP-0026 R5.8 leaves that release to the type profile.
 
-Section 5 is no choice of this draft: it is decided by the owner on
-2026-11-17 and in force in this version, as the header and that
-section say.
+The paragraph of section 5 that states the four rules is no choice
+of this draft: it is decided by the owner on 2026-11-17 and in force
+in this version. The separate PROPOSED reading needs acceptance and
+has no interim force.
 
 Nothing of this profile is implemented. The owners accept or change
 its proposed rules through this LIP, under LIP-0001.
@@ -139,7 +143,7 @@ its proposed rules through this LIP, under LIP-0001.
 | A period of the two families of L3, as a function of a stated tip height or clock reading | Yes | The owners' acceptance; at a real executor, a healthy observation and a clock under LIP-0022 sections 1 to 3 |
 | The admission of a child that carries a limit, end to end | No | Even at a side that runs this LIP, parts (b) and (c) of row F6 of LIP-0014 section 8.4 end every child admission before F17 until a v4 contract profile exists (rule T1). No reader should expect children with limits to be admitted now |
 | The vectors of section 7 | No | The owners' acceptance; no file exists |
-| The report of section 5 to a parent | No | A carrier for the report (open questions) |
+| The report required by section 5 | No | Report recipients, carrier and form (open questions) |
 
 ## Motivation
 
@@ -218,7 +222,7 @@ and the settlement.
 | --- | --- | --- |
 | L1 | A limit of one of the three kinds is a limit of LIP-0020 W11.4: exactly `kind`, `resource` and `unit`, each a text, and `amount`, an integer in the string form from 0 to 18446744073709551615 (W11.1), with `period`, a text, where the kind has one. `kind` is `swarma/coins`, `swarma/model-cost` or `swarma/model-tokens`. This LIP assigns no other member, and a side reads no member beside these for a limit of the three kinds. The key of a limit is all of its members but the amount (LIP-0026 R1.2). | The codes of the member step (LIP-0020 W11.8) |
 | L2 | The amount of each of the three kinds is a ceiling. R2.4 of LIP-0026 therefore applies to them as it stands: the amount of a child under a key is at most the amount of its row under the same key. No kind of this LIP is a floor, and the sentence of R2.4 that leaves a floor to its type profile has no case here. | `CHILD_BUDGET_OVER` |
-| L3 | `period` has three readings, and no other. Absent: the amount bounds the sum of all debits of the key over the whole window of the grant. Present with the text `swarma/per-request`: the amount bounds the debit of one request. Present with a text of one of the two families below: the amount bounds the sum of the debits of the key inside one instance of the period that the text names. A period divides the one window for accounting (LIP-0008 section 2.1). Whether a period is counted in blocks or in clock time belongs to the limit's type profile and to the contract, as that section has it; this LIP, as the type profile, assigns the counting, the length and the boundaries of each family, and the contract's mirror of them stays open (L10). The block-counted family is `swarma/blocks-<N>` and the clock-counted family is `swarma/seconds-<S>`, where `<N>` and `<S>` are decimal integers with no sign and no leading zero, from 1 to 9007199254740991 (the bound of a height and of the number form, LIP-0020 W11.1 and section 2). `<N>` is a count of blocks and `<S>` a count of seconds. A text of neither form, and a count of 0, has no definition under this profile. Which family each kind accepts is stated in sections 2 to 4: every kind accepts the clock-counted family, and chain coins accept the block-counted family as well, under the owner's requirement of 2026-11-17 recorded above. No side converts blocks into seconds or seconds into blocks, at any rate; a limit in one family and a limit in the other are two keys. The instance arithmetic of the two families stands in the paragraphs after this table and in L7. | L4 for a text with no definition at the side, or of a family that the kind does not accept |
+| L3 | `period` has three readings, and no other. Absent: the amount bounds the sum of all debits of the key over the whole window of the grant. Present with the text `swarma/per-request`: the amount bounds the debit of one request. Present with a text of one of the two families below: the amount bounds the sum of the debits of the key inside one instance of the period that the text names. A period divides the one window for accounting (LIP-0008 section 2.1). Whether a period is counted in blocks or in clock time belongs to the limit's type profile and to the contract, as that section has it; this LIP, as the type profile, assigns the counting, the length and the boundaries of each family, and the contract's mirror of them stays open (L10). The block-counted family is `swarma/blocks-<N>` and the clock-counted family is `swarma/seconds-<S>`, where `<N>` and `<S>` are decimal integers with no sign and no leading zero, from 1 to 9007199254740991 (the bound of a height and of the number form, LIP-0020 W11.1 and section 2). `<N>` is a count of blocks and `<S>` a count of seconds. A text of neither form, and a count of 0, has no definition under this profile. Which family each kind accepts is stated in sections 2 to 4: every kind accepts the clock-counted family, and chain coins accept the block-counted family as well, under the owner's requirement of 2026-11-17 recorded above. No side converts a period text or its accounts between blocks and seconds to make two keys match; conversion of calendar time to window heights at issuance remains LIP-0008 section 7.1. A seconds period has fixed length and epoch alignment, not calendar months, calendar years or local-time days; those periods remain open. The instance arithmetic of the two families stands in the paragraphs after this table and in L7. | L4 for a text with no definition at the side, or of a family that the kind does not accept |
 | L4 | A side that has the profile of a kind and meets a limit of that kind whose `resource`, `unit` or `period` it does not recognise under sections 2 to 4 — an asset system it does not serve, a currency and scale it has no price in, an accounting it does not count by, a period text that L3 does not define, a block-counted text for a kind or a resource that accepts no block counting there, or a block count on a chain that the side does not read — refuses as `LIMIT_UNSUPPORTED`. The refusal stands where the kind is judged: at the admission of a child inside row F17 with its part (b), after the kind and before the amounts, and at a request inside row E2. A kind with no profile at the side is not this refusal; it stays `LIMIT_KIND_UNDEFINED` (LIP-0020 W11.14 rule 2). No unrecognised text is read as no limit, and none is read in the other counting. No refusal code beside `LIMIT_UNSUPPORTED` is needed for a period family: a counting that the child and the template do not share is two keys and refuses in part (a) under L6. | `LIMIT_UNSUPPORTED` |
 | L5 | A request consumes keys as follows. For the kind, resource and unit that the request draws on it always consumes the key without `period`. It also consumes every key with a `period` other than the reserved text that the grant — for a request under a child, the child and the template of its row together — states for the same kind, resource and unit, each in the instance that holds the request. The key with the reserved text, where stated, is checked per kind in sections 2 to 4 and is no cumulative account. A key that a request consumes and that the grant does not state has the ceiling 0 (LIP-0020 W11.4; LIP-0026 R5.2), so the first debit against it refuses. Which resource and unit a request draws on is fixed by the action that it asks for and by the executor that serves it, under the profile of that action; this LIP defines no action. | At the reservation, L8 |
 | L6 | At the admission of a child the three kinds are compared in row F17 of LIP-0014 section 8.4, in its three parts: every limit of the child has the key of a limit of the template of its row (part (a)); the kind of every limit of the child and of the template has a profile at the side, and its texts are recognised there (part (b) with L4); each amount of the child is at most the amount of the template under the same key (part (c), by L2). The key of part (a) holds `period` among its members (LIP-0020 W11.4; LIP-0026 R1.2), so a child's period counting matches its template's exactly where part (a) passes at all: a child that states a block-counted text where the template states a clock-counted one, a clock-counted text where the template states a block-counted one, the reserved text where the template states an instance text, or any other count of blocks or seconds than the template's, states a key that the template lacks and refuses in part (a) as `CHILD_BUDGET_OVER`, however near the two lengths stand in time; no side converts one counting into the other to make them match (L3). A child need not restate a key of its template to pass this step; a key that it omits then has the ceiling 0 in its own account under R5.2 and authorizes no consumption under the child, whatever the row states. The child is compared against no pool at an admission: the pool is judged on the signed octets of the parent — in step 9 on the parent's octets, as LIP-0020 W11.10 has it — one pool for every key that a template limits, by the sum over the groups of the number of rows of the group times the amount of its template for that key, an exact integer sum that never wraps (LIP-0026 R8.5; LIP-0020 W11.10 rule 6). That rule takes the keys that a template limits exactly, the key with `swarma/per-request` included: a template that states the reserved text therefore has a pool of count times amount for that key as well, or the parent refuses as `GRANT_DELEGATE`, although no account sums that key (L5). The chosen reading of L3 has the pool consequence that the fourth kind of the Alternatives would have had, and this profile states it instead of leaving it to be found. The pool is no account, and what one row leaves unused is available to no other row (LIP-0026 R5.5). | `CHILD_BUDGET_OVER`; `LIMIT_KIND_UNDEFINED`; `LIMIT_UNSUPPORTED`; for the pool, `GRANT_DELEGATE` |
@@ -226,6 +230,21 @@ and the settlement.
 | L8 | Before the effect of a request the executor reserves the debits of every key that the request consumes, durably and in one atomic write of its journal, or none of them, taking the keys in the order in which the request consumes them and for each key the own account before the row account, and it reports the first account whose ceiling the reservation would exceed (LIP-0026 R5.6). What is made durable is the reservation entry of the journal; its octets and the key that identifies a request come with the members of the invocation (LIP-0026 section 5) and are open here as there. A request that is refused reserves nothing (LIP-0026 R6.2). Parallel requests and the replicas of one executor share one allowance through that one journal, in the form that LIP-0025 proposes; no replica keeps a remainder of its own (LIP-0008 section 4; LIP-0026 R5.5). | `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
 | L9 | One request identity holds at most one reservation, and a repeated request is charged once (LIP-0026 R5.7). A reservation whose effect has an outcome that is not known is retained until it is reconciled, and no account is lowered by a revocation, a restart or an unknown outcome (LIP-0026 R5.8; LIP-0008 section 2). Where sections 2 to 4 settle a reservation at an actual consumption below the reserved amount, the difference is released in the same accounts that the reservation debited, in one write with the entry that records the outcome, and only where that outcome is known: the effect happened at the settled consumption, or it did not happen. A settlement never raises an account above the reserved amount of its request, and a consumption above the reservation is not charged to the grant after the effect; each kind states what its reservation must cover so that this case cannot arise inside the profile. After a recovery by starting anew, what an account counts as is the rule of LIP-0025 section 7 for row accounts; what it charges for an instance account of L7 is an open question. | None of its own |
 | L10 | The contract mirrors the limits of the grant as LIP-0008 section 2 states it, and a mismatch refuses admission there; the code of that refusal comes with the v4 contract profile and is open (LIP-0014 section 8.4, row F6 part (c)). A default selects an allowance only within the signed limit and never supplies a limit that the grant lacks (LIP-0008 section 2; LIP-0018 section 2). Operator ceilings of the executor may be lower and never higher, as that section has it. The two rules that LIP-0018 section 2 holds for every kind without restating them hold here in the same way and are cited here, not repeated; the tables below cite this rule. Whether the contract also mirrors `period` — its text, its counting and its count — besides the executor, kind, resource, unit and amount of that section is open with the code, as the open questions state; until a v4 contract profile mirrors it, two contracts that differ only in a period cannot be told apart by that mirror, while the signed keys of L6 tell them apart at every side. | None of its own |
+
+**Exact arithmetic (L8, L9, L13 to L21).** Every debit, sum of
+debits, product in the declared integer unit, account value and
+released difference is an exact integer, computed before any
+comparison. No side wraps, saturates, truncates or rounds that
+arithmetic. L17's explicit upward conversion of a fractional quoted
+cost to whole subunits precedes it; it is not permission to round a
+debit or an account. A result above 18446744073709551615 is above
+every ceiling and refuses at the applicable check: `SPEND_OVER` at
+a stated ceiling for one request, otherwise `OWN_LIMIT_OVER` or
+`ROW_CAP_OVER` at the first account that the reservation would
+exceed, in L8's order. A refusal performs no effect and writes no
+reservation or changed account. The pool's existing exact, no-wrap
+sum and its refusal remain L6 and LIP-0020 W11.10 rule 6 (W2.4);
+this paragraph does not replace them with fixed-width arithmetic.
 
 **The instances of a block-counted period (L3, L7).** Let `A` be
 `not_before_height` and `E` be `not_after_height` of the grant that
@@ -241,7 +260,8 @@ instance, `A + n·N`, belongs to it; the height that opens the next
 one belongs to the next one and to no other. A reservation at tip
 height `H` belongs to instance `(H - A)` divided by `N`, the whole
 quotient, computed exactly; heights on different chains are not
-compared, added or converted (LIP-0022 B5.3), which is why L12
+compared, added or converted, in the manner of LIP-0022 B5.3 for
+depths, which is why L12
 bounds the chain of a block count. Take `A = 200000` and
 `swarma/blocks-144`: instance 0 holds heights 200000 to 200143,
 instance 1 opens at 200144, and a spend reserved while the tip
@@ -262,13 +282,21 @@ the seconds `[m·S, (m+1)·S)`, the first second included and the
 first second of the next instance excluded, and a reservation at
 `now` belongs to instance `now` divided by `S`, the whole quotient.
 So `swarma/seconds-3600` holds the clock hours and
-`swarma/seconds-86400` the UTC days. An instance may begin before
+`swarma/seconds-86400` the UTC days; `swarma/seconds-604800` starts
+its weeks on Thursday 00:00 UTC, not on a contract's chosen weekday.
+Calendar months, years and local-time days have no assigned text.
+An instance may begin before
 the window opens in heights or end after it closes; a debit still
 needs the window open at `H`, and the instance gives the account,
 never the admission. The guards on that clock — a reading below the
 kept mark, a header too far ahead, the age of the tip — are those
 of LIP-0022 section 3 where that profile runs, with its codes and
-its order; this LIP adds none for a clock. The epoch alignment, the
+its order. Even at a side that does not run that profile, a reading
+in a clock instance earlier than the latest one already debited for
+the key refuses `OBSERVATION_CLOCK`, with no reservation or changed
+account, rather than debiting an ended instance (L7). This reuses
+the code of B3.2; a reading in the same or a later instance passes
+this instance check. The epoch alignment, the
 two text forms and their common bound are choices of this draft,
 marked in point 1 above; that a period is expressible in both
 countings is the owner's requirement, and no rate between a block
@@ -300,11 +328,23 @@ B2.4, B2.5), so no reservation takes an instance from a contested
 tip. What a displaced spend itself charges is L15; the instance of
 its reservation does not follow the block that confirms it.
 
+Thus this draft's reading of "at most N coins per M blocks" is per
+instance at the reservation's validated tip, not per M blocks of a
+chain that is finally validated. This is proposed, not a further
+owner decision.
+
+Own and row instances can have different anchors. Where the child
+and parent starts differ modulo `N`, a fresh own instance can meet
+a row instance that already holds debits and refuse `ROW_CAP_OVER`.
+Both ceilings still hold; the effective allowance may be below a
+full template amount in each own instance.
+
 Two consequences of L5 are stated in place. A parent whose template
 states only a ceiling per period gives its children nothing to spend:
 the key without `period` has the ceiling 0, and the first request
 refuses at its reservation, against the own account first, however
-much room the period has. And a template that states two periods for one resource, an hour
+much room the period has. And a template that states two periods
+for one resource, an hour
 and a day, bounds a request by both, each in its own instance; neither
 period needs the other, and the pool holds a key and a sum for each.
 
@@ -335,7 +375,7 @@ it: a limit of this kind bounds spending and prices nothing.
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | L11 | `resource` is the identifier of the asset and of the payment system, in the form `<system>:<asset>`. The system is a chain with its asset, or a rail outside a chain, in the words of the decision. This LIP assigns one value, `namecoin:NMC`, for Namecoin and its coin. Every further value is assigned as L4 and the open questions have it, by a text that names the system, the asset and its atomic unit; a value that no such text assigns is unrecognised at every side. `unit` names the atomic unit of the asset, the smallest unit that the payment system itself counts, and `amount` counts atomic units. For `namecoin:NMC` this LIP assigns the unit text `atomic` and states the scale that the tree already carries: one whole NMC holds 100000000 atomic units, as the bound of `amount_sat`, at most `21000000 * 100000000` atomic NMC units (LIP-0006), and the spend budget in atoms, 0 to 2100000000000000 (LIP-0013 section 2.1), each give it. No side converts an amount through a number of whole coins. The text `namecoin:NMC` does not by itself tell the main chain from a regtest chain: the grant names its chain by the hash of its genesis block alone (LIP-0020 W11.2; LIP-0020, open questions, "The chain"), and that genesis governs. A side serves `namecoin:NMC` under a grant only on the chain of that grant's `genesis`; on a grant of another chain the resource is unrecognised there. | L4 |
-| L12 | The three maxima of the decision are three limits of one kind with one `resource` and one `unit`, told apart by `period` under L3: without `period`, the total over the term of the grant; with a period text of L3, the maximum inside one instance of that period; with `swarma/per-request`, the maximum for one spend. A grant states any of them, and each stated one bounds every spend under L5; the total is the key that every spend consumes, stated or not. The maximum for a period of this kind is expressible in both countings: in clock time, by `swarma/seconds-<S>` for every resource of the kind; and in blocks, by `swarma/blocks-<N>` where the system of the resource is a chain. A block count holds heights of that chain, and of no other: it is defined in this profile only where that chain is the chain of the grant's `genesis` under L11, so that the heights of the count and the heights of the window are heights of one chain and the anchor of the instances after this table's section 1 text applies. A block-counted text for a rail outside a chain, which has no blocks, and for a chain other than the grant's, whose heights no signed member anchors, is unrecognised (L4); the second case is open with the further payment systems. A template that states the key with `swarma/per-request` has a pool for that key under L6, as for every key it limits. | L5, L8; L4 |
+| L12 | The three maxima of the decision are three limits of one kind with one `resource` and one `unit`, told apart by `period` under L3: without `period`, the total over the term of the grant; with a period text of L3, the maximum inside one instance of that period; with `swarma/per-request`, the maximum for one spend. A grant states any of them, and each stated one bounds every spend under L5; the total is the key that every spend consumes, stated or not. The maximum for a period of this kind is expressible in both countings: in clock time, by `swarma/seconds-<S>` for every resource of the kind; and in blocks, by `swarma/blocks-<N>` where the system of the resource is a chain. A block count holds heights of that chain, and of no other: it is defined in this profile only where that chain is the chain of the grant's `genesis` under L11, so that the heights of the count and the heights of the window are heights of one chain and section 1's instance anchor applies. A block-counted text for a rail outside a chain, which has no blocks, and for a chain other than the grant's, whose heights no signed member anchors, is unrecognised (L4); the second case is open with the further payment systems. A template that states the key with `swarma/per-request` has a pool for that key under L6, as for every key it limits. | L5, L8; L4 |
 | L13 | The debit of one spend is the value that the spend pays away from the payer together with the applicable fees of that spend in the same asset, in atomic units. Change that the spend pays back to the payer is no part of the debit, at whichever address of the payer it lands; a payment to the payer itself with no value leaving it debits its fee alone. A fee in another asset than the spent one has no debit under this profile and is an open question. The executor computes the debit from the spend that it is asked to make, before it makes it, and reserves it in full under L8; a spend whose fee the executor cannot bound before the effect is not made under this kind. Where the confirmed spend shows a smaller fee than the reserved one, the difference is settled under L9; a larger one cannot arise, because the reservation covered the fee that the executor itself set. | L8 |
 | L14 | The maximum for one spend is checked before any reservation. All spends that one request asks for are one spend for this check: their debits under L13 are summed, and a sum above the amount of the key with `swarma/per-request` refuses as `SPEND_OVER` and reserves nothing. Splitting one payment into several outputs, transactions or requests of one identity does not pass the check; two requests with two identities are two spends, and what identifies a request is open with the invocation (L8). Where neither a grant nor, for a child, the child and its row state the key, no check is made. Where it is stated, the check at a request under a child follows the accounts: the sum is held first against the child's amount for the key, which is 0 where the child omits it (L6), and then against the row's amount, under which the child's already lies by L2. | `SPEND_OVER` |
 | L15 | The executor that a grant of this kind names is the service that makes the spend, and it alone meters: it debits its ledger under L7 and L8 and no other side keeps the counter. The evidence of a debit is the spend on the named payment system together with the reservation entry that precedes it; what a receipt states about the spend comes with the members of the receipt, which no reader accepts yet (LIP-0020), and is open. A verifier at the admission of a child compares signed limits under L6 and reads no balance: that the payer holds enough of the asset is no part of this profile, and a spend that the payer cannot fund refuses at the executor without a code of this LIP and reserves nothing. An outcome that is not known — a spend broadcast and neither confirmed nor seen spent otherwise — retains its reservation under L9; when the spend is confirmed the debit stands, and when the same coins are seen spent by a different transaction the reservation is settled at a consumption of 0 for the value and at the fee that was actually paid to make the attempt, if any. What a displaced or replaced spend charges beyond this is an open question. | L8 |
@@ -353,7 +393,7 @@ reported first under L8 where the request consumes that key first.
 | --- | --- |
 | Identifier and resource | Kind `swarma/coins`; the resource is one asset on one payment system (L11). |
 | Unit and integer scale | Atomic units of the asset; for `namecoin:NMC`, 100000000 to one whole coin, as the tree carries it; `amount` in the string form (L1, L11). No amount is a floating-point number, as the item requires and LIP-0020 section 2 has it. |
-| Bounds and rounding | 0 to 18446744073709551615 (L1). No rounding: a debit is a whole number of atomic units or it is not made (L13). |
+| Bounds and rounding | 0 to 18446744073709551615 (L1). No rounding: a debit is a whole number of atomic units or it is not made (L13). Sums and accounts are exact, never wrap, and overflow refuses (section 1, Exact arithmetic). |
 | Period and aggregation | Whole window, per period instance, and one spend, by `period` (L3, L12). An instance is counted in clock time (`swarma/seconds-<S>`, for every resource) or, for a chain resource on the grant's chain, in blocks of that chain (`swarma/blocks-<N>`); the heights and seconds of each instance, half-open, and the reorganisation cases stand in section 1. Debits add inside an instance (L7). |
 | Reservation | The full debit, fee included, durably before the spend (L8, L13). |
 | Concurrency | One journal for parallel requests and replicas (L8). |
@@ -379,16 +419,11 @@ cost is settled after it. In the second table of that section the
 kind is the first case of external service cost; this LIP profiles
 the model case alone and assigns no identifier for the wider kind.
 Its periods are counted in clock time alone, by
-`swarma/seconds-<S>` (L3). A block-counted period makes no sense for
-this kind and this profile states none: the resource is a priced
-model at an executor and has no chain of its own whose blocks could
-count its consumption, the executor meters by its price table at
-the request and not by chain state, and the heights of the grant's
-chain bound the window without giving a rate in time — a window has
-no exact length in wall-clock time (LIP-0008 section 7.1) — so a
-count of blocks would bound cost by a span whose priced length no
-text fixes. A `swarma/blocks-<N>` text under this kind is
-unrecognised (L4).
+`swarma/seconds-<S>` (L3). Clock-only periods are this draft's choice,
+not a claim that a block-counted model limit is impossible. The
+owner's requirement asks for blocks for chain coins; this draft
+assigns no block-counted period to model cost. A
+`swarma/blocks-<N>` text under this kind is unrecognised (L4).
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
@@ -407,8 +442,8 @@ authorizes nothing (L5).
 | --- | --- |
 | Identifier and resource | Kind `swarma/model-cost`; the resource is one priced model at its executor (L16). |
 | Unit and integer scale | One currency in its smallest accounted subdivision; `amount` in the string form (L1, L16). |
-| Bounds and rounding | 0 to 18446744073709551615 (L1). A fractional cost rounds up to the subdivision (L17). |
-| Period and aggregation | Whole window and per period instance (L3, L5), and one request (L18A). An instance is counted in clock time alone, by `swarma/seconds-<S>`; a block-counted period makes no sense for this kind, for the reason at the head of this section, and its text is unrecognised (L4). Settled costs add inside an instance (L7, L18). |
+| Bounds and rounding | 0 to 18446744073709551615 (L1). A fractional quoted cost converts upward to the subdivision (L17); subsequent arithmetic is exact, with no rounding or wrap, and overflow refuses (section 1, Exact arithmetic). |
+| Period and aggregation | Whole window and per period instance (L3, L5), and one request (L18A). An instance is counted in clock time alone, by `swarma/seconds-<S>`, as this draft's choice; a block-counted text is unrecognised (L4). Settled costs add inside an instance (L7, L18). |
 | Reservation | The maximum under the price table, durably before the request; the reservation entry is what is made durable (L8, L17). |
 | Concurrency | One journal for parallel requests and replicas (L8). |
 | Uncertain outcomes | The reserved maximum is retained until reconciled (L9, L18). |
@@ -432,9 +467,7 @@ that section lists as a kind of its own, and it gives the signed
 default output allowance of that kind no member, because
 `swarma-grant/4` has none; both stand in the open questions. Its
 periods are counted in clock time alone, by `swarma/seconds-<S>`
-(L3), for the reason stated at the head of section 3: the resource
-is a model under a token accounting at an executor, which counts
-tokens at the request and has no chain of its own. A
+(L3), as this draft's choice, like model cost in section 3. A
 `swarma/blocks-<N>` text under this kind is unrecognised (L4).
 
 | Rule | Requirement | Refusal |
@@ -454,8 +487,8 @@ fails the instance reserves nothing, as every refused request does.
 | --- | --- |
 | Identifier and resource | Kind `swarma/model-tokens`; the resource is one model under one named token accounting (L19). |
 | Unit and integer scale | `input-token` and `output-token`, one token each; `amount` in the string form (L1, L19). |
-| Bounds and rounding | 0 to 18446744073709551615 (L1). No rounding: a count is a whole number of tokens under its accounting (L20). |
-| Period and aggregation | Whole window and per period instance, separately for input and output (L3, L5, L7), and one request for each unit (L21). An instance is counted in clock time alone, by `swarma/seconds-<S>`; a block-counted period makes no sense for this kind, for the reason at the head of section 3 taken at the head of this section, and its text is unrecognised (L4). |
+| Bounds and rounding | 0 to 18446744073709551615 (L1). No rounding: a count is a whole number of tokens under its accounting (L20). Sums and accounts are exact, never wrap, and overflow refuses (section 1, Exact arithmetic). |
+| Period and aggregation | Whole window and per period instance, separately for input and output (L3, L5, L7), and one request for each unit (L21). An instance is counted in clock time alone, by `swarma/seconds-<S>`, as this draft's choice; a block-counted text is unrecognised (L4). |
 | Reservation | Input at its count, output at the longest permitted, durably before the request (L8, L20). |
 | Concurrency | One journal for parallel requests and replicas (L8). |
 | Uncertain outcomes | Both reservations retained until reconciled; output already held is counted (L9, L20). |
@@ -471,63 +504,61 @@ fails the instance reserves nothing, as every refused request does.
 
 ### 5. Exhaustion and continuation
 
-**Decided by the owner on 2026-11-17, and in force in this
-version.** Ivan Oparin approved the four rules of this section on
-2026-11-17; the co-author's answer is folded in by amendment. The
-paragraph that follows is the one place that states what exhaustion
-and continuation are for the kinds of this LIP, and every other text
-points here: the README, the changelog and the unresolved questions.
-It states the owner's four rules and nothing beyond them: stop and
-report, without revocation; no top-up of an existing grant;
-continuation by a new grant on a new place; long-lived agents get
-limits per period, with a new grant per period. The paragraph uses
-terms that are proposals of this draft and no part of the decision —
-the whole-window account and the account of an instance (L3, L5,
-L7) — to name the counters that the first rule stops on; what is
-open inside the decision stands in the open questions.
+The owner, Ivan Oparin, decided the four rules below on 2026-11-17;
+the co-author's answer is folded in by amendment. Only the quoted
+paragraph is decided and in force in this version. It is the
+decision record to which the README, changelog and unresolved
+questions point, with the four rules' wording unchanged:
 
-When a counter of a grant is exhausted — the whole-window account
-of a key, or the account of the instance that holds the request, is
-at its ceiling, or a reservation under it refuses because its debit
-would pass that ceiling — the executor stops the action under that
-grant: it admits no further request that consumes that key under
-that grant while the ceiling stands, it reports the exhaustion to
-the parent, for a child to the delegating side of its parent and
-for a root grant to its issuer, and the grant is not revoked:
-exhaustion by itself spends no seal and records no closure, so a
-later instance of a period admits again under the same grant where
-the ceiling that stopped the action was an instance account, and a
-whole-window ceiling stops it for the rest of the window; an
-existing grant is never topped up, because for one place of one
-parent the signing service MUST make one signature, ever (LIP-0014
-J4.4 (a)), and a signed amount therefore changes only with a new
-grant; continuation is a new grant on a new place — for a child, a
-new child grant on a new place of the parent (a place is the
-ordinal of a row, LIP-0014 J4.4 (a)), under a row that no child has
-taken, with its own seal and its own accounts, and never a second
-signature for the place of the exhausted child and never a larger
-amount written over it, and for a root grant, a new grant by its
-issuer; and a long-lived agent is given its limits per period, with
-a new grant for each period.
+> stop and report, without revocation; no top-up of an existing grant;
+> continuation by a new grant on a new place; long-lived agents get
+> limits per period, with a new grant per period.
 
-How the fourth rule sits beside LIP-0008 section 2.1 is a reading of
-this draft and no fifth rule. That section, decided on 2026-11-11,
-has each grant cover the whole agreed term and a period divide the
-one window, so that "a new period needs no new grant, no new seal
-and no new issuance record" for a limit whose period stands inside
-one grant, as L3 and L7 carry it. The fourth rule does not take
-that sentence back for such a grant: it gives a long-lived agent
-its authority period by period, each period under a new grant, so
-that the whole-window total of each such grant (L5) is the limit
-for its period and continuation after it is the third rule, never
-a top-up. The window of each such grant is stated in heights like
-every v4 window — the heights of its block-counted period where the
-period counts blocks, and heights converted at issuance where it
-counts clock time (LIP-0008 section 7.1) — and a child so issued
-takes a new place of its parent for each period. This LIP amends no
-sentence of LIP-0008; where the owners want section 2.1 to name
-this issuance pattern, that amendment is theirs to fold in, and
-until then the two texts stand as this paragraph reads them.
+### PROPOSED reading of exhaustion and continuation
+
+This separate subsection is entirely PROPOSED. It needs the owners'
+acceptance, has no interim force and adds nothing to the decided
+paragraph of section 5.
+
+The draft reads an exhausted counter as an account at its ceiling:
+the whole-window account of a key, or the account of the instance
+that holds the request (L3, L5, L7). A refused reservation does not
+exhaust an account that still has room. The extended trigger "a
+reservation under it refuses because its debit would pass that
+ceiling" is not adopted: at 10 of 100, refusing a debit of 95 would
+otherwise strand 90 units and stop a later debit of 5 that L8
+admits. Any proposed extension needs the owner's confirmation and
+must not fire while a smaller request fits, or on the no-finite-
+maximum refusals of L18 and L20. No such extension is in force.
+
+The draft would stop requests consuming the exhausted key while
+that ceiling stands, without a seal spend or a recorded closure.
+It would report to the delegating side of the parent for a child,
+and to the issuer for a root grant; these recipients, the carrier
+and the form of the report are proposed, not part of the decision.
+Whether a later instance can admit again under the same grant is
+also a proposed reading, subject to the fourth rule and the open
+relation to LIP-0008 section 2.1 below.
+
+The draft relates a new place for a child to the ordinal of an
+unused row, with its own seal and accounts, and not a second
+signature or a larger amount for the old place: LIP-0014 J4.4 (a)
+says the signing service MUST make one signature, ever, for one
+place of one parent. Continuation of a root by a new grant from
+its issuer is the draft's proposal, not a decided recipient or
+issuance rule.
+
+The relation of the fourth rule to both sentences of LIP-0008
+section 2.1 remains open: "Each grant covers the whole agreed term"
+and "A new period needs no new grant, no new seal and no new issuance
+record". One possible reading distinguishes accounting periods
+inside a grant from authority issued period by period to a
+long-lived agent. That reading, including a whole-window total per
+such grant, its window in heights under LIP-0008 section 7.1, and
+a new parent place for each child so issued, is PROPOSED only.
+This LIP neither resolves the relation nor amends LIP-0008; the
+owners must decide whether and how to amend that section. No
+reconciliation acquires force pending their answer.
 
 ### 6. Refusals and their order
 
@@ -540,6 +571,7 @@ until then the two texts stand as this paragraph reads them.
 | `OWN_LIMIT_OVER` | A reservation would exceed an own account, of the window or of an instance | L7, L8 | LIP-0026 R5.6 |
 | `ROW_CAP_OVER` | A reservation would exceed a row account, of the window or of an instance | L7, L8 | LIP-0026 R5.6; LIP-0014 J1.3 |
 | `GRANT_DELEGATE` | The pools of a parent do not bound the sums of its templates for a key of the three kinds | L6 | LIP-0020 W11.10 rule 6 |
+| `OBSERVATION_CLOCK` | A clock reading falls in an instance earlier than the latest one already debited for the key | L7; section 1, clock instances | LIP-0022 B3.2, code reused |
 
 The form of a limit refuses in the member step with the codes of that
 step, and no code of this LIP changes their meaning (L1). The refusal
@@ -563,9 +595,10 @@ of the invocation itself (row E0) have no codes and no order against
 E1 and E2 in that table, and this LIP orders nothing against them.
 
 None of these refusals records a closure. Exhaustion is no refusal
-of this table and has no code; what it stops, to whom it is
-reported and how work continues is section 5 alone, and this
-section restates none of it.
+of this table and has no code. The four decided rules stand only
+in the paragraph of section 5; the separate PROPOSED reading and
+the open questions hold the draft's details. This section restates
+none of them.
 
 ### 7. Vectors
 
@@ -590,13 +623,37 @@ maximum for one spend; the same spend against a count of blocks; a
 reservation at a maximum settled below it; input and output against
 a window and an instance; a debit that falls into the next instance;
 a replay charged once; an uncertain outcome retained and then
-reconciled; a counter filled exactly and the next request refused,
-and a counter that no debit fills — at 95 of 100 a debit of 6 —
-refused and exhausted under section 5). Identifiers, models, currencies and accountings in such a
-file would be placeholders, as they are in the vectors of LIP-0026.
+reconciled; a counter filled exactly and the next request refused;
+at 95 of 100 a debit of 6 refused without exhausting the account,
+beside a debit of 5 admitted and filling it exactly). Identifiers,
+models, currencies and accountings in such a file would be
+placeholders, as they are in the vectors of LIP-0026.
 The vectors bind nothing until both owners accept the rules that
 they follow, and no octet of an existing vector file changes for
 this LIP.
+
+These paired text fixtures narrow the exhaustion and exactness
+requirements. They are not an executable vector set or conformance
+evidence. All unrelated checks pass; no per-request ceiling is
+stated unless the case names one. A refusal leaves every account
+and reservation unchanged and performs no effect.
+
+| Case | Refused trace | Valid control |
+| --- | --- | --- |
+| `overshoot-room` | Own account 10 of 100, debit 95: `OWN_LIMIT_OVER`, account stays 10 and is not exhausted | A following debit of 5 is admitted at 15 of 100 |
+| `overshoot-remainder` | Own account 95 of 100, debit 6: `OWN_LIMIT_OVER`, account stays 95 and is not exhausted | A following debit of 5 is admitted at 100, exactly exhausted; a further debit of 1 refuses `OWN_LIMIT_OVER` |
+| `unbounded-cost` | Cost account 0 of 1000, no finite maximum under L18: `OWN_LIMIT_OVER`, no exhaustion | A following finite maximum of 5 is admitted at 5 of 1000 |
+| `unbounded-output` | Output account 0 of 1000, no longest output under L20: `OWN_LIMIT_OVER`, no exhaustion and no input reservation either | A following output maximum of 5, with input within its own ceiling, is admitted |
+| `clock-instance-regression` | After debiting clock instance 2 of length 3600, `now = 7199` selects instance 1: `OBSERVATION_CLOCK`, no account changes | `now = 7200` selects instance 2 and passes the instance check; a debit of 1 against an account at 0 of 100 is admitted |
+| `exact-room` | Own account 9000 of 10000, maximum 1001: `OWN_LIMIT_OVER`, account stays 9000 | Maximum 1000 is admitted at 10000 |
+| `maximum-no-wrap` | Own account 9000 of 10000, maximum 18446744073709551616: `OWN_LIMIT_OVER`, never a debit of 0 | Maximum 1000 is admitted at 10000 |
+| `maximum-offset-no-wrap` | Own account 9000 of 10000, maximum 18446744073709552116: `OWN_LIMIT_OVER`, never a debit of 500 | Maximum 500 is admitted at 9500 |
+| `sum-no-wrap` | L14 spends with debits 18446744073709551615 and 1 sum to 18446744073709551616: `OWN_LIMIT_OVER` against an empty account with ceiling 18446744073709551615 | Debits 18446744073709551614 and 1 sum to 18446744073709551615 and are admitted at that ceiling |
+| `product-no-wrap` | A finite L17 maximum in integer subunits of 9223372036854775808 times 2 is 18446744073709551616: `OWN_LIMIT_OVER` against an empty account with ceiling 18446744073709551615 | 9223372036854775807 times 2 is 18446744073709551614 and is admitted |
+| `account-no-wrap` | Own account 18446744073709551615 at that ceiling, debit 1: `OWN_LIMIT_OVER`, never an account of 0 | At account 18446744073709551614, debit 1 is admitted at the ceiling |
+| `row-no-wrap` | Own account 0, row account 18446744073709551615, both ceilings 18446744073709551615, debit 1: `ROW_CAP_OVER`, neither account changes | With row account 18446744073709551614, debit 1 is admitted in both accounts |
+| `per-request-no-wrap` | Stated per-request ceiling 10000, maximum 18446744073709551616: `SPEND_OVER` before any reservation | Maximum 10000 passes that check and, with an empty own account of ceiling 10000, is admitted |
+| `no-binary64-rounding` | Own account 9007199254740992 at that ceiling, debit 1: `OWN_LIMIT_OVER`, not a rounded account at the ceiling | At account 9007199254740991, debit 1 is admitted at 9007199254740992 |
 
 ## Sources
 
@@ -698,11 +755,12 @@ rule of this LIP makes a third side recount a request.
 
 ## Conformance impact
 
-Section 5 is decided by the owner on 2026-11-17 and in force in
-this version; it changes no member, no octet and no rule of a text
-in force, because the counters that it stops on are the proposed
-accounts of L3, L5 and L7 and nothing of them is in force or
-implemented. No member of `swarma-grant/4` changes, no octet of a
+The paragraph of section 5 that states the four rules is decided
+by the owner on 2026-11-17 and in force in this version. The separate
+PROPOSED reading, including its accounts and triggers, has no
+interim force. The relation of the fourth rule to LIP-0008
+section 2.1 is open, not a claim that no rule of a text in force is
+affected. No member of `swarma-grant/4` changes, no octet of a
 tool or of a vector file changes, and Grant v3 is untouched. A side
 that adopts no profile of this LIP refuses the three kinds as
 `LIMIT_KIND_UNDEFINED`, exactly as version 0.1.57 has it; a side
@@ -718,24 +776,31 @@ and its vectors are described and not built (section 7).
 
 - **The owners' acceptance** of each proposed rule, and first of the
   five points that "What is decided and what is proposed" lists.
-  Section 5 needs no acceptance: it is decided. The co-author's
+  The paragraph of section 5 that states the four rules needs no
+  acceptance: it is decided. Every interpretation outside that
+  paragraph, including the separate PROPOSED reading, needs it.
+  The co-author's
   agreement is pending on the decisions that sections 2 to 4 build
   on, as LIP-0008 section 2 and LIP-0018 section 2 record them, and
   the co-author's answer on section 5 is folded in by amendment.
-- **Section 5, whole.** Exhaustion and continuation are decided by
-  the owner on 2026-11-17 and in force in this version. Still open
-  inside the decision: the carrier and the form of the report to
-  the parent, how a delegating side learns of it without polling
-  the executor, and what code, if any, a request takes after the
-  stop where its debit is 0 and no reservation of L8 would refuse
-  it. The reading that sets the fourth rule beside LIP-0008
-  section 2.1 is this draft's, and whether that section is amended
-  to name the per-period issuance of a long-lived agent is for the
-  owners.
+- **Exhaustion details beyond the four rules.** Only the paragraph
+  of section 5 that states the four rules is decided and in force.
+  The separate PROPOSED reading has no interim force. Open: the
+  trigger beyond an account at its ceiling; the report recipients,
+  carrier and form; how a delegating side learns of it without
+  polling the executor; continuation of a root; and what code, if
+  any, a request takes after the stop that L8 would admit, including
+  both zero and positive debits. The relation to LIP-0008
+  section 2.1 must address both "Each grant covers the whole agreed
+  term" and "A new period needs no new grant, no new seal and no new
+  issuance record". The draft's reconciliation decides nothing;
+  whether and how that section is amended is for the owners.
 - **Period texts beyond the two families.** L3 assigns the
   block-counted and clock-counted families, their counts and the
   boundaries of their instances; every other text refuses under L4.
-  Open: who assigns a further text and in what registry; a block
+  Open: calendar months, calendar years, local-time days and a
+  contract's chosen week alignment; who assigns a further text and
+  in what registry; a block
   count on a chain other than the grant's, whose instance anchor no
   signed member states (L12); what a recovery by starting anew
   charges for an instance account (L7, L9), and whether an instance
