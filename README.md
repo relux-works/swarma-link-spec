@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions
+## Draft profiles and design decisions in v0.1.59
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -986,8 +986,12 @@ halt, operator and closure-journal ends have no admitted DI requester/reason
 pair in station/1 v1; all five additions are explicitly proposed and open
 for its owners (N11 (b)), not merely unbounded. A refusal retains the stop
 duty and alarm and forbids slot reuse without the execution-bound proof.
-Neither text supplies a numeric bound to R08 for them, and `end_to_absence` starts only in `stopping`. The profile
-keeps the grants, the paths, the verdicts and the debits. The executor is the service set of a host: a grant
+Neither text supplies a numeric bound to R08 for them, and
+`end_to_absence` starts only in `stopping`. The root-issuer mapping selects
+start classes only: a standing human stop refuses above R03 and is never
+lifted by a recipient request; a grant-based lift path remains open. The
+profile keeps the grants, the paths, the verdicts and the debits. The
+executor is the service set of a host: a grant
 checker with the chain view and the closure journals, a dispatching service
 with the session journal and the accounts, and the key holder that binds
 each run. The
@@ -1024,8 +1028,9 @@ operator's teardown of a name with a live account to retirement, key
 bindings never being handed over. A restore of a closure journal still
 clears no mark for a closure that fell due unwritten. Ten
 refusals of the base that still have no v4 code are proposed as
-new codes; the child predicate uses the codes of the version 0.1.57 base.
-Every rule is marked as restating a cited text with the state of that text, as proposed, or as open; seven questions are the owners', each with
+new codes; the child predicate uses the codes of the version 0.1.58 base.
+Every rule is marked as restating a cited text with the state of that
+text, as proposed, or as open; seven questions are the owners', each with
 options, costs and a recommendation, and the draft lists what still stands
 open in the station contract and on its dispatcher seam, including the
 unbounded direct-end-to-R08 interval and two exceptions filed against

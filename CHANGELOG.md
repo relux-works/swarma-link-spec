@@ -12,7 +12,8 @@ the profile is adopted by this version, and nothing of it is implemented.
   checker verdict content and currency; and a five-state authority table
   covering 36 events, with journal-before-effect rules and refusal codes.
 - **Admission and station boundaries.** Authenticated root-issuer input
-  for direct starts, atomic final rereads with R03 in the one store,
+  solely for selecting start classes, never lifting a human stop; atomic
+  final profile and human-stop rereads with R03 in the one store;
   restart ordering, quarantine after store loss, and mappings to admitted
   station/1 stop triggers. Five unsupported direct stop reasons and their
   DI requester authority are proposed additions, not admitted runtime
