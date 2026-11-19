@@ -3,6 +3,14 @@
 Draft implementation descriptions do not adopt normative profiles. Their
 decision, protocol and conformance work follows LIP-0001.
 
+The [child-issuer integration companion](lips/LIP-0014-source-contract-proposals.md)
+records H1, T1, the action-profile mapping and O1–O8 as **PROPOSED**,
+clause by clause. For the state of the R8.3 count order, see LIP-0026
+section 8. The remaining LIP-0026 proposal Q2 remains proposed. Other
+acceptance must name the affected clause and exact source text.
+Invocation definitions stay with O2/O3 and contract-party assent with T1;
+native custody, implementation, adoption and conformance remain separate.
+
 | Question | Location and boundary |
 | --- | --- |
 | Adoption and coexistence of landlord, locator and action-service profiles | LIP-0004/0005/0006 remain Draft; historical v0.1 requirements and evidence retain their own meaning. |

@@ -372,9 +372,8 @@ two-age measure. A local calendar limit is no public freshness substitute.
 
 For the state of the R8.3 count order, see LIP-0026 section 8.
 
-The remaining LIP-0026 proposal Q2 stays **PROPOSED**: a verifier binds the
-ordinal to the signed template, range and coin as one signed binding, and
-defines the bound check.
+The remaining parts of LIP-0026 proposal Q2 stay **PROPOSED**;
+LIP-0026 proposal Q2 states them.
 
 ## 11. Paired acceptance cases
 
@@ -393,7 +392,7 @@ flag is not an implementation of T1 or evidence for F6(b).
 | O5 | Readable closure journal with established continuity and no closure allows later checks | Unreadable state: `CLOSURE_JOURNAL_UNAVAILABLE`; lost continuity: `CLOSURE_JOURNAL_FENCED`; neither creates a grant closure or a fresh journal; known closure remains effective after recovery |
 | O7 | A clean parent and a valid selected row pass the document checks | Global pool/overlap/seal/stop defect, including one to which the selected row contributes, or a mandatory foreign-group defect: `GRANT_DELEGATE`; no foreign row-chain lookup |
 | O8 | Otherwise valid observation with tip age 3599 seconds passes this cutoff | Age exactly 3600 seconds: `TIP_AGE`; a fresh initial check followed by stale Repeat also refuses before USE/private entry; no caller downgrade |
-| R8 | The nine-row example resolves ordinal 5 to the exact second range/second coin | Ordinal 0/10: `CHILD_ORDINAL`; swapped signed group order changes the mapping and is never accepted as the same signed parent; used rows are not removed from the count |
+| R8 | The nine-row example of LIP-0026 section 8 resolves ordinal 5 to the exact second range/second coin | Ordinal 0/10: `CHILD_ORDINAL`; swapped signed group order changes the mapping and is never accepted as the same signed parent; used rows are not removed from the count |
 
 The implementation must later demonstrate the intended failure using
 independent observations of private-entry counts, journals and effects,

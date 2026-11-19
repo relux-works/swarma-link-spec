@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.59 — 2026-11-19
+
+Adds a companion to LIP-0014, `lips/LIP-0014-source-contract-proposals.md`.
+It collects **PROPOSED** choices for H1 (identity latch), T1 (contract
+profile), the action-profile mapping and the points O1 to O8 of LIP-0014
+section 8.4. Each choice has its acceptance condition and paired valid and
+forbidden cases.
+
+- It points to LIP-0026 section 8 for the state of the R8.3 count order.
+- LIP-0014 section 8.4, README and UNRESOLVED_QUESTIONS gain a pointer
+  paragraph.
+- No LIP is adopted, and no rule, wire member, vector or implementation changes.
+
 ## 0.1.58 — 2026-11-19
 
 Adds Draft LIP-0031, the first three limit-kind profiles for Grant
