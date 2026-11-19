@@ -13,6 +13,26 @@ forbidden cases.
   paragraph.
 - No LIP is adopted, and no rule, wire member, vector or implementation changes.
 
+Adds Draft LIP-0030, action profile no. 1, an agent session on a host.
+It proposes the authority that a v4 grant gives the host's service set,
+separate from the process lifecycle of station/1 version 1. No rule of
+the profile is adopted by this version, and nothing of it is implemented.
+
+- **Session authority.** Five action leaves for start, restart, renewal,
+  stop and owner halt; starts, level and span limits; height leases;
+  checker verdict content and currency; and a five-state authority table
+  covering 36 events, with journal-before-effect rules and refusal codes.
+- **Admission and station boundaries.** Authenticated root-issuer input
+  solely for selecting start classes, never lifting a human stop; atomic
+  final profile and human-stop rereads with R03 in the one store;
+  restart ordering, quarantine after store loss, and mappings to admitted
+  station/1 stop triggers. Five unsupported direct stop reasons and their
+  DI requester authority are proposed additions, not admitted runtime
+  behavior; refusals retain the stop duty and bar slot reuse without proof.
+- **Draft index and open decisions.** README and unresolved questions
+  record the profile, its owner choices and station-integration gaps.
+  No grant member, wire schema, tool or vector octet changes.
+
 ## 0.1.58 — 2026-11-19
 
 Adds Draft LIP-0031, the first three limit-kind profiles for Grant

@@ -66,7 +66,6 @@ spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
 ## Draft profiles and design decisions in v0.1.59
-
 The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
 collect **PROPOSED** choices for H1 (identity latch), T1 (contract profile),
 the action-profile mapping and the points O1 to O8 of LIP-0014 section 8.4.
@@ -980,6 +979,71 @@ before F17 until a v4 contract profile exists. No member of
 changes; the vector set of the LIP is
 described and not built. Every LIP remains Draft, and nothing of it
 is implemented.
+
+Version 0.1.59 adds the following draft.
+[LIP-0030](lips/LIP-0030-action-profile-agent-session.md) proposes action
+profile no. 1, an agent session on a host: the first profile that would give
+a v4 grant an action at an executor. It defines the authority of a session
+and not the life of a process, which belongs to the station contract of the
+host, now cited as station/1 version 1 where the draft names it: the
+station record and its one store, journal loss and its exits, the start
+fence and restart order are that contract's rows. The profile maps every
+authority end to D's immediate stop-request duty; only an actual R24
+trigger starts the 300-second revocation clock. The direct height, renter,
+halt, operator and closure-journal ends have no admitted DI requester/reason
+pair in station/1 v1; all five additions are explicitly proposed and open
+for its owners (N11 (b)), not merely unbounded. A refusal retains the stop
+duty and alarm and forbids slot reuse without the execution-bound proof.
+Neither text supplies a numeric bound to R08 for them, and
+`end_to_absence` starts only in `stopping`. The root-issuer mapping selects
+start classes only: a standing human stop refuses above R03 and is never
+lifted by a recipient request; a grant-based lift path remains open. The
+profile keeps the grants, the paths, the verdicts and the debits. The
+executor is the service set of a host: a grant
+checker with the chain view and the closure journals, a dispatching service
+with the session journal and the accounts, and the key holder that binds
+each run. The
+checker hands the dispatching service a verdict with fixed content — under
+a restart grant it carries the cited path, whose accounts a restart debits,
+and the session's own path, whose result alone moves its state — owes the
+next one at every tip, at every closure and every 60 seconds, and a verdict
+is current for 120 seconds at most from its observation, a stated margin of
+60 seconds over that duty. The three bounds are the draft's own proposed
+numbers. The draft proposes five action leaves in
+slash form, to start, to restart, to renew, to stop and, for the owner, to
+halt a session, and three limit kinds with their full keys: starts, which is
+an account, and a level and a span, which are checks without an account. It
+adds no member to the grant. The authority has five states, none, session
+held, suspended, ended and quarantined, and one table gives for every state
+and each of 36 events the next state, who acts, the record that is written
+before the effect, and a refusal code of one closed list, or the reason why
+the event cannot occur. An authority ends on a closure of a link or on a
+height, and every other refusal suspends it. The authority lease is counted
+in blocks, not clock time; process-stop duties and their gaps are as stated
+above. A checker that can show a validated
+block of the pinned chain at the lease end ends it by height although its
+observation is not healthy. The last check before a process is
+started reads the tip, the clock and the journals again; its failure only
+refuses, ends nothing and consumes no start. A restart is a new run by a
+signed request and orders no run while an earlier run's start outcome is
+unknown; that a host signs it alone under a restart grant is proposed and
+awaits the owner's yes. A lost, fenced
+or restored station store puts every station of the host in that
+contract's `lost` and quarantines its slot; no restore is an exit and
+nothing is recorded as ended there, and the only exits are its two: the
+operator's re-provision of a name the key service has never bound, and the
+operator's teardown of a name with a live account to retirement, key
+bindings never being handed over. A restore of a closure journal still
+clears no mark for a closure that fell due unwritten. Ten
+refusals of the base that still have no v4 code are proposed as
+new codes; the child predicate uses the codes of the version 0.1.58 base.
+Every rule is marked as restating a cited text with the state of that
+text, as proposed, or as open; seven questions are the owners', each with
+options, costs and a recommendation, and the draft lists what still stands
+open in the station contract and on its dispatcher seam, including the
+unbounded direct-end-to-R08 interval and two exceptions filed against
+LIP-0029 (start-leaf step 10/O2.3 and halt-resend step 11/O4.5). It defines
+no octets and no vectors, and nothing of it is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
