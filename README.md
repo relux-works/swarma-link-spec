@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.58
+**Version:** 0.1.59
 
 **Date:** 2026-11-19
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.58
+## Draft profiles and design decisions
 
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
@@ -972,7 +972,7 @@ changes; the vector set of the LIP is
 described and not built. Every LIP remains Draft, and nothing of it
 is implemented.
 
-Version 0.1.58 (unreleased) adds the following draft.
+Version 0.1.59 adds the following draft.
 [LIP-0030](lips/LIP-0030-action-profile-agent-session.md) proposes action
 profile no. 1, an agent session on a host: the first profile that would give
 a v4 grant an action at an executor. It defines the authority of a session
@@ -982,8 +982,11 @@ station record and its one store, journal loss and its exits, the start
 fence and restart order are that contract's rows. The profile maps every
 authority end to D's immediate stop-request duty; only an actual R24
 trigger starts the 300-second revocation clock. The direct height, renter,
-halt, operator and closure-journal ends have no numeric bound to R08 in
-either text, and `end_to_absence` starts only in `stopping`. The profile
+halt, operator and closure-journal ends have no admitted DI requester/reason
+pair in station/1 v1; all five additions are explicitly proposed and open
+for its owners (N11 (b)), not merely unbounded. A refusal retains the stop
+duty and alarm and forbids slot reuse without the execution-bound proof.
+Neither text supplies a numeric bound to R08 for them, and `end_to_absence` starts only in `stopping`. The profile
 keeps the grants, the paths, the verdicts and the debits. The executor is the service set of a host: a grant
 checker with the chain view and the closure journals, a dispatching service
 with the session journal and the accounts, and the key holder that binds
