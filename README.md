@@ -305,7 +305,14 @@ grant, and every grant binds a contract. A grant's window lies inside its
 contract's window, a framework contract covers several grants over time,
 and a contract can name a seal whose script is its termination clause and
 whose spend, with action `0x08`, ends every grant under it. Grant v3 does
-not change. [LIP-0018](lips/LIP-0018-extension-guide.md) lists what a
+not change. Decisions of Ivan Oparin of 2026-11-17, with the co-author's
+answer pending, amend it in version 0.1.58: the termination type of a
+contract is the type of its seal, a machine field shown from the seal
+script and never from prose, which ends nothing; drafting a contract
+starts with creating its seal; and no grant is issued under a contract
+without a confirmed seal, which the issuer's signing service and every
+verifier check on their own node and refuse without (a paragraph at the
+end of this section states the amendment and what stays open in it). [LIP-0018](lips/LIP-0018-extension-guide.md) lists what a
 proposal for a contract profile, a limit kind or an action name has to
 state, and LIP-0008 section 2 names the further limit kinds of the same
 decision, each with a meaning that is the draft's proposal. These are semantics without bytes, and nothing of them is
@@ -1044,6 +1051,43 @@ open in the station contract and on its dispatcher seam, including the
 unbounded direct-end-to-R08 interval and two exceptions filed against
 LIP-0029 (start-leaf step 10/O2.3 and halt-resend step 11/O4.5). It defines
 no octets and no vectors, and nothing of it is implemented.
+
+Version 0.1.58 records three decisions of Ivan Oparin of 2026-11-17 on the
+contract seal, as an amendment of Draft
+[LIP-0017](lips/LIP-0017-contracts.md) (decisions C10 to C12 there). The
+co-author's answer is pending; it is relayed by Meta by 2026-11-19
+12:00Z, and the LIP stays Draft. The termination type of a contract is
+the type of its seal — issuer only, either party, both together, or
+arbiter, per its script — and it is a machine field of the contract:
+every reader, renderer and user interface shows it from the seal script,
+never from prose, and a prose clause on termination ends nothing
+(section 5, rule 6; section 6, rule 7). Drafting a contract starts with
+creating its seal, which is confirmed before the contract is signed. And
+no grant is issued under a contract without a confirmed seal: the
+issuer's signing service checks before it signs and every verifier at
+admission, each on its own node, that the contract names a seal and that
+the node shows it confirmed with the named script, and both refuse
+without it. This draft names that refusal `CONTRACT_SEAL_MISSING` and
+puts it, for a v4 child, in part (c) of row F6 of
+[LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 8.4
+(rule T11, pair Q28, case S8-30), registered in
+[LIP-0020](lips/LIP-0020-grant-v4-wire-registry.md) section 11.11; the
+part that was (c), the valid contract and the mirror of a grant's terms,
+is part (d) since this version. The code name and that place are this
+version's proposals; the refusal and its two sides are the decision. The
+draft reads the ban in the scope that section 6 already has, v4 grants
+and framework contracts, so Grant v3 does not change, and it keeps the
+contract that no grant binds free to have no seal; whether the decisions
+reach either is open and is stated in LIP-0017 and in
+[UNRESOLVED_QUESTIONS.md](UNRESOLVED_QUESTIONS.md). Also open: how a node
+is read for the confirmation and the script against one tip; the step,
+the code and the closure for a contract seal that is confirmed and then
+spent, which is never this code; and the place of the check at the
+admission of a root grant, for which no step table exists. No member of
+`swarma-grant/4` names a contract seal, no octet of a grant changes, and
+the vectors of the new part are planned on stated facts and not
+generated. Every LIP remains Draft, and nothing of this version is
+implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

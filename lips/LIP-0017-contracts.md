@@ -26,11 +26,17 @@ Two rules connect a contract with the grants under it. A grant's window
 lies inside its contract's window, so one framework contract can cover many
 grants over time. And a contract can name a seal of its own: an output
 whose script says who may end the contract, and whose spend ends every
-grant under it.
+grant under it. Decisions of 2026-11-17 make that seal the whole
+termination rule of the contract and a condition of issuance: the
+termination type of a contract is the type of its seal, shown by every
+reader from the seal's script and never from prose; drafting a contract
+starts with creating its seal; and no grant is issued under a contract
+without a confirmed seal (sections 5 and 6).
 
-The LIP records Ivan Oparin's decisions of 2026-11-14; the co-author's
-agreement is pending. It proposes semantics without canonical bytes, and
-nothing of it is implemented.
+The LIP records Ivan Oparin's decisions of 2026-11-14 and, since this
+amendment, of 2026-11-17; the co-author's agreement is pending. It
+proposes semantics without canonical bytes, and nothing of it is
+implemented.
 
 ## Decisions recorded
 
@@ -49,12 +55,29 @@ the co-author agrees; adoption follows LIP-0001.
 | C8. Contract seal | For v4 and for framework contracts: the contract names its own confirmed output. Every grant under it also requires that output unspent, and one spend ends them all. The script of the output encodes the termination clause: the issuer alone, either party, both together, or an arbiter. The spend carries a frame with the hash of the signed termination statement. v3 stays as it is: the issuer spends seals, and the reason follows LIP-0011. |
 | C9. Configuration | The contract carries the hash of the configuration manifest that the parties agreed on. The manifest is expressed only through Curator profiles, Curator skills, from the catalog or custom and reviewed, and the systems that the agent may use. Both parties sign it with the contract, and the platform executes exactly it. For a rental the slot launcher composes the agent's read-only runtime context from the pinned profile, the human terms of the contract, the machine terms of the grant and any scope text. |
 
-The nine directions are the owner's. Everything else in this LIP is the
-draft's proposal and is not decided: the members of the contract object, the
-construction of its identifier, the two action numbers, the checks of a
-reader and their order, the limit of one framework contract above a
-contract, and, in section 8, which contracts must carry the configuration
-hash and what a reader and a launcher refuse.
+Ivan Oparin decided three further points on 2026-11-17. The co-author's
+answer on them is pending; it is relayed by Meta by 2026-11-19 12:00Z. The
+labels C10 to C12 are this draft's numbering, continuing the table above.
+
+| Decision | Direction |
+| --- | --- |
+| C10. The seal decides termination | The termination type of a contract is the type of its seal: issuer only, either party, both together, or arbiter, per its script. It is a machine field of the contract, and every reader, renderer and user interface shows it from the seal script, never from prose. A prose clause on termination ends nothing (section 5, rule 6). |
+| C11. Drafting starts with the seal | Drafting a contract starts with creating its seal. |
+| C12. No grant without a contract seal | A grant is not issued under a contract without a confirmed seal. The issuer's signing service and every verifier check this deterministically and refuse. |
+
+The nine directions of 2026-11-14 and the three of 2026-11-17 are the
+owner's. Everything else in this LIP is the draft's proposal and is not
+decided: the members of the contract object, the construction of its
+identifier, the two action numbers, the checks of a reader and their order,
+the limit of one framework contract above a contract, and, in section 8,
+which contracts must carry the configuration hash and what a reader and a
+launcher refuse. Of the amendment of 2026-11-17 the same holds for its
+form: the name of the new refusal code, `CONTRACT_SEAL_MISSING` (section 6),
+its place in the order tables of LIP-0014 section 8.4 and LIP-0020
+section 11.11, and the readings in sections 5 and 6 that state the scope
+of C11 and C12 against Grant v3 and against a contract without a grant,
+whose questions the open questions below name. The refusal itself, and
+that both sides make it, are the decided part of C12.
 
 ## Motivation
 
@@ -117,7 +140,7 @@ their bytes come with a profile (LIP-0018).
 | Clauses | An ordered list. A clause holds free text, or machine members, or both. |
 | Salts | One random value for the contract and one for each clause (section 2). |
 | Framework | Optional. The identifier of the one framework contract that this contract stands under (section 5). |
-| Seal | Optional. The contract's own seal (section 6). |
+| Seal | The contract's own seal (section 6). Required in a contract under which a v4 grant is issued and in a framework contract (decision C12); a contract that no grant binds may have none. Its script gives the contract's termination type, a machine member that a reader derives from the script (decision C10, section 6). |
 | Assent output | Optional. The output whose spend shows assent on chain (section 4). |
 | Configuration | The hash of the configuration manifest that the parties agreed on. The profile of a contract under which the platform starts an agent requires it; other contracts carry none (section 8). |
 
@@ -236,7 +259,28 @@ open.
    that rule is the issuer's spend of a grant's seal. Under section 6 it is
    the spend of the contract seal by the parties that its script names. A
    clause that states reasons for an end in words binds the parties and
-   ends nothing by itself; LIP-0011 says the same of a verdict.
+   ends nothing by itself; LIP-0011 says the same of a verdict. By decision
+   C10 of 2026-11-17 the termination type of a contract is the type of its
+   seal — issuer only, either party, both together, or arbiter, per its
+   script (section 6) — and no other. The type is a machine field of the
+   contract: every reader, renderer and user interface MUST derive the
+   type that it shows from the script of the seal that the contract
+   names, and MUST NOT take it from the prose of a clause, from a summary
+   or from any other text. A prose clause on termination, whether it
+   states reasons or names a party that may end the contract, ends
+   nothing and changes no type; where the prose and the script say
+   different things, the script decides what is shown and what ends the
+   contract, and the prose binds the parties as text alone. A contract
+   that names no seal has no termination type to show, and a reader MUST
+   NOT supply one from its prose.
+7. **No grant without a contract seal.** By decision C12 of 2026-11-17 a
+   grant MUST NOT be issued under a contract without a confirmed seal.
+   Section 6 states the check, its scope and its refusal code: the
+   issuer's signing service makes it before it signs, and every verifier
+   makes it at admission, each deterministically on its own node. A
+   contract without a seal, or whose named seal the node does not show
+   confirmed as named, therefore carries no grant in the scope of
+   section 6, however complete its text and its signatures are.
 
 ### 6. The contract seal
 
@@ -246,9 +290,27 @@ LIP-0011 gives the form of the reason. The grants under a contract are the
 grants that bind it and, for a framework contract, the grants whose own
 contract names it.
 
-A contract MAY name a seal of its own: an output, given by transaction,
-index and script, that is confirmed before the contract is signed. The
-script of the seal is the termination clause of the contract:
+By decision C12 of 2026-11-17 a contract in the scope of this section —
+a contract under which a v4 grant is issued, and a framework contract —
+MUST name a seal of its own: an output, given by transaction, index and
+script, that is confirmed before the contract is signed. A contract that
+no grant binds MAY name one and MAY have none; whether decision C11 takes
+that choice away is open (see "Open questions"). Grant v3 does not change,
+as the paragraph above says: a minimal contract that a v3 grant binds
+needs no contract seal under this section, and whether C12 is meant to
+reach v3 as well, against decision C8, is open there too. By decision C11
+drafting a contract starts with creating its seal. In the scope above
+that is an order, not a style: the parties first create the seal output,
+whose script fixes the termination type below; the contract then names
+that output, and it is signed only once the output is confirmed, as a
+seal exists before its grant (LIP-0008 section 9). A contract therefore
+never waits for a seal that is still to be made, and its identifier,
+which commits to the parts other than the clauses (section 2), commits
+to a seal that already exists on the chain. The script of the seal is
+the termination clause of the contract, and by decision C10 its type is
+the contract's termination type, a machine field of the contract that
+every reader, renderer and user interface MUST show from the seal script
+and never from prose (section 5, rule 6):
 
 | Termination clause | Who may end the contract | Script of the seal |
 | --- | --- | --- |
@@ -282,6 +344,42 @@ output, a LIP-0005 frame with a new action:
    other party and an arbiter find the statement behind an ending. A frame
    that the seal signatures do not cover is no evidence, and the contract
    is ended all the same.
+6. **No grant without a confirmed seal (decision C12).** Before a grant
+   in the scope of this section is signed, the issuer's signing service
+   MUST check, and at every admission every verifier MUST check, each on
+   its own node and in the observation of that signing or admission, that
+   the contract that the grant binds names a contract seal and that the
+   seal is confirmed as named: the named transaction is confirmed in the
+   active chain, it has an output at the named index, and the script of
+   that output is, octet for octet, the script that the contract names.
+   The check is deterministic: the same contract document, read against
+   the same confirmed chain, gives the same answer at every side, and no
+   side takes the fact from the party that presents the grant or asks for
+   the signature. Where the contract names no seal, or the node shows no
+   such confirmed output, or the output's script is another script, the
+   signing service MUST NOT sign the grant and a verifier MUST refuse it,
+   both as `CONTRACT_SEAL_MISSING`. The name of the code is this draft's
+   proposal; the refusal, and that both sides make it, are the decision.
+   Its place at the admission of a v4 child is part (c) of row F6 of
+   LIP-0014 section 8.4, registered in LIP-0020 section 11.11; the place
+   is the draft's proposal of that amendment. The refusal records no
+   closure: nothing has ended, the contract was never in a state to carry
+   the grant. A seal that is confirmed as named and then spent is not
+   this code: it ends the contract under rules 1 and 2 above, whose
+   closure and code in an order table stay open below. A read that proves
+   nothing shows no confirmed seal either: no side signs or admits on its
+   strength, as unavailable data never permits an effect (LIP-0008
+   section 4, step 3), and this rule assigns it no code of its own.
+7. **The type that is shown (decision C10).** A reader, a renderer and a
+   user interface derive the termination type from the script of the
+   named seal, by the script forms of the contract's profile, and show
+   that type. They MUST NOT show a type taken from prose, and a type that
+   prose states beside a seal of another type is not shown instead and
+   not shown beside it as an alternative. The exact scripts of the four
+   rows are open (see "Open questions"), so which script gives which row
+   is fixed with those scripts; until then no reader classifies a script
+   that its profile does not give a form, and it has no type to show for
+   it. This rule assigns that case no code.
 
 Each grant keeps its own seal, whose spend ends that one grant. The
 contract seal adds a second way to end, for all grants at once and for the
@@ -302,7 +400,7 @@ The scenarios show which objects each kind of contract uses:
 
 | Scenario | Parties | Contract | Grants under it | Who can end it |
 | --- | --- | --- | --- | --- |
-| Rental of an agent | A renter and the operator who rents the agent out | The booking contract, with the price, the period and the limits | At least a TEXT grant and an EFFECT grant, each for the whole term (LIP-0008 section 2.1) | The issuer, by the seal of each grant |
+| Rental of an agent | A renter and the operator who rents the agent out | The booking contract, with the price, the period and the limits | At least a TEXT grant and an EFFECT grant, each for the whole term (LIP-0008 section 2.1) | By the contract seal, as its script states; the issuer also by the seal of each grant |
 | Trust between the agents of two owners | A principal and an agent of another owner | A trust contract (LIP-0013) | One grant; under LIP-0014 also child grants | The issuer, by the seal of the grant |
 | Services between two companies | Two companies | A framework contract for a year, anchored under section 3 | One grant for each order, each inside the year | Either company, when the termination clause says "either party" |
 | Employment | A company and a person | A framework contract for the employment | Grants that let the person, or the person's agent, act on the company's resources | The parties together, or an arbiter, when the clause says so |
@@ -385,7 +483,17 @@ use" lists are open.
 
 - **Text binds no machine.** A clause in words is applied by people and by
   agents and is judged afterwards. Only machine members and the seals stop
-  anything.
+  anything. Since decision C10 this holds for what a reader shows as
+  well: a termination type read from prose can promise an end that the
+  seal's script gives to nobody, or hide an end that it gives to the other
+  party, so the type is shown from the script alone.
+- **A contract without a confirmed seal carries no grant** in the scope
+  of section 6 (decision C12). The check closes the gap in which a grant
+  was live under a contract that nothing could end as its text promised,
+  because the seal that the text named was never created or never
+  confirmed. It proves confirmation and script alone: who holds the
+  seal's keys, and whether they still exist, no read of the output shows,
+  so a seal that nobody can spend passes the check and ends nothing.
 - **The contract seal moves power.** Under "either party" the recipient of
   the grants can end them, and so can a thief of either party's seal key.
   The thief ends authority and creates none. Under "both together" a party
@@ -412,6 +520,8 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 | A contract of profile `/1` whose window equals the grant's | A `/1` contract with another window refuses as `CONTRACT_MISMATCH`, as today. |
 | A contract of three clauses; the second is disclosed with its salt and with the commitments of the other two, and the identifier recomputes | A changed clause, a wrong salt and commitments in another order do not recompute. |
 | A v4 grant under a contract whose seal is unspent | The contract seal spent, in the mempool or in a block: every grant under the contract refuses, while the seal of each grant is unspent. |
+| A v4 grant under a contract whose named seal is confirmed in the active chain with the named script: the signing service signs and a verifier passes this check | The contract names no seal; the named transaction is unconfirmed or unknown; it has no output at the named index; the output has another script: each refuses as `CONTRACT_SEAL_MISSING` at the signing service, with no signature, and at a verifier, with no closure. A seal confirmed as named and spent is not this code. |
+| A contract whose prose and whose seal script give the same termination type: the reader shows that type | Prose that names another type than the seal script: the reader shows the type of the script, and the prose ends nothing. A contract with no seal: no type is shown from its prose. |
 | A termination frame that the signatures on the seal input cover | A frame in another transaction, and one that the signatures do not cover: the contract is ended by the spend, and the frame is no evidence. |
 | An anchor that spends the assent output that the contract names | An anchor that spends another output shows no assent on chain; the signatures of the contract stand. |
 | A grant under a contract that names a framework contract, all three windows nested | A contract whose window reaches outside its framework contract refuses, and so does a framework contract that names another one. |
@@ -431,7 +541,27 @@ None while this LIP is a Draft. A future vector set pairs these controls:
 - Whether one level of framework contract is enough.
 - Which key of a party signs a contract under which no grant is issued.
 - The closure that a verifier records for a spent contract seal, which
-  belongs to the closure profile of v4 (LIP-0008 section 5.1).
+  belongs to the closure profile of v4 (LIP-0008 section 5.1), and with it
+  the step and the code at which an order table reports a confirmed
+  contract seal that is spent; section 6, rule 6, assigns
+  `CONTRACT_SEAL_MISSING` to a seal that is absent or not confirmed as
+  named, and to no spend.
+- Whether decision C12 of 2026-11-17 reaches a contract that a Grant v3
+  grant binds. Decision C8 says that v3 stays as it is, and sections 5
+  and 6 read C12 in the scope of section 6 — v4 grants and framework
+  contracts — so a minimal v3 contract needs no contract seal here. If
+  the owner meant every grant, the v3 profiles change, and no text says
+  how.
+- Whether decision C11 leaves a contract that no grant binds free to
+  have no seal, as the last row of section 7 has it, or takes that choice
+  away, so that every contract is drafted from a seal and every contract
+  has a termination type. Sections 5 and 6 state the first reading and
+  keep the case.
+- How a node is read for the confirmation and the script of a named
+  contract seal against one tip, in the observation of the signing or the
+  admission; section 6, rule 6, states the facts that the check needs
+  and no read for them, as the reads for other seals are open in their
+  profiles.
 - Refunds at an early end, which LIP-0011 leaves to the contract.
 - The bytes of a configuration manifest, how a launcher recomputes its
   hash, and the list of systems that an agent may use.

@@ -1,5 +1,103 @@
 # Changelog
 
+## 0.1.58 — 2026-11-17
+
+Records three owner decisions on the contract seal as an amendment of
+Draft LIP-0017. No member of `swarma-grant/4` changes, and no octet of a
+tool or of a vector file changes. Every LIP stays a Draft, and nothing of
+this version is implemented.
+
+**State, and its source.** Ivan Oparin decided the three points on
+2026-11-17. The co-author's answer is pending; it is relayed by Meta by
+2026-11-19 12:00Z, and LIP-0017 stays Draft until the co-author agrees,
+under LIP-0001. No decision of this version is put in force without that
+answer, and no earlier order is stretched to it. What is decided and what
+is this draft's form are stated apart in each place: the refusal without
+a confirmed seal, at the issuer's signing service and at every verifier,
+is decided; its code name, its place in the order tables, and the two
+scope readings below are proposals of this version.
+
+- **The seal decides termination (LIP-0017, decision C10; section 5,
+  rule 6; section 6, rule 7).** The termination type of a contract is the
+  type of its seal: issuer only, either party, both together, or arbiter,
+  per its script. The type is a machine field of the contract, and every
+  reader, renderer and user interface MUST show it from the seal script
+  and MUST NOT take it from prose. Section 5, rule 6, already said that a
+  clause in words ends nothing; it now says the same of a type that prose
+  states. Where prose and script differ, the script decides what is shown
+  and what ends the contract. A contract with no seal has no type to
+  show, and none is supplied from its prose. Which script gives which of
+  the four types is fixed with the scripts of the four clauses, which
+  stay open.
+- **Drafting starts with the seal (LIP-0017, decision C11; section 6).**
+  The parties first create the seal output; the contract then names it
+  and is signed only once it is confirmed. That the seal is confirmed
+  before the contract is signed is the sentence that section 6 already
+  had; the order before it is new. The identifier of the contract, which
+  commits to the parts other than the clauses (section 2), therefore
+  commits to a seal that already exists.
+- **No grant without a contract seal (LIP-0017, decision C12; section 5,
+  rule 7; section 6, rule 6).** A grant MUST NOT be issued under a
+  contract without a confirmed seal. The issuer's signing service checks
+  before it signs, and every verifier at admission, each on its own node
+  in its observation, that the contract names a seal and that the node
+  shows it confirmed as named: the named transaction confirmed in the
+  active chain, an output at the named index, and its script octet for
+  octet the named script. A contract that names no seal, or whose seal
+  the node does not so show, is refused by both sides with no signature
+  and no closure. One code is new, `CONTRACT_SEAL_MISSING`, counted from
+  the table of LIP-0020 section 11.11. A seal that is confirmed as named
+  and then spent is not this code: it ends the contract under rules 1 and
+  2 of section 6, and its step, code and closure stay open. A read that
+  proves nothing is given no code; no side signs or admits on it.
+- **Scope, as this draft reads it.** LIP-0017 section 6 is for v4 grants
+  and for framework contracts and says that Grant v3 does not change
+  (decision C8). Sections 5 and 6 read C11 and C12 in that scope: a
+  contract that a v4 grant binds and a framework contract MUST name a
+  seal, a minimal contract that a v3 grant binds needs none here, and a
+  contract that no grant binds may have none, as the last row of
+  section 7 has it. Whether the owner meant the ban for every grant, v3
+  included, against C8, and whether C11 takes the seal-less contract
+  away, are open and are stated in LIP-0017 and in the unresolved
+  questions. In section 1 the part "Seal" is no longer "Optional"
+  without qualification, and the rental row of section 7 now ends by the
+  contract seal as its script states, beside the seal of each grant.
+- **The step of a v4 child (LIP-0014 section 8.4, row F6, part (c); rule
+  T11; pair Q28; case S8-30; section 8.5, I4).** Row F6 gains one part
+  and no row is added: after the contract has recomputed to the
+  identifier that both grants bind, and before the findings that wait
+  for a v4 contract profile, both sides judge the confirmed contract
+  seal and refuse as `CONTRACT_SEAL_MISSING`. A document that names no
+  seal is reported there and not under the open code of the profile
+  findings. The part that version 0.1.55 numbered (c) — a valid contract
+  of its profile, mirroring the terms of each grant — is part (d) since
+  this version, and each place that cited it says so: rules T1 and T11,
+  open point O4, sections 8.5 (I4), 8.6 and 8.7 of LIP-0014, and
+  LIP-0020 section 11.11. Texts of versions 0.1.55 to 0.1.57 that cite
+  part (c), the entries below among them, mean that part. The vectors
+  `step-f-39` to `step-f-41` are planned on stated facts, as every result
+  at or after part (b) is, and none is generated; none is planned for a
+  spent contract seal. Because part (c) reads a node, it stands in the
+  repeat of step 6 of the order of one request (LIP-0014 section 11.1)
+  between I3 and I5, refused there as event 12 with the place held; the
+  principle of that step, every check of step 1 that reads a node or a
+  journal, already reaches it, so only its enumerations, there and in
+  row I11 of section 8.5, are amended in place and marked there.
+- **The wire registry (LIP-0020 section 11.11).** A grant gives its
+  contract seal through `contract` alone: no member of `swarma-grant/4`
+  names it, which the table "Which rule reads which member" now states.
+  The new code is registered beside the codes of version 0.1.55, in the
+  state of W11.11. It is no fifth comparison of W11.11, which keeps its
+  four. For a root grant the duty and the code are the same (LIP-0017
+  section 6, rule 6), and no step table fixes its place among the checks
+  of a root; none is proposed.
+- **Left open.** The co-author's answer on C10 to C12 and on every form
+  that this version marks as its own: the code name and its place; the
+  two scope readings; how a node is read for the confirmation and the
+  script of a contract seal against one tip; the step, the code and the
+  closure for a spent contract seal; and the scripts of the four
+  termination clauses, with the rest of LIP-0017's open questions.
+
 ## 0.1.60 — 2026-11-19
 
 Adds a companion to LIP-0014, `lips/LIP-0014-source-contract-proposals.md`.

@@ -81,6 +81,17 @@ stretched to these two additions. The steps at which they stand are those
 of LIP-0014 section 8.4, which has the same state. No octet of a grant and
 no vector of section 12 changes.
 
+Version 0.1.58 adds no member either. It registers in section 11.11 one
+further code, `CONTRACT_SEAL_MISSING`, for the check that the contract
+which a grant binds has the confirmed seal that it names. The refusal is
+decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17; the co-author's answer
+is pending, relayed by Meta by 2026-11-19 12:00Z), at the issuer's signing
+service and at every verifier. The code name and its step, part (c) of
+row F6 of LIP-0014 section 8.4, are proposals of version 0.1.58 in the
+state of W11.11 and of that section. No member of `swarma-grant/4` names
+a contract seal; the grant gives the seal's contract through `contract`
+alone, and no octet and no vector changes.
+
 The requirements that the proposal meets are Draft text of LIP-0008: a type
 and a version inside the signed bytes, one tagged digest for each type, one
 identifier for each object, strict BIP-340 verification, and RFC 8785 as the
@@ -1362,6 +1373,7 @@ this section. No rule of this table is changed here.
 | The issuer rule (LIP-0008 section 3; LIP-0021 section 7.1) | `issuer.name`, `issuer.registration`, `issuer.owner`, `issuer.grant_key`, `recent_block` |
 | The window (LIP-0008 section 7.1) and the recent block (LIP-0022 section 4) | `not_before_height`, `not_after_height`, `recent_block` |
 | The seal (LIP-0008 SB2, SB3; LIP-0024 E1.2) and the linkage output (LIP-0023 C2.3) | `seal` |
+| The contract seal (LIP-0017 section 6, rule 6) | `contract` alone: no member of the grant names the contract seal, which the contract document that `contract` binds names; its confirmation and its script are read on the side's own node, and no grant member is compared |
 | The assent, the consent and the issuance (sections 7 and 8) | `genesis`, `contract`, `issuer.grant_key`, `recipient` |
 | A recipient by name (LIP-0008 section 3.1; LIP-0021 section 7.2) | `recipient.name`, `recipient.owner` |
 | The executor and the action (LIP-0008 section 4) | `executor`, `actions` |
@@ -1464,11 +1476,37 @@ section 2.5, which reports that fields of a v3 contract differ from fields
 of its grant, and not `CONTRACT_HASH` of the same section, which reports a
 plain hash. The v4 counterpart of `CONTRACT_MISMATCH`, the mirror of the
 terms of a grant in its contract, has no code yet; it gets one with the v4
-contract profile, as part (c) of row F6. `CHILD_CONTRACT_DIFFERS`, first
+contract profile, as part (d) of row F6, part (c) through version 0.1.57. `CHILD_CONTRACT_DIFFERS`, first
 called `CHILD_CONTRACT_MISMATCH`, follows `CHILD_TEXT_DIFFERS` of LIP-0014
 section 3.4, which reports the same relation between a child and its
 parent for a text hash. `CONTRACT_NOT_PRESENTED` reports a missing input
 and no finding about a contract.
+
+**Code of version 0.1.58.** One further code is registered here, for a
+checker, proposed with the row that reports it and reported by no
+pipeline of section 9. It is no fifth comparison of W11.11: the four
+above compare a child with its parent on their signed octets, and this
+one holds a grant, root or child, against the seal of the contract that
+it binds, which no member of the grant names. At the admission of a
+child it stands where the path is held against that one contract,
+between the recomputed identifier and the open findings that wait for a
+v4 contract profile (LIP-0014 section 8.4, row F6 and rule T11). For a
+root grant, LIP-0017 section 6, rule 6, states the same duty of the
+issuer's signing service and of every verifier and this table gives it
+the same code; no step table of a root admission fixes its place against
+the other checks of a root, and none is proposed here.
+
+| Code | What it reports | Step | Again | Defined by | State |
+| --- | --- | --- | --- | --- | --- |
+| `CONTRACT_SEAL_MISSING` | The contract that the grant binds names no contract seal, or the side's own node does not show the named seal confirmed as named in its observation: the named transaction not confirmed in the active chain, no output at the named index, or an output with another script than the contract names. A seal that is confirmed as named and spent is not this code, and its spend gets no step or code here. At an issuer no signature exists | F6, part (c) | no where the document names no seal; state where the node decides; no closure in either case | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The refusal, at the signing service and at every verifier, is decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17), with the co-author's answer pending. The code name and its step are new proposals of version 0.1.58 |
+
+The name is chosen against the same neighbours: it is not `SEAL_OUTPUT`,
+`SEAL_SCRIPT` or `SEAL_PROFILE`, which report the seal that a grant itself
+names in its member `seal` (LIP-0008 SB2), and not `CONTRACT_ID` or
+`CONTRACT_NOT_PRESENTED`, which report the document. One name covers the
+seal that the document does not name and the seal that it names without
+the confirmed output behind it, because decision C12 gives both one
+answer: no grant under that contract.
 
 Open beside these codes, and named in LIP-0014 section 8.4 as O2 to O4: the
 code of a request that is not authenticated, the codes of the checks of an
@@ -1769,7 +1807,10 @@ list
 `not_exercised` stand as they were made for version 0.1.53: not one octet
 of the file changes with version 0.1.55, and the list names the four codes
 of the table above and not the later ones. LIP-0014 section 8.7 plans the
-vectors of the steps.
+vectors of the steps. Version 0.1.58 adds `CONTRACT_SEAL_MISSING` to that
+list in the same state: a check of a signing and of an admission, which
+the pipeline reports not, with no vector here and its plan in LIP-0014
+section 8.7.
 
 The document step has four vectors on the octets of a grant beside those of
 section 10: a signed form that stops before its last octet (`WIRE_JSON`), a
@@ -2072,8 +2113,9 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   `DELEGATE_KEY_REUSE` and `SEAL_PROFILE` on the octets of grants. The last
   three have no vector on a v4 grant anywhere (section 12). The same holds
   for the codes of W11.11 and W11.14 and for `CONTRACT_NOT_PRESENTED`,
-  `CONTRACT_ID` and `CHILD_NOT_LIVE`; LIP-0014 section 8.7 plans vectors
-  for them, plans none for a result that this version cannot compute, and
+  `CONTRACT_ID`, `CONTRACT_SEAL_MISSING` and `CHILD_NOT_LIVE`; LIP-0014
+  section 8.7 plans vectors for them, on stated facts for the contract
+  seal, plans none for a result that this version cannot compute, and
   generates none.
 - **The registries of action names and of limit kinds**, with the meaning
   of a period (LIP-0007, LIP-0018; LIP-0008 sections 2 and 12.3). Section
@@ -2096,9 +2138,15 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   that does not mirror the terms of its grant, with the preimage of the
   identifier (LIP-0017 section 2), without which `CONTRACT_ID` cannot be
   computed. They come with a v4 contract profile (LIP-0014 section 8.4,
-  open point O4). Open with the members of the invocation: the code of a
-  request that is not authenticated and the codes of the checks of an
-  invocation (O2, O3).
+  open point O4). Since version 0.1.58 one code stands between the
+  identifier and those two: `CONTRACT_SEAL_MISSING`, for decision C12 of
+  LIP-0017, whose refusal Ivan Oparin decided on 2026-11-17 and whose
+  name, step and node read are proposals of that version, with the
+  co-author's answer pending. No step or code is stated for a contract
+  seal that is confirmed as named and spent, and no step table fixes the
+  place of the contract-seal check at the admission of a root grant.
+  Open with the members of the invocation: the code of a request that is
+  not authenticated and the codes of the checks of an invocation (O2, O3).
 - **The reading of a payload before it is signed.** LIP-0014 section 8.4,
   rule T7, proposes five steps for the signing service of the delegation
   key. W9.1 has no class for it and gains one by amendment if the rule is
