@@ -936,16 +936,24 @@ input and output ceilings per period under a named model and
 token-accounting profile. The three kinds share the reading of
 `period`, the comparison of a child against the template of its row
 and the pool of its parent (count times amount, LIP-0026 section 8),
-and the accounts of a period. Exhaustion and continuation stand in
-one paragraph, section 5 of the LIP, to which every other text
-points; the owner decided the paragraph on 2026-11-17. Two refusal codes are new, `LIMIT_UNSUPPORTED` and
-`SPEND_OVER`; every other refusal takes a code that a landed text
-already names. LIP-0020 section 11.14 enters the three kinds in the
-registry of limit kinds, each proposed by version 0.1.58, LIP-0031;
-the registry of action identifiers is untouched. Every rule is the
-draft's proposal, neither owner has decided one, and nothing of it is
-in force: a side that runs no profile of the LIP refuses the three
-kinds as before. No member of `swarma-grant/4` changes, and no octet
+and the accounts of a period. A period is stated for every kind in
+clock time, and for chain coins also in blocks of that chain, under
+the owner's requirement of 2026-11-17; the model kinds state why
+their periods count clock time alone. A child's period counting
+must be its template's, as one of its keys. Exhaustion and
+continuation stand in one paragraph, section 5 of the LIP, to which
+every other text points; the owner decided that paragraph on
+2026-11-17, and it is in force in this version. Two refusal codes
+are new, `LIMIT_UNSUPPORTED` and `SPEND_OVER`; every other refusal
+takes a code that a landed text already names. LIP-0020
+section 11.14 enters the three kinds in the registry of limit
+kinds, each proposed by version 0.1.58, LIP-0031; the registry of
+action identifiers is untouched. Every rule except section 5 is
+the draft's proposal, neither owner has decided one, and nothing
+else of it is in force: a side that runs no profile of the LIP
+refuses the three kinds as before, and even at a side that runs
+one, row F6 of LIP-0014 section 8.4 ends every child admission
+before F17 until a v4 contract profile exists. No member of `swarma-grant/4` changes, and no octet
 of a tool or of a vector file changes; the vector set of the LIP is
 described and not built. Every LIP remains Draft, and nothing of it
 is implemented.

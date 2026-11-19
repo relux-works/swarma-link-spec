@@ -3,9 +3,14 @@
 ## 0.1.58 — 2026-11-17
 
 Adds Draft LIP-0031, the first three limit-kind profiles for Grant
-v4, and enters their kinds in the registry of LIP-0020 W11.14. Every
-rule of the new LIP is proposed; nothing of it is in force by this
-text, and neither owner has decided a rule of it. No member of
+v4, and enters their kinds in the registry of LIP-0020 W11.14.
+Section 5 of the new LIP is decided by the owner on 2026-11-17 and
+in force in this version; every other rule of it is proposed,
+nothing else of it is in force by this text, and neither owner has
+decided another rule of it. The owner's requirement of the same day
+that a period be expressible in clock time and, for chain coins, in
+blocks is recorded in the LIP, and the rules that carry it are
+proposed like the rest. No member of
 `swarma-grant/4` changes, and no octet of a tool or of a vector file
 changes. Every LIP stays a Draft, and nothing of this version is
 implemented.
@@ -25,21 +30,32 @@ implemented.
   section 2, the comparison of a child against the template of its
   row and the pool of its parent, and who meters on what evidence.
   The kinds share one reading of `period` and one account for each
-  period instance. Two codes are new, `LIMIT_UNSUPPORTED` and
-  `SPEND_OVER`; the rest are codes that landed texts already name.
-  The vector set is described and not built.
+  period instance. That reading states the period item of
+  LIP-0018 section 2 for every kind: clock time for all three, and
+  blocks of the chain for chain coins, with the half-open instance
+  arithmetic and the reorganisation cases; the two model kinds
+  state why a block-counted period makes no sense for them. A
+  child's period counting must be its template's. Two codes are
+  new, `LIMIT_UNSUPPORTED` and `SPEND_OVER`; the rest are codes
+  that landed texts already name, and no further code is needed for
+  a period counting. The vector set is described and not built.
+  Even at a side that runs a profile, row F6 of LIP-0014
+  section 8.4 ends every child admission before F17 until a v4
+  contract profile exists.
 - **Exhaustion and continuation (LIP-0031 section 5).** One
-  paragraph, decided by the owner on 2026-11-17, states what a
-  full counter does and how work continues; this entry, the README
-  and the unresolved questions point to that paragraph and restate
-  none of it.
+  paragraph, decided by the owner on 2026-11-17 and in force in
+  this version, states what an exhausted counter does and how work
+  continues; this entry, the README and the unresolved questions
+  point to that paragraph and restate none of it.
 - **The registry of limit kinds (LIP-0020 W11.14).** The three
   kinds enter the table, each proposed by version 0.1.58, LIP-0031.
   At a side that runs a profile of that LIP the kind is judged under
   it in rows F17 and E2; at a side that runs none, rule 2 refuses as
   before. The registry of action identifiers is untouched, and no
   rule, code placement or octet of section 11 changes beside the
-  entry.
+  entry, the two prose sentences of W11.14 that state its effect at
+  a side that runs a profile and at a side that runs none, and the
+  framing of the table that holds it.
 - **Unresolved questions.** Two rows: the limit-kind profiles, with
   what they leave open, and exhaustion and continuation, which
   points to LIP-0031 section 5. One clause of the row "Members of

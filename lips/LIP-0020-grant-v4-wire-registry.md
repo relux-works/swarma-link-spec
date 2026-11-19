@@ -1082,7 +1082,10 @@ tool that wants one identifier for one set of limits orders them itself.
 
 The texts of a limit are identifiers. Their registry, the meaning of each
 kind, its unit, its period and its arithmetic come with the type profile of
-the kind (LIP-0008 section 2; LIP-0018 section 2), and none exists yet. A
+the kind (LIP-0008 section 2; LIP-0018 section 2), and none is in force
+yet; the first three profiles stand proposed by version 0.1.58 in
+LIP-0031 and in the registry of W11.14, and a proposal defines no kind
+at a side that runs none of it. A
 verifier refuses the admission that an unknown kind affects; the document
 with it is still a well-formed grant. A kind whose amount is a floor, as
 the required confirmation depth, takes the same members.
@@ -1609,10 +1612,10 @@ registry of limit kinds lists the texts that a type profile defines as the
 `kind` of a limit, with its units, its periods and its arithmetic (LIP-0008
 section 2; LIP-0018 section 2).
 
-| Registry | Entries in version 0.1.55 |
+| Registry | Entries as they stand in version 0.1.58 |
 | --- | --- |
 | Action identifiers | None. No text of this specification names a v4 action identifier: the names of LIP-0014 D12 are actions of the v3 contract profile, and the actions of the vectors of section 12 are placeholders |
-| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet. Version 0.1.58 proposes the first three entries, each proposed by version 0.1.58, [LIP-0031](LIP-0031-limit-kinds-1.md): `swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Each is a proposal of that LIP with the state of its header; a side that adopts no profile of it has no profile for the kind and judges it under rule 2 as before |
+| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet. The first three entries stand proposed by version 0.1.58, [LIP-0031](LIP-0031-limit-kinds-1.md): `swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Each is a proposal of that LIP with the state of its header; a side that adopts no profile of it has no profile for the kind and judges it under rule 2 as before |
 
 | # | Rule | Refusal |
 | --- | --- | --- |
