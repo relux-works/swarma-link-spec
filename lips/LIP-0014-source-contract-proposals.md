@@ -32,7 +32,7 @@ and conformance remain separate requirements after textual agreement.
 | O1 | LIP-0014 F21 and F7 part 7.6; seal and issuance profiles | PROPOSED | Acceptance of the proposed order across the three blocs, preserving their existing internal orders |
 | O2 | LIP-0014 A1; LIP-0020 invocation registry | PROPOSED | Invocation specification accepts the narrow authentication refusal and its exact place |
 | O3 | LIP-0014 E0 to E3; LIP-0020 invocation registry | PROPOSED | Invocation specification accepts the codes and order below, together with actual invocation members |
-| O4 | LIP-0014 F6(b)/(c) and T1 | PROPOSED | The same accepted contract profile as T1 fixes identifier, profile-validity and term-mirror checks |
+| O4 | LIP-0014 F6(b)/(d) and T1 | PROPOSED | The same accepted contract profile as T1 fixes identifier, profile-validity and term-mirror checks |
 | O5 | LIP-0014 F7 part 7.4, F20(a), J4.4; LIP-0025 | PROPOSED | Closure-journal source accepts the separate failures, recovery residue and continuity requirements |
 | O6 | LIP-0014 F21 and F7 part 7.6; LIP-0008 SB3 | PROPOSED | Acceptance of validated-spend classification relative to the two other blocs, as part of O1 |
 | O7 | LIP-0014 F13(b)/T10; LIP-0020 W11.10; LIP-0026 proposal Q1 | PROPOSED | Explicit decision on whole-parent admission, without silently changing the count bounds |
@@ -163,7 +163,7 @@ Replacement condition: an explicit owning admission of this home-latch custody s
 
 Where one contract is intended to cover several configurations along a delegation path, the proposal is an explicitly committed, closed role/profile-to-manifest mapping in the contract profile, rather than one unqualified manifest silently reused for every participant. Selection must be authenticated and constrained by the path and the local operation; a caller cannot choose another role to widen rights. This is an addition for contract-profile agreement, not a new grant field or an interpretation already provided by LIP-0030. If that addition is rejected, the profile must instead use the one agreed configuration literally and document that limitation.
 
-**P-MAP-5 — T1 and O4 are not replaced by a plain hash.** Keep F5 and F6 in their published order: compare the contract identifiers in the grants, establish a complete presentation, recompute the identifier under its actual v4 profile, validate that profile, and check the machine terms it requires against each grant. LIP-0017 section 2 commits salted clauses and the other parts; the identifier is not SHA256 of the received document as in the old v3 shortcut. The exact salted preimages, domain prefixes, salt lengths, canonical byte rules, contract validity/mirror rules and their refusal precedence must be defined by the new accepted profile. No stand-in preimage or fabricated success is used while they are absent. Under the current text, no side completes the predicate at F6(b); a proposed configuration mapping does not resolve this by itself.
+**P-MAP-5 — T1 and O4 are not replaced by a plain hash.** Keep F5 and F6 in their published order: compare the contract identifiers in the grants, establish a complete presentation, recompute the identifier under its actual v4 profile, check the confirmed contract seal (F6(c)), validate that profile, and check the machine terms it requires against each grant. LIP-0017 section 2 commits salted clauses and the other parts; the identifier is not SHA256 of the received document as in the old v3 shortcut. The exact salted preimages, domain prefixes, salt lengths, canonical byte rules, contract validity/mirror rules and their refusal precedence must be defined by the new accepted profile. No stand-in preimage or fabricated success is used while they are absent. Under the current text, no side completes the predicate at F6(b); a proposed configuration mapping does not resolve this by itself.
 
 **P-MAP-6 — lifecycle and Host transport are not the grant profile.** The pinned station/1 section 1.3 (SR1/SR6) and section 13 place the authoritative station state and its journal with the dispatcher; the workbench owns the launch description, Curator owns home composition/name-latch state, and the Host reports logical-session liveness. A requester-side registry or launcher latch is not a second station-state writer. Station/1 section 11 places J1 at the grant checker behind message origin: the dispatcher consumes the validated binding, not a self-authored admission assertion. Its exact binding form remains OPEN OQ19; the listed logical members are not accepted wire bytes. The run/J2 additions in station-runs must not be imported as lifecycle-v1 authority or implemented delivery semantics merely because their file is present.
 
@@ -280,7 +280,8 @@ this proposal authorizes no retry of an uncertain effect.
 
 Keep F6(a) presentation and F6(b) identifier recomputation in their
 existing order and retain `CONTRACT_NOT_PRESENTED` and `CONTRACT_ID`.
-For F6(c), propose two checks in this order:
+After the contract-seal check of F6(c), for F6(d) propose two checks in
+this order:
 
 1. The complete document is valid under the selected v4 contract profile:
    `CONTRACT_PROFILE_INVALID` (new).
@@ -299,7 +300,7 @@ These proposed code names distinguish malformed profile content from
 valid content whose terms do not mirror the grant. They replace neither
 the existing v3 codes nor an already accepted future profile assignment.
 Without accepted exact contract bytes, neither side can finish F6(b),
-and these conditional F6(c) rules cannot be reported as executed.
+and these conditional F6(d) rules cannot be reported as executed.
 
 ## 7. O5: unusable grant-closure journals — PROPOSED
 

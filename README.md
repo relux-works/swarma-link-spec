@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.60
+**Version:** 0.1.61
 
 **Date:** 2026-11-19
 
@@ -65,7 +65,7 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.60
+## Draft profiles and design decisions in v0.1.61
 The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
 collect **PROPOSED** choices for H1 (identity latch), T1 (contract profile),
 the action-profile mapping and the points O1 to O8 of LIP-0014 section 8.4.
@@ -305,9 +305,10 @@ grant, and every grant binds a contract. A grant's window lies inside its
 contract's window, a framework contract covers several grants over time,
 and a contract can name a seal whose script is its termination clause and
 whose spend, with action `0x08`, ends every grant under it. Grant v3 does
-not change. Decisions of Ivan Oparin of 2026-11-17, with the co-author's
-answer pending, amend it in version 0.1.58: the termination type of a
-contract is the type of its seal, a machine field shown from the seal
+not change. Decisions of Ivan Oparin of 2026-11-17 amend it in version
+0.1.61; the co-author agrees and leaves the judgement to Ivan (source
+below). The termination type of a contract is the type of its seal, a
+machine field shown from the seal
 script and never from prose, which ends nothing; drafting a contract
 starts with creating its seal; and no grant is issued under a contract
 without a confirmed seal, which the issuer's signing service and every
@@ -1052,11 +1053,13 @@ unbounded direct-end-to-R08 interval and two exceptions filed against
 LIP-0029 (start-leaf step 10/O2.3 and halt-resend step 11/O4.5). It defines
 no octets and no vectors, and nothing of it is implemented.
 
-Version 0.1.58 records three decisions of Ivan Oparin of 2026-11-17 on the
+Version 0.1.61 records three decisions of Ivan Oparin of 2026-11-17 on the
 contract seal, as an amendment of Draft
 [LIP-0017](lips/LIP-0017-contracts.md) (decisions C10 to C12 there). The
-co-author's answer is pending; it is relayed by Meta by 2026-11-19
-12:00Z, and the LIP stays Draft. The termination type of a contract is
+co-author agrees and leaves the judgement to Ivan: event
+`$KhhzZv1s7jj238dOQ_cnvhJbUXZta1R19JU748Fiutw` of 2026-11-17,
+«ок, звучит вроде разумно , но я доверюсь Ване)». The LIP stays Draft.
+The termination type of a contract is
 the type of its seal — issuer only, either party, both together, or
 arbiter, per its script — and it is a machine field of the contract:
 every reader, renderer and user interface shows it from the seal script,

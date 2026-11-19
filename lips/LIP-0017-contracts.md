@@ -34,9 +34,9 @@ starts with creating its seal; and no grant is issued under a contract
 without a confirmed seal (sections 5 and 6).
 
 The LIP records Ivan Oparin's decisions of 2026-11-14 and, since this
-amendment, of 2026-11-17; the co-author's agreement is pending. It
-proposes semantics without canonical bytes, and nothing of it is
-implemented.
+amendment, of 2026-11-17. On C10 to C12, the co-author agrees and leaves
+the judgement to Ivan (source below). It proposes semantics without
+canonical bytes, and nothing of it is implemented.
 
 ## Decisions recorded
 
@@ -55,9 +55,13 @@ the co-author agrees; adoption follows LIP-0001.
 | C8. Contract seal | For v4 and for framework contracts: the contract names its own confirmed output. Every grant under it also requires that output unspent, and one spend ends them all. The script of the output encodes the termination clause: the issuer alone, either party, both together, or an arbiter. The spend carries a frame with the hash of the signed termination statement. v3 stays as it is: the issuer spends seals, and the reason follows LIP-0011. |
 | C9. Configuration | The contract carries the hash of the configuration manifest that the parties agreed on. The manifest is expressed only through Curator profiles, Curator skills, from the catalog or custom and reviewed, and the systems that the agent may use. Both parties sign it with the contract, and the platform executes exactly it. For a rental the slot launcher composes the agent's read-only runtime context from the pinned profile, the human terms of the contract, the machine terms of the grant and any scope text. |
 
-Ivan Oparin decided three further points on 2026-11-17. The co-author's
-answer on them is pending; it is relayed by Meta by 2026-11-19 12:00Z. The
-labels C10 to C12 are this draft's numbering, continuing the table above.
+Ivan Oparin decided three further points on 2026-11-17. For these points,
+the co-author agrees and leaves the judgement to Ivan. The co-author's
+words in
+event `$KhhzZv1s7jj238dOQ_cnvhJbUXZta1R19JU748Fiutw` of 2026-11-17
+are «ок, звучит вроде разумно , но я доверюсь Ване)». This records that
+position and no stronger one; the LIP stays Draft and adoption follows LIP-0001.
+The labels C10 to C12 are this draft's numbering, continuing the table above.
 
 | Decision | Direction |
 | --- | --- |

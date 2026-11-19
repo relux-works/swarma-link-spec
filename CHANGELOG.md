@@ -1,18 +1,23 @@
 # Changelog
 
-## 0.1.58 — 2026-11-17
+## 0.1.61 — 2026-11-19
 
-Records three owner decisions on the contract seal as an amendment of
-Draft LIP-0017. No member of `swarma-grant/4` changes, and no octet of a
-tool or of a vector file changes. Every LIP stays a Draft, and nothing of
-this version is implemented.
+Net change over 0.1.60: records three owner decisions on the contract
+seal as an amendment of Draft LIP-0017, registers its proposed refusal
+code, and inserts the contract-seal check in the existing admission order.
+The limit-kind profiles, agent-session action profile and child-issuer
+companion added in 0.1.58 to 0.1.60 are retained. No member of
+`swarma-grant/4` changes, and no octet of a tool or of a vector file
+changes. Every LIP stays a Draft, and nothing of this version is
+implemented.
 
 **State, and its source.** Ivan Oparin decided the three points on
-2026-11-17. The co-author's answer is pending; it is relayed by Meta by
-2026-11-19 12:00Z, and LIP-0017 stays Draft until the co-author agrees,
-under LIP-0001. No decision of this version is put in force without that
-answer, and no earlier order is stretched to it. What is decided and what
-is this draft's form are stated apart in each place: the refusal without
+2026-11-17. In event `$KhhzZv1s7jj238dOQ_cnvhJbUXZta1R19JU748Fiutw`
+of 2026-11-17 the co-author wrote «ок, звучит вроде разумно , но я доверюсь Ване)»:
+the co-author agrees and leaves the judgement to Ivan. LIP-0017 stays Draft;
+adoption follows LIP-0001, and no earlier order is stretched to it. What
+is decided and what is this draft's form are stated apart in each place:
+the refusal without
 a confirmed seal, at the issuer's signing service and at every verifier,
 is decided; its code name, its place in the order tables, and the two
 scope readings below are proposals of this version.
@@ -73,8 +78,11 @@ scope readings below are proposals of this version.
   of its profile, mirroring the terms of each grant — is part (d) since
   this version, and each place that cited it says so: rules T1 and T11,
   open point O4, sections 8.5 (I4), 8.6 and 8.7 of LIP-0014, and
-  LIP-0020 section 11.11. Texts of versions 0.1.55 to 0.1.57 that cite
-  part (c), the entries below among them, mean that part. The vectors
+  LIP-0020 section 11.11. Texts of versions 0.1.55 to 0.1.60 that cite
+  part (c), the entries below among them, mean that part. Current
+  references in LIP-0031 and the child-issuer companion now name (d);
+  the W11.14 limit-kind registry introduced in 0.1.58 is unchanged. The
+  vectors
   `step-f-39` to `step-f-41` are planned on stated facts, as every result
   at or after part (b) is, and none is generated; none is planned for a
   spent contract seal. Because part (c) reads a node, it stands in the
@@ -91,9 +99,8 @@ scope readings below are proposals of this version.
   four. For a root grant the duty and the code are the same (LIP-0017
   section 6, rule 6), and no step table fixes its place among the checks
   of a root; none is proposed.
-- **Left open.** The co-author's answer on C10 to C12 and on every form
-  that this version marks as its own: the code name and its place; the
-  two scope readings; how a node is read for the confirmation and the
+- **Left open.** Every form that this version marks as its own:
+  the code name and its place; the two scope readings; how a node is read for the confirmation and the
   script of a contract seal against one tip; the step, the code and the
   closure for a spent contract seal; and the scripts of the four
   termination clauses, with the rest of LIP-0017's open questions.

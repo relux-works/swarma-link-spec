@@ -81,13 +81,13 @@ stretched to these two additions. The steps at which they stand are those
 of LIP-0014 section 8.4, which has the same state. No octet of a grant and
 no vector of section 12 changes.
 
-Version 0.1.58 adds no member either. It registers in section 11.11 one
+Version 0.1.61 adds no member either. It registers in section 11.11 one
 further code, `CONTRACT_SEAL_MISSING`, for the check that the contract
 which a grant binds has the confirmed seal that it names. The refusal is
-decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17; the co-author's answer
-is pending, relayed by Meta by 2026-11-19 12:00Z), at the issuer's signing
+decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17; the co-author agrees and leaves the judgement to Ivan, as recorded with the event and quote in LIP-0017,
+"Decisions recorded"), at the issuer's signing
 service and at every verifier. The code name and its step, part (c) of
-row F6 of LIP-0014 section 8.4, are proposals of version 0.1.58 in the
+row F6 of LIP-0014 section 8.4, are proposals of version 0.1.61 in the
 state of W11.11 and of that section. No member of `swarma-grant/4` names
 a contract seal; the grant gives the seal's contract through `contract`
 alone, and no octet and no vector changes.
@@ -1476,13 +1476,13 @@ section 2.5, which reports that fields of a v3 contract differ from fields
 of its grant, and not `CONTRACT_HASH` of the same section, which reports a
 plain hash. The v4 counterpart of `CONTRACT_MISMATCH`, the mirror of the
 terms of a grant in its contract, has no code yet; it gets one with the v4
-contract profile, as part (d) of row F6, part (c) through version 0.1.57. `CHILD_CONTRACT_DIFFERS`, first
+contract profile, as part (d) of row F6, part (c) through version 0.1.60. `CHILD_CONTRACT_DIFFERS`, first
 called `CHILD_CONTRACT_MISMATCH`, follows `CHILD_TEXT_DIFFERS` of LIP-0014
 section 3.4, which reports the same relation between a child and its
 parent for a text hash. `CONTRACT_NOT_PRESENTED` reports a missing input
 and no finding about a contract.
 
-**Code of version 0.1.58.** One further code is registered here, for a
+**Code of version 0.1.61.** One further code is registered here, for a
 checker, proposed with the row that reports it and reported by no
 pipeline of section 9. It is no fifth comparison of W11.11: the four
 above compare a child with its parent on their signed octets, and this
@@ -1498,7 +1498,7 @@ the other checks of a root, and none is proposed here.
 
 | Code | What it reports | Step | Again | Defined by | State |
 | --- | --- | --- | --- | --- | --- |
-| `CONTRACT_SEAL_MISSING` | The contract that the grant binds names no contract seal, or the side's own node does not show the named seal confirmed as named in its observation: the named transaction not confirmed in the active chain, no output at the named index, or an output with another script than the contract names. A seal that is confirmed as named and spent is not this code, and its spend gets no step or code here. At an issuer no signature exists | F6, part (c) | no where the document names no seal; state where the node decides; no closure in either case | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The refusal, at the signing service and at every verifier, is decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17), with the co-author's answer pending. The code name and its step are new proposals of version 0.1.58 |
+| `CONTRACT_SEAL_MISSING` | The contract that the grant binds names no contract seal, or the side's own node does not show the named seal confirmed as named in its observation: the named transaction not confirmed in the active chain, no output at the named index, or an output with another script than the contract names. A seal that is confirmed as named and spent is not this code, and its spend gets no step or code here. At an issuer no signature exists | F6, part (c) | no where the document names no seal; state where the node decides; no closure in either case | LIP-0017 section 6, rule 6; LIP-0014 section 8.4, rule T11 | The refusal, at the signing service and at every verifier, is decision C12 of LIP-0017 (Ivan Oparin, 2026-11-17); the co-author agrees and leaves the judgement to Ivan. The code name and its step are new proposals of version 0.1.61 |
 
 The name is chosen against the same neighbours: it is not `SEAL_OUTPUT`,
 `SEAL_SCRIPT` or `SEAL_PROFILE`, which report the seal that a grant itself
@@ -1807,7 +1807,7 @@ list
 `not_exercised` stand as they were made for version 0.1.53: not one octet
 of the file changes with version 0.1.55, and the list names the four codes
 of the table above and not the later ones. LIP-0014 section 8.7 plans the
-vectors of the steps. Version 0.1.58 adds `CONTRACT_SEAL_MISSING` to that
+vectors of the steps. Version 0.1.61 adds `CONTRACT_SEAL_MISSING` to that
 list in the same state: a check of a signing and of an admission, which
 the pipeline reports not, with no vector here and its plan in LIP-0014
 section 8.7.
@@ -2138,11 +2138,12 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   that does not mirror the terms of its grant, with the preimage of the
   identifier (LIP-0017 section 2), without which `CONTRACT_ID` cannot be
   computed. They come with a v4 contract profile (LIP-0014 section 8.4,
-  open point O4). Since version 0.1.58 one code stands between the
+  open point O4). Since version 0.1.61 one code stands between the
   identifier and those two: `CONTRACT_SEAL_MISSING`, for decision C12 of
   LIP-0017, whose refusal Ivan Oparin decided on 2026-11-17 and whose
-  name, step and node read are proposals of that version, with the
-  co-author's answer pending. No step or code is stated for a contract
+  name, step and node read are proposals of that version; the
+  co-author agrees and leaves the judgement to Ivan (LIP-0017,
+  "Decisions recorded"). No step or code is stated for a contract
   seal that is confirmed as named and spent, and no step table fixes the
   place of the contract-seal check at the admission of a root grant.
   Open with the members of the invocation: the code of a request that is
