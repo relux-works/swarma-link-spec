@@ -972,16 +972,19 @@ changes; the vector set of the LIP is
 described and not built. Every LIP remains Draft, and nothing of it
 is implemented.
 
-A further draft has no version yet.
+Version 0.1.58 (unreleased) adds the following draft.
 [LIP-0030](lips/LIP-0030-action-profile-agent-session.md) proposes action
 profile no. 1, an agent session on a host: the first profile that would give
 a v4 grant an action at an executor. It defines the authority of a session
 and not the life of a process, which belongs to the station contract of the
 host, now cited as station/1 version 1 where the draft names it: the
 station record and its one store, journal loss and its exits, the start
-fence, the restart order and the stop bounds are that contract's rows,
-cited and not redefined, and the profile keeps the grants, the paths, the
-verdicts and the debits. The executor is the service set of a host: a grant
+fence and restart order are that contract's rows. The profile maps every
+authority end to D's immediate stop-request duty; only an actual R24
+trigger starts the 300-second revocation clock. The direct height, renter,
+halt, operator and closure-journal ends have no numeric bound to R08 in
+either text, and `end_to_absence` starts only in `stopping`. The profile
+keeps the grants, the paths, the verdicts and the debits. The executor is the service set of a host: a grant
 checker with the chain view and the closure journals, a dispatching service
 with the session journal and the accounts, and the key holder that binds
 each run. The
@@ -1000,8 +1003,9 @@ held, suspended, ended and quarantined, and one table gives for every state
 and each of 36 events the next state, who acts, the record that is written
 before the effect, and a refusal code of one closed list, or the reason why
 the event cannot occur. An authority ends on a closure of a link or on a
-height, and every other refusal suspends it: a revocation while running is
-bounded in blocks and not in time, and a checker that can show a validated
+height, and every other refusal suspends it. The authority lease is counted
+in blocks, not clock time; process-stop duties and their gaps are as stated
+above. A checker that can show a validated
 block of the pinned chain at the lease end ends it by height although its
 observation is not healthy. The last check before a process is
 started reads the tip, the clock and the journals again; its failure only
@@ -1015,14 +1019,15 @@ nothing is recorded as ended there, and the only exits are its two: the
 operator's re-provision of a name the key service has never bound, and the
 operator's teardown of a name with a live account to retirement, key
 bindings never being handed over. A restore of a closure journal still
-clears no mark for a closure that fell due unwritten. Eleven
-refusals of the base that have no v4 code are proposed as
-new codes. Every rule is marked as restating a cited text with the state of
-that text, as proposed, or as open; seven questions are the owners', each with
+clears no mark for a closure that fell due unwritten. Ten
+refusals of the base that still have no v4 code are proposed as
+new codes; the child predicate uses the codes of the version 0.1.57 base.
+Every rule is marked as restating a cited text with the state of that text, as proposed, or as open; seven questions are the owners', each with
 options, costs and a recommendation, and the draft lists what still stands
-open in the station contract and on its dispatcher seam, among it an
-exception for the halt class filed against LIP-0029. It defines no octets
-and no vectors, and nothing of it is implemented.
+open in the station contract and on its dispatcher seam, including the
+unbounded direct-end-to-R08 interval and two exceptions filed against
+LIP-0029 (start-leaf step 10/O2.3 and halt-resend step 11/O4.5). It defines
+no octets and no vectors, and nothing of it is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)
