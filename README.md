@@ -67,14 +67,6 @@ Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
 ## Draft profiles and design decisions in v0.1.58
 
-The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
-collect proposed readings of the remaining identity, contract/profile
-and O1–O8 inputs, with an acceptance condition and paired cases. These
-choices remain **PROPOSED**. For the state of the R8.3 count order, see
-LIP-0026 section 8. The remaining LIP-0026 proposal Q2 stays **PROPOSED**.
-The companion changes no existing rule, wire member or implementation,
-and supplies no native or end-to-end qualification.
-
 This revision reconciles informative draft descriptions with the public
 implementation: [LIP-0004](lips/LIP-0004-landlord-grants.md) covers landlord
 grants, optional social name metadata and separate discovery;
@@ -927,6 +919,58 @@ parent, by Ivan Oparin's explicit decision of 2026-11-17. LIP-0026
 section 8 and LIP-0020 W11.6 now give that order one state, and the
 contradiction recorded by version 0.1.56 is closed. No member of the
 grant, no tool and no vector octet changes.
+
+Version 0.1.58 adds [LIP-0031](lips/LIP-0031-limit-kinds-1.md), Draft
+text that proposes the first three limit-kind profiles for Grant v4:
+`swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Until a
+type profile defines a limit kind, a child that states a limit is
+neither signed nor admitted (LIP-0020 W11.14 rule 2), and LIP-0008
+section 2 names the kinds by meaning alone. The draft gives each kind
+every item that LIP-0018 section 2 lists: for coins an asset and
+payment-system identifier in atomic units, with a maximum for one
+spend, a maximum for a period and a total over the term including
+fees; for model cost a cumulative ceiling per period in an exact
+currency and scale, reserved at the maximum before a request and
+settled at the actual cost; for model tokens separate cumulative
+input and output ceilings per period under a named model and
+token-accounting profile. The three kinds share the reading of
+`period`, the comparison of a child against the template of its row
+and the pool of its parent (count times amount, LIP-0026 section 8),
+and the accounts of a period. A period is stated for every kind in
+clock time, and for chain coins also in blocks of that chain, under
+the owner's requirement of 2026-11-17; the model kinds state
+clock-only periods as a draft choice, not a necessity. A child's
+period counting must be its template's, as one of its keys.
+Debits, sums, products and accounts use exact integer arithmetic
+without wrap or rounding; overflow refuses before any effect or
+reservation. L17 and L18 compute maximum and actual costs as exact
+rational products and sums over the whole request, without binary64,
+then convert upward once each to integer subunits; no unit price or
+part is rounded. Exhaustion and
+continuation stand in the paragraph of section 5 that states the
+four rules, to which every other text points; the owner decided it on
+2026-11-17, and it is in force in this version. All interpretations
+are in a separate PROPOSED subsection with no interim force; the
+relation to both whole-term and no-new-grant sentences of LIP-0008
+section 2.1 stays open. Three refusal codes are new,
+`LIMIT_UNSUPPORTED`, `SPEND_OVER` and `LIMIT_CLOCK_REGRESSION`;
+the last is a per-key ledger check before that key's own account,
+after per-request ceilings, and changes no LIP-0022 observation code.
+Every other refusal
+takes a code that a landed text already names. LIP-0020
+section 11.14 enters the three kinds in the registry of limit
+kinds, each proposed by version 0.1.58, LIP-0031; the registry of
+action identifiers is untouched. Every rule except the paragraph
+of section 5 that states the four rules is the draft's proposal,
+neither owner has decided one, and nothing else of it is in force:
+a side that runs no profile of the LIP
+refuses the three kinds as before, and even at a side that runs
+one, row F6 of LIP-0014 section 8.4 ends every child admission
+before F17 until a v4 contract profile exists. No member of
+`swarma-grant/4` changes, and no octet of a tool or vector file
+changes; the vector set of the LIP is
+described and not built. Every LIP remains Draft, and nothing of it
+is implemented.
 
 Three additions of 2026-11-14 record decisions of Ivan Oparin and await the
 co-author's agreement. [LIP-0006](lips/LIP-0006-grant-gated-actions.md)

@@ -1,17 +1,91 @@
 # Changelog
 
-## 0.1.58 — Unreleased
+## 0.1.58 — 2026-11-19
 
-Corrects the references and version filing of the child-issuer integration
-companion. No LIP is adopted, and no implementation or conformance status
-changes.
+Adds Draft LIP-0031, the first three limit-kind profiles for Grant
+v4, and enters their kinds in the registry of LIP-0020 W11.14.
+The paragraph of section 5 that states the four rules is decided
+by the owner on 2026-11-17 and in force in this version; every other
+rule of it is proposed, nothing else is in force by this text, and
+neither owner has
+decided another rule of it. The owner's requirement of the same day
+that a period be expressible in clock time and, for chain coins, in
+blocks is recorded in the LIP, and the rules that carry it are
+proposed like the rest. No member of
+`swarma-grant/4` changes, and no octet of a tool or of a vector file
+changes. Every LIP stays a Draft, and nothing of this version is
+implemented.
 
-- The companion points to LIP-0026 section 8 for the state of the R8.3 count
-  order and names only the remaining LIP-0026 proposal Q2.
-- LIP-0014 section 8.4, README and the unresolved-questions paragraph use that
-  pointer instead of restating the order's state.
-- The companion's changes are filed under version 0.1.58; version 0.1.57 and
-  its published PDF remain unchanged.
+- **Three limit kinds (LIP-0031).** Until a type profile defines a
+  limit kind, a child that states a limit is neither signed nor
+  admitted (LIP-0020 W11.14 rule 2). LIP-0008 section 2 lists the
+  kinds by meaning, and LIP-0018 section 2 lists what a proposal for
+  a kind states. LIP-0031 proposes a profile for each of
+  `swarma/coins` (asset and payment-system identifier, atomic unit,
+  maximum for one spend, maximum for a period, total over the term
+  including fees), `swarma/model-cost` (cumulative ceiling per
+  period, exact currency and scale, reserve the maximum and settle
+  the actual) and `swarma/model-tokens` (separate cumulative input
+  and output ceilings per period under a named model and
+  token-accounting profile), each with every item of LIP-0018
+  section 2, the comparison of a child against the template of its
+  row and the pool of its parent, and who meters on what evidence.
+  The kinds share one reading of `period` and one account for each
+  period instance. That reading states the period item of
+  LIP-0018 section 2 for every kind: clock time for all three, and
+  blocks of the chain for chain coins, with the half-open instance
+  arithmetic and the reorganisation cases; clock-only periods for
+  the two model kinds are a draft choice. Fixed-length epoch
+  seconds do not define calendar months, years or local-time days;
+  those remain open. A child's period counting must be its
+  template's. Three codes are new: `LIMIT_UNSUPPORTED`, `SPEND_OVER`
+  and `LIMIT_CLOCK_REGRESSION`; the rest are codes that landed texts
+  already name. The new ledger check stands after the per-request
+  ceiling and, for each clock-counted key, before its own account,
+  even where LIP-0022 does not run; it changes no observation code
+  or order. An unbounded model request refuses `SPEND_OVER` where
+  its per-request key is stated, or at reservation otherwise.
+  Debits, sums, products and accounts are
+  exact integers, with no wrap or rounding and refusal on overflow;
+  L17 and L18 compute rational costs exactly over the whole request,
+  without binary64 or rounding any price or part, then convert
+  upward once each for reservation and settlement. Paired text
+  fixtures include the overshoot with room, unbounded model
+  requests, clock-refusal order, exact-room and 2^64 boundaries,
+  fractional over- and under-reservation, sum-before-rounding and
+  settlement; named mutation witnesses narrow the fractional
+  regression. The vector set is described and not built.
+  Even at a side that runs a profile, row F6 of LIP-0014
+  section 8.4 ends every child admission before F17 until a v4
+  contract profile exists.
+- **Exhaustion and continuation (LIP-0031 section 5).** One
+  paragraph, decided by the owner on 2026-11-17 and in force in
+  this version, states what an exhausted counter does and how work
+  continues; this entry, the README and the unresolved questions
+  point to that paragraph and restate none of it. Every draft
+  interpretation is outside section 5 in a separate PROPOSED
+  subsection with no interim force: the extended trigger, report
+  recipients and root continuation are not decided. Under that
+  PROPOSED reading, a refused overshoot or unbounded maximum does
+  not exhaust remaining room.
+  The relation of the fourth rule to both the whole-term and the
+  no-new-grant sentences of LIP-0008 section 2.1 remains open, as
+  does a code for any post-stop request that L8 would admit.
+- **The registry of limit kinds (LIP-0020 W11.14).** The three
+  kinds enter the table, each proposed by version 0.1.58, LIP-0031.
+  At a side that runs a profile of that LIP the kind is judged under
+  it in rows F17 and E2; at a side that runs none, rule 2 refuses as
+  before. The registry of action identifiers is untouched, and no
+  rule, code placement or octet of section 11 changes beside the
+  entry, W11.4's sentence on the registry and type profiles, the
+  two prose sentences of W11.14 that state its effect at
+  a side that runs a profile and at a side that runs none, and the
+  framing of the table that holds it.
+- **Unresolved questions.** Two rows: the limit-kind profiles, with
+  what they leave open, and exhaustion and continuation, which
+  points to LIP-0031 section 5. One clause of the row "Members of
+  `swarma-grant/4`" no longer says that section 11.14 states the
+  registries as empty.
 
 ## 0.1.57 — 2026-11-17
 
