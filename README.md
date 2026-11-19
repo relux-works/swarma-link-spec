@@ -943,15 +943,20 @@ clock-only periods as a draft choice, not a necessity. A child's
 period counting must be its template's, as one of its keys.
 Debits, sums, products and accounts use exact integer arithmetic
 without wrap or rounding; overflow refuses before any effect or
-reservation, with L17's upward conversion of a quoted fractional
-cost to integer subunits kept distinct. Exhaustion and
+reservation. L17 and L18 compute maximum and actual costs as exact
+rational products and sums over the whole request, without binary64,
+then convert upward once each to integer subunits; no unit price or
+part is rounded. Exhaustion and
 continuation stand in the paragraph of section 5 that states the
 four rules, to which every other text points; the owner decided it on
 2026-11-17, and it is in force in this version. All interpretations
 are in a separate PROPOSED subsection with no interim force; the
 relation to both whole-term and no-new-grant sentences of LIP-0008
-section 2.1 stays open. Two refusal codes are new,
-`LIMIT_UNSUPPORTED` and `SPEND_OVER`; every other refusal
+section 2.1 stays open. Three refusal codes are new,
+`LIMIT_UNSUPPORTED`, `SPEND_OVER` and `LIMIT_CLOCK_REGRESSION`;
+the last is a per-key ledger check before that key's own account,
+after per-request ceilings, and changes no LIP-0022 observation code.
+Every other refusal
 takes a code that a landed text already names. LIP-0020
 section 11.14 enters the three kinds in the registry of limit
 kinds, each proposed by version 0.1.58, LIP-0031; the registry of

@@ -38,17 +38,23 @@ implemented.
   the two model kinds are a draft choice. Fixed-length epoch
   seconds do not define calendar months, years or local-time days;
   those remain open. A child's period counting must be its
-  template's. Two codes are
-  new, `LIMIT_UNSUPPORTED` and `SPEND_OVER`; the rest are codes
-  that landed texts already name, and no further code is needed for
-  a period counting. A clock reading in an earlier, ended instance
-  refuses with the existing `OBSERVATION_CLOCK` code even where
-  LIP-0022 does not run. Debits, sums, products and accounts are
+  template's. Three codes are new: `LIMIT_UNSUPPORTED`, `SPEND_OVER`
+  and `LIMIT_CLOCK_REGRESSION`; the rest are codes that landed texts
+  already name. The new ledger check stands after the per-request
+  ceiling and, for each clock-counted key, before its own account,
+  even where LIP-0022 does not run; it changes no observation code
+  or order. An unbounded model request refuses `SPEND_OVER` where
+  its per-request key is stated, or at reservation otherwise.
+  Debits, sums, products and accounts are
   exact integers, with no wrap or rounding and refusal on overflow;
-  L17's upward conversion of quoted fractional cost remains a
-  separate step. Paired text fixtures include the overshoot with
-  room, unbounded model requests, clock regression, exact-room and
-  2^64 boundaries. The vector set is described and not built.
+  L17 and L18 compute rational costs exactly over the whole request,
+  without binary64 or rounding any price or part, then convert
+  upward once each for reservation and settlement. Paired text
+  fixtures include the overshoot with room, unbounded model
+  requests, clock-refusal order, exact-room and 2^64 boundaries,
+  fractional over- and under-reservation, sum-before-rounding and
+  settlement; named mutation witnesses narrow the fractional
+  regression. The vector set is described and not built.
   Even at a side that runs a profile, row F6 of LIP-0014
   section 8.4 ends every child admission before F17 until a v4
   contract profile exists.
@@ -59,8 +65,9 @@ implemented.
   point to that paragraph and restate none of it. Every draft
   interpretation is outside section 5 in a separate PROPOSED
   subsection with no interim force: the extended trigger, report
-  recipients and root continuation are not decided. A refused
-  overshoot or unbounded maximum does not exhaust remaining room.
+  recipients and root continuation are not decided. Under that
+  PROPOSED reading, a refused overshoot or unbounded maximum does
+  not exhaust remaining room.
   The relation of the fourth rule to both the whole-term and the
   no-new-grant sentences of LIP-0008 section 2.1 remains open, as
   does a code for any post-stop request that L8 would admit.

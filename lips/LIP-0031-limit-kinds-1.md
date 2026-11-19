@@ -90,7 +90,7 @@ none of those texts and restates none of them; it cites them.
 | The pool bounds, for each key, the sum over the groups of the number of rows of the group times the amount of its template | LIP-0026 section 8 (J12); LIP-0020 W11.10 rule 6 | The same sum for the three kinds, which are ceilings (L2, L6) |
 | For one place of one parent the signing service MUST make one signature, ever | LIP-0014 J4.4 (a) | The PROPOSED reading relates continuation to it; section 5 states only the four decided rules |
 | Every period and term of a limit is expressible in clock time and, for chain coins, in blocks of that chain ("at most N coins per M blocks") | Owner requirement of 2026-11-17, recorded here | Two period families, counted in blocks and in clock seconds, with their instance arithmetic (L3, L7); states the item for every kind (sections 2 to 4). The requirement is decided; the texts and arithmetic that carry it are this draft's proposal |
-| Exhaustion and continuation: stop and report, without revocation; no top-up of an existing grant; continuation by a new grant on a new place; long-lived agents get limits per period, with a new grant per period | Decided by the owner on 2026-11-17; in force in this version, the co-author's answer folded in by amendment | The paragraph of section 5 that states the four rules contains nothing beyond them. The separate PROPOSED reading has no interim force |
+| Exhaustion and continuation | The decision record is the paragraph of section 5 that states the four rules | That paragraph contains nothing beyond them. The separate PROPOSED reading has no interim force |
 
 Every rule of this LIP except the paragraph of section 5 that states
 the four rules is the draft's proposal, and neither owner has decided
@@ -118,7 +118,8 @@ first:
 3. One account for each period instance (L7). LIP-0026 section 5 keys
    an account by grant or row and limit key and holds no vector with a
    period; which instance a debit belongs to has no answer there.
-4. Two new codes, `LIMIT_UNSUPPORTED` and `SPEND_OVER` (section 6).
+4. Three new codes, `LIMIT_UNSUPPORTED`, `SPEND_OVER` and
+   `LIMIT_CLOCK_REGRESSION` (section 6).
    Every other refusal of this LIP takes a code that a landed text
    already names.
 5. The settlement of sections 3 and 4 releases the difference between
@@ -235,9 +236,12 @@ and the settlement.
 debits, product in the declared integer unit, account value and
 released difference is an exact integer, computed before any
 comparison. No side wraps, saturates, truncates or rounds that
-arithmetic. L17's explicit upward conversion of a fractional quoted
-cost to whole subunits precedes it; it is not permission to round a
-debit or an account. A result above 18446744073709551615 is above
+arithmetic. L17 and L18 first convert the exact rational cost of a
+whole request upward once to integer subunits; those integers are
+the reservation and settlement debits, with no further rounding of
+either debit or any account. No binary64 calculation takes part in
+either the rational cost or the integer arithmetic. A result above
+18446744073709551615 is above
 every ceiling and refuses at the applicable check: `SPEND_OVER` at
 a stated ceiling for one request, otherwise `OWN_LIMIT_OVER` or
 `ROW_CAP_OVER` at the first account that the reservation would
@@ -291,12 +295,11 @@ needs the window open at `H`, and the instance gives the account,
 never the admission. The guards on that clock — a reading below the
 kept mark, a header too far ahead, the age of the tip — are those
 of LIP-0022 section 3 where that profile runs, with its codes and
-its order. Even at a side that does not run that profile, a reading
-in a clock instance earlier than the latest one already debited for
-the key refuses `OBSERVATION_CLOCK`, with no reservation or changed
-account, rather than debiting an ended instance (L7). This reuses
-the code of B3.2; a reading in the same or a later instance passes
-this instance check. The epoch alignment, the
+its order. The separate per-key ledger check of section 6 applies
+even at a side that does not run that profile; it can refuse
+`LIMIT_CLOCK_REGRESSION`, with no reservation or changed account,
+rather than debiting an ended instance (L7). A reading in the same
+or a later instance passes this instance check. The epoch alignment, the
 two text forms and their common bound are choices of this draft,
 marked in point 1 above; that a period is expressible in both
 countings is the owner's requirement, and no rate between a block
@@ -428,8 +431,8 @@ assigns no block-counted period to model cost. A
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | L16 | `resource` names the priced model at the executor that serves it, in the form that the executor's own profile states for its models; this LIP assigns no model name, and a resource that names no model of the executor is unrecognised there. `unit` states the currency and its scale in one text of the form `<currency>/<scale>`, where `<currency>` is the code of the currency as the executor's price table states it and `<scale>` is the name of the smallest subdivision that the table accounts in. `amount` counts that subdivision. Two limits that differ in currency or in scale are two keys and are never added together, and no side converts between currencies or scales inside this profile. Which codes and subdivisions a deployment uses is stated by its price table under L17; a unit that the table does not state is unrecognised. | L4 |
-| L17 | Before a request the executor reserves the maximum cost of that request under its price table: the highest cost that the table gives the request as asked, over every part that the table prices, the input that it carries and the longest output that it permits included. The reservation is made under L8 in the unit of the limit, and a cost that the table states as a fraction of the subdivision is rounded up to a whole subdivision before it is reserved, so that the reservation never falls short of the table. A request whose maximum the table cannot give — an output without a permitted length, a part with no price — is not served under this kind. The price table is the executor's: who sets it, how it is signed or pinned, and how a change of it meets a live grant have no member and no text, and stand in the open questions. A change of the table changes no signed ceiling; it changes what one request reserves against it. | L8; for no finite maximum, L18 |
-| L18 | When the outcome of a request is known, the executor settles the reservation at the actual cost under the same table and releases the difference under L9. A request that the upstream refused before any priced work settles at 0; priced work that was done settles at its table cost whether or not the answer was used. An outcome that is not known retains the full reserved maximum until it is reconciled (L9). A charge above the reserved maximum is outside this profile: the reservation was the highest cost of the table, so a higher charge means the table did not govern the request, and the executor charges nothing above the reservation to the accounts of the grant. What it does with such a charge is an open question. A request with no finite maximum under L17 reserves nothing and refuses at the reservation step against the first account that it consumes, as a reservation above every ceiling does. | `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
+| L17 | Before a request the executor reserves the maximum cost of that request under its price table: the highest cost that the table gives the request as asked, over every part that the table prices, the input that it carries and the longest output that it permits included. The cost is computed exactly as a rational number from the values the table states, with no binary64 calculation; every product and the sum over all parts are exact, and no unit price or part is rounded. The reservation under L8 is the least integer in the limit's subdivision not below that exact maximum: round upward once, after summing the whole request, so that the reservation never falls short of the table. A request whose maximum the table cannot give — an output without a permitted length, a part with no price — is not served under this kind. The price table is the executor's: who sets it, how it is signed or pinned, and how a change of it meets a live grant have no member and no text, and stand in the open questions. A change of the table changes no signed ceiling; it changes what one request reserves against it. | L8; for no finite maximum, L18 |
+| L18 | When the outcome of a request is known, the executor computes the actual cost under the same table by L17's exact rational products and sum over all parts, and settles at the least integer subdivision not below that sum, with the same single upward conversion and no binary64 calculation. That integer is the settlement debit; the integer difference from the reservation is released under L9. Upward conversion is monotone, so an actual cost no greater than the table's exact maximum never settles above the reserved integer. A request that the upstream refused before any priced work settles at 0; priced work that was done settles at its table cost converted in this way whether or not the answer was used. An outcome that is not known retains the full reserved maximum until it is reconciled (L9). A charge above the reserved maximum is outside this profile: the reservation was the highest cost of the table, so a higher charge means the table did not govern the request, and the executor charges nothing above the reservation to the accounts of the grant. What it does with such a charge is an open question. A request with no finite maximum under L17 reserves nothing and refuses as `SPEND_OVER` at the per-request check if that key is stated; otherwise it refuses at the reservation step against the first account that it consumes, as a reservation above every ceiling does. | `SPEND_OVER`; otherwise `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
 | L18A | The reserved text of L3 gives a maximum cost for one request. It is checked against the reserved maximum of L17 before any reservation, as L14 checks one spend: a reserved maximum above the amount of the key with `swarma/per-request` refuses and reserves nothing. Where neither a grant nor, for a child, the child and its row state the key, no check is made; where it is stated, the check at a request under a child holds the maximum first against the child's amount for the key, which is 0 where the child omits it (L6), and then against the row's amount, as L14 has it. | `SPEND_OVER` |
 
 The ceilings of this kind are the whole-window total and, for each
@@ -442,7 +445,7 @@ authorizes nothing (L5).
 | --- | --- |
 | Identifier and resource | Kind `swarma/model-cost`; the resource is one priced model at its executor (L16). |
 | Unit and integer scale | One currency in its smallest accounted subdivision; `amount` in the string form (L1, L16). |
-| Bounds and rounding | 0 to 18446744073709551615 (L1). A fractional quoted cost converts upward to the subdivision (L17); subsequent arithmetic is exact, with no rounding or wrap, and overflow refuses (section 1, Exact arithmetic). |
+| Bounds and rounding | 0 to 18446744073709551615 (L1). Maximum and actual costs use exact rational products and sums over the whole request, then one upward conversion each to integer subunits (L17, L18). No unit price or part is rounded and no binary64 calculation takes part; subsequent integer arithmetic is exact, with no rounding or wrap, and overflow refuses (section 1, Exact arithmetic). |
 | Period and aggregation | Whole window and per period instance (L3, L5), and one request (L18A). An instance is counted in clock time alone, by `swarma/seconds-<S>`, as this draft's choice; a block-counted text is unrecognised (L4). Settled costs add inside an instance (L7, L18). |
 | Reservation | The maximum under the price table, durably before the request; the reservation entry is what is made durable (L8, L17). |
 | Concurrency | One journal for parallel requests and replicas (L8). |
@@ -473,7 +476,7 @@ periods are counted in clock time alone, by `swarma/seconds-<S>`
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
 | L19 | `resource` names one model together with the token accounting that counts for it, in the form `<model>/<accounting>`, where `<model>` is the model as the executor's profile states it — the same text that L16 prices — and `<accounting>` is the identifier of the counting under which the executor reports input and output. This LIP assigns neither part; a pair that the executor does not serve is unrecognised there. `unit` is `input-token` for the ceiling of tokens sent to the model and `output-token` for the ceiling of tokens received from it, so the two ceilings of the meaning are two keys for one resource. `amount` counts tokens. Input and output are never added together, and a count under one accounting is never compared with a ceiling of another. | L4 |
-| L20 | The executor counts. The input of a request is counted under the named accounting before the request is sent and is reserved at that count. The output is reserved before the request at the longest output that the request permits under the same accounting, and a request that permits no longest output reserves nothing and refuses at the reservation step, as L18 has it for cost. When the outcome is known the output reservation settles at the counted output under L9; the input, counted exactly, settles at its reservation where the request was sent and at 0 where it was not. A count that the upstream reports beside the executor's own does not govern: where the two differ the account keeps the executor's count under the named accounting, and the difference is evidence for the parties and no debit. An outcome that is not known retains both reservations until it is reconciled (L9); output received before the outcome became unknown is counted where the executor holds it, and the rest of the reserved output stays reserved. | L8; `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
+| L20 | The executor counts. The input of a request is counted under the named accounting before the request is sent and is reserved at that count. The output is reserved before the request at the longest output that the request permits under the same accounting, and a request that permits no longest output reserves nothing and refuses as `SPEND_OVER` if a per-request output ceiling is stated, or at the reservation step otherwise, as L18 has it for cost. When the outcome is known the output reservation settles at the counted output under L9; the input, counted exactly, settles at its reservation where the request was sent and at 0 where it was not. A count that the upstream reports beside the executor's own does not govern: where the two differ the account keeps the executor's count under the named accounting, and the difference is evidence for the parties and no debit. An outcome that is not known retains both reservations until it is reconciled (L9); output received before the outcome became unknown is counted where the executor holds it, and the rest of the reserved output stays reserved. | L8; `SPEND_OVER`, `OWN_LIMIT_OVER`, `ROW_CAP_OVER` |
 | L21 | The reserved text of L3 gives a ceiling for one request for each unit. For input it is checked against the count of L20 before any reservation, and for output against the longest output that the request permits; either above its amount refuses as `SPEND_OVER` by the proposal of section 6 and reserves nothing. Such a ceiling is per request and no cumulative account, and it takes the place of no signed maximum answer length, which stays a kind of its own as the head of this section says. | `SPEND_OVER` |
 
 The ceilings of this kind are, for each unit, the whole-window total
@@ -571,7 +574,7 @@ reconciliation acquires force pending their answer.
 | `OWN_LIMIT_OVER` | A reservation would exceed an own account, of the window or of an instance | L7, L8 | LIP-0026 R5.6 |
 | `ROW_CAP_OVER` | A reservation would exceed a row account, of the window or of an instance | L7, L8 | LIP-0026 R5.6; LIP-0014 J1.3 |
 | `GRANT_DELEGATE` | The pools of a parent do not bound the sums of its templates for a key of the three kinds | L6 | LIP-0020 W11.10 rule 6 |
-| `OBSERVATION_CLOCK` | A clock reading falls in an instance earlier than the latest one already debited for the key | L7; section 1, clock instances | LIP-0022 B3.2, code reused |
+| `LIMIT_CLOCK_REGRESSION` | A clock reading falls in an instance earlier than the latest one already debited for the key | L7; section 1, clock instances | New |
 
 The form of a limit refuses in the member step with the codes of that
 step, and no code of this LIP changes their meaning (L1). The refusal
@@ -586,11 +589,20 @@ a family that the kind does not accept, refuses here), then the
 amounts (`CHILD_BUDGET_OVER`). At a request the order is: the action and the
 kinds it consumes, with their texts (rows E1 and E2;
 `LIMIT_KIND_UNDEFINED`, then `LIMIT_UNSUPPORTED`); then the ceiling
-for one request (`SPEND_OVER`); then the reservation, own account
-before row account for each key (`OWN_LIMIT_OVER`, `ROW_CAP_OVER`).
+for one request (`SPEND_OVER`); then the reservation, taking keys in
+L8's order. For each key, check its clock instance first
+(`LIMIT_CLOCK_REGRESSION`, for clock-counted keys only), then its
+own account (`OWN_LIMIT_OVER`), then its row account (`ROW_CAP_OVER`),
+before moving to the next key. No account or reservation is written
+unless all these checks pass. Where LIP-0022 runs, its observation
+guards and B6.1 withholding still precede these request checks;
+the new ledger refusal is not an observation refusal and does not
+invoke B6.1 withholding on its own.
 The place of `LIMIT_UNSUPPORTED` beside the kind and of `SPEND_OVER`
 before the reservation are proposals of this LIP, marked NEW against
-the table of LIP-0014 section 8.4, which has neither code. The checks
+the table of LIP-0014 section 8.4, which has neither code. The place
+of `LIMIT_CLOCK_REGRESSION` at the reservation is also NEW against
+that table; it changes no definition or order of LIP-0022. The checks
 of the invocation itself (row E0) have no codes and no order against
 E1 and E2 in that table, and this LIP orders nothing against them.
 
@@ -644,7 +656,12 @@ and reservation unchanged and performs no effect.
 | `overshoot-remainder` | Own account 95 of 100, debit 6: `OWN_LIMIT_OVER`, account stays 95 and is not exhausted | A following debit of 5 is admitted at 100, exactly exhausted; a further debit of 1 refuses `OWN_LIMIT_OVER` |
 | `unbounded-cost` | Cost account 0 of 1000, no finite maximum under L18: `OWN_LIMIT_OVER`, no exhaustion | A following finite maximum of 5 is admitted at 5 of 1000 |
 | `unbounded-output` | Output account 0 of 1000, no longest output under L20: `OWN_LIMIT_OVER`, no exhaustion and no input reservation either | A following output maximum of 5, with input within its own ceiling, is admitted |
-| `clock-instance-regression` | After debiting clock instance 2 of length 3600, `now = 7199` selects instance 1: `OBSERVATION_CLOCK`, no account changes | `now = 7200` selects instance 2 and passes the instance check; a debit of 1 against an account at 0 of 100 is admitted |
+| `clock-instance-regression` | After debiting 10 to clock instance 2 of length 3600, `now = 7199` selects instance 1: `LIMIT_CLOCK_REGRESSION`, no account changes | `now = 7200` selects instance 2 and passes the instance check; a debit of 1 against its account at 10 of 100 is admitted at 11 |
+| `clock-per-request-order` | Without LIP-0022, coins total 10 of 100, instance 2 of length 3600 at 10 of 70, per-request ceiling 50; at `now = 7199` a debit of 60 refuses `SPEND_OVER`, before the instance check; a debit of 5 instead refuses `LIMIT_CLOCK_REGRESSION` | At `now = 7200` a debit of 5 is admitted at total 15 of 100 and instance 2 at 15 of 70 |
+| `clock-before-own` | Clock instances have length 3600; latest debit in instance 2, instance 1 at 70 of 70, instance 2 at 10 of 70. At `now = 7199` a debit of 1 refuses `LIMIT_CLOCK_REGRESSION`, not `OWN_LIMIT_OVER` on instance 1 | At `now = 7200` the debit of 1 is admitted in instance 2 at 11 of 70 |
+| `clock-key-order` | The request consumes the total before its clock-period key of length 3600; total 100 of 100, latest instance 2, `now = 7199`, debit 1: `OWN_LIMIT_OVER` on the total before the later key's instance check | With total 99 of 100 and `now = 7200`, instance 2 at 10 of 70, debit 1 is admitted at total 100 and instance 2 at 11 of 70 |
+| `unbounded-cost-per-request` | Cost account 0 of 1000, per-request ceiling 50, no finite maximum: `SPEND_OVER`, not `OWN_LIMIT_OVER`; no reservation | With the same ceilings, a finite maximum of 5 is admitted at 5 of 1000 |
+| `unbounded-output-per-request` | Output account 0 of 1000, per-request output ceiling 50, no longest output: `SPEND_OVER`, no output or input reservation | With the same ceilings, a longest output of 5 and input within its own ceilings are admitted |
 | `exact-room` | Own account 9000 of 10000, maximum 1001: `OWN_LIMIT_OVER`, account stays 9000 | Maximum 1000 is admitted at 10000 |
 | `maximum-no-wrap` | Own account 9000 of 10000, maximum 18446744073709551616: `OWN_LIMIT_OVER`, never a debit of 0 | Maximum 1000 is admitted at 10000 |
 | `maximum-offset-no-wrap` | Own account 9000 of 10000, maximum 18446744073709552116: `OWN_LIMIT_OVER`, never a debit of 500 | Maximum 500 is admitted at 9500 |
@@ -654,6 +671,21 @@ and reservation unchanged and performs no effect.
 | `row-no-wrap` | Own account 0, row account 18446744073709551615, both ceilings 18446744073709551615, debit 1: `ROW_CAP_OVER`, neither account changes | With row account 18446744073709551614, debit 1 is admitted in both accounts |
 | `per-request-no-wrap` | Stated per-request ceiling 10000, maximum 18446744073709551616: `SPEND_OVER` before any reservation | Maximum 10000 passes that check and, with an empty own account of ceiling 10000, is admitted |
 | `no-binary64-rounding` | Own account 9007199254740992 at that ceiling, debit 1: `OWN_LIMIT_OVER`, not a rounded account at the ceiling | At account 9007199254740991, debit 1 is admitted at 9007199254740992 |
+| `fractional-binary64-over` | Own account 9993 of 10000, maximum 8: `OWN_LIMIT_OVER`, unchanged; forming price 0.07 times 100 in binary64 gives 7.000000000000001 and then 8, the forbidden `binary64-cost` mutant | Exact price 0.07 subunit times 100 tokens is 7; reserve 7 and admit at 10000, not 10001; 100 actual tokens settle at 7 and release 0 |
+| `fractional-no-shortfall` | Exact price 0.10000000000000001 subunit times 1000000000 tokens is 100000000.00000001; reserve 100000001, so an empty account with ceiling 100000000 refuses `OWN_LIMIT_OVER`; binary64's 100000000 is short of the table and forbidden | With ceiling 100000001 the same request is admitted at 100000001; that actual count settles at the same integer and releases 0 |
+| `fractional-sum-once` | Empty account, ceiling 1: reservation 2 refuses `OWN_LIMIT_OVER`; converting input cost 0.5 and output cost 0.5 separately to 1 each is the forbidden `round-parts` mutant | Sum the two parts exactly to 1, reserve 1 and admit at the ceiling; those actual parts settle at 1 and release 0 |
+| `fractional-unit-price` | Own account 700 of 1000: reservation 1000 refuses `OWN_LIMIT_OVER`; rounding a unit price of 0.25 to 1 before multiplying by 1000 is forbidden | Exact price 0.25 subunit times 1000 tokens is 250, reserved once and admitted at 950 of 1000; those actual tokens settle at 250 |
+| `fractional-settlement` | At price 0.05 subunit per token, 100 permitted tokens reserve 5. For 50 actual tokens, settling at 2 or refusing the fractional cost is forbidden; 2 is the `truncate-settlement` mutant | Actual cost 2.5 converts upward once to settlement 3; release exactly 2 of the reserved 5; 100 actual tokens instead settle at 5 with no release |
+| `fractional-overflow` | Exact maximum 18446744073709551615.1 converts upward to 18446744073709551616: `OWN_LIMIT_OVER` against an empty account with ceiling 18446744073709551615, with no wrap or truncation | Exact maximum 18446744073709551614.1 converts to 18446744073709551615 and is admitted at that ceiling |
+
+The named `fractional-binary64-over` regression fixture narrows the
+repeated exactness finding to the fractional path: its valid control
+must admit at 10000, while the `binary64-cost` mutant refuses it.
+`fractional-no-shortfall` catches that mutant in the other direction:
+it admits a request whose exact reservation exceeds the ceiling.
+`round-parts` fails `fractional-sum-once`; `truncate-settlement` fails
+`fractional-settlement`. These are text-level mutation witnesses,
+not a claim that an executor or the planned vector checker was run.
 
 ## Sources
 
@@ -668,8 +700,8 @@ and reservation unchanged and performs no effect.
   same tip and the recheck before a reservation (B1.1, B1.5, B1.6),
   a tip that conflicts (B2.4, B2.5), the clock in whole seconds of
   UTC (B3.1), verdicts relative to the active chain after a
-  reorganisation (B4.4), and no comparison of depths and heights
-  across chains (B5.3).
+  reorganisation (B4.4), and no comparison of depths across chains
+  (B5.3), applied to heights in the same manner by this LIP.
 - LIP-0006 (`amount_sat`, atomic NMC units at most
   `21000000 * 100000000`) and LIP-0013 section 2.1 (`spend_budget` in
   atoms, 0 to 2100000000000000): the scale of NMC that L11 states.
@@ -703,8 +735,8 @@ keys that a grant states, so that a grant for one period needs no
 whole-window limit. Not taken as the rule, and left to the owners in
 the open questions: the meaning of coins binds a total, a missing
 total under the other reading is an unlimited term behind a bounded
-hour, and the fourth rule of section 5 already gives a long-lived
-agent that wants period-sized authority a new grant per period,
+hour, and under the PROPOSED reading of section 5 a long-lived
+agent that wants period-sized authority gets a new grant per period,
 whose total is its window.
 
 **The maximum for one spend as a fourth kind.** LIP-0008 section 2
