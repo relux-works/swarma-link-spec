@@ -66,6 +66,40 @@ spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
 ## Draft profiles and design decisions in v0.1.65
+
+Version 0.1.65 publishes six new **Draft** proposals and reconciles the
+older Draft/PROPOSED clauses with Ivan Oparin's decisions of 2026-11-20.
+The co-author's agreement on each amended decision is pending. These
+source changes claim no implementation, installed reader rollout, protocol
+adoption or production-name migration.
+
+| LIP | Draft proposal |
+| --- | --- |
+| [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md) | Separate credential issuer key; `subject-claim` and `agent-audit` credentials; typed notary `/2` with only two kinds; eternal history and authenticated compromise height |
+| [LIP-0033](lips/LIP-0033-reference-distribution-for-pinned-lists.md) | Non-exclusive delivery, inline first; one Nostr kind 30079; binary event-ID location `0x05`; no name/manifest `loc` |
+| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Device-authenticated `auth-response/1` in `swarm-envelope/2`, restricted provisional accounts and client-owned registration |
+| [LIP-0035](lips/LIP-0035-unilateral-mandates.md) | Contract-free root EFFECT grants only without `delegate`, never hire or rental, exactly one key/name recipient |
+| [LIP-0036](lips/LIP-0036-federated-trust-and-progressive-disclosure.md) | Separate policy/grant screening and human-gated targeted disclosure; external `curator-trust` dependency |
+| [LIP-0037](lips/LIP-0037-entity-card.md) | Unsigned public identity card pinned solely through the manifest; a2a-swarm's accepted card protocol remains independent |
+
+[LIP-0010 section 11](lips/LIP-0010-name-value.md#11-heads-of-statement-sets-the-single-manifest-draft-amendment-of-2026-11-20)
+now defines the single `swarma-manifest` name head, its document and service
+declaration. Device/holder/certificate/card heads live there, freeing the
+former 150-byte reserve. A landlord with NIP-05 object, one relay and the
+head takes 398 bytes (413 at the maximum seq), within 520. Legacy H8 remains
+explicitly readable; mixed forms refuse, and final legacy retirement is open.
+Manifest seq strictly increases on updates; set seq never decreases. Seal
+revocation needs no manifest. Inline bytes work for names with no NIP-05
+domain or Nostr key; secondary paths are optional. Every verifier's reader
+must be upgraded before writing the new head to a production name.
+
+Older version descriptions below are historical where superseded by these
+amendments. The exact remaining questions are in
+[UNRESOLVED_QUESTIONS.md](UNRESOLVED_QUESTIONS.md). Every new LIP has its
+extension checklist, deterministic refusal order and conformance boundary;
+Draft vectors are not required, and no unavailable canonical mapping is
+claimed complete.
+
 The [child-issuer integration proposals](lips/LIP-0014-source-contract-proposals.md)
 collect **PROPOSED** choices for H1 (identity latch), T1 (contract profile),
 the action-profile mapping, the enrollment boundary (section 2.4),
@@ -85,7 +119,8 @@ describes grant-gated services and the concrete wallet service v1 profile,
 with examples and a separately scoped delegated-issuance capability.
 
 [LIP-0007](lips/LIP-0007-service-types.md) proposes service types, action tables
-and a typed self-declaration in a service's Namecoin value.
+and a typed self-declaration in the service's name-pinned manifest
+(LIP-0010 section 11), not an extra member competing for name-value bytes.
 [LIP-0008](lips/LIP-0008-grant-v4.md) proposes Grant v4 signed rental limits,
 an issuer name pinned by registration and owner key with a history walk,
 owner-pinned recipients and concrete executor budgets.
@@ -302,7 +337,8 @@ contract an object of its own: one document that two or more parties sign,
 with free text and machine members, whose identifier commits to a salt and
 to a salted hash of each clause, so that single clauses can be disclosed.
 A contract is anchored as LIP-0005 action `0x07` and may exist without any
-grant, and every grant binds a contract. A grant's window lies inside its
+grant. Grants that bind a contract (bilateral, framework, rental) bind one;
+only LIP-0035's scoped root EFFECT exception may omit it. Such a bound grant's window lies inside its
 contract's window, a framework contract covers several grants over time,
 and a contract can name a seal whose script is its termination clause and
 whose spend, with action `0x08`, ends every grant under it. Grant v3 does
@@ -661,8 +697,8 @@ review confirmed, and is dropped; every text that reads it points to
 child-seal key, which is neither the grant key nor the delegation key and
 which every child's seal pays
 ([LIP-0014](lips/LIP-0014-notary-certified-redelegation.md) section 11.2).
-Every statement set of an owner has its head in the owner's name value, and
-only the last head confirmed in the active chain counts, after a
+Every statement set of an owner has its head in the name-pinned manifest,
+and only the last manifest confirmed in the active chain counts, after a
 reorganisation too, while the refusals that a reader journaled stay
 ([LIP-0010](lips/LIP-0010-name-value.md) section 11;
 [LIP-0016](lips/LIP-0016-certificate-store.md) section 3.1). The emergency
@@ -680,7 +716,8 @@ is NOT established (corrected in version 0.1.52)
 the words of the decision (section 8.3); the sender attaches the device list
 when it changes and at first contact with a receiver, otherwise the envelope
 carries the hash, an unknown hash refuses by name and the sender re-sends,
-and the owner's domain and a Nostr replaceable event are secondary paths
+and an independently authenticated NIP-05 domain and Nostr kind 30079
+are optional, non-exclusive secondary paths
 (section 3.5); a Matrix device is an ordinary record at L1 without
 presence, whose end-to-end encrypted events count only when bound to its
 session, never when forwarded, restored from backup or sent in plaintext
@@ -703,8 +740,10 @@ Version 0.1.53 replaces the member `holders` by a hash-pinned holders list
 ([LIP-0010](lips/LIP-0010-name-value.md) section 10), in force on an owner
 decision of 2026-11-16 without the co-author's answer, which is folded in by
 amendment. The landlord's name value pins the hash and the version of the
-list in a member `swarma-holders`, outside `swarma`, on the method of the
-LIP-0029 device list, and the list lives off the value with no cap of five.
+list in the historical direct member `swarma-holders`, outside `swarma`,
+on the then-current method of the LIP-0029 device list. Version 0.1.65
+keeps this explicitly as legacy and moves the head into the manifest
+profile. The list lives off the value with no cap of five.
 It has one entry for each agent or station name: the name, the key that
 holds it and a seal. A change of the list is a name update that ends no v4
 grant, because a grant depends on the owner and on the `swarma` member, which

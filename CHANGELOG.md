@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.1.66 — 2026-11-20
+
+Net change over 0.1.65: six new Draft proposals, LIP-0032 to LIP-0037,
+reconciled with Ivan Oparin's decisions of 2026-11-20. Those decisions take
+precedence over conflicting older Draft/PROPOSED text; the co-author's
+agreement on every amended decision is pending. No implementation, adoption,
+production name migration or deployed reader support is claimed.
+
+- LIP-0010 section 11 defines one `swarma-manifest` head and document,
+  carrying device, holder, certificate and card heads and the LIP-0007
+  declaration. It frees the 150-byte reserve and recomputes the 520-byte
+  budget. Legacy H8 stays explicitly readable; mixed forms refuse. Manifest
+  counters strictly increase; set counters do not decrease. Inline-only
+  operation and the per-verifier reader rollout gate are explicit.
+- LIP-0032 separates credential issuance from notary attestations, retains
+  typed notary `/2` for its two kinds, uses LIP-0020 canonical/digest rules,
+  assigns credential actions `0x09`/`0x0a` and authenticated compromise-break
+  action `0x0b`, and preserves eternal anchors below `h_c`. LIP-0012,
+  LIP-0014, LIP-0020, LIP-0021 and the key registries are reconciled.
+- LIP-0033 makes delivery non-exclusive, keeps `LIST_UNKNOWN`, assigns
+  dedicated Nostr kind 30079 and 32-byte event-ID location `0x05`, preserves
+  SSRF boundaries and clarifies inline step 0 in LIP-0019. Neither the
+  name nor manifest has `loc`.
+- LIP-0034 adds Draft `auth-response/1` in the existing envelope format,
+  distinguishes device identity login from authority, and corrects name
+  registration/upgrade details. External envelope registration is a gate.
+- LIP-0035 selects scoped Option B: no contract only for root EFFECT grants
+  without `delegate`, never hire/rental. LIP-0017 C5/C12 and LIP-0020 consent
+  and W11.2 are scoped accordingly. Private delivery, targeted single-use/
+  standing modes, no obligations, no delegation and durable revocation stay.
+  Preparation `/2` and issuance payload `0x03` specify that sole exception.
+- LIP-0036 composes credentials, supported screening limits and a human-gated
+  disclosure grant, with `curator-trust` explicitly external. LIP-0037 is
+  the unsigned manifest-only identity card, with full relays/transports,
+  projection boundaries and future signing option (d) left open.
+- Each new LIP has an extension checklist, ordered refusals and a conformance
+  section. Draft vectors are not required. Exact child-notary v2 mapping,
+  selective-disclosure proofs and application profiles remain open, not
+  invented byte fixtures. No existing vector or checker is changed.
+
+
 ## 0.1.65 — 2026-11-20
 
 Net change over 0.1.64: records the owners' K3, b1 and c1 decisions, with
