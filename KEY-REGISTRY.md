@@ -99,7 +99,7 @@ and wait for the owners' confirmation.
 | Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version. LIP-0014 section 11.2, Draft of 2026-11-16: in v4 from the first version, agreement pending |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft; typed notary `/2` in LIP-0032 |
 | Auth key | high | Draft LIP-0034; paired manifest auth key/seal, external identity only |
-| Credential issuer key | high | LIP-0032 and LIP-0010 section 9.1, Draft; owner decision of 2026-11-20, co-author agreement pending |
+| Credential issuer key | high | LIP-0032 and LIP-0010 section 9.1, Draft; owner decision of 2026-11-20 (source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`), co-author agreement pending |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
 | Row stop key, v4 | medium | LIP-0014 section 10.1; decision of 2026-11-14, agreement pending |
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
@@ -758,8 +758,10 @@ until that agreement.
 - Danger: high: a leak impersonates the owner at services, not at Link executors.
 - Recovery: spend the disposable auth seal; observers durably close login.
   Publish a new auth key with a fresh seal via an owner-signed manifest update.
-- Derivation: Draft `m/84'/7'/12'/0/0` in a fresh dedicated account. Existing
-  account assignments are never reused; KEY-MAP reconciles v0.3 conflicts.
+- Derivation: Draft `m/84'/7'/2'/0/0`, its own separately wrapped account
+  on the hot signer seed, not the cold name-owner seed. KEY-MAP rejects
+  v0.3 account 12 because it intersects the dynamic seal/row/stop pool 10+;
+  reserve account 3 and funding account 0 remain separate from auth account 2.
   Auth/device fast-revocation seal keys are CSPRNG-only and destroyed after
   recording their pre-signed revoke, never derived from the recovery seed.
 - Source: the Swarma Link editor's resolution adopting the owner's v0.3

@@ -14,7 +14,7 @@ A root EFFECT grant may confer permission without imposing a contract on its
 recipient. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to take **Option B, scoped**:
 only a root grant without `delegate`, never a hire or rental grant, may omit
 `contract`; the recipient is one key or one name. The co-author's agreement
-is pending. Source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`.
+is pending.
 
 This supersedes the universal wording of LIP-0017 C5 and C12 and the universal
 consent wording in LIP-0020. Their requirements still apply to grants that
@@ -29,7 +29,7 @@ Draft is not evidence of implemented or admitted execution profiles.
 U1. Use `swarma-grant/4` and LIP-0020 W1–W6 and W11. Omission of its optional
 `contract` member selects the contract-free branch of this profile. A
 root satisfying U2–U6 MAY instead bind the optional mandate in section 2.1;
-that branch retains contract-bound issuance, assent and consent checks. Do not add `authorization_mode`,
+both branches use the consent-free issuance pipeline below. Do not add `authorization_mode`,
 `contract_hash`, `consent`, `scope`, or `kind` members to the grant. In
 particular `contract: null` is invalid under W1. All other required W11
 members remain required, including `recent_block`, `not_before_height`,
@@ -53,7 +53,7 @@ the issuance snapshot and live-name checks, remain required. At issuance,
 resolve the recipient name at the signed grant's `recent_block` using the
 verifier's own indexed name history, and compare its live owner to
 `recipient.owner`. No consent-key snapshot or `name_output` evidence is
-fabricated for the contract-free branch. Missing historical evidence refuses
+fabricated for either unilateral branch. Missing historical evidence refuses
 `ISSUANCE_MODE` in W9.4 step 2; invocation repeats the live name/owner check.
 Omitted consent
 does not mean omitted issuer or recipient identity checks.
@@ -77,28 +77,40 @@ LIP-0014 rules; do not convert this grant by adding a child.
 
 ## 2. Issuance preparation and anchor
 
-For this case only, the unsigned preparation is `swarma-issuance/2`, with
-exactly `type`, `genesis`, `grant_id`, and `grant_signature`. The last three
-have the same forms and meanings as in `swarma-issuance/1`. Its canonical
-payload is at most 1024 bytes, follows W1–W4, and has no detached signature.
-The grant signature, not a signature on the preparation, proves the issuer's
-grant-key authorization. No issuer assent, recipient consent event, or
-contract seal is fabricated.
+For both unilateral branches, the unsigned preparation is
+`swarma-issuance/2`, with exactly `type`, `genesis`, `grant_id`, and
+`grant_signature`, plus `mandate_signature` **if and only if** the grant
+binds the optional mandate. The four base members have the same forms and
+meanings as in `/1`; `mandate_signature` is the checked W5 signature of
+the mandate, 128 lowercase hex characters. Its canonical payload is at
+most 1024 bytes, follows W1–W4, and has no detached signature. The grant
+identifier binds the mandate identifier through `contract`; including the
+mandate signature also binds its exact signed form. No separate issuer
+assent or recipient consent event is required or fabricated. A mandate
+adds its actual confirmed issuer-only seal, which MAY be the grant seal;
+the contract-free branch does not fabricate a contract seal.
 
 The issuance anchor uses LIP-0005 action `0x01`, payload version `0x03`, and
 the 32-byte typed digest of that preparation. Location `0x00` has zero pointer
 bytes; location `0x01` has the 32-byte SHA-256 content address of the **signed
 grant**, not of the preparation. These frames are 40 and 72 bytes respectively.
-Version `0x02` and preparation `/1` remain the contract-binding path; neither
+Version `0x02` and preparation `/1` remain the ordinary bilateral, framework
+and rental path; neither
 version may be substituted for the other. Existing v3 framing is unchanged.
 
-Apply W9's frame, wire, signature, binding and commitment checks in order.
-In its issuance pipeline, choose `/2` only after the signed grant satisfies
-U1–U6. Skip only the contract-assent/consent evidence steps, not signature,
-name, seal, snapshot, or action-profile checks. The recipient snapshot is
-reconstructed at the signed `recent_block` as U3 specifies, not read from
-a nonexistent `/2` member. A `/2` preparation carrying
-a contract-binding grant, or `/1` carrying a contract-free grant, refuses.
+Use the **one deterministic issuance pipeline of LIP-0020 W9.4**, not
+an independent mandate pipeline: signed grant, contract-profile input,
+signed mandate if selected, equality, then U1–U6 in step 1; identity and
+preparation mode in step 2; skip separate assent/consent in steps 3–4 for
+either unilateral branch; frame in step 5; typed preparation commitment
+in step 6. The presenter supplies the signed mandate bytes whenever the
+grant binds that profile. Missing root contract bytes refuse
+`CONTRACT_NOT_PRESENTED`; a failed mandate never falls back to `/1` or the
+contract-free branch. The recipient snapshot is reconstructed at the signed
+`recent_block` as U3 specifies, not read from a nonexistent `/2` member.
+A supplied `/1` for either unilateral branch, or `/2` for another contract
+profile, is `ISSUANCE_MODE`; an anchor with the wrong frame version is
+`ISSUANCE_FRAME`. Neither failure creates an issuance or an effect.
 
 ### 2.1. Optional signed mandate contract
 
@@ -133,10 +145,14 @@ and the grant's `contract` MUST equal its identifier. After both objects'
 wire/signature checks, any inequality is **`UNILAT_MANDATE_MISMATCH`**.
 This includes a different issuer key or recipient owner pin. No fallback
 to the contract-free branch is allowed when a supplied contract fails.
-The contract-bound `/1` issuance path still checks W7 issuer assent and
-recipient consent; the issuer-only mandate signature does not fabricate
-either document. Its single-party contract signature imposes no grantee
-obligation. Re-delegation stays forbidden under U6.
+The mandate adds **issuer-signed terms and a confirmed issuer-only seal**,
+possibly shared with the grant. It adds **no recipient assent, consent or
+obligation**. Its issuer signature is sufficient for those terms; no
+separate W7 issuer assent is required. Both unilateral branches use `/2`,
+skip W7 assent/consent, and remain subject to U2/U5/U6. This is the Swarma
+Link editor's resolution reconciling the optional v0.3 profile with scoped
+Option B, not a bilateral agreement or a new owner decision. Re-delegation
+stays forbidden under U6.
 
 ### 2.2. Signed broker invocation
 
@@ -172,7 +188,7 @@ Unsupported name-mode proof refuses; no signature alone supplies authority.
 `issuance_txid` must resolve to the verified grant issuance, not just any
 transaction. A fresh nonce does not reopen an already single-used grant.
 
-After wire, mandate equality and grant/issuance/state checks, a missing,
+After the W9.4 issuance pipeline and the existing grant/state checks, a missing,
 expired, mismatched or consumed challenge is `UNILAT_INVOCATION`. The
 executor atomically reserves the nonce and single-use grant (or standing
 budget) in its fenced LIP-0025 journal before any effect. Section 3 applies
@@ -184,11 +200,17 @@ to retries, backup rollback, concurrency and uncertain outcomes.
 issuer-revocable seal and a durable one-time consumption record in the
 executor's LIP-0025 journal, with an **external append-only fencing
 witness outside the database backup domain**. Before admission the executor
-checks the journal position against that witness; a restored stale database
-is `JOURNAL_ROLLBACK`, never a fresh use. Reserve in the journal and witness
-before performing the effect; interrupted/uncertain reservations stay
-consumed or pending, never reopen. Unavailable fencing fails closed with
-LIP-0025's `JOURNAL_FENCED`. Admission MUST reserve the one permitted use
+checks continuity in **LIP-0025 M4.6 order**: readable outside witness,
+readable local store, matching identities, held fencing token, then journal
+positions and commitments. An absent/unreadable witness or local store,
+or an identity mismatch, is `JOURNAL_LOST` before the token check. With
+readable matching-identity evidence, a missing token is `JOURNAL_FENCED`
+even if the store is stale. With the token held, a database position behind
+the external witness is `JOURNAL_LOST`, never a fresh use. Reserve in the
+journal and witness before performing the effect; interrupted/uncertain
+reservations stay consumed or pending, never reopen. Every other M4.5
+continuity failure keeps `JOURNAL_LOST`; only M4.4's missing writer token
+is `JOURNAL_FENCED`. Admission MUST reserve the one permitted use
 durably before the external effect. Retries with the same invocation identity
 return the journaled outcome; uncertainty MUST NOT reopen the use. All
 replicas of that one executor share the authoritative journal. Independent
@@ -220,31 +242,39 @@ network propagation time. Already disclosed bytes cannot be recalled.
 
 Use existing pipeline codes rather than aliases for malformed wire or closure:
 
-1. LIP-0005 frame errors, then W9 canonical/type/size/signature errors
-   for each object. Null is `WIRE_VALUE`; a contract-free child is
-   `WIRE_MEMBER` before any scope check.
-2. For the optional contract profile, `UNILAT_MANDATE_MISMATCH` for any
-   inequality of the section 2.1 bound fields or contract identifier.
-3. `UNILAT_SCOPE` for an otherwise well-formed contract-free root with
-   `delegate`, a hire/rental action profile or non-EFFECT scope; then
-   `UNILAT_OBLIGATION_FORBIDDEN` for any other obligation-bearing profile.
-   Optional mandates must satisfy the same U2/U5/U6 semantic restrictions.
-   An attempted child under a non-delegable parent remains `NOT_DELEGABLE`
-   at its ordinary delegation stage, never a new alias.
-4. W11 binding, unsupported action/limit, name and issuance-anchor errors
-   in their existing order. Existing `ISSUER_NAME_CLOSED`, seal-spend and
-   window refusals retain their existing stages and precede consumption.
+1. Issuance uses LIP-0020 W9.4 exactly, including its ordered step-1
+   substeps: grant W9/W11, root contract bytes, mandate W9, equality,
+   `UNILAT_SCOPE`, then `UNILAT_OBLIGATION_FORBIDDEN`. Null is `WIRE_VALUE`;
+   a contract-free child is `WIRE_MEMBER` before scope. An attempted child
+   under a non-delegable parent remains `NOT_DELEGABLE` at its ordinary
+   delegation stage, never a new alias.
+2. In W9.4 step 2, wrong preparation mode or missing U3 identity/snapshot
+   evidence is `ISSUANCE_MODE`. Neither unilateral branch reads a separate
+   assent or consent event in steps 3–4.
+3. W9.4 step 5 checks the frame (`ISSUANCE_FRAME`); step 6 checks the typed
+   `/2` commitment (`ISSUANCE_COMMITMENT`). A different valid mandate
+   signature changes the preparation commitment, not its contract identifier.
+4. Existing grant/action/limit, name, seal-spend and window refusals keep
+   their ordinary state-check stages and precede consumption. In a broker
+   presentation, first check the outer invocation's W9 wire/signature, then
+   the decoded issuance through the pipeline above; no competing order is
+   introduced for its inner signed objects.
 5. `UNILAT_INVOCATION` for a failed broker challenge/binding/expiry check.
-6. `JOURNAL_ROLLBACK` for a database position behind the external witness;
-   LIP-0025 `JOURNAL_LOST`/`JOURNAL_FENCED` for missing/unavailable journal
-   or fencing evidence. No effect is allowed.
+6. LIP-0025 M4.6 order from section 3: unreadable/absent witness or store,
+   or wrong identity, is `JOURNAL_LOST`; then no token is `JOURNAL_FENCED`;
+   then a database position behind the external witness is `JOURNAL_LOST`.
+   No effect is allowed.
 7. `UNILAT_ALREADY_CONSUMED` when a single-use grant was consumed; the
    existing limit code for exhausted standing budget. A retry of the same
    accepted invocation returns its recorded outcome, never a second effect.
 
 The draft aliases `UNILAT_ENCODING`, `UNILAT_REDELEGATION_FORBIDDEN` and
 `UNILAT_SEAL_SPENT` are not new wire codes. Preserve W9, delegation and seal
-codes above. A stage failure creates neither a partial effect nor authority.
+codes above. The v0.3 name `JOURNAL_ROLLBACK` is **not adopted**: a restored
+stale journal is already LIP-0025's `JOURNAL_LOST`, with M4.6's earlier
+no-token `JOURNAL_FENCED` precedence. This is an editorial reconciliation,
+not a new alias or a change to LIP-0025. A stage failure creates neither a
+partial effect nor authority.
 
 ## 5. Rejected alternative and security
 
@@ -275,8 +305,10 @@ guarantees. Private delivery does not remove ledger visibility of an anchor.
 - Specialized certificate-subject checklist: not applicable. No certificate
   subject or general new limit kind is registered by this LIP.
 - Adoption: W11, issuance preparation and executor-journal readers must be
-  updated before production issuance. Existing contract-binding grants keep
-  their consent and confirmed-contract-seal requirements.
+  updated before production issuance. Ordinary bilateral, framework and
+  rental grants keep their consent and confirmed-contract-seal requirements;
+  the optional unilateral mandate requires its confirmed issuer-only seal,
+  not recipient consent.
 
 Vectors are **not required for Draft LIPs** and are not supplied. Admission
 still requires implementation tests for a valid root/key and root/name pair,
@@ -288,7 +320,17 @@ No single-use P2SH-v4 bytes are claimed while their construction is open.
 The conformance plan also requires named regression pairs for contract-free child `WIRE_MEMBER` versus root
 scope `UNILAT_SCOPE`, each mandate equality field, null `WIRE_VALUE`, nonce
 replay/expiry, and restored database versus external fencing witness
-(`JOURNAL_ROLLBACK`). A witness outside the backup domain is not optional.
+(`JOURNAL_LOST` with the token held). A witness outside the backup domain
+is not optional. Add these ordered regression pairs: a valid signed mandate
+issues without assent/consent, versus an otherwise equal grant with
+`delegate` (`UNILAT_SCOPE`); a mandate limits mismatch plus a bad unsolicited
+consent event (`UNILAT_MANDATE_MISMATCH`, no consent processing); `/2` with
+the mandate signature versus its omission (`ISSUANCE_MODE`); and matching
+mandate signatures versus a different valid signature at the same anchor
+(`ISSUANCE_COMMITMENT` if its frame pointer still matches). Journal pairs
+must cover intact admission, stale-with-token (`JOURNAL_LOST`),
+stale-without-token (`JOURNAL_FENCED`), and absent/unreadable witness
+(`JOURNAL_LOST` before fencing). Every refused case must have no effect.
 
 ## Open questions
 

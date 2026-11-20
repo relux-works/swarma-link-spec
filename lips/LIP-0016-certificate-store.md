@@ -177,8 +177,10 @@ through LIP-0010 SH5 it follows §9.4: after a reorganisation the last
 confirmed head counts again and a revocation that a reader journaled stays.
 §3.12 is an update for the book once agreed.
 
-The decided Draft form now puts the head behind the single manifest, not
-in a separate name member. Every changed set still requires a name update
+The Draft form decided by Ivan Oparin on 2026-11-20 (source:
+`$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`; co-author agreement
+pending) now puts the head behind the single manifest, not in a separate
+name member. Every changed set still requires a name update
 signed by the cold key, with the v3 outage of LIP-0029 O3.10. The one shared
 manifest head costs 104 bytes at a one-digit sequence or 119 at the maximum
 (LIP-0010 section 8); the certificate entry itself costs no extra name

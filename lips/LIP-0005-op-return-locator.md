@@ -88,7 +88,8 @@ not additions to the current reference parser's accepted set.
 [LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes payload version
 `0x02` of action `0x01` for the issuance of a v4 grant; the reference parser
 does not accept it. Draft LIP-0035 additionally assigns action `0x01`
-payload `0x03` to contract-free issuance preparation `/2`. LIP-0032 assigns
+payload `0x03` to unilateral issuance preparation `/2`, both contract-free
+and optional-mandate branches. LIP-0032 assigns
 action `0x04` payload `0x02` to typed notary attestation `/2` where its kind
 schema is specified. These assignments do not relax any existing profile's
 narrower location/version acceptance.

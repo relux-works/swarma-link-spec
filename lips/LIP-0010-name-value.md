@@ -365,7 +365,8 @@ characters. The manifest profile moves the typed service declaration of LIP-0007
 off the name value into the pinned manifest (section 11.1).
 
 **Budget amendment (Draft, 2026-11-20).** Ivan Oparin decided on
-2026-11-20 that one manifest replaces per-set heads and carries the LIP-0007
+2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`)
+that one manifest replaces per-set heads and carries the LIP-0007
 service declaration. The co-author's agreement is pending. The former
 150-byte service reserve is released; it is not an extra 150 bytes added to
 the 520-byte consensus limit. Keys whose change must close grants remain

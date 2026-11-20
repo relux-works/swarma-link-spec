@@ -28,15 +28,19 @@ production name migration or deployed reader support is claimed.
 - LIP-0034 uses a dedicated BIP-340 auth key and registered typed challenge/
   upgrade objects, with paired manifest auth key/seal, TTL at most 120 seconds
   and atomic replay-safe upgrade. Device keys stay internal; cold keys never
-  log in. Existing key derivations win over conflicting v0.3 path proposals.
+  log in. Existing key derivations win over conflicting v0.3 path proposals;
+  fixed auth/reserve accounts 2/3 stay outside the dynamic 10+ pool.
 - LIP-0035 selects scoped Option B: no contract only for root EFFECT grants
   without `delegate`, never hire/rental. LIP-0017 C5/C12 and LIP-0020 consent
   and W11.2 are scoped accordingly. Private delivery, targeted single-use/
   standing modes, no obligations, no delegation and durable revocation stay.
-  Preparation `/2` and issuance payload `0x03` specify that sole exception.
+  Preparation `/2` and issuance payload `0x03` specify both unilateral branches.
   The editor also accepts an optional signed unilateral mandate contract,
   exact grant equality, signed broker invocation and externally fenced
-  single-use journal; root wire/scope and child refusals are unambiguous.
+  single-use journal. The mandate's checked signature is bound in `/2`,
+  without separate assent or recipient consent; W9.4 orders equality and
+  scope checks. Journal continuity keeps LIP-0025's existing loss/fencing
+  codes and precedence; root wire/scope and child refusals are unambiguous.
 - LIP-0036 composes credentials, supported screening limits and a human-gated
   disclosure grant, with `curator-trust` explicitly external, role-separated
   hub names and direct Contour A PII routing that bypasses screening hubs. LIP-0037 is

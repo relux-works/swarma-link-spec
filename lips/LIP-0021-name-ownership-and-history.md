@@ -481,10 +481,13 @@ J6.4.
 
 #### 7.6. Credential issuer history and compromise break (Draft, 2026-11-20)
 
-Ivan Oparin decided on 2026-11-20 (source: `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) that eternal credentials survive rotation,
-and an emergency issuer closure states a compromise height `h_c`, signed
-by the name-owner key in the break transaction. The co-author's agreement
-is pending. Source: `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`.
+Ivan Oparin decided on 2026-11-20 that eternal credentials survive rotation
+(source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`) and that an
+emergency issuer closure states a compromise height `h_c` (source:
+`$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`). The co-author's
+agreement is pending. This Draft proposes name-owner authentication of
+the break in its transaction; that signature mechanism is not an owner
+decision in the cited record.
 LIP-0032 sections 2–4 define the credential issuer role and the
 exact `swarma-credential-break/1` object, frame and refusal order.
 

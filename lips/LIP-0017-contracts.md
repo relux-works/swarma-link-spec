@@ -43,7 +43,9 @@ canonical bytes, and nothing of it is implemented.
 The Swarma Link editor's resolution also proposes LIP-0035's optional
 `swarma-unilateral-mandate/1` contract profile from the owner's v0.3 draft,
 2026-11-20. It does not make a contract mandatory for scoped B. The issuer
-alone signs that contract; grant issuance retains applicable W7 evidence.
+alone signs that contract; both unilateral branches use the consent-free
+`/2` issuance pipeline of LIP-0020 W9.4. The mandate adds issuer-signed
+terms, not recipient assent or obligation; no separate W7 assent is needed.
 The mandate's issuer-only seal MAY equal the grant seal. C5/C12 hold; a
 spend closes both without requiring an unspecified termination-statement
 format. That narrow profile refines C8, not the bilateral/framework/rental

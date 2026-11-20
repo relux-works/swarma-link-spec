@@ -358,21 +358,29 @@ previous section says.
 
 The Swarma Link editor's resolution preserves existing derivations where
 the owner's v0.3 draft differs. It adds a separate auth role, not a migration
-of an existing secret. No account holding an existing seal may be reused
-for another purpose. On a fresh provision, reserve the auth/reserve accounts
-below before allocating seal accounts; an older colliding allocation stays
-unchanged and needs a separately agreed free account, not key reuse.
-LIP-0024 E5.1–E5.5 still require independent account provisioning/wrapping;
-different path strings alone do not prove custody separation.
+of an existing secret. The fixed auth account is `m/84'/7'/2'`; the fixed
+emergency fee-reserve account is `m/84'/7'/3'`, both on the operator's hot
+signer seed, **not** the cold name-owner seed. These account indices are
+below 10 and outside the shared dynamic pool of LIP-0024 seals, LIP-0026
+rows and LIP-0027 stop keys. This Draft does **not** adopt v0.3's fixed
+indices 12 and 14: those are valid future dynamic allocations on the same
+seed, so reserving them only against existing seals would not prevent a
+row/stop collision. The existing funding account 0 and dynamic pool 10+
+stay unchanged; the notary's `m/44'/1237'/2'` is a different full path.
+No existing key is moved or reused by this correction. LIP-0024 E5.1–E5.5
+still require independent provisioning/wrapping of every seal account;
+the auth and reserve accounts are also provisioned/wrapped separately.
+An auth signer receives neither reserve/funding nor seal key material.
+Different path strings alone do not prove custody separation.
 
 | Role | v0.3 proposal | This specification |
 | --- | --- | --- |
 | Funding | `m/84'/7'/0'/0/*` | Compatible external branch of existing funding account `m/84'/7'/0'` |
 | Name owner | `m/84'/7'/10'/0/0` | Not adopted: preserve separate seed, account `m/84'/7'/0'`, fresh address per name; no hot-seed owner key |
 | Grant | `m/84'/7'/11'/0/0` | Not adopted: preserve decided K5 random Keychain key and later BIP-85 target `m/83696968'/2'/7'`; the grant key stays outside every wallet account |
-| Auth | `m/84'/7'/12'/0/0` | New Draft dedicated account on fresh provisioning, subject to existing-allocation exclusion above |
+| Auth | `m/84'/7'/12'/0/0` | Not adopted: fixed `m/84'/7'/2'/0/0` on the hot signer seed, outside the dynamic 10+ pool |
 | Grant seals | `m/84'/7'/13'/0'/*'` | Not adopted: preserve `m/84'/7'/<seal-account>'/0/i`, account 10 or above and existing non-hardened children; no silent derivation migration |
-| Emergency fee reserve | `m/84'/7'/14'/0/0` | New Draft separate reserve account on fresh provisioning; never an auth or grant-seal account |
+| Emergency fee reserve | `m/84'/7'/14'/0/0` | Not adopted: fixed `m/84'/7'/3'/0/0` on the hot signer seed, outside the dynamic 10+ pool; fee funding only, never auth or seal keys |
 | Auth/device fast-revocation seals | CSPRNG | CSPRNG-only, never BIP-39-derived; destroy keys after pre-signing and recording revoke transactions |
 
 Two reasons carry the layout. The grant key stays outside every wallet

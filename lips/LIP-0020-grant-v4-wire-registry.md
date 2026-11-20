@@ -298,7 +298,7 @@ The registry:
 | `swarma-credential/1` | Third-party `subject-claim` and `agent-audit` credentials, plus explicitly supported application kinds | Signature | The separately registered credential issuer key | LIP-0032 section 2; signed form at most 65536 bytes |
 | `swarma-credential-withdrawal/1` | Cause for a credential-seal spend, never the LIP-0014 notary withdrawal | Commitment | No detached signature; validated seal spend authenticates the withdrawal | LIP-0032 section 3; payload at most 512 bytes |
 | `swarma-credential-break/1` | Name-owner-authenticated issuer compromise height | Commitment | No detached signature; name input authorization commits to the break frame | LIP-0032 section 3; payload at most 1024 bytes |
-| `swarma-issuance/2` | Contract-free root EFFECT issuance only | Commitment | No detached signature; binds the checked grant signature | LIP-0035 section 2; payload at most 1024 bytes |
+| `swarma-issuance/2` | Scoped unilateral root EFFECT issuance, with or without the optional mandate | Commitment | No detached signature; binds the checked grant signature and, when present, mandate signature | LIP-0035 section 2; payload at most 1024 bytes |
 | `swarma-auth-challenge/1` | Foreign-service auth challenge signed as response | Signature: W4 tagged hash with tag `swarma-auth-challenge/1` | Dedicated BIP-340 auth key, never a device/grant/name-owner key | LIP-0034 section 2; signed form at most 4096 bytes |
 | `swarma-auth-upgrade/1` | Atomic provisional-to-name upgrade | Signature: W4 tagged hash with tag `swarma-auth-upgrade/1` | Same dedicated auth key as the provisional cell | LIP-0034 section 2; signed form at most 4096 bytes |
 | `swarma-unilateral-mandate/1` | Optional unilateral contract, never mandatory for the scoped contract-free branch | Signature: W4 tag `swarma-unilateral-mandate/1` | Issuer's BIP-340 grant key only | LIP-0035 section 2.1; signed form at most 65536 bytes |
@@ -450,8 +450,8 @@ co-author's agreement is pending.
 
 | Point | Decision |
 | --- | --- |
-| Authorisation by name at issuance | It is required. At the issuance snapshot, the consistent state of its own node that the issuer signs against, the issuer's name is live, is held by the pinned owner under the first ownership profile (for the Witness profile on Namecoin: a closed list of single-key scripts, read on a node with a transaction index), and its value names the grant key that signs. The recipient identity snapshot is also required when the grant names a recipient by name. For a contract-binding grant, its current value names the channel key that signed the consent; for the narrowly scoped contract-free grant of LIP-0035 no consent signature is required, but the identity snapshot is not waived. A state that held earlier or later is no substitute. |
-| Age and reuse of a consent | For grants that bind a contract (bilateral, framework, rental), a consent is bound and is used once. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to scope this rule accordingly; co-author agreement pending. A LIP-0035 root EFFECT grant with no contract has no consent to consume. The consent names the exact contract, the issuer and the recipient. Exactly one issuance consumes it. It is never presented again for another grant, for a re-issue or for a successor; each of those needs a fresh consent, and the issuer records the identifier of the consent as consumed. At most 72 hours pass between the `created_at` of the consent event and the issuer's first transaction of the issuance, measured on the issuer's clock, and an older consent refuses. `created_at` is never compared with a block height. The 72 hours cover an issuance of two transactions with a person's confirmation between them. They are a policy number, not a measured tolerance, and a later profile may change them. |
+| Authorisation by name at issuance | It is required. At the issuance snapshot, the consistent state of its own node that the issuer signs against, the issuer's name is live, is held by the pinned owner under the first ownership profile (for the Witness profile on Namecoin: a closed list of single-key scripts, read on a node with a transaction index), and its value names the grant key that signs. The recipient identity snapshot is also required when the grant names a recipient by name. For an ordinary bilateral, framework or rental grant, its current value names the channel key that signed the consent; for either narrowly scoped unilateral branch of LIP-0035 no consent signature is required, but the identity snapshot is not waived. A state that held earlier or later is no substitute. |
+| Age and reuse of a consent | For grants that bind a contract (bilateral, framework, rental), a consent is bound and is used once. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to scope this rule accordingly; co-author agreement pending. Under LIP-0035's editor proposal, neither scoped unilateral branch has a consent to consume. The consent names the exact contract, the issuer and the recipient. Exactly one issuance consumes it. It is never presented again for another grant, for a re-issue or for a successor; each of those needs a fresh consent, and the issuer records the identifier of the consent as consumed. At most 72 hours pass between the `created_at` of the consent event and the issuer's first transaction of the issuance, measured on the issuer's clock, and an older consent refuses. `created_at` is never compared with a block height. The 72 hours cover an issuance of two transactions with a person's confirmation between them. They are a policy number, not a measured tolerance, and a later profile may change them. |
 
 The rest of the section is the draft's proposal for carrying the two points
 in octets and in checks. It adds four things that the decision does not
@@ -471,7 +471,10 @@ name/owner binding at the issuance snapshot remain required; the exception
 does not manufacture a channel-key consent signature that never occurred.
 All consent age/reuse rules remain unchanged where consent is required.
 
-For preparation `/2`, the signed grant's `recent_block` commits to the
+For both scoped unilateral branches, including the optional issuer-signed
+mandate, preparation `/2` requires no separate W7 issuer assent or recipient
+consent; this is the Swarma Link editor's resolution in LIP-0035, not an
+additional owner decision. The signed grant's `recent_block` commits to the
 recipient identity snapshot: resolve that name's owner at that block with
 the verifier's indexed history and compare `recipient.owner` (LIP-0035 U3).
 No `name_output` or consent channel-key evidence is fabricated. Missing
@@ -704,7 +707,7 @@ section fixes what the preparation is and what the anchor carries. How the
 anchor transaction is built, which inputs it spends and when it counts as
 confirmed stays with LIP-0008 sections 1.1 and 9, where it is open.
 
-W8.1. For a contract-binding grant, the issuance preparation is a payload
+W8.1. For an ordinary bilateral, framework or rental grant, the issuance preparation is a payload
 of type `swarma-issuance/1`.
 Each of its objects has exactly the members that this table lists for it
 (W3.2), and the largest size is 2048 octets.
@@ -726,11 +729,15 @@ Each of its objects has exactly the members that this table lists for it
 | `name_output.txid` | 64 hexadecimal characters | Its transaction id |
 | `name_output.vout` | integer in the number form, from 0 to 4294967295 | Its output index. The bound, 2^32 - 1, is that of an output index in a transaction |
 
-The sole contract-free preparation is `swarma-issuance/2`, defined by
+The scoped unilateral preparation is `swarma-issuance/2`, defined by
 LIP-0035 section 2: exactly `type`, `genesis`, `grant_id`, `grant_signature`,
-using W1–W4 and at most 1024 bytes. It has no assent, consent or detached
-signature. These are different versioned schemas, not optional omissions
-from `/1`. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to permit that scoped
+and, **if and only if** the grant binds `swarma-unilateral-mandate/1`,
+`mandate_signature` (128 lowercase hex characters, the checked W5 signature
+of that mandate). It uses W1–W4 and at most 1024 bytes. The grant identifier
+already binds the mandate identifier through `contract`; the additional
+signature fixes the exact signed mandate as W8.3 requires. There is no
+separate issuer assent, recipient consent or detached preparation signature.
+These are different versioned schemas, not optional omissions from `/1`. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to permit that scoped
 contract-free path; co-author agreement is pending.
 
 W8.2. The `/1` preparation is rebuilt from four inputs: the signed grant, the
@@ -748,6 +755,13 @@ of the grant (section 11). The request key of W7.5 is `recipient.key`, the
 name and the owner key of W7.6 are `recipient.name` and `recipient.owner`,
 and the recent block of W7.6 is the block of `recent_block`.
 
+For `/2`, rebuild the preparation from the checked signed grant and, for
+the optional mandate branch, the checked signed mandate supplied with it.
+Do not include `contract`, `issuer_assent`, `recipient_consent` or
+`name_output` in `/2`. An unrequested consent event is not read or checked.
+The mandate adds issuer-signed terms and a confirmed issuer-only seal that
+MAY be the grant seal; it adds no recipient assent or obligation.
+
 W8.3. The preparation states the signature of each signed part beside what
 identifies the part, and each of those signatures is the signature of the
 part that the reader checked. The anchor therefore fixes the exact signed
@@ -759,7 +773,13 @@ W8.4. A `/1` preparation for a recipient by name carries `name_output`. A
 preparation for a recipient by key carries none. The mode is the grant's.
 A presentation that offers an evidence outpoint for a grant by key, or none
 for a grant by name, refuses as `ISSUANCE_MODE`. A verifier makes this
-check on the inputs before it reads the consent event (W9.4).
+check on the inputs before it reads the consent event (W9.4). For either
+unilateral branch, `/2` is required and the identity/snapshot inputs of
+LIP-0035 U3 are required instead of consent evidence. For a supplied
+preparation, the wrong version, or the presence/absence of
+`mandate_signature` inconsistent with the selected branch, is
+`ISSUANCE_MODE` at step 2; the reader never trusts a preparation to select
+the branch. Without a supplied preparation it rebuilds the same schema.
 
 W8.5. The issuance commitment is the typed digest of the preparation
 (section 4). The anchor carries it in one zero-value `OP_RETURN` output, in
@@ -773,12 +793,14 @@ grant (W6.4):
 
 The script is 72 octets, the length of a v3 issuance script. Payload
 version `0x01` stays the commitment of LIP-0004 for a v3 grant. A reader of
-a contract-binding v4 grant accepts version `0x02` alone, with this action,
-this location type and this pointer. The sole contract-free root path uses
+an ordinary contract-binding v4 grant accepts version `0x02` alone, with
+this action, this location type and this pointer. Both scoped unilateral
+root paths (contract-free or optional mandate) use
 preparation `/2`, action `0x01`, payload `0x03`, and location `0x00` with no
 pointer or `0x01` with the signed grant's content address (LIP-0035 section 2).
-A reader never interprets either version as the other. A mismatched grant
-mode, preparation, frame version or location refuses as `ISSUANCE_FRAME`. The rule of LIP-0005
+A reader never interprets either version as the other. After the preparation
+mode passed step 2, a mismatched anchor frame version, location or pointer
+refuses as `ISSUANCE_FRAME` at step 5. The rule of LIP-0005
 section 3 that an issuance transaction has exactly one `OP_RETURN` output
 holds unchanged.
 
@@ -836,24 +858,48 @@ bound of its member (`WIRE_INTEGER`). Then the signing keys among the
 members are points of the curve (`WIRE_KEY`), and so are the output keys of
 a grant (W11.1).
 
-W9.4. A contract-binding issuance is checked in six steps, and the first
-that fails gives the refusal. For LIP-0035's sole contract-free case, step 1
-also validates its U1–U6 scope; step 2 checks the required identity/snapshot
-inputs but not nonexistent consent evidence; steps 3–4 are inapplicable;
-steps 5–6 bind preparation `/2` and payload `0x03`. No other check is skipped. The root wire schema deliberately permits
-missing `contract` before the sole semantic `UNILAT_SCOPE` check; the child
-schema still requires it (`WIRE_MEMBER`). Do not emit a WIRE code for a
-well-formed contract-free root merely because it carries `delegate`.
-A unilateral grant with a mandate uses the ordinary contract-bound path,
-including W7 assent/consent; validate its exact equality under LIP-0035
-section 2.1 before treating it as that profile.
+W9.4. Every issuance follows the same six steps below; the first failure
+gives the refusal. Step 1 has the following ordered substeps:
+
+1. Check the signed grant through W9 and W11.8–W11.10. The root wire schema
+   permits missing `contract`; a child still requires it (`WIRE_MEMBER`).
+2. A root with `contract` MUST present the bound contract document for
+   profile selection; missing bytes are `CONTRACT_NOT_PRESENTED`, not a
+   reason to assume the contract-free branch or silently fetch it. A
+   document claiming payload type `swarma-unilateral-mandate/1` selects the
+   mandate branch, regardless of the offered preparation version. Profile
+   selection is not validation: that signed mandate then passes its W9
+   wire/signature pipeline. A different supported contract profile stays
+   on `/1` and must recompute to the grant's `contract` using that profile's
+   defined preimage (`CONTRACT_ID` otherwise), still in this substep.
+   An unsupported or unspecified preimage cannot admit an ordinary path;
+   unrelated bytes never reroute a mandate into it. A root without `contract`
+   selects the contract-free branch and MUST NOT supply a mandate.
+3. For the mandate branch, compare every bound field and the contract
+   identifier under LIP-0035 section 2.1. Any mismatch is
+   `UNILAT_MANDATE_MISMATCH`; do not examine any consent event first or
+   fall back to another branch after a failed mandate.
+4. For **both** unilateral branches, check U1–U6: `UNILAT_SCOPE` for a root
+   with `delegate`, hire/rental or non-EFFECT scope, then
+   `UNILAT_OBLIGATION_FORBIDDEN` for any remaining grantee obligation.
+   An equal mandate does not excuse `delegate` or re-delegation. An
+   unexpected mandate on a contract-free grant is `ISSUANCE_MODE` at step 2.
+
+For both unilateral branches, step 2 requires the U3 identity/snapshot
+inputs but no consent-key snapshot or evidence outpoint; steps 3–4 are
+inapplicable even if an unsolicited consent event is supplied. The issuer's
+mandate signature is the issuer's signed terms, not a separate W7 assent
+requirement and never recipient assent. Steps 5–6 use `/2` and payload
+`0x03`, including the mandate signature when present. No name, signature,
+seal, action-profile or state check is waived. The optional mandate is the
+editor's resolution of the owner's v0.3 profile, not a new owner decision.
 
 | Step | Check | Refusal |
 | --- | --- | --- |
-| 1 | The signed grant, through the pipeline of a signed object, with W11.8 to W11.10 | The codes of that pipeline, `GRANT_SHAPE`, `GRANT_DELEGATE` and `UNILAT_SCOPE`; for a child also the codes of W11.8 |
-| 2 | The inputs: the mode of the grant and the presence of the evidence outpoint (W8.4) | `ISSUANCE_MODE` |
-| 3 | The issuer's assent, through the pipeline of a signed object, and then W7.2 | The codes of that pipeline, `ASSENT_BINDING`, `ASSENT_PARTY` |
-| 4 | The consent event, through the five steps of W7.4, with the evidence outpoint for a grant by name | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` |
+| 1 | Signed grant; root contract-profile input; signed mandate if selected; mandate equality; unilateral scope, in the substep order above | The respective W9/W11 codes, `CONTRACT_NOT_PRESENTED`, ordinary-profile `CONTRACT_ID`, `UNILAT_MANDATE_MISMATCH`, `UNILAT_SCOPE`, `UNILAT_OBLIGATION_FORBIDDEN` |
+| 2 | Preparation mode and profile-specific inputs (W8.4): ordinary consent evidence, or unilateral U3 identity/snapshot inputs; no unexpected mandate | `ISSUANCE_MODE` |
+| 3 | Ordinary `/1` only: the issuer's assent, through the pipeline of a signed object, and then W7.2 | The codes of that pipeline, `ASSENT_BINDING`, `ASSENT_PARTY` |
+| 4 | Ordinary `/1` only: the consent event, through the five steps of W7.4, with the evidence outpoint for a grant by name | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` |
 | 5 | The frame (W8.5) | `ISSUANCE_FRAME` |
 | 6 | The commitment (W8.6) | `ISSUANCE_COMMITMENT` |
 
@@ -1045,7 +1091,7 @@ and every other payload under the list of a root grant.
 | --- | --- | --- | --- |
 | `type` | string | both | `swarma-grant/4` |
 | `genesis` | hash | both | The chain of the grant: the hash of its genesis block, as in an assent (W7.1) |
-| `contract` | hash | child required; root optional at wire stage | The identifier of the one bound contract. The root wire schema permits omission; the LIP-0035 semantic scope check alone refuses `UNILAT_SCOPE` for a contract-free root with `delegate`, non-EFFECT or obligation-bearing hire/rental profile. A child requires it and absence is `WIRE_MEMBER` before scope. No other omission is admitted. `null` is never allowed. |
+| `contract` | hash | child required; root optional at wire stage | The identifier of the one bound contract. The root wire schema permits omission; W9.4 applies LIP-0035 semantic scope to both contract-free and optional-mandate roots (`UNILAT_SCOPE`, then `UNILAT_OBLIGATION_FORBIDDEN`), never to a child as an omission exception. A child requires it and absence is `WIRE_MEMBER` before scope. No other omission is admitted. `null` is never allowed. |
 | `issuer` | object with exactly `name`, `registration`, `owner` and `grant_key` | root | The issuer, as LIP-0008 section 3 binds it |
 | `issuer.name` | text | | The exact name of the issuer |
 | `issuer.registration` | outpoint | | The transaction and the output that first registered that name |
@@ -1519,8 +1565,8 @@ LIP-0014 section 8.4 for what a refusal leaves behind.
 | Code | What it reports | Step | Again | Defined by | State |
 | --- | --- | --- | --- | --- | --- |
 | `CHILD_CONTRACT_DIFFERS` | The member `contract` of a child differs from that of its parent | F5 | no | W11.11, rule 1 | New code, new rule |
-| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind, or, since the proposal of 0.1.61, for the framework identifier that document names | F6, part (a) | input | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework presentation added by 0.1.61 |
-| `CONTRACT_ID` | A presented document does not recompute to its required identifier: the bound contract to the identifier of the grants, and, since the proposal of 0.1.61, the framework contract to the identifier the bound document names (LIP-0017 section 2). Not computable until a v4 contract profile fixes the preimage | F6, part (b) | no | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework recomputation added by 0.1.61 |
+| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind, or, since the proposal of 0.1.61, for the framework identifier that document names | Root issuance W9.4 step 1, before mandate checks; path F6, part (a), unchanged | input | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework presentation added by 0.1.61 |
+| `CONTRACT_ID` | A presented document does not recompute to its required identifier: the bound contract to the identifier of the grants, and, since the proposal of 0.1.61, the framework contract to the identifier the bound document names (LIP-0017 section 2). Not computable until its v4 contract profile fixes the preimage; a mandate mismatch uses W9.4's `UNILAT_MANDATE_MISMATCH` instead | Ordinary root profile selection W9.4 step 1; path F6, part (b), unchanged | no | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework recomputation added by 0.1.61 |
 | `CHILD_NOT_LIVE` | A child that its own closure or its own window refuses: a journaled closure, a window that opens below its recent block, a window that has not opened, a window that has ended, a spent seal | F20, F21 | closed for a closure and a validated spend; state for the window | LIP-0014 section 8.4, rule T3 | New code for rules of LIP-0008 sections 5.1 and 7.1 |
 | `ACTION_UNDEFINED` | A request for an action that no type profile of the executor defines | E1 | no, under one profile | W11.14, rule 1 | New code for the rule of W11.4 |
 | `LIMIT_KIND_UNDEFINED` | A limit of a child or of its row whose kind has no type profile at the side; a request that consumes a kind without a profile | F17, part (b); E2 | no, under one set of profiles | W11.14, rule 2; LIP-0014 section 8.4, rule T9 | New code for the rule of W11.4 |

@@ -892,7 +892,8 @@ has no terminator or length, in the fixed-prefix style of LIP-0004 section 2.
 The typed-hash plan of LIP-0008 section 8 may replace it before adoption.
 [LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes that replacement as
 a successor type, `swarma-notary-attestation/2`. Ivan Oparin decided on
-2026-11-20 to restrict it to `child-within-parent` (unchanged v1 semantics)
+2026-11-20 (source: `$-R4EXclWAkV9M95f3lhmqEzucNKId1XdrKY-YUtUJb0`)
+to restrict it to `child-within-parent` (unchanged v1 semantics)
 and `contract-notarization`; co-author agreement is pending. LIP-0032
 section 1 specifies the latter. The exact child-v2 mapping remains open
 until J5/J2 scope and path bytes are settled; no v1 signature or anchor is

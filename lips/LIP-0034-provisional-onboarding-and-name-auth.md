@@ -28,9 +28,10 @@ reader support is claimed.
 ## 1. Keys and manifest binding
 
 A1. The auth key is secp256k1 BIP-340, in its own hardened account and
-separate custody. Its Draft path is `m/84'/7'/12'/0/0`; see KEY-MAP's
-v0.3 reconciliation for existing-path exceptions. A P-256 or BIP-340 device
-key stays internal to the owner's control plane and MUST NOT sign external
+separate custody. Its Draft path is `m/84'/7'/2'/0/0` on the hot signer
+seed, not the cold name-owner seed. KEY-MAP records why v0.3 account 12
+is not adopted: it intersects the shared dynamic account pool 10+. A P-256
+or BIP-340 device key stays internal to the owner's control plane and MUST NOT sign external
 service challenges or grants. The cold name-owner key signs name operations
 only, never a login. The grant key signs grants, never a login.
 
@@ -130,8 +131,10 @@ The owner's v0.3 draft, 2026-11-20, suggests a five-output `funding_tx`
 to distinct user-controlled `name_new_addr`, `firstupdate_addr`,
 `auth_seal_addr`, `seal_pool_addr`, `emergency_reserve_addr`. The auth-seal
 address is CSPRNG-only and stays unspent until real auth revocation; the
-emergency reserve uses a separate account 14'. See KEY-MAP for exceptions
-to v0.3's proposed owner, grant and seal derivations. Persist the
+emergency reserve uses separate account `m/84'/7'/3'` (first external
+address `m/84'/7'/3'/0/0`), not v0.3 account 14, which intersects the
+dynamic seal/row/stop pool. See KEY-MAP for the owner, grant, auth, reserve
+and seal derivation differences and independent account wrapping. Persist the
 `OP_NAME_NEW` salt in encrypted durable storage **before broadcast**.
 A restart-safe client resumes after sleep/restart and automatically submits
 FIRSTUPDATE when the commit is mature. This is implementation advice,
@@ -189,6 +192,9 @@ conformance pairs valid named/provisional/upgrade cases with device, grant
 and cold-key substitution, wrong audience/nonce/purpose, TTL 121 versus 120,
 expiry equality, replay/concurrency, unavailable or rolled-back manifest,
 spent/unknown seal, immature reveal and an upgrade that changes the key.
+Provisioning cases pair auth account 2/reserve account 3 with rejection of
+fixed 12/14 in the dynamic seal/row/stop pool, and separately verify account
+wrapping: different paths without isolated key material are not sufficient.
 
 ## Open questions
 
