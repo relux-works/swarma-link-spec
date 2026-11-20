@@ -3,7 +3,7 @@
 - **Status:** PROPOSED integration choices. No choice takes effect by this
   file's own word.
   It changes no existing rule, wire member, vector or implementation.
-- **Date:** 2026-11-19
+- **Date:** 2026-11-20
 - **Source baseline:** version 0.1.57, commit
   `819433846febb9404c11a5fcd1ba124770f7910b`.
 - **Scope:** identity, contract/profile, first-refusal and ordinal inputs
@@ -39,7 +39,7 @@ and conformance remain separate requirements after textual agreement.
 | O7 | LIP-0014 F13(b)/T10; LIP-0020 W11.10; LIP-0026 proposal Q1 | PROPOSED | Explicit decision on whole-parent admission, without silently changing the count bounds |
 | O8 | LIP-0014 F3 at ISSUE and I3; LIP-0022 B3.5/B3.6 | PROPOSED | Freshness source or owning decision assigns child signing to the proposed class |
 | R8 count order | LIP-0026 R8.3 and section 8; LIP-0020 W11.6 | See LIP-0026 section 8 for its state | The remaining LIP-0026 proposal Q2 is separate |
-| Enrollment | This companion section 2.4 with P-MAP-2/P-MAP-3 and P-NATIVE-1; KEY-MAP K3; LIP-0013 J7.7/J7.8 | PROPOSED | The owning keyvault interface accepts the enrollment transaction and native management-code admission; the owners decide the custody of the homeserver registration credential and of the new account's token; a decision record names the accepted text and its source revision |
+| Enrollment | This companion section 2.4 with P-MAP-2/P-MAP-3 and P-NATIVE-1; KEY-MAP K3; LIP-0013 J7.7/J7.8 | Owner decisions K3, b1 and c1 recorded; transaction clauses remain PROPOSED | Acceptance of the enrollment text in the keyvault specification, including native management-code admission; a decision record names the accepted text and its exact source revision |
 
 The register describes Source agreement, not a claim that the machine
 interfaces or complete signed conformance vectors already exist. Matching
@@ -186,6 +186,14 @@ publication does not select it over the unresolved profile requirements.
 
 ### 2.4 Enrollment transaction boundary — PROPOSED
 
+**Owner decisions (2026-11-20)**
+
+- **K3 — owner-created identity.** Only the owner (guardian) creates an agent identity; an agent never registers its own account. This confirms the KEY-MAP K3 reading used below.
+- **b1 — custody.** The homeserver registration credential is the owner's secret, outside every agent's reach; the new account's access token goes straight into keyvault custody.
+- **c1 — contract home.** The enrollment contract lives in [swarma-keyvault `docs/agent-enrollment.md`](https://github.com/relux-works/swarma-keyvault/blob/eb103c8f361ce430589c50b26e42604c43b2e83e/docs/agent-enrollment.md), [PR #123](https://github.com/relux-works/swarma-keyvault/pull/123), in review. Link cites that contract and does not restate it.
+
+Sources: Ivan Oparin selected K3, b1 and c1 on 2026-11-20 (Matrix event `$NX-4b0Z7__fFWBYg8LSZXPhabKJSLTIUhBt6ZszLMrQ`); Alexis agreed on 2026-11-19 through his meta-keeper (relay of 10:57Z). These decisions settle authority, custody and contract home, not acceptance of the keyvault text. P-ENROLL-1 to P-ENROLL-4 remain **PROPOSED** until the replacement condition below is met.
+
 **P-ENROLL-1 — authority before registration.** In this section an account is a homeserver (Matrix) account, neither a ledger account of LIP-0026 R5.1/R5.2 nor the OS account of a slot (LIP-0030 AS1.3). A dedicated admitted native enrollment role first records, in its own enrollment journal, the identity and origin exactly as the H1 latch of section 2.2 returned them, the consumer binding, the exact homeserver and its registration connection, an account not yet registered (the destination), the required session policy and the finite set of public writes. It writes no H1 record (P-HOME-1) and makes no vault call for one (P-NATIVE-2). Before any remote account effect it proves two predicates: account-registration authority, which is an act of an owner (KEY-MAP K3: only an owner creates an identity, and an agent registers no identity for another agent), and native management-code admission of its caller as the owning keyvault interface defines it. Native release clients, messenger daemons and a same-Team signed program do not acquire management rights through a flag, environment variable, parent process, room membership or a general session grant. Unqualified or absent authority refuses before network submission.
 
 **P-ENROLL-2 — one original operation and no secret-bearing result.** Before registration the enrollment transaction durably binds its original native operation identity and immutable intended destination in a bounded nonsecret journal. There is at most one incomplete transaction for that destination. Registration and native create run in one process, the owning native custody executable of section 2.5 (P-NATIVE-1), so the access token that the homeserver returns for the new account passes from bounded owned memory directly to native create under the original operation. An enrollment hook is an IPC client of that executable: it supplies no secret, receives none, and is the peer that P-ENROLL-3 rechecks. A route in which another process performs the registration is a two-process route; it requires its own authenticated secret-channel contract, accepted before it is built. No token goes to argv, a room, prompt, generic result object, file store, journal, hash preimage for a public receipt, or fallback credential cache.
@@ -198,9 +206,9 @@ Existing account-password custody for an explicitly selected daemon E2EE/UIA rou
 
 The journal's schema, transaction states, limits and nonsecret receipt preimage belong to the enrollment implementation contract; no octet schema is declared by these logical clauses. Prove bounds fit or refuse before the remote effect, never truncate. Buffer handling must state actual ownership/copies and cannot promise erasure of immutable strings, OS snapshots or memory outside its custody.
 
-The required session policy, the finite public write set, native management-code admission, the place and form of public publication, and the custody of the homeserver registration credential are not defined here, and the owners have not decided the custody of the new account's token. Until the owning keyvault interface defines the first four and the owners decide the custody of the homeserver registration credential and of the new account's token (B2), no side completes P-ENROLL-1 and enrollment refuses before network submission.
+The required session policy, the finite public write set, native management-code admission, and the place and form of public publication are not defined here; custody is decided by b1 above. Until the owning keyvault interface defines those four inputs in accepted enrollment text, no side completes P-ENROLL-1 and enrollment refuses before network submission.
 
-Replacement condition: accepted enrollment text in the owning keyvault interface, together with the owners' custody decision for the homeserver registration credential and the new account's token, replaces P-ENROLL-1 to P-ENROLL-4 in one revision that cites both sources. A build against these proposed clauses is not that acceptance.
+Replacement condition: acceptance of the enrollment text in the keyvault specification named by c1 replaces P-ENROLL-1 to P-ENROLL-4 with a citation in one revision that names the accepted text and its exact source revision and cites the owner decisions above. The custody decision is made; acceptance of that text remains the trigger. A build against these proposed clauses is not that acceptance.
 
 ### 2.5 Native custody and limits of evidence — PROPOSED
 

@@ -14,8 +14,8 @@ native custody, implementation, adoption and conformance remain separate.
 
 | Question | Location and boundary |
 | --- | --- |
-| B1. Adoption and home | **OPEN** for the companion section 2.4 enrollment boundary. The owners decide the home and adoption under LIP-0001; the owning keyvault interface specification's owner decides the text. |
-| B2. Custody of the homeserver registration credential and of the new account's token | **OPEN** for the companion section 2.4 enrollment boundary. The owners decide both custody assignments. |
+| B1. Adoption and home | Home **DECIDED** by c1 in the [companion section 2.4](lips/LIP-0014-source-contract-proposals.md#24-enrollment-transaction-boundary--proposed), owner decisions of 2026-11-20: the enrollment contract lives in the keyvault specification. Acceptance of that text and adoption under LIP-0001 remain **OPEN**. |
+| B2. Custody of the homeserver registration credential and of the new account's token | **DECIDED** by b1 in the [companion section 2.4](lips/LIP-0014-source-contract-proposals.md#24-enrollment-transaction-boundary--proposed), owner decisions of 2026-11-20: the registration credential is the owner's secret, outside every agent's reach; the new account's token goes straight into keyvault custody. |
 | B3. The process boundary | **OPEN** for the companion section 2.4 enrollment boundary. One process inside the custody executable, or an accepted authenticated secret-channel contract; the keyvault specification's owner decides within B2. |
 | B4. Definition of native management-code admission and of the required session policy | **OPEN** for the companion section 2.4 enrollment boundary. The keyvault specification's owner decides. |
 | Adoption and coexistence of landlord, locator and action-service profiles | LIP-0004/0005/0006 remain Draft; historical v0.1 requirements and evidence retain their own meaning. |

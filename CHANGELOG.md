@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.65 — 2026-11-20
+
+Net change over 0.1.64: records the owners' K3, b1 and c1 decisions, with
+their dated sources, in section 2.4 of the LIP-0014 Source-contract
+companion. Only the owner (guardian) creates an agent identity; the
+homeserver registration credential is the owner's secret, outside every
+agent's reach; the new account's access token goes straight into keyvault
+custody. The enrollment contract lives in the keyvault specification,
+`docs/agent-enrollment.md` (PR #123, in review); Link cites it rather than
+restating it. The Enrollment register and B1/B2 question entries now
+distinguish the decided custody and contract home from acceptance of the
+keyvault text, which remains the replacement trigger. The transaction
+clauses stay **PROPOSED**; no normative rule, wire member, vector or
+implementation changes, and no qualification or adoption is claimed.
+
 ## 0.1.64 — 2026-11-19
 
 Net change over 0.1.63: a PROPOSED clarification of LIP-0014 section 8.4,
