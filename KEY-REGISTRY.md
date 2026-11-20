@@ -786,8 +786,9 @@ until that agreement.
   and a live seal. An owner-authenticated LIP-0032 compromise break states
   `h_c`: anchors below it survive, those at or above refuse. No silent
   history erasure or retroactive replacement by the current key is allowed.
-- Decision: Ivan Oparin decided on 2026-11-20 (source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`, `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) to add this role and historical
-  closure rule; the co-author's agreement is pending. Sources:
+- Decision: Ivan Oparin decided on 2026-11-20 (source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`, `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) to add this role and the compromise-height
+  boundary. This Draft proposes the authenticated historical-key break
+  details; the co-author's agreement is pending. Sources:
   `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo` and
   `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`.
 - Source: [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md),
