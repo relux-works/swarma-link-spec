@@ -4,7 +4,7 @@
 
 Net change over 0.1.64: records the owners' K3, b1 and c1 decisions, with
 their dated sources, in section 2.4 of the LIP-0014 Source-contract
-companion. Only the owner (guardian) creates an agent identity; the
+companion. Only an owner (KEY-MAP K3) creates an agent identity; the
 homeserver registration credential is the owner's secret, outside every
 agent's reach; the new account's access token goes straight into keyvault
 custody. The enrollment contract lives in the keyvault specification,
@@ -17,9 +17,14 @@ mechanism and acceptance of the keyvault text. Section 2.4 retains the owners'
 b1 wording and records the keyvault decision record's differing date,
 deployment scope and holder; the scope and owner/administrator identity
 remain OPEN, and the keyvault text must align before acceptance. Acceptance
-with those gates retained remains the replacement trigger. The transaction
-clauses stay **PROPOSED**; no normative rule, wire member, vector or
-implementation changes, and no qualification or adoption is claimed.
+with those gates retained remains the replacement trigger. Section 11's
+proposed paired control requires a named and accepted B2 mechanism and aligned
+decision records, and refuses before reservation and network submission if
+either is missing. The decision record clarifies owner and co-author
+terminology, notes the cited book deviation, and names the deciders of the
+remaining B1/B2 questions. The transaction clauses stay **PROPOSED**; no
+normative rule, wire member, vector or implementation changes, and no
+qualification or adoption is claimed.
 
 ## 0.1.64 — 2026-11-19
 
