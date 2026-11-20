@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.65
+**Version:** 0.1.66
 
 **Date:** 2026-11-20
 
@@ -65,9 +65,9 @@ v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
 
-## Draft profiles and design decisions in v0.1.65
+## Draft profiles and design decisions in v0.1.66
 
-Version 0.1.65 publishes six new **Draft** proposals and reconciles the
+Version 0.1.66 publishes six new **Draft** proposals and reconciles the
 older Draft/PROPOSED clauses with Ivan Oparin's decisions of 2026-11-20.
 The co-author's agreement on each amended decision is pending. These
 source changes claim no implementation, installed reader rollout, protocol
@@ -77,8 +77,8 @@ adoption or production-name migration.
 | --- | --- |
 | [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md) | Separate credential issuer key; `subject-claim` and `agent-audit` credentials; typed notary `/2` with only two kinds; eternal history and authenticated compromise height |
 | [LIP-0033](lips/LIP-0033-reference-distribution-for-pinned-lists.md) | Non-exclusive delivery, inline first; one Nostr kind 30079; binary event-ID location `0x05`; no name/manifest `loc` |
-| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Device-authenticated `auth-response/1` in `swarm-envelope/2`, restricted provisional accounts and client-owned registration |
-| [LIP-0035](lips/LIP-0035-unilateral-mandates.md) | Contract-free root EFFECT grants only without `delegate`, never hire or rental, exactly one key/name recipient |
+| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Dedicated BIP-340 auth key, typed challenge/upgrade, restricted provisional accounts and client-owned registration; devices never face foreign verifiers |
+| [LIP-0035](lips/LIP-0035-unilateral-mandates.md) | Scoped contract-free roots plus optional signed mandate contract; fenced broker invocation; never hire/rental or re-delegation |
 | [LIP-0036](lips/LIP-0036-federated-trust-and-progressive-disclosure.md) | Separate policy/grant screening and human-gated targeted disclosure; external `curator-trust` dependency |
 | [LIP-0037](lips/LIP-0037-entity-card.md) | Unsigned public identity card pinned solely through the manifest; a2a-swarm's accepted card protocol remains independent |
 
@@ -88,7 +88,9 @@ declaration. Device/holder/certificate/card heads live there, freeing the
 former 150-byte reserve. A landlord with NIP-05 object, one relay and the
 head takes 398 bytes (413 at the maximum seq), within 520. Legacy H8 remains
 explicitly readable; mixed forms refuse, and final legacy retirement is open.
-Manifest seq strictly increases on updates; set seq never decreases. Seal
+Manifest seq strictly increases on updates; set seq never decreases.
+Journals bind the anchoring txid; reorgs retain closures/removal marks.
+Migration selection is per name and registration, not globally per verifier. Seal
 revocation needs no manifest. Inline bytes work for names with no NIP-05
 domain or Nostr key; secondary paths are optional. Every verifier's reader
 must be upgraded before writing the new head to a production name.
@@ -741,7 +743,7 @@ Version 0.1.53 replaces the member `holders` by a hash-pinned holders list
 decision of 2026-11-16 without the co-author's answer, which is folded in by
 amendment. The landlord's name value pins the hash and the version of the
 list in the historical direct member `swarma-holders`, outside `swarma`,
-on the then-current method of the LIP-0029 device list. Version 0.1.65
+on the then-current method of the LIP-0029 device list. Version 0.1.66
 keeps this explicitly as legacy and moves the head into the manifest
 profile. The list lives off the value with no cap of five.
 It has one entry for each agent or station name: the name, the key that
