@@ -891,7 +891,13 @@ The signature is BIP-340 by `notary_key` over
 has no terminator or length, in the fixed-prefix style of LIP-0004 section 2.
 The typed-hash plan of LIP-0008 section 8 may replace it before adoption.
 [LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes that replacement as
-a successor type, `swarma-notary-attestation/2`, and gives it no member yet.
+a successor type, `swarma-notary-attestation/2`. Ivan Oparin decided on
+2026-11-20 to restrict it to `child-within-parent` (unchanged v1 semantics)
+and `contract-notarization`; co-author agreement is pending. LIP-0032
+section 1 specifies the latter. The exact child-v2 mapping remains open
+until J5/J2 scope and path bytes are settled; no v1 signature or anchor is
+silently reinterpreted as typed v2. Credential kinds use a separate issuer
+key and `swarma-credential/1`, never this attestation key.
 `attestation_id` is the SHA-256 of the compact object
 `{"attestation":…,"signature":…}`.
 
@@ -3562,6 +3568,15 @@ vectors.
   future option, for example as an emergency brake for a compromised
   notary. It is no part of the first v4 version, and its cost and its
   limits are not worked out (section 10.1).
+
+## Credential cause separation (Draft amendment of 2026-11-20)
+
+Ivan Oparin decided on 2026-11-20 that credential revocation for cause has
+its own action/domain; co-author agreement is pending. LIP-0032 uses action
+`0x0a` and `swarma-credential-withdrawal/1`. This does not alter action
+`0x05`, its `swarma-attest-cause-v1` commitment or its child-specific
+notary-withdrawal semantics. A credential withdrawal cannot forbid a child
+attestation or masquerade as a notary's cause verdict.
 
 ## Security consequences
 

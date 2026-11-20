@@ -479,6 +479,49 @@ refuses where the read was needed, and no closure is recorded. Which
 pending operations a verifier reads, and when the closure is written, is
 J6.4.
 
+#### 7.6. Credential issuer history and compromise break (Draft, 2026-11-20)
+
+Ivan Oparin decided on 2026-11-20 that eternal credentials survive rotation,
+and an emergency issuer closure states a compromise height `h_c`, signed
+by the name-owner key in the break transaction. The co-author's agreement
+is pending. LIP-0032 sections 2–4 define the credential issuer role and the
+exact `swarma-credential-break/1` object, frame and refusal order.
+
+A verifier MUST establish the credential key in the issuer's exact
+registration and owner history at the credential anchor's confirmed chain
+position. A historical eternal credential does not require that key to be
+current today. A rotation, lapse or transfer alone cannot erase its anchored
+fact. Unavailable historical evidence refuses; a current key is no substitute
+for the historical one. Re-registration is a different identity.
+
+A compromise break uses action `0x0b`, payload `0x01`, location `0x00`, with
+the typed digest of the break payload plus its eight-byte little-endian
+`h_c`, before the zero location byte (48-byte script, LIP-0032 section 3).
+All payload members are reconstructed from the spent issuer name/history,
+credential key, name input and this public height, then checked against the
+digest; a missing off-chain document cannot suppress the closure. It spends the named current issuer
+output, removes or replaces its `issuer.cred`, and its supported owner
+signature commits to all outputs, including that frame (`SIGHASH_ALL`
+without `ANYONECANPAY`, O4.4). The payload binds the chain, issuer
+name/registration/owner, compromised credential key, spent name outpoint and
+`h_c`. A signature by the credential key, an unsigned claim, or an unrelated
+name transaction cannot close that issuer key. The height is a JSON number
+within the LIP-0020 height bound and no later than the break's inclusion
+height; a mempool witness uses its candidate inclusion height.
+
+For a valid owner-authenticated break, anchors **below** `h_c` retain their
+previous validity; anchors **at or above** `h_c` refuse `CRED_ISSUER_CLOSED`.
+Apply this to both eternal and revocable credentials of that compromised key;
+ordinary window and seal checks still apply. Journal a validated closure
+under the durable-revocation rules, including across reorganisation; multiple
+breaks for a key use the lowest authenticated `h_c`. Never infer an unknown
+compromise height from a plain rotation, and never translate this credential
+closure into a grant `ISSUER_NAME_CLOSED` without its separate J6 witness.
+
+The break authenticates a statement by the currently authorized name owner.
+It does not turn chain time into proof that the issuer was honest below
+`h_c`, or let a different registration speak for an earlier owner history.
+
 ### 8. Vectors
 
 [`vectors/LIP-0021/name-vectors.json`](../vectors/LIP-0021/name-vectors.json)

@@ -30,10 +30,13 @@ under a decision of 2026-11-15 that awaits the co-author's agreement, the
 store holds no statement for an owner's own devices: the device list pinned in
 the owner's name replaces it for them.
 
-Section 3.1 holds Draft text, under a decision of 2026-11-16 that awaits the
-co-author's agreement, under which the head of the set lives in the issuer's
-name value as `swarma-certs` (LIP-0010 section 11), the anchor and its chain
-of spends go, and the mempool no longer counts.
+Ivan Oparin decided on 2026-11-20 that section 3.1 uses the
+`swarma-certs` entry of the single manifest pinned by the issuer's name
+(LIP-0010 section 11), superseding the separate-head Draft of 2026-11-16.
+The co-author's agreement is pending. In this profile the set has no head
+anchor or chain of spends, and only the confirmed name pins it. The older
+anchor-based profile below remains a separately identified legacy profile,
+not a fallback when a manifest or its set is absent.
 
 ## Motivation
 
@@ -68,6 +71,10 @@ passes its row above. A subject is currently bound when step 7 says so. The
 store adds nothing to a record and cannot make an invalid one valid.
 
 ## 2. The head
+
+This section describes the older **signed, anchored-head profile**. The
+current Draft manifest profile of section 3.1 replaces its head signature
+and anchor chain; its missing bytes never trigger fallback to this profile.
 
 The issuer signs one head per version of its set. The head is one JSON
 object under the encoding rules of LIP-0013 section 2.1, with exactly these
@@ -131,16 +138,20 @@ spends, and it is left to a later proposal.
 ### 3.1. The head in the name (Draft, 2026-11-16)
 
 Under the decision of LIP-0010 section 11 the store has one mechanism with
-every other statement set: its head is the member `swarma-certs` of the
-issuer's name value, and the last head confirmed in the active chain counts.
-The text is written optimistically; the co-author's agreement is pending, and
-until it is given sections 2, 3 and 5 stand.
+every other statement set: its head is the `swarma-certs` entry in the
+issuer's name-pinned `swarma-manifest/1`, and the last confirmed manifest
+counts. Ivan Oparin decided on 2026-11-20 to replace the former direct
+name member this way; co-author agreement on this amendment is pending.
+The co-author's agreement remains pending. The 2026-11-20 direction
+supersedes the conflicting older Draft placement now; it does not claim
+implementation or adoption. Sections 2, 3 and 5 describe the explicitly
+separate legacy anchored-head profile except where CH1–CH4 replace them.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| CH1 | The head document is the head of section 2 with members 1 to 7 only, in that order, and without a signature. `swarma-certs` pins its `seq` and the SHA-256 of its exact octets (LIP-0010 SH1). The name-owner key, which signs the name update, authenticates it. | |
+| CH1 | The head document is the head of section 2 with members 1 to 7 only, in that order, and without a signature. `sets.swarma-certs` in the pinned manifest pins its `seq` and the SHA-256 of its exact octets (LIP-0010 SH1–SH5). The name-owner key, which signs the name update, authenticates it. | |
 | CH2 | No anchor of section 3 is made, and action `0x06` is not used. | |
-| CH3 | In section 5, steps 2, 4 and 5 are replaced by two steps. 2: the confirmed value of `issuer_name` on the reader's own node carries `swarma-certs` (LIP-0010 SH3 and SH6); the fetched head hashes to its `sha256`, its `seq` equals the pinned `seq`, its `issuer_name` and `network` are the name's and the reader's, and `issuer_key` equals the grant key that the name yields. 4: the head passes LIP-0010 SH5: its `seq` is not lower than the highest that the reader journaled for this issuer, unless a reorganisation removed the name operation that carried that head, and a certificate that the reader journaled as revoked stays revoked. Steps 1, 3, 6 and 7 stay. | 2: `HEAD_PIN`; 4: `HEAD_ROLLBACK` |
+| CH3 | In section 5, steps 2, 4 and 5 are replaced by two steps. 2: the confirmed value of `issuer_name` on the reader's own node pins the manifest, which carries `sets.swarma-certs` (LIP-0010 SH1–SH6); the fetched head hashes to its `sha256`, its `seq` equals the pinned `seq`, its `issuer_name` and `network` are the name's and the reader's, and `issuer_key` equals the grant key that the name yields. 4: the head passes LIP-0010 SH5: its `seq` is not lower than the highest that the reader journaled for this issuer, unless a reorganisation removed the name operation that carried that head, and a certificate that the reader journaled as revoked stays revoked. Steps 1, 3, 6 and 7 stay. | 2: `HEAD_PIN`; 4: `HEAD_ROLLBACK` |
 | CH4 | A pending name update gives no head. A record that a new head adds or revokes takes effect at that head's confirmation, at every reader alike. | |
 
 The two consequences that change:
@@ -166,10 +177,12 @@ through LIP-0010 SH5 it follows §9.4: after a reorganisation the last
 confirmed head counts again and a revocation that a reader journaled stays.
 §3.12 is an update for the book once agreed.
 
-The alternative of this LIP, "the head in the issuer's name value", is
-therefore the decided form. Its cost is the one stated there: every change
-of the set is a name update, signed by the cold key, on v3 with the outage
-of LIP-0029 O3.10, and 101 bytes of the value (LIP-0010 section 11).
+The decided Draft form now puts the head behind the single manifest, not
+in a separate name member. Every changed set still requires a name update
+signed by the cold key, with the v3 outage of LIP-0029 O3.10. The one shared
+manifest head costs 104 bytes at a one-digit sequence or 119 at the maximum
+(LIP-0010 section 8); the certificate entry itself costs no extra name
+bytes. Legacy direct-head sizes are not this profile's budget.
 
 ## 4. Providers
 
@@ -254,10 +267,9 @@ commits then lead back to the grant key, though a reader does not need them.
 
 ## Alternatives
 
-- **The head in the issuer's name value,** as an owner member outside
-  `swarma`. The name then always shows the current head without a chain of
-  spends. It is possible only after LIP-0010 readers are deployed on every
-  verifier, and it costs value bytes on every change.
+- **A separate head in the issuer's name value.** Superseded by the
+  single manifest on 2026-11-20. The explicit legacy transition of
+  LIP-0010 section 11.2 does not permit mixing this form with the manifest.
 - **No anchor, signatures only.** A reader then detects an altered record
   and not a dropped one.
 - **An anchor without the chain of spends.** A reader that kept the highest

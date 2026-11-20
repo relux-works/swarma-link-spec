@@ -7,13 +7,15 @@
 ## Summary
 
 A grant-gated service declares its type, supported actions, receipt public key
-and endpoint in a typed member of its Namecoin name value. A client can discover
+and endpoint in the typed `service` member of its name-pinned
+`swarma-manifest/1` document (LIP-0010 section 11.1). A client can discover
 an interface without mistaking the declaration for permission to act. A grant
 and the selected action profile still control admission.
 
 This proposal does not adopt a normative profile or extend the existing closed
-name parsers. Member spelling, canonical encoding and action schemas need a
-profile before interoperable publication.
+name parsers. LIP-0010 section 11.1 now defines the declaration container and initial
+BIP-340 receipt-key shape; action/transport schemas still need profiles
+before interoperable publication.
 
 ## Motivation
 
@@ -89,8 +91,11 @@ behaviour, not an added wallet-v1 request field or type-declaration guarantee.
 
 ### 3. Typed name-value member
 
-The service declaration is a typed member within the service's Namecoin name
-value. It has these logical members; this table is not a JSON byte fixture:
+Ivan Oparin decided on 2026-11-20 that the service declaration moves out of
+the 520-byte name value into `service` of the pinned `swarma-manifest/1`,
+freeing the former 150-byte reserve. The co-author's agreement is pending.
+LIP-0010 section 11.1 defines its exact container and canonical byte rules.
+The following table describes those members logically:
 
 | Logical member | Meaning |
 | --- | --- |
@@ -99,12 +104,12 @@ value. It has these logical members; this table is not a JSON byte fixture:
 | Receipt key | Public key for verifying this service's signed receipts. |
 | `endpoint` | Address of the service interface under its transport profile. |
 
-The containing member path, spelling of the receipt-key field, key algorithm,
-canonical field order, multiplicity and versioning remain open. A profile must
-fit the complete Namecoin value within the chain's size limit and specify how
-it coexists with authority and channel descriptors. An existing strict consumer
-must not be assumed to ignore this member; publish only after compatible
-consumers and an explicit value profile exist.
+The first profile has one declaration, with `type`, `actions`, `receipt_key`
+and `endpoint`, under LIP-0010 section 11.1. It is discovery only; a key whose
+change must close grants stays in `swarma`. Other receipt algorithms, multiple
+services and application action schemas remain open. The name carries only
+the manifest head, and the complete value still fits the 520-byte limit.
+Every verifier's compatible-reader rollout gates a production write.
 
 ### 4. Discovery and trust
 
@@ -159,8 +164,9 @@ credential forwarding or effect. A valid nearby request must remain admissible.
 
 ## Open questions
 
-- Exact member path, wire spelling, canonical bytes, key/endpoint profiles and
-  complete-value size budget; integration with existing closed parsers.
+- Co-author agreement on manifest placement and its first declaration profile;
+  additional receipt algorithms and application endpoint profiles. The path,
+  initial field spellings and name budget are closed by LIP-0010 section 11.
 - Versioning and multi-service names; precise non-wallet action schemas and
   a separate type/action profile for delegated issuance.
 - Lowercase slash-command grammar, reserved `swarma/` leaf assignments and

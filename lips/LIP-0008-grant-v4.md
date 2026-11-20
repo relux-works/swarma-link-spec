@@ -238,8 +238,12 @@ The corresponding type profile defines exact integers, bounds, rounding,
 reservation, concurrency, uncertain outcomes, replay and whether denied requests
 consume a resource. A generic integer counter is not a complete cost contract.
 
-The contract mirrors all grant limits by executor, kind, resource, unit and
-amount; a mismatch refuses admission. The contract may retain additional human
+For a grant that binds a contract (bilateral, framework, rental), the
+contract mirrors all grant limits by executor, kind, resource, unit and
+amount; a mismatch refuses admission. Ivan Oparin decided on 2026-11-20 to
+exclude only the LIP-0035 contract-free root EFFECT case; the co-author's
+agreement on this Draft amendment is pending. Hire and rental remain
+contract-binding. The contract may retain additional human
 terms, but cannot widen the signed scope. Operator configuration may impose a lower global
 ceiling or refuse service. It never increases a rental ceiling or substitutes a
 per-rental cap absent from the grant. An accepted request must fit both the
@@ -798,6 +802,14 @@ chain; one process relabelled as new is not a newcomer.
 | S6-9 | A notary rotates `attest` under the same owner and certifies again: admitted, and admitted again later | The journal holds no record for that rotation, in any namespace. |
 | S6-10 | v3: a confirmed change of the landlord's grant key closes for a verifier that had seen the earlier generation | v3: a pending change refuses without closure. |
 | S6-11 | A verifier with an intact journal | A verifier whose journal was deleted does not admit until its owner starts it anew, and reports no witness state. |
+
+Credential issuer breaks are a different key role, not a new interpretation
+of `ISSUER_NAME_CLOSED`. Ivan Oparin decided on 2026-11-20 that eternal
+credentials survive rotation and that a name-owner-authenticated compromise
+height `h_c` closes only anchors at or above it; co-author agreement is
+pending. LIP-0032 section 3 and LIP-0021 section 7.6 specify that break and
+`CRED_ISSUER_CLOSED`. It neither closes unrelated grants nor lets a grant
+survive an otherwise valid J6 break.
 
 ### 5.3. The emergency brake on v4 (Draft, 2026-11-16)
 

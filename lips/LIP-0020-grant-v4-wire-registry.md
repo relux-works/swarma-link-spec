@@ -257,8 +257,9 @@ unsigned bits. A type that needs more states its own bound.
 Which members take the string form is decided with each type. The rule of
 thumb in the table is the draft's: whatever can be summed without a natural
 ceiling takes the string form, so that no later asset or price forces a
-change of form. The assent, the consent event and the preparation hold one
-integer member, an output index, in the number form. The grant holds both
+change of form. The assent, the consent event and preparation `/1` hold one integer
+member, an output index, in the number form. Preparation `/2` has no
+integer member; the new credential types state each integer form explicitly. The grant holds both
 forms (section 11), and its rule W11.10 is the one rule of this LIP that
 computes with integers.
 
@@ -293,11 +294,17 @@ The registry:
 | `swarma-seal-endorsement/1` | The endorsement of a seal key (LIP-0008 section 11.2) | Signature | The issuer's grant key | Named by meaning in LIP-0008 section 11.2; none here |
 | `swarma-contract-assent/1` | The assent of one party to a contract | Signature | The key of that party | Section 7.1, complete |
 | `swarma-issuance/1` | The issuance preparation | Commitment | Nobody; the anchor transaction authenticates it | Section 8, complete |
-| `swarma-notary-attestation/2` | The successor of the attestation of LIP-0014 section 6.1 | Signature | The notary's attestation key | None yet |
+| `swarma-notary-attestation/2` | Typed notary attestations: only `child-within-parent` and `contract-notarization` | Signature | The notary's attestation key, never its credential issuer key | LIP-0032 section 1: contract-notarization schema specified; child mapping remains open, v1 semantics unchanged |
+| `swarma-credential/1` | Third-party `subject-claim` and `agent-audit` credentials, plus explicitly supported application kinds | Signature | The separately registered credential issuer key | LIP-0032 section 2; signed form at most 65536 bytes |
+| `swarma-credential-withdrawal/1` | Cause for a credential-seal spend, never the LIP-0014 notary withdrawal | Commitment | No detached signature; validated seal spend authenticates the withdrawal | LIP-0032 section 3; payload at most 512 bytes |
+| `swarma-credential-break/1` | Name-owner-authenticated issuer compromise height | Commitment | No detached signature; name input authorization commits to the break frame | LIP-0032 section 3; payload at most 1024 bytes |
+| `swarma-issuance/2` | Contract-free root EFFECT issuance only | Commitment | No detached signature; binds the checked grant signature | LIP-0035 section 2; payload at most 1024 bytes |
 
 The largest size is 1024 octets for the signed form of an assent, 2048
-octets for an issuance preparation and 65536 octets for the signed form of
-a grant (W11.6). A type without members states its largest size with them.
+octets for issuance preparation `/1` and 65536 octets for the signed form
+of a grant (W11.6). The new types state their own bounds in the registry
+and defining LIP; preparation `/2` is at most 1024 bytes. A type without
+members states its largest size with them.
 
 Draft [LIP-0024](LIP-0024-seal-endorsement.md) proposes the members of
 `swarma-seal-endorsement/1`, with its largest size, its codes and its
@@ -434,8 +441,8 @@ co-author's agreement is pending.
 
 | Point | Decision |
 | --- | --- |
-| Authorisation by name at issuance | It is required. At the issuance snapshot, the consistent state of its own node that the issuer signs against, the issuer's name is live, is held by the pinned owner under the first ownership profile (for the Witness profile on Namecoin: a closed list of single-key scripts, read on a node with a transaction index), and its value names the grant key that signs. The same holds for a recipient that the grant names by name: the current value of its name at that snapshot names the channel key that signed the consent. A state that held earlier or later is no substitute. |
-| Age and reuse of a consent | A consent is bound and is used once. It names the exact contract, the issuer and the recipient. Exactly one issuance consumes it. It is never presented again for another grant, for a re-issue or for a successor; each of those needs a fresh consent, and the issuer records the identifier of the consent as consumed. At most 72 hours pass between the `created_at` of the consent event and the issuer's first transaction of the issuance, measured on the issuer's clock, and an older consent refuses. `created_at` is never compared with a block height. The 72 hours cover an issuance of two transactions with a person's confirmation between them. They are a policy number, not a measured tolerance, and a later profile may change them. |
+| Authorisation by name at issuance | It is required. At the issuance snapshot, the consistent state of its own node that the issuer signs against, the issuer's name is live, is held by the pinned owner under the first ownership profile (for the Witness profile on Namecoin: a closed list of single-key scripts, read on a node with a transaction index), and its value names the grant key that signs. The recipient identity snapshot is also required when the grant names a recipient by name. For a contract-binding grant, its current value names the channel key that signed the consent; for the narrowly scoped contract-free grant of LIP-0035 no consent signature is required, but the identity snapshot is not waived. A state that held earlier or later is no substitute. |
+| Age and reuse of a consent | For grants that bind a contract (bilateral, framework, rental), a consent is bound and is used once. Ivan Oparin decided on 2026-11-20 to scope this rule accordingly; co-author agreement pending. A LIP-0035 root EFFECT grant with no contract has no consent to consume. It names the exact contract, the issuer and the recipient. Exactly one issuance consumes it. It is never presented again for another grant, for a re-issue or for a successor; each of those needs a fresh consent, and the issuer records the identifier of the consent as consumed. At most 72 hours pass between the `created_at` of the consent event and the issuer's first transaction of the issuance, measured on the issuer's clock, and an older consent refuses. `created_at` is never compared with a block height. The 72 hours cover an issuance of two transactions with a person's confirmation between them. They are a policy number, not a measured tolerance, and a later profile may change them. |
 
 The rest of the section is the draft's proposal for carrying the two points
 in octets and in checks. It adds four things that the decision does not
@@ -444,6 +451,16 @@ block of the grant as the block of the snapshot, with the evidence output
 and the verifier's read of it (W7.6); which transaction counts as the
 first of an issuance (W7.8); and what a verifier can and cannot see of the
 single use (W7.9).
+
+Ivan Oparin decided on 2026-11-20 to scope this section's contract assent
+and recipient consent requirements to **grants that bind a contract
+(bilateral, framework, rental)**. The co-author's agreement on this amendment
+is pending. Only the LIP-0035 root EFFECT case without `delegate`, never hire
+or rental, may omit `contract` and the associated assents/consent. Its
+recipient is one key or one name. Issuer authorization and recipient
+name/owner binding at the issuance snapshot remain required; the exception
+does not manufacture a channel-key consent signature that never occurred.
+All consent age/reuse rules remain unchanged where consent is required.
 
 #### 7.1. The assent of a party
 
@@ -672,7 +689,8 @@ section fixes what the preparation is and what the anchor carries. How the
 anchor transaction is built, which inputs it spends and when it counts as
 confirmed stays with LIP-0008 sections 1.1 and 9, where it is open.
 
-W8.1. The issuance preparation is a payload of type `swarma-issuance/1`.
+W8.1. For a contract-binding grant, the issuance preparation is a payload
+of type `swarma-issuance/1`.
 Each of its objects has exactly the members that this table lists for it
 (W3.2), and the largest size is 2048 octets.
 
@@ -693,7 +711,14 @@ Each of its objects has exactly the members that this table lists for it
 | `name_output.txid` | 64 hexadecimal characters | Its transaction id |
 | `name_output.vout` | integer in the number form, from 0 to 4294967295 | Its output index. The bound, 2^32 - 1, is that of an output index in a transaction |
 
-W8.2. The preparation is rebuilt from four inputs: the signed grant, the
+The sole contract-free preparation is `swarma-issuance/2`, defined by
+LIP-0035 section 2: exactly `type`, `genesis`, `grant_id`, `grant_signature`,
+using W1–W4 and at most 1024 bytes. It has no assent, consent or detached
+signature. These are different versioned schemas, not optional omissions
+from `/1`. Ivan Oparin decided on 2026-11-20 to permit that scoped
+contract-free path; co-author agreement is pending.
+
+W8.2. The `/1` preparation is rebuilt from four inputs: the signed grant, the
 signed form of the issuer's assent, the consent event and, for a recipient
 by name, the evidence outpoint. The first three are objects that a reader
 checks through their own pipelines. The fourth is two values that nothing
@@ -715,7 +740,7 @@ preparation. A part that is presented under another valid signature is the
 same object (W5.4) and is still not what was published: the recomputed
 commitment differs.
 
-W8.4. A preparation for a recipient by name carries `name_output`. A
+W8.4. A `/1` preparation for a recipient by name carries `name_output`. A
 preparation for a recipient by key carries none. The mode is the grant's.
 A presentation that offers an evidence outpoint for a grant by key, or none
 for a grant by name, refuses as `ISSUANCE_MODE`. A verifier makes this
@@ -733,9 +758,12 @@ grant (W6.4):
 
 The script is 72 octets, the length of a v3 issuance script. Payload
 version `0x01` stays the commitment of LIP-0004 for a v3 grant. A reader of
-a v4 grant accepts version `0x02` alone, with this action, this location
-type and this pointer, and it never reads a frame of one version as the
-other. Any other frame refuses as `ISSUANCE_FRAME`. The rule of LIP-0005
+a contract-binding v4 grant accepts version `0x02` alone, with this action,
+this location type and this pointer. The sole contract-free root path uses
+preparation `/2`, action `0x01`, payload `0x03`, and location `0x00` with no
+pointer or `0x01` with the signed grant's content address (LIP-0035 section 2).
+A reader never interprets either version as the other. A mismatched grant
+mode, preparation, frame version or location refuses as `ISSUANCE_FRAME`. The rule of LIP-0005
 section 3 that an issuance transaction has exactly one `OP_RETURN` output
 holds unchanged.
 
@@ -793,8 +821,11 @@ bound of its member (`WIRE_INTEGER`). Then the signing keys among the
 members are points of the curve (`WIRE_KEY`), and so are the output keys of
 a grant (W11.1).
 
-W9.4. An issuance is checked in six steps, and the first that fails gives
-the refusal.
+W9.4. A contract-binding issuance is checked in six steps, and the first
+that fails gives the refusal. For LIP-0035's sole contract-free case, step 1
+also validates its U1–U6 scope; step 2 checks the required identity/snapshot
+inputs but not nonexistent consent evidence; steps 3–4 are inapplicable;
+steps 5–6 bind preparation `/2` and payload `0x03`. No other check is skipped.
 
 | Step | Check | Refusal |
 | --- | --- | --- |
@@ -864,7 +895,7 @@ with a vector and what it does not.
 | --- | --- | --- |
 | Document | `canonical`: 15 valid, 30 refused, 8 compound | W1.1 to W1.6 on octets, in the order of W9.2 |
 | Integer | `integers`: 6 valid, 13 refused | W2.3 on the content of a string, for a bound of 2^64 - 1 |
-| Primitive | `primitives`: 11 | Arithmetic on given octets under a given type string: the tag and the typed digest for each of the seven types, a signature over a digest, the two SHA-256 values. No schema is consulted, and the octets are no valid object |
+| Primitive | `primitives`: 11 | Arithmetic on given octets under a given type string: the tag and the typed digest for each of the original seven types, a signature over a digest, the two SHA-256 values. No schema is consulted, and the octets are no valid object |
 | Signed object | `assents`: 4 valid, 26 refused, 6 compound, 6 bindings; `identifiers`: 4 | The pipeline of a signed object on the signed form of an assent, and W7.2 with a stated context |
 | Event | `consent_events`: 2 valid, 33 cases | The pipeline of a Nostr event with a stated context. For a recipient by name the context states what the verifier's node would find about the evidence output |
 | Issuer | `issuer_checks`: 12 | What an issuer decides before it signs (W7.6, W7.8, W7.9), from its clock, its record of consumed consents and the facts of its snapshot |
@@ -978,8 +1009,9 @@ their parity (LIP-0024 E1.2, LIP-0021 section 3), so they are output keys.
 Where a rule compares keys of the two forms, it compares x coordinates
 (LIP-0021 O2.3).
 
-A text holds printable ASCII and nothing else. A name with another octet has
-no grant in this profile, as it has no consent (W7.3).
+A text holds printable ASCII and nothing else. A name with another octet
+is outside this profile, including its contract-free branch. A missing
+consent is not the reason to reject the LIP-0035 exception.
 
 #### 11.2. The payload
 
@@ -992,7 +1024,7 @@ and every other payload under the list of a root grant.
 | --- | --- | --- | --- |
 | `type` | string | both | `swarma-grant/4` |
 | `genesis` | hash | both | The chain of the grant: the hash of its genesis block, as in an assent (W7.1) |
-| `contract` | hash | both | The identifier of the one contract that the grant binds (LIP-0017 section 5) |
+| `contract` | hash | both; optional only for LIP-0035's root EFFECT exception | The identifier of the one bound contract. Omission is allowed only for a root without `delegate`, never hire or rental, with one key/name recipient; all other grants require it. `null` is never allowed. |
 | `issuer` | object with exactly `name`, `registration`, `owner` and `grant_key` | root | The issuer, as LIP-0008 section 3 binds it |
 | `issuer.name` | text | | The exact name of the issuer |
 | `issuer.registration` | outpoint | | The transaction and the output that first registered that name |
@@ -1013,6 +1045,12 @@ and every other payload under the list of a root grant.
 | `seal.outpoint` | outpoint | | The transaction and the output index of the seal |
 | `seal.key` | output key | | The seal public key. In a child it is the child-seal key of the parent (LIP-0014 CS2) |
 | `delegate` | object (W11.5) | root, optional | The right of re-delegation. A root grant without the member gives none |
+
+Ivan Oparin decided on 2026-11-20 to make `contract` optional for exactly
+the scoped LIP-0035 case, amending W11.2. Co-author agreement on this Draft
+decision is pending. No `authorization_mode`, `contract_hash`, `window` or
+execution-mode member is added. `not_before_height`/`not_after_height` remain
+the actual height members. A child still requires `contract`.
 
 A child has no `issuer` and no `delegate`. Its authority comes from its
 parent, whose issuer is the root of the path, and a path has two links
@@ -1373,8 +1411,8 @@ this section. No rule of this table is changed here.
 | The issuer rule (LIP-0008 section 3; LIP-0021 section 7.1) | `issuer.name`, `issuer.registration`, `issuer.owner`, `issuer.grant_key`, `recent_block` |
 | The window (LIP-0008 section 7.1) and the recent block (LIP-0022 section 4) | `not_before_height`, `not_after_height`, `recent_block` |
 | The seal (LIP-0008 SB2, SB3; LIP-0024 E1.2) and the linkage output (LIP-0023 C2.3) | `seal` |
-| The contract seal (LIP-0017 section 6, rule 6) | `contract` alone: its document names its own seal and, where applicable, one framework contract, whose document names its own seal. Both documents are presented or resolved and recompute to their identifiers; each seal's confirmation and script are read on the side's own node. No grant member names either seal or is compared by this check |
-| The assent, the consent and the issuance (sections 7 and 8) | `genesis`, `contract`, `issuer.grant_key`, `recipient` |
+| The contract seal (LIP-0017 section 6, rule 6), only when a contract is bound | `contract` alone: its document names its own seal and, where applicable, one framework contract, whose document names its own seal. Both documents are presented or resolved and recompute to their identifiers; each seal's confirmation and script are read on the side's own node. No grant member names either seal or is compared by this check |
+| The assent, the consent and the issuance (sections 7 and 8) | Contract-binding path: `genesis`, `contract`, `issuer.grant_key`, `recipient`. The LIP-0035 branch uses preparation `/2` and its existing identity checks, without assent/consent evidence or a `contract` member |
 | A recipient by name (LIP-0008 section 3.1; LIP-0021 section 7.2) | `recipient.name`, `recipient.owner` |
 | The executor and the action (LIP-0008 section 4) | `executor`, `actions` |
 | The accounts of a request (LIP-0026 section 5) | `limits`; for a request under a child also the limits of the template of its row |
@@ -1984,8 +2022,9 @@ The remaining alternatives concern section 11.
   identifier. A reader that follows section 9 never repairs an object and
   never reports a later defect in place of an earlier one.
 - **What it does not give.** Canonical bytes say nothing about meaning.
-  Four of the seven types have no members, and until they have, no reader
-  can accept one of them.
+  Invocation, receipt and seal-endorsement schemas remain incomplete, as
+  does the child-kind mapping of notary `/2`. No reader may accept an
+  unsupported schema merely because its type or digest is registered.
 - **A grant that is read is not a grant that is admitted.** The pipeline
   of section 11 shows a well-formed document under a signature by the key
   that the payload itself names. It reads no chain. Whether that key is the
@@ -2062,11 +2101,12 @@ every grant as `WIRE_TYPE`, no longer conforms; the change is its own.
   tag (sections 3 and 4); the string form for amounts and counters with
   2^64 - 1 as the largest bound of the first profile (section 2); the
   exclusion of `null` and of code points below U+0020 (section 1); the
-  depth of 16 and the largest sizes; the names of the seven types; the
+  depth of 16 and the largest sizes; the registered type names, including the new Draft additions; the
   order of W9.2.
 - **The members** of the invocation, the receipt, the seal-key endorsement
-  and the successor attestation, with their vectors, and with them the
-  journal key of a request.
+  and the child-kind successor attestation, with their vectors, and with
+  them the journal key of a request. The contract-notarization schema is
+  proposed in LIP-0032, not an implementation claim.
 - **The co-author's answer on section 11**, and on the three decisions
   whose members it carries before their agreement: the delegation key (J4),
   the stop coin of a row (J2) and the seal in the grant with the child-seal

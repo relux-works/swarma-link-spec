@@ -19,8 +19,9 @@ members that machines compare. Its identifier commits to a salt and to a
 salted hash of each clause, so that a party can disclose one clause and
 keep the others. The parties anchor the identifier in one LIP-0005 frame,
 and they can show their assent on chain by spending an output that needs
-all their signatures. Every grant binds a contract, which may be minimal,
-and a contract may exist without any grant.
+all their signatures. Grants that bind a contract (bilateral, framework,
+rental) bind one contract, which may be minimal; a contract may exist without
+a grant. LIP-0035 defines the sole contract-free root EFFECT exception.
 
 Two rules connect a contract with the grants under it. A grant's window
 lies inside its contract's window, so one framework contract can cover many
@@ -50,7 +51,7 @@ the co-author agrees; adoption follows LIP-0001.
 | C2. Salts | The contract carries a salt, and each clause a salt of its own, so that a party can disclose single clauses. |
 | C3. Anchor | A contract is anchored in a LIP-0005 frame with an action code of its own. |
 | C4. Assent on chain | Optionally, both parties show their assent by spending a shared output that needs both signatures. |
-| C5. Contract and grant | Every grant references a contract, which may be minimal. A contract may exist without any grant. |
+| C5. Contract and grant | Grants that bind a contract (bilateral, framework, rental) bind exactly one, which may be minimal. A contract may exist without a grant. Only LIP-0035's root EFFECT grant without `delegate`, never hire or rental, may omit it; the recipient is one key or one name. Ivan Oparin decided on 2026-11-20 to scope the former universal rule this way; co-author agreement on this amendment is pending. |
 | C6. Any parties, many kinds | Contracts and grants work for any pair of parties, people, companies and agents in any combination, and for many kinds of contract: between businesses, for services, employment, rental and trust. |
 | C7. Windows | A grant's window lies inside its contract's window. Profile `swarma-trust-contract/1` keeps equality as the special case. A framework contract may cover several grants over time. A contract ends early only through a machine rule that names who may declare the end. |
 | C8. Contract seal | For v4 and for framework contracts: the contract names its own confirmed output. Every grant under it also requires that output unspent, and one spend ends them all. The script of the output encodes the termination clause: the issuer alone, either party, both together, or an arbiter. The spend carries a frame with the hash of the signed termination statement. v3 stays as it is: the issuer spends seals, and the reason follows LIP-0011. |
@@ -68,7 +69,7 @@ The labels C10 to C12 are this draft's numbering, continuing the table above.
 | --- | --- |
 | C10. The seal decides termination | The termination type of a contract is the type of its seal: issuer only, either party, both together, or arbiter, per its script. It is a machine field of the contract, and every reader, renderer and user interface shows it from the seal script, never from prose. A prose clause on termination ends nothing (section 5, rule 6). |
 | C11. Drafting starts with the seal | Drafting a contract starts with creating its seal. |
-| C12. No grant without a contract seal | A grant is not issued under a contract without a confirmed seal. The issuer's signing service and every verifier check this deterministically and refuse. |
+| C12. No grant without a contract seal | Grants that bind a contract (bilateral, framework, rental) MUST NOT be issued under it without a confirmed seal; signing services and verifiers refuse deterministically. LIP-0035's scoped contract-free root requires its own grant seal, not a contract seal. Ivan Oparin decided on 2026-11-20 to scope this rule; co-author agreement on the amendment is pending. |
 
 The nine directions of 2026-11-14 and the three of 2026-11-17 are the
 owner's. Everything else in this LIP is the draft's proposal and is not
@@ -240,8 +241,10 @@ open.
 
 ### 5. Contracts and grants
 
-1. Every grant binds exactly one contract: `contract_sha256` on v3, the
-   contract hash of the signed grant on v4. The contract may be minimal.
+1. Every grant that binds a contract (bilateral, framework, rental) binds
+   exactly one: `contract_sha256` on v3, `contract` on v4. It may be minimal.
+   Only the LIP-0035 root EFFECT exception without `delegate`, never hire or
+   rental, may omit `contract`; the recipient is one key or one name.
 2. A contract may exist without any grant. It is concluded by its
    signatures and anchored under section 3.
 3. **Containment.** The window of a grant lies inside the window of its
@@ -280,9 +283,11 @@ open.
    that names no seal has no termination type to show, and a reader MUST
    NOT supply one from its prose. A stored type member that disagrees with
    the script does not override the type derived from the script.
-7. **No grant without a contract seal.** By decision C12 of 2026-11-17 a
-   v4 grant, and a grant under a framework contract, MUST NOT be issued
-   under a contract without a confirmed seal (the scope of section 6).
+7. **No contract-binding grant without a contract seal.** As amended by
+   C12 on 2026-11-20, grants that bind a contract (bilateral, framework,
+   rental) MUST NOT be issued under a contract without a confirmed seal
+   (the scope of section 6). The LIP-0035 exception is not a contract and
+   needs its dedicated grant seal, not a fictitious contract seal.
    A minimal contract of the landed v3 path still needs no contract seal;
    whether C12 reaches v3 as well is open against decision C8.
    Section 6 states the check, its scope and its refusal codes: the

@@ -97,7 +97,8 @@ and wait for the owners' confirmation.
 | Delegation key, v4 | high | LIP-0014 section 11.1; decision of 2026-11-14, agreement pending; the reservation ledger of its signing service, J4.4 (a) to J4.4 (g), decision of 2026-11-16 |
 | Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreed by both owners on 2026-11-15 |
 | Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version. LIP-0014 section 11.2, Draft of 2026-11-16: in v4 from the first version, agreement pending |
-| Notary attestation key | high | LIP-0012 and LIP-0014, Draft |
+| Notary attestation key | high | LIP-0012 and LIP-0014, Draft; typed notary `/2` in LIP-0032 |
+| Credential issuer key | high | LIP-0032 and LIP-0010 section 9.1, Draft; owner decision of 2026-11-20, co-author agreement pending |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
 | Row stop key, v4 | medium | LIP-0014 section 10.1; decision of 2026-11-14, agreement pending |
 | Receipt key | medium | LIP-0006, implemented in the wallet service v1 profile |
@@ -169,7 +170,8 @@ v4 grant does not end by that update, because the owner and `swarma` stay.
 Draft [LIP-0029](lips/LIP-0029-owner-control.md), written optimistically under
 a decision of 2026-11-15 that awaits the co-author's agreement, gives the
 name-owner key of an owner's name one more meaning: its update writes the
-member `swarma-devices`, the hash and version of the owner's device list, and
+member `swarma-manifest`, the hash and version of the manifest carrying
+the owner's device-list head, and
 so decides who speaks for the owner at its own executors (O10.1). A thief of
 the key writes a list of its own devices; a v4 grant does not end by that
 update, because the owner and `swarma` stay.
@@ -515,7 +517,8 @@ names it as the holder or as the channel key.
   agents.
 - Published: in the owner's device list, in a record with `alg`, `key`,
   `presence`, `ceiling` and `seal`; the owner's name value pins the hash and
-  version of the list in `swarma-devices` (LIP-0029 sections 3.1 to 3.3).
+  version of `swarma-manifest/1`, whose `sets.swarma-devices` entry pins the
+  list (LIP-0010 section 11; LIP-0029 sections 3.1 to 3.3).
 - Holder: one device of the owner: a P-256 key in a secure element, such as
   the Secure Enclave of a phone or a laptop, or a BIP-340 key. Under Draft
   text of 2026-11-16 (LIP-0029 section 4.1) also the Ed25519 key of a Matrix
@@ -530,8 +533,9 @@ names it as the holder or as the channel key.
   record's ceiling, at the owner's own executors and at the key holders of
   the owner's agents; at ceiling 2 also the owner's executor policy sections
   and the fast revocation of another device. No grant, no Nostr event, no
-  seal spend and no name operation. At a foreign executor it signs nothing
-  that counts. A Matrix device key signs no envelope: its device-keys object
+  seal spend and no name operation. Draft LIP-0034 also permits
+  identity-only `auth-response/1` login at a foreign service, not grant,
+  consent or effect authority. A Matrix device key signs no envelope: its device-keys object
   binds the Olm identity from which its Megolm sessions come, and an
   end-to-end encrypted event bound to it counts as an L1 owner command
   (LIP-0029 OM2).
@@ -725,7 +729,9 @@ until that agreement.
   On a host without one, a file under a separate OS user is an exception
   that each owner approves (LIP-0014 section 6.3).
 - Signs: attestations of profile `swarma-notary-attestation/1`, under the
-  domain `swarma-notary-v1`. No grant.
+  domain `swarma-notary-v1`; Draft LIP-0032 also specifies typed notary `/2`
+  for `contract-notarization` and reserves its unchanged-semantics child
+  mapping. No grant, credential or card.
 - Danger: high.
 - Leak: the thief certifies children. It cannot widen an action set, a
   repository list, a window or a child's own budget, because every
@@ -739,6 +745,29 @@ until that agreement.
   again under the new one. No grant is reissued.
 - Source: LIP-0012 and LIP-0014 sections 6 and 7, Draft; the designation is
   the owners' decision D3 of 2026-11-12.
+
+**Credential issuer key**
+
+- Owner: the credential issuer, a person or organization; a notary uses a
+  separate name for this separate role.
+- Published: exact `swarma.issuer.cred` in its own `id/` name, a valid BIP-340
+  x-only key in 64 lowercase hex (LIP-0010 section 9.1).
+- Holder: an isolated signing service that does not export the private key;
+  a signing service is not the cold name-owner wallet.
+- Signs: only `swarma-credential/1` payloads under the LIP-0020 W4/W5 typed
+  digest, including `subject-claim` and `agent-audit`. No grant, notary
+  attestation, Nostr event, owner envelope, name operation or card.
+- Danger: high; compromise forges claims within a separately trusted issuer
+  policy but cannot itself authorize Link effects.
+- Recovery: rotate the key in `swarma`. Eternal, already anchored credentials
+  survive ordinary rotation; revocable credentials require the current key
+  and a live seal. An owner-authenticated LIP-0032 compromise break states
+  `h_c`: anchors below it survive, those at or above refuse. No silent
+  history erasure or retroactive replacement by the current key is allowed.
+- Decision: Ivan Oparin decided on 2026-11-20 to add this role and historical
+  closure rule; the co-author's agreement is pending.
+- Source: [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md),
+  [LIP-0021 section 7.6](lips/LIP-0021-name-ownership-and-history.md#76-credential-issuer-history-and-compromise-break-draft-2026-11-20).
 
 **Notary seal key**
 

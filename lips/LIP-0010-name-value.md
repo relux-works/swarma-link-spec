@@ -8,9 +8,11 @@
 
 ## Summary
 
-A name value has one member that belongs to Link: `swarma`. Every other member
-belongs to the name's owner or to another standard, and a Link reader does not
-interpret it. Inside `swarma` parsing stays strict.
+The grant-binding member of a name value is `swarma`, whose parsing stays
+strict. Link also reads `nostr` for its defined key roles and, under the
+Draft amendment of section 11, the top-level `swarma-manifest` head for
+statement sets. Other owner members are skipped. Legacy set-head members
+are read only in the explicit transition profile of section 11.2.
 
 An agent's key is written once, in the `nostr` member, in the shape NIP-05
 defines for `names` and `relays`. `swarma.agent` keeps only the landlord
@@ -49,31 +51,31 @@ the owner keys of the names of its agents and stations (J11). Version 0.1.51
 put it in force as a member `holders` of the landlord binding: on 2026-11-16
 Ivan Oparin put it in force without waiting for the co-author's agreement,
 which has not been given, and the co-author's answer is folded in by
-amendment. An owner decision of the same day has the holders follow the
+amendment. An owner decision of the same day had the holders follow the
 method of the device list: the landlord's name value pins the hash and the
 version of a holders list in a member outside `swarma`, `swarma-holders`; the
 list lives off the value without the cap of five; a change of it ends no v4
 grant; and the list has one entry for each agent or station name, with the
 key that holds the name and a seal whose spend revokes that one name. Section
-10 states this, in force since version 0.1.53 on the same terms, and keeps the
+10 retains that H8 form, in force since version 0.1.53 on the same terms,
+as a readable legacy form under section 11.2, and keeps the
 member of version 0.1.51 as the inline form for the transition (section
 10.9). Section 3 is read with section 10.9 for a landlord binding in the
 inline form.
 
-Ivan Oparin accepted on 2026-11-15 a third member that Link reads, outside
-`swarma`: `swarma-devices`, the hash and the version of an owner's device list
-([LIP-0029](LIP-0029-owner-control.md) section 3.3). The text was written
-optimistically, and the co-author's agreement is pending. The member gives no
-grant authority; only the owner's own executors and key holders read it, and a
-duplicate or fold alias of it refuses the whole value as for `swarma` and
-`nostr`. Until the co-author agrees, sections 1 and 2 stand: a reader skips the
-member as one of the owner's.
+Ivan Oparin accepted a separate device-list head on 2026-11-15, and a
+per-set head mechanism on 2026-11-16. Ivan Oparin decided on 2026-11-20
+that one `swarma-manifest` head replaces those separate heads; section 11
+supersedes those earlier Draft directions, with the co-author's agreement
+pending. The manifest carries all four registered set heads and the
+LIP-0007 service declaration. A set defect refuses that set, not grant
+authority; an invalid manifest leaves all its sets unverified.
 
-Section 11 holds Draft text, under a decision of 2026-11-16 that awaits the
-co-author's agreement, for one mechanism for every statement set of an owner:
-the head of the set in the owner's name value, read from the confirmed active
-chain only. `swarma-devices` is its first instance; under section 11 a defect
-of a head member refuses that set only, and no longer the whole value.
+The device list gives no grant authority. Besides the owner's executors
+and key holders, a foreign service may use the narrow identity-only login
+of LIP-0034; it does not gain EFFECT authority. Exact-value v3 readers
+refuse the new member. Section 11's every-verifier implementation gate and
+section 11.2's explicit legacy transition apply before production writes.
 
 ## Motivation
 
@@ -124,11 +126,12 @@ unless they are aliases or fold conflicts ([names](../protocol/names.md)
 | --- | --- | --- |
 | `swarma` | This specification | Reads the authority binding under section 3. |
 | `nostr` | NIP-05 for the shape of `names` and `relays`; the draft NIP-N0 and NIP-N1 for carrying that shape in a Namecoin value | Reads one key, the entry for `_`, and optional relay hints under section 4. |
-| `swarma-holders` (section 10.3, in force since version 0.1.53) | This specification | Reads the pin of a landlord's holders list under H8 and H9. It gives no authority (H12). |
+| `swarma-manifest` (section 11, Draft) | This specification | Reads the one manifest head; sets and the service declaration live behind it. It gives no grant authority. |
+| `swarma-holders` (legacy H8, in force since version 0.1.53) | This specification | Readable only under the explicit legacy transition in section 11.2; never together with the manifest form. |
 | Any other member | The name's owner or another standard | Does not read it. A head member of section 11 is read under that section where it applies. |
 
-The only part of the value that gives authority is `swarma`. Authority comes from
-`swarma` alone. A member outside `swarma` that looks like a grant key, a
+The only part of the value that gives grant authority is `swarma`. Grant
+authority comes from `swarma` alone. A member outside `swarma` that looks like a grant key, a
 landlord pointer or a limit gives nothing.
 
 ### 2. Reading the top level
@@ -148,13 +151,11 @@ landlord pointer or a limit gives nothing.
    occupies in the name value and parse that span under section 3.
 5. A value without `swarma` carries no Link authority. A Link check that
    needs the binding refuses; the name stays valid for its other uses.
-6. Rule 3 has one exception in force: the member `swarma-holders`. A reader
-   that makes the checks of a landlord class reads it under section 10.3,
-   matches it under H9, and takes its value as the exact byte span that it
-   occupies. A defect of that member gives no holders list and never
-   refuses the value (H9). Every other reader skips it under rule 3. The
-   head members of section 11 are a further exception where that section
-   applies.
+6. Rule 3 has the manifest-profile exception `swarma-manifest`, read under
+   section 11 by readers needing a set or the service declaration. The legacy
+   `swarma-holders` exception is retained under section 11.2 and H8/H9.
+   A defective head gives no affected set, never grant authority or a grant
+   closure. Manifest and direct heads MUST NOT coexist; no fallback is allowed.
 
 Rule 2 is what makes rule 3 safe. Two readers that differ in how they treat
 duplicate members still extract the same `swarma` bytes, because a value with
@@ -163,13 +164,14 @@ a second `swarma` is refused before anything is read.
 ### 3. `swarma` stays strict
 
 `swarma` is a JSON object with exactly one member: `landlord`, `agent` or,
-under the amendment of section 9, `notary`:
+under the amendments of sections 9 and 9.1, `notary` or `issuer`:
 
 | Name | Value of `swarma` | Meaning |
 | --- | --- | --- |
 | Landlord name | `{"landlord":{"grant":"<grant key>"}}` | The key that signs grants issued under this name. |
 | Agent name | `{"agent":{"landlord":"<landlord name>"}}` | The landlord name whose grant key issues grants for this agent. |
 | Notary name (section 9) | `{"notary":{"attest":"<attestation key>"}}` | The key that signs this notary's attestations. |
+| Credential issuer name (section 9.1) | `{"issuer":{"cred":"<credential key>"}}` | The key that signs third-party credentials (LIP-0032, Draft). |
 
 A key is a valid secp256k1 x-only public key written as 64 lowercase
 hexadecimal characters. Inside `swarma` a reader MUST refuse a missing,
@@ -181,8 +183,9 @@ fold alias of a defined one, and any two fold-equal members. The byte span of
 under section 5.
 
 Since version 0.1.53 the holders of a landlord (J11) are no member of the
-landlord binding: the landlord's value pins a holders list in the top-level
-member `swarma-holders`, outside `swarma` (section 10). The binding of a
+landlord binding. The historical direct `swarma-holders` head remains the
+legacy form (section 10); the new manifest profile reaches it through
+`sets.swarma-holders` (section 11). The binding of a
 landlord is `{"landlord":{"grant":"<grant key>"}}` as the table has it.
 Version 0.1.51 gave the binding a second member, `holders`; a reader still
 admits that member, for the transition, as section 10.9 says, and refuses
@@ -359,22 +362,44 @@ and `"name":"Cedar"`:
 Writing the agent key once shortens the agent value from 212 to 137 bytes.
 One more agent in a `d/` record costs 70 bytes plus the length of its label,
 so a record holds the root and five agents with labels of up to 15
-characters. The typed service declaration of LIP-0007 is not counted here and
-needs its own budget inside the same 520 bytes.
+characters. The manifest profile moves the typed service declaration of LIP-0007
+off the name value into the pinned manifest (section 11.1).
 
-**Budget plan (proposal, not decided; deciders: the specification's
-authors).** A landlord value with a NIP-05 object and one relay takes 294
-bytes and leaves 226. The plan keeps it that way:
+**Budget amendment (Draft, 2026-11-20).** Ivan Oparin decided on
+2026-11-20 that one manifest replaces per-set heads and carries the LIP-0007
+service declaration. The co-author's agreement is pending. The former
+150-byte service reserve is released; it is not an extra 150 bytes added to
+the 520-byte consensus limit. Keys whose change must close grants remain
+in `swarma`; the credential issuer key has its own shape in section 9.1.
+Certificate-store statements do not replace authority keys or device-list
+records. The card carries transports and the full relay list; operating with
+no relay in the name is recommended, not a prohibition on a relay hint.
 
-1. A name carries only the keys that some reader must resolve on chain: the
-   grant key or the notary key in `swarma`, and the Nostr key in `nostr`.
-2. Every other key or binding is a signed statement in the certificate store
-   of [LIP-0016](LIP-0016-certificate-store.md), anchored by LIP-0005
-   frames: messaging device keys, commit-signing keys, release keys and
-   organization membership.
-3. A further key enters a name only when a verifier must resolve it on
-   chain, and then with a shape of its own in this LIP.
-4. About 150 bytes stay reserved for the service declaration of LIP-0007.
+The following replaces the per-set-head budget for the manifest profile.
+The single head adds 104 bytes for one-digit `seq`, 119 at the maximum.
+The unchanged base sizes above remain useful for legacy values.
+
+| Value | Base | Manifest, one-digit seq | Left of 520 | Manifest, maximum seq | Left of 520 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Landlord, no `nostr` | 100 | 204 | 316 | 219 | 301 |
+| Landlord, key string | 175 | 279 | 241 | 294 | 226 |
+| Landlord, NIP-05 object | 191 | 295 | 225 | 310 | 210 |
+| Landlord, NIP-05 object and one relay | 294 | 398 | 122 | 413 | 107 |
+| Landlord, NIP-05 object and two relays | 318 | 422 | 98 | 437 | 83 |
+| Agent, key string | 121 | 225 | 295 | 240 | 280 |
+| Agent, NIP-05 object | 137 | 241 | 279 | 256 | 264 |
+| Agent, NIP-05 object and one relay | 240 | 344 | 176 | 359 | 161 |
+| Agent, NIP-05 object and two relays | 264 | 368 | 152 | 383 | 137 |
+| Agent, NIP-05 object plus owner `email` and `name` | 180 | 284 | 236 | 299 | 221 |
+| Notary, no `nostr` | 99 | 203 | 317 | 218 | 302 |
+| Notary, key string | 174 | 278 | 242 | 293 | 227 |
+| Notary, NIP-05 object | 190 | 294 | 226 | 309 | 211 |
+| Credential issuer, no `nostr` | 97 | 201 | 319 | 216 | 304 |
+
+The issuer base is `{"swarma":{"issuer":{"cred":"<64 hex>"}}}`.
+A manifest does not belong in a `d/` discovery-only record: pin it in the
+owner's `id/` name. Neither the set count nor the service declaration adds
+another byte to the name's head.
 
 ### 9. Notary name (Draft amendment of 2026-11-12)
 
@@ -415,6 +440,26 @@ The list of a principal's notaries is not a member of the principal's own
 value. It is signed in each parent grant (LIP-0014 section 2). A list in the
 value would be read at check time and not at issuance, and a member added
 to `swarma` refuses under section 3.
+
+### 9.1. Credential issuer name (Draft amendment of 2026-11-20)
+
+Ivan Oparin decided on 2026-11-20 to introduce a separate **credential issuer
+key**; the co-author's agreement is pending. [LIP-0032](LIP-0032-generalized-notary-and-credentials.md)
+uses the exact shape `{"swarma":{"issuer":{"cred":"<key>"}}}` in the issuer's
+own `id/` name. `cred` is a valid secp256k1 x-only public key, 64 lowercase
+hex. No additional or alternative member inside this shape is accepted.
+A notary or landlord that also issues credentials registers a separate name;
+one `swarma` object still has exactly one role. A credential key signs no
+grant, owner command, card or notary attestation.
+
+The new shape participates in strict parsing and name-history verification.
+A change to this `swarma` span is a name-shape/key change under LIP-0021;
+it MUST NOT be hidden in the manifest. It cannot serve as a landlord binding
+for existing grants. Eternal credentials have the explicit historical-key
+exception of LIP-0032 section 3 and LIP-0021 section 7.6: rotation does not
+erase an already anchored fact. An authenticated compromise break with
+height `h_c` closes anchors at or above `h_c`, not those below it. That is a
+credential rule, not an exemption from grant closure rules.
 
 ### 10. Holders of a landlord: the hash-pinned holders list (amendment of 2026-11-16, in force since 0.1.53)
 
@@ -591,34 +636,19 @@ one; section 10.11 says what a vector set fixes.
 
 | Rule | Requirement | Refusal | Source |
 | --- | --- | --- | --- |
-| H8 | The landlord's name value pins the hash of the holders list only, with its version, in the top-level member `swarma-holders`, outside `swarma`: `{"seq":<seq>,"sha256":"<h(H)>"}`, exactly these two members in this order, compact. `seq` is a canonical positive integer, at most 9007199254740991, and `sha256` is 64 lowercase hex. Nothing else of the list enters the name. | `HOLDER_PIN_INVALID` | LIP-0029 O3.4; section 11, SH1. The member name is **NEW**, in the form of `swarma-devices` |
-| H9 | A reader MUST match `swarma-holders` by exact name. A duplicate of it, or a member equal to it under Unicode simple case folding that is not that exact name, gives no holders list, and so no listed name. It leaves `swarma`, `nostr`, every other member and every grant as they read. A member of another shape than H8 gives no holders list in the same way. The name is matched on the bytes of the member name as the value writes them: the 14 bytes `swarma-holders` between two quotation marks, with no escape. A top-level member whose written name holds an escape and decodes to `swarma-holders`, or to a string that is equal to it under the fold, is such an alias and gives no holders list; a reader therefore decodes the names of the top-level members to find it and never takes a pin from a member that it found only by decoding. The value of the member is the exact byte span that it occupies in the name value, from the opening brace to the closing one, and that span MUST equal the compact encoding of the pin that it parses to (H8); the content of the other members is not interpreted to find it, beyond the JSON structure that delimits them. | `HOLDER_PIN_INVALID` | Section 11, SH6. LIP-0029 O3.5, which refuses the whole value, is not taken: a defect of the pin would then refuse every grant of the landlord, against H13. The rule for an escaped spelling and the byte span of the pin are **NEW**, in the form of section 2, rules 2 and 4; reading an escaped name as the member is not taken, because two readers would then find a pin in different values |
+| H8 | In the manifest profile the landlord's confirmed name value pins `swarma-manifest`, whose `sets.swarma-holders` entry is exactly `{"seq":<seq>,"sha256":"<h(H)>"}` under section 11. The direct top-level two-member `swarma-holders` head remains readable only under the explicit legacy transition of section 11.2, never alongside a manifest. Positive integer and lowercase hash forms are unchanged. | `HOLDER_PIN_INVALID` or `MANIFEST_PIN_INVALID` | Ivan Oparin decided on 2026-11-20; co-author agreement pending; SH1/SH2 |
+| H9 | Match the manifest head and entries under SH6, then the holders pin under H8. A duplicate, folded alias, escaped name, noncanonical pin or invalid shape gives no holders list and never grant closure. In legacy mode the written name is exactly `swarma-holders`, without escapes; decode member names to detect aliases but never obtain a pin only by decoding one. A name carrying manifest and direct heads refuses the set path; no preference or fallback is allowed. | `HOLDER_PIN_INVALID` or `MANIFEST_PIN_INVALID` | Ivan Oparin decided on 2026-11-20; co-author agreement pending; section 11.2 |
 | H10 | The pinned `seq` equals the `seq` of the list, and `sha256` equals `h(H)`. The `owner` of the list is, octet for octet, the landlord name whose value pins it, and its `network` is the network of the reader's pinned chain. | `HOLDER_LIST_MISMATCH` | LIP-0029 O3.6; section 11, SH4 |
 | H11 | A reader takes the pin only from the landlord's name output that is confirmed in the active chain of its own node. A pending name operation gives no pin: it neither adds, replaces nor removes one until it confirms. | | Section 11, SH3; LIP-0029 O9.2. A class check refuses while such an operation is pending (LIP-0026 R9.5, sixth step) |
-| H12 | `swarma-holders` gives no grant authority, and section 1 holds as written: authority comes from `swarma` alone. The member is a further one that Link reads, beside `swarma`, `nostr` and the heads of section 11. Unlike `swarma-devices`, which only an owner's own executors read, every verifier that makes the checks of a landlord class reads it, an executor of another owner included. | | LIP-0029 O3.7, with the difference stated; rule 6 of version 0.1.51 |
+| H12 | The holders entry gives no grant authority. Grant authority comes from `swarma`; every verifier making landlord-class checks reads the holders set, including another owner's executor. Device-list use is separately scoped by LIP-0029 O3.7, including identity-only login under LIP-0034. | | Section 11 SH7; LIP-0029 O3.7 |
 
-The member is registered as a head of a statement set in section 11 (SH2),
-whose Draft text awaits the co-author's agreement. Rules H8 to H11 state for
-this member what SH1, SH3, SH4 and SH6 state for every head, so that the pin
-does not depend on the status of section 11.
-
-The member adds 103 bytes while `seq` has one digit, 118 bytes at the largest
-`seq`: the same as `swarma-devices`, whose name has the same length. The
-sizes count as in section 8:
-
-| Landlord value | Bytes without | With `swarma-holders`, `seq` < 10 | Left of 520 | With `swarma-devices` as well | Left of 520 |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| No `nostr` | 100 | 203 | 317 | 306 | 214 |
-| Key string | 175 | 278 | 242 | 381 | 139 |
-| NIP-05 object | 191 | 294 | 226 | 397 | 123 |
-| NIP-05 object and one relay | 294 | 397 | 123 | 500 | 20 |
-| NIP-05 object and two relays | 318 | 421 | 99 | 524 | does not fit |
-
-The cost of the list to the name value is the same for one entry and for
-1024. A landlord value with a NIP-05 object, one relay and the three heads
-`swarma-holders`, `swarma-devices` and `swarma-certs` takes 601 bytes and
-does not fit; the single member over every set, which section 11 leaves open,
-is the way out, and it is open with it.
+Ivan Oparin decided on 2026-11-20 to put the holders head in the single
+manifest. The co-author's agreement on this amendment is pending. The direct
+two-member H8 form, in force since 0.1.53, remains readable only in the
+explicit legacy mode of section 11.2. It is not silently accepted alongside
+a manifest. The old three-head value cost 601 bytes with the NIP-05 object
+and one relay; the replacement is 398 bytes (413 at maximum manifest seq),
+including all four set heads indirectly and without the former service reserve.
 
 #### 10.4. What a grant's liveness depends on (replaces rule 7 of version 0.1.51)
 
@@ -630,11 +660,11 @@ H13:
 
 | Rule | Requirement | Source |
 | --- | --- | --- |
-| H13 | The holders of a landlord are no part of its `swarma` member. The pin `swarma-holders` is a top-level member outside `swarma`, and the list is outside the value. A name update of the landlord that adds, replaces or removes `swarma-holders`, and that changes neither the owner of the name nor the octets of `swarma`, ends no v4 grant, refuses none, and is no break under LIP-0008 section 5.2 (J6.1): a verifier records no closure for it, and the landlord issues nothing again. The spend of a holder seal that was made under H26 and that is no other outpoint of the protocol (H49) is no operation of the landlord name and touches no grant. A seal that is, against H49, also the seal of a grant, a linkage output, a coin of a row, a stop coin or a name output performs that other act when it is spent, and this sentence does not cover it; a verifier refuses such an entry where it can see the collision (H49). A v4 grant that the landlord issued depends, in the landlord's name, on exactly the facts that LIP-0008 section 3 binds: the name; its registration; the owner key that controls every output of the name from the one current at the grant's committed recent block to the current one; and the exact octets of the `swarma` member on each of those outputs, which for a landlord in the pinned form are the compact encoding of `{"landlord":{"grant":"<grant key>"}}`, with the grant key equal to the grant's issuer key, and nothing else. No octet of `swarma-holders`, of a holders list or of a holder seal is among them. Beside the name the grant depends, as before, on its own seal and its own window. | LIP-0029 O3.8 and decision 3; section 11, SH7; LIP-0008 section 3, unchanged |
+| H13 | The holders of a landlord are no part of its `swarma` member. The current pin is the `swarma-holders` entry of the manifest reached through top-level `swarma-manifest`; the direct top-level `swarma-holders` is legacy only (section 11.2). The list is outside the value. A name update of the landlord that changes either permitted pinning form, and that changes neither the owner of the name nor the octets of `swarma`, ends no v4 grant, refuses none, and is no break under LIP-0008 section 5.2 (J6.1): a verifier records no closure for it, and the landlord issues nothing again. The spend of a holder seal that was made under H26 and that is no other outpoint of the protocol (H49) is no operation of the landlord name and touches no grant. A seal that is, against H49, also the seal of a grant, a linkage output, a coin of a row, a stop coin or a name output performs that other act when it is spent, and this sentence does not cover it; a verifier refuses such an entry where it can see the collision (H49). A v4 grant that the landlord issued depends, in the landlord's name, on exactly the facts that LIP-0008 section 3 binds: the name; its registration; the owner key that controls every output of the name from the one current at the grant's committed recent block to the current one; and the exact octets of the `swarma` member on each of those outputs, which for a landlord in the pinned form are the compact encoding of `{"landlord":{"grant":"<grant key>"}}`, with the grant key equal to the grant's issuer key, and nothing else. No octet of `swarma-manifest`, of its document or set entries, of legacy `swarma-holders`, of a holders list or of a holder seal is among them. Beside the name the grant depends, as before, on its own seal and its own window. | LIP-0029 O3.8 and decision 3; section 11, SH7; LIP-0008 section 3, unchanged |
 | H14 | H13 changes nothing in LIP-0008. The rule that a grant lives while the owner and `swarma` do not change stands as written; what changes is that `swarma` no longer holds the holders. A change of the grant key or of the owner still ends every v4 grant of the landlord. | LIP-0008 section 3 |
-| H15 | Every change of the list is a name update of the landlord, signed by the name-owner key, that writes a pin with a higher `seq`. While it is pending, a class check that reads this landlord refuses without closure (LIP-0026 R9.5, sixth step), and a v3 verifier refuses the grants of the name, without closure, until the update confirms (LIP-0004 section 5). Whether a pending update of `swarma-holders` alone suspends the admission of the landlord's own v4 grants is a question of the observation profile, as it is for `swarma-devices` (LIP-0029 section 3.4). | LIP-0029 O3.10 and O9.1 |
-| H36 | **Adding entries.** Adding a name, a reserve included, or changing the owner pin of a listed name needs a new list that holds the entry, a new seal for the entry (H38) with its prepared spend placed under H27, and an update of the landlord's name, signed by the name-owner key, that writes `swarma-holders` with a higher `seq`. The funding transaction of every seal of the list is confirmed in the active chain before that update is broadcast, so that the seal exists as H46 asks when the pin confirms; the landlord's tool makes that read and refuses otherwise, and a verifier sees a breach as `HOLDER_SEAL_NOT_LIVE`. A presentation, an attachment or a message never adds an entry. That update ends no v4 grant (H13). Adding is slow and guarded; revoking one name is fast where H51 is met. | LIP-0029 O9.1 to O9.3 and decision 6; **NEW** as a rule for entries by name. That the seals are confirmed before the pin is broadcast is **NEW** |
-| H16 | A landlord MUST NOT write `swarma-holders` into a name while a verifier that its own deployment configures or knows of reads that name with a reader older than this LIP. No landlord can list every present and future verifier of another party, so for those the sentence is a statement of cost and no rule: a LIP-0004 reader refuses the whole value, and every v3 grant under that name then refuses at that verifier, without closure, until the exact value is restored (section 6). A reader of this LIP before this amendment skips the member as one of the owner's and finds no holder, so it refuses every recipient of a class of that landlord and admits none wrongly. | LIP-0029 O3.9; section 2, rule 3. None at a verifier: no verifier can observe the order of a landlord's deployment. The narrowing to the verifiers that the deployment knows is **NEW** |
+| H15 | Every change of the list is a name update of the landlord, signed by the name-owner key, that writes a higher manifest `seq` and a higher holders-entry `seq` (or a higher direct H8 `seq` in legacy mode). While it is pending, a class check that reads this landlord refuses without closure (LIP-0026 R9.5, sixth step), and a v3 verifier refuses the grants of the name, without closure, until the update confirms (LIP-0004 section 5). Whether a pending update of `swarma-holders` alone suspends the admission of the landlord's own v4 grants is a question of the observation profile, as it is for `swarma-devices` (LIP-0029 section 3.4). | LIP-0029 O3.10 and O9.1 |
+| H36 | **Adding entries.** Adding a name, a reserve included, or changing the owner pin of a listed name needs a new list that holds the entry, a new seal for the entry (H38) with its prepared spend placed under H27, and an update of the landlord's name, signed by the name-owner key, that writes a higher manifest `seq` and a higher holders-entry `seq` (or the direct H8 head only in legacy mode). The funding transaction of every seal of the list is confirmed in the active chain before that update is broadcast, so that the seal exists as H46 asks when the pin confirms; the landlord's tool makes that read and refuses otherwise, and a verifier sees a breach as `HOLDER_SEAL_NOT_LIVE`. A presentation, an attachment or a message never adds an entry. That update ends no v4 grant (H13). Adding is slow and guarded; revoking one name is fast where H51 is met. | LIP-0029 O9.1 to O9.3 and decision 6; **NEW** as a rule for entries by name. That the seals are confirmed before the pin is broadcast is **NEW** |
+| H16 | A landlord MUST NOT write the new `swarma-manifest` member to a production name until every verifier of that name has a compatible reader (SH8). The exact-value LIP-0004/v3 reader refuses the whole value, not just holders, and grants refuse without a closure until compatible bytes or a compatible reader are restored. The readable legacy H8 profile is not permission to mix forms or silently downgrade. An operator cannot infer remote reader readiness from chain data; this is an implementation gate, not a verifier check. | Ivan Oparin decided on 2026-11-20; co-author agreement pending; section 11.2 and SH8 |
 
 A grant to an agent is a different matter from the landlord's own grants, and
 H13 does not speak of it. A child of a class row is admitted through the
@@ -653,7 +683,7 @@ party that has the list to give is the one that presents the child.
 | --- | --- | --- | --- |
 | H17 | The name pins the hash and nothing else (H8). The list is addressed by its content: every copy whose exact octets hash to the pinned `sha256` is the list, whoever serves it, and no other copy is. | `HOLDER_LIST_MISMATCH` | LIP-0029 O3.11 |
 | H18 | The primary path is the presentation. The party that presents a child of a row whose recipient is a class, or a request under such a child, supplies the exact octets of the list that the landlord's value pins: when the list has changed since the last presentation that this verifier admitted from it, and at first contact, which is every presentation to a verifier of which the presenter holds no record that it admitted one under this `h(H)`. Otherwise the presentation carries nothing of the list. A verifier caches every list that it verified under H10 and H17, keyed by the landlord (its name with its registration, H39) and `h(H)`, and makes a later check from the cache. The member that carries the octets comes with the octets of a v4 request ([LIP-0020](LIP-0020-grant-v4-wire-registry.md)); until then the list travels beside the presentation. | | LIP-0029 O3.12. That the presenter stands in the sender's place is **NEW** |
-| H19 | Two secondary paths serve a reader that has no presenter to ask, such as the signer of an issuer under LIP-0026 R9.12 or a verifier that starts with an empty cache. (a) The landlord's domain: `https://<domain>/.well-known/swarma/holders-list/<h(H)>`, where `<domain>` is the domain of the NIP-05 identifier in the landlord's name value, and the body of the response is the exact octets of the list. (b) A parameterized replaceable Nostr event signed by the key that the landlord's name value yields for the Nostr channel, with the tag `["d","swarma-holders-list"]`, whose `content` is the exact octets of the current list. Both places are named by the landlord's name value, and a reader fetches from no other: not from a URL in a request, not from a relay's or a peer's hint. A copy from either counts only under H17. **Neither path can be built between two independent readers yet.** The name value of this document holds a key and relay hints and no domain, so path (a) has no `<domain>` that a reader can derive from the value alone; the kind of the event of path (b) is open. Until both are closed, the readers that this rule names have no working secondary path: they stay at `LIST_UNKNOWN` (H20), which fails closed, and no implementation claims either path. | | LIP-0029 O3.13. The path segment and the `d` tag value are **NEW**, in the form of those of the device list; the kind of the event is open as it is there. That the paths are not yet implementable is stated here and is **NEW** as a statement |
+| H19 | Secondary retrieval follows LIP-0033: the authenticated NIP-05 domain, if independently available, serves `https://<domain>/.well-known/swarma/holders-list/<h(H)>`; the name's Nostr key, if present, may publish kind 30079 with `d` tag `swarma-holders-list`. These are optional, non-exclusive channels. Bytes from any source count only under H17 and all profile checks. The SSRF boundary restricts network requests, not acceptance of matching inline bytes. No domain or Nostr key is needed when the presenter supplies the manifest and list inline. | `LIST_UNKNOWN` if needed bytes are absent | Ivan Oparin decided on 2026-11-20; co-author agreement pending; LIP-0033 closes the event-kind question, not a missing NIP-05 domain binding |
 | H20 | A verifier that holds no list with the pinned hash refuses by name, and the presenter presents again with the list. The refusal is never replaced by a silent fetch. The refusal is no evidence about the landlord, the recipient or any holder, and it records no closure. The unavailability of a secondary path never blocks a presentation that carries the list. | `LIST_UNKNOWN` | LIP-0029 O3.14 and decision 17, with its code |
 
 No path adds an entry. The pin comes from the landlord's name on the reader's
@@ -954,14 +984,14 @@ vectors of the inline form cite them as 10.1 to 10.8:
 
 | Rule | Requirement | Refusal | Source |
 | --- | --- | --- | --- |
-| M1 | **The form of a landlord value.** A value whose `landlord` has the member `holders` and that has no top-level `swarma-holders` is in the inline form. A value whose `landlord` has `grant` alone is in the pinned form: its listed names are the entries of the list that `swarma-holders` pins, and none where the member is absent. | | **NEW**; the shape selects the rules, as in section 6 |
-| M2 | A value that has both the inline member and a top-level `swarma-holders` has no holder by either form. Its `swarma` still parses under rule 1, and its grants read as before. | `CLASS_HOLDER` | **NEW**; "MUST NOT mix", section 6 |
-| M3 | **What a verifier does with each form meanwhile.** A reader of this LIP MUST parse both forms, so that a landlord value in the inline form keeps its grant key and its grants. For a class check against a landlord in the inline form it takes the holders from the inline member under rules 1 to 4 and makes checks (c) and (d) on them as version 0.1.51 did: every name that an inline holder holds passes check (c), and a value that any inline holder wrote passes check (d). Steps 0 and 1 of section 10.6 are made for every landlord, and steps 2 to 6 and 8 have no subject for a value in the inline form. **The inline form is read only for a landlord of which the verifier's journal holds no form mark.** Once the verifier took a pinned list for a landlord, a value of that landlord in the inline form gives no holder (H42), so that a return to the inline form lifts no closure and no removal, and admits no name. An inline holder is a key and has no seal: it is removed only by a name update, with the consequence of rule 7, and one name of it cannot be revoked alone. For a landlord in the pinned form the verifier follows section 10.6. | The codes of LIP-0026 section 9; `HOLDER_FORM_DOWNGRADE` (H42) | **NEW** |
-| M4 | **What a landlord does.** From this version a landlord MUST NOT write the inline member into a value that did not carry it, MUST NOT add a pin to an inline list, and MUST NOT write the inline member into a value of a name that ever carried `swarma-holders`. It moves to the pinned form by one name update that removes `holders` from `landlord` and writes `swarma-holders` with the pin of a list that holds one entry for each agent and station name that it means to keep, each with the key that holds the name and with a seal made under H26 and H51, confirmed (H36), and its prepared spend placed under H27 before the update is broadcast. | None at a verifier for the writer's duties: the landlord's tool refuses. A verifier answers a return to the inline form by H42 | **NEW** |
-| M5 | **The cost of the move.** The update of M4 changes the octets of `swarma`. It is the last update of that landlord to which rule 7 applies: every v4 grant that the landlord issued under the inline form refuses from the block that confirms it and is issued again, and a verifier that observes it under LIP-0008 section 5.2 records the closure. From then on H13 holds. A landlord whose value never carried the inline member moves at no cost to its grants: it adds `swarma-holders`, and `swarma` stays. | | LIP-0008 sections 3 and 5.2 |
+| M1 | **The form of a landlord value.** The current pinned form uses the `swarma-holders` entry in the manifest of section 11; without that manifest and entry it supplies no holders. Only an explicitly selected legacy reader may use the older inline `landlord.holders` or direct top-level H8 head. Missing manifest bytes MUST NOT trigger legacy fallback. | `CLASS_HOLDER`; the manifest refusals of section 11 | Ivan Oparin decided on 2026-11-20; co-author agreement pending |
+| M2 | A value that mixes inline holders with a direct holders head or a manifest has no holder by either form. A manifest together with any direct set head refuses under section 11.2. Its otherwise valid `swarma` authority still reads under rule 1; the mixture creates no grant closure. | `CLASS_HOLDER`; `MANIFEST_PIN_INVALID` for mixed manifest/direct heads | Section 11.2 |
+| M3 | **Legacy reads meanwhile.** An explicitly selected legacy reader retains the inline checks of version 0.1.51 and the direct H8 checks of section 10.6. An inline key admits only the names it holds and wrote, has no individual seal, and can be removed only by changing `swarma`, with rule 7 consequences. It MUST NOT be accepted after the journal records a pinned form (H42). A manifest reader uses section 11.2, carries existing counters, removals and closures across migration, and never clears them on a form change. | The codes of LIP-0026 section 9; `HOLDER_FORM_DOWNGRADE` (H42) | Legacy compatibility only; section 11.2 |
+| M4 | **Current migration target.** A landlord MUST NOT newly write inline holders or return to inline after a pinned form. It migrates inline holders by one name update removing `landlord.holders` and adding `swarma-manifest` with a holders-set head. The list names every agent or station to keep, with its owner key and an H26/H51 seal confirmed under H36; the prepared spend is placed under H27 before broadcast. A direct H8 head instead migrates atomically under section 11.2, without an intermediate mixed form. | Writer precondition; a verifier refuses downgrade under H42 and section 11.2 | Ivan Oparin decided on 2026-11-20; co-author agreement pending |
+| M5 | **Cost of the move.** Removing inline holders changes the octets of `swarma`: every v4 grant issued under those old bytes refuses at the confirming block and must be issued again; an observing verifier records the LIP-0008 J6 closure. M6 still applies. Moving a direct H8 head to the manifest, or adding a first manifest to a grant-only landlord value, changes no `swarma` byte or owner and closes no grant (H13). | | LIP-0008 sections 3 and 5.2; section 11.2 |
 | M6 | A landlord that added the inline member to a value which had been `{"landlord":{"grant":"<grant key>"}}` would, by removing it, write a `swarma` value that it replaced, which LIP-0008 J6.7 forbids. Such a landlord moves with a new grant key in the update of M4. A landlord whose first `swarma` value already carried the inline member keeps its grant key. | | LIP-0008 section 5.2, J6.1 and J6.7 (Draft, agreement pending) |
 | M8 | The move narrows what passes. Under the inline form every name that a listed key holds and wrote is admitted; under the pinned form only the names that the list names. A landlord lists every name in use before it moves, and a name that it leaves out refuses `CLASS_HOLDER` from the block of the update. | `CLASS_HOLDER` | Follows from H34, an owner decision of 2026-11-16 |
-| M7 | A landlord with live v3 grants moves only after every verifier of those grants reads this section, as H16 says. A reader of version 0.1.51 reads the inline form and skips `swarma-holders`; a reader before version 0.1.51 refuses the inline form and skips `swarma-holders`; a LIP-0004 reader refuses both. | | Section 6; the closing text of section 10 in version 0.1.51 |
+| M7 | A landlord moves only after the every-verifier reader gate of H16/SH8. Legacy inline and H8 readers are not manifest readers. An exact-value LIP-0004 reader refuses all these extended forms; a reader which merely skips an unknown manifest finds no holders and cannot admit a class recipient. | Implementation gate, not an on-chain readiness proof | Section 6; section 11.2 |
 
 No implementation of version 0.1.51 is claimed, and this text knows of no
 landlord name that carries the inline member. The date after which a reader
@@ -971,6 +1001,12 @@ only thing that keeps a sealed-off name refused while the inline form is
 still read.
 
 #### 10.10. Cases
+
+The direct-head and inline fixtures below are preserved as **legacy-profile**
+cases under section 11.2. Their list, entry and seal checks also apply after
+manifest resolution; direct name-member examples do not authorize a mixed
+or direct-head value in the manifest profile. Section 11 adds the new
+manifest cases separately.
 
 Each case pairs a valid control with its refusal. The landlord `id/acme` is
 `L`, and the keepers of its prepared spends are the devices `P` and `M`.
@@ -1017,6 +1053,10 @@ name passes (LIP-0026 R9.9) and the class checks are reached.
 | S10-28 | The control of S10-1: the value of `L` pins list 3, which holds the entry of the recipient name | The value of `L` pins, under a valid pin, a list with an empty `holders` that `Y` holds: every child refuses as `CLASS_HOLDER` (step 6, H7). The value of `L` is in the pinned form without the member `swarma-holders`: every child refuses as `CLASS_HOLDER` (step 1, H7), and the grant key still reads. |
 
 #### 10.11. Vectors
+
+These retained fixtures describe the legacy placement where they name a
+direct top-level head. They are not manifest-profile vectors; the latter
+remain future conformance work under section 11.
 
 [`vectors/LIP-0010/holders-vectors.json`](../vectors/LIP-0010/holders-vectors.json)
 holds 28 landlord values of the inline form, 9 valid and 19 refused, and
@@ -1113,77 +1153,147 @@ describe.
 Until two implementations that share no code agree on those octets, the
 length and the hash of section 10.2 are an illustration.
 
-### 11. Heads of statement sets (Draft amendment of 2026-11-16)
+### 11. Heads of statement sets: the single manifest (Draft amendment of 2026-11-20)
 
-Ivan Oparin decided, as recorded by the lead on 2026-11-16, that every
-statement set of an owner has one mechanism: the head of the set lives in the
-owner's name value, and the last head confirmed in the active chain counts;
-the mempool does not. The organization head of the Link book, chapter 9,
-«Организация из подписанных записей», is read the same way. The text is
-written optimistically: the co-author's agreement is pending, and until it is
-given sections 1 and 2 stand and LIP-0016 keeps its anchor.
+Ivan Oparin decided on 2026-11-20 that **one manifest head replaces the
+per-set heads in the name value**. It closes the umbrella-head question
+left open by the decision of 2026-11-16. The co-author's agreement is
+pending. The new Draft text takes precedence over the older Draft
+per-set placement, including LIP-0029 decision 3; section 11.2 explicitly
+preserves the in-force H8 form as legacy, not as a manifest fallback.
+Sources: events `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s` and
+`$EdwfFTmT7uElQhGWzEq0ykBQXA4pDYrolbWK9FaLWyA` of 2026-11-20.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| SH1 | The head of a statement set of an owner is one top-level member of the owner's name value, outside `swarma`: `{"seq":<seq>,"sha256":"<hex>"}`, exactly these two members in this order, compact. `seq` is a canonical positive integer, at most 9007199254740991, and `sha256` is 64 lowercase hex: the SHA-256 of the exact octets of the set's head document. | The set's own code; none for the value |
-| SH2 | The member names are registered here, each with the LIP that defines its head document: `swarma-devices`, whose head document is the device list (LIP-0029 section 3.2), `swarma-certs`, whose head document is the head of LIP-0016 section 2, and `swarma-holders`, whose head document is the holders list of a landlord (section 10.2). A new set is a section of a LIP that registers its member here. `swarma-holders` is in force since version 0.1.53 by rules of its own (section 10.3, H8 to H11), which state for it what SH1, SH3, SH4 and SH6 state; it does not wait for this section. Its rollback rule and its removal mark (section 10.6, H23 and H41) follow SH5 and state its points of time. | |
-| SH3 | A reader takes a head only from the owner's name output that is confirmed in the active chain of its own node, after the last confirmed name operation. A pending name operation gives no head: it neither adds, replaces nor removes one until it confirms. | |
-| SH4 | The head document names the owner's `id/` name and the network, and its `seq` equals the pinned `seq`. A document that names another owner or another network, or whose octets do not hash to `sha256`, gives no verified set. | The set's mismatch code |
-| SH5 | A reader journals, outside the agents' write authority, for each set of each owner: the highest `seq` that it took, the txid of the name operation that carried that head, and every refusal that it took from the set (for `swarma-devices`, a device that a list removed, a spent device seal and a journaled revocation; LIP-0029 section 8). When a reorganisation removes that name operation from the active chain, the reader takes the last head confirmed in the active chain, whatever its `seq`, journals it in place of the removed one, and keeps every journaled refusal: a record that the removed head revoked or removed stays refused, and a record that only the removed head added waits until a head that holds it confirms again. While the operation of the journaled head stays in the active chain, a head with a lower `seq` that a later name operation carries gives no verified set. | The set's rollback code |
-| SH6 | A reader matches a head member by exact name. A duplicate of it, or a member equal to it under Unicode simple case folding that is not that exact name, gives no verified set for that set, and leaves `swarma`, `nostr`, every other set and every grant as they read. | The set's own code |
-| SH7 | A head member gives no grant authority. A Link reader of grants does not read it, and an update that changes only head members changes neither the owner nor `swarma` and ends no v4 grant (LIP-0008 section 3; LIP-0029 O3.7 and O3.8). | |
-| SH8 | The deployment order of LIP-0029 O3.9 and the v3 cost of O3.10 hold for every head member: none is written before every verifier of the name runs a LIP-0010 reader, and every change of a head is a name update. | |
+| SH1 | The sole head in the manifest profile is the top-level member `swarma-manifest`, outside `swarma`, with value `{"seq":<seq>,"sha256":"<hex>"}`, exactly these two members in this order, compact. `seq` is a positive canonical JSON integer, at most 9007199254740991; `sha256` is 64 lowercase hex, SHA-256 of the exact manifest document bytes. No `loc` is allowed. | `MANIFEST_PIN_INVALID` |
+| SH2 | This section registers `swarma-manifest` and document `swarma-manifest/1`. The manifest's `sets` registers `swarma-devices` (LIP-0029 section 3.2), `swarma-holders` (section 10.2), `swarma-certs` (the unsigned head of LIP-0016 section 3.1) and `swarma-card` (LIP-0037 section 1). These are entries of the manifest, not extra name members. A new set requires a LIP registering it here. The manifest also carries the service declaration of LIP-0007 under section 11.1. | `MANIFEST_INVALID` |
+| SH3 | A reader takes a manifest head only from the last name output confirmed in the active chain of its own node. A pending name operation neither adds, replaces nor removes a head. | `LIST_UNKNOWN` when no head exists |
+| SH4 | The manifest's `owner`, `network` and `seq` match the name, reader's pinned chain and head; its exact bytes hash to the pin. Each needed set document then matches that entry's `seq` and `sha256`, and its own name and network fields match that same name and network. The naming field is `owner` for device/holder lists, `issuer_name` for a certificate head, and `name` for a card; the card's `owner` describes its operator. | `MANIFEST_MISMATCH`, then the set's mismatch code |
+| SH5 | A reader journals both the manifest head and each set head, keyed by name and pinned registration, outside agents' write authority. For every later update while the journaled operation remains in the active chain, manifest `seq` MUST strictly increase (`new > old`); each retained set's `seq` MUST NOT decrease (`new >= old`). An untouched set keeps its `seq` and hash when another changes. Equal set `seq` with another hash refuses. Rereading the same manifest head is not an update. A removed set keeps its highest counter and removal marks, and reintroduction requires a higher counter. A lower manifest or set counter refuses; a missing or unwritable journal supplies no rollback proof and fails closed under LIP-0025. | `MANIFEST_ROLLBACK`, then the set's rollback code; `JOURNAL_LOST` or `JOURNAL_FENCED` |
+| SH6 | A reader matches `swarma-manifest` exactly and on its written name, with no escapes. Duplicates, Unicode simple-fold aliases and escaped spellings give no verified manifest or sets. Duplicate, unknown or aliased entries in `sets` are invalid. A defect leaves `swarma`, `nostr` and grants as they read; it never creates a closure. | `MANIFEST_PIN_INVALID` or `MANIFEST_INVALID` |
+| SH7 | A manifest and its sets give no grant authority. **Every key or binding whose change must close grants stays in `swarma`, never in the manifest.** A grant reader does not substitute a manifest entry for a grant key, landlord pointer or other authority pin. Changing only the manifest head changes neither `swarma` nor its owner and ends no v4 grant. **Revocation remains a spend of seals and requires no manifest**: a reader processes and journals a validated spend even when the manifest is missing or unreadable. | No new grant closure |
+| SH8 | Exact-value v3/LIP-0004 readers refuse `swarma-manifest`. A production name MUST NOT be rewritten until **every verifier of that name** has a reader supporting this profile. This is an implementation/deployment gate, not evidence of installed adoption. Every manifest update is a name update signed by the name-owner key; it does not need a detached manifest signature. | The older reader's existing refusal |
 
-| Case | Valid control | Refusal or invariant |
+The reorganisation branch of SH5 is kept: when the journaled name operation
+leaves the active chain, take the last head confirmed in the active chain,
+whatever its counters, journal that head in place of the removed one, and
+keep every removal and revocation already journaled. A record added only
+by the removed operation waits for a head containing it to confirm again.
+This branch does not permit a later operation on an unchanged active chain
+to decrease either counter. Equal head and equal hash are a reread, not a
+new take; a changed manifest with equal `seq` in a later update refuses.
+A renewal or unrelated name edit retaining the identical manifest head is
+a reread, not a manifest update; it need not invent another document.
+
+In the manifest profile **no manifest means no set**. A reader refuses by
+name (`LIST_UNKNOWN`) and asks the presenter to resend; it never silently
+fetches as a substitute for that refusal. In a verified manifest, an absent
+set entry means the owner publishes no such set. A present entry with no
+matching bytes is unavailable, not absent; it records no removal. A valid
+new manifest which omits a formerly present set records that removal under
+the set's own rules. A set's signature or cached bytes cannot recreate a
+missing pin. An invalid manifest leaves all its sets unverified, without
+closing grants.
+
+#### 11.1. Manifest bytes and the service declaration
+
+The manifest is one compact UTF-8 JSON object, at most **16384 bytes**,
+without a BOM or trailing bytes. It uses the fixed-member-order encoding
+of LIP-0013 section 2.1, **not** RFC 8785 key sorting: strings are printable
+ASCII with only `\"` and `\\` escapes. Integers are exact unsigned decimal
+JSON numbers, without signs, leading zeros, fractions or exponents, at most
+9007199254740991. A reader re-encodes and requires identical bytes. Unknown,
+duplicate, reordered, null or escaped member names refuse.
+
+| Order | Member | Rule |
 | --- | --- | --- |
-| S11-H1 | Alisa's confirmed value carries `swarma-devices` with `seq` 4, and Bob's executor reads list 4. List 5 adds device `K` and drops device `M`; after it confirmed, a reorganisation removes its update, and Bob's executor reads list 4 again (SH5) | A pending update to `seq` 5: `K` is unknown until the update confirms (SH3). After the reorganisation: `K` is unknown until a head that names it confirms again, and `M`, which list 5 dropped, stays refused (`DEVICE_REVOKED`). A later name update that writes `seq` 3 while the update of `seq` 5 stays in the active chain: no verified list, `DEVICE_LIST_ROLLBACK`. |
-| S11-H2 | The same value with `swarma-certs`: Bob's store reader verifies Alisa's set | A value with `swarma-devices` twice: no device list, and Alisa's v4 grants and her certificate set still read (SH6). A list whose `owner` is Karl's name, pinned in Alisa's value: no verified list (SH4). |
+| 1 | `schema` | Exact string `swarma-manifest/1` |
+| 2 | `network` | `main` or `regtest`, matching the pinned chain |
+| 3 | `owner` | The exact `id/` name which pins this manifest, at most 255 ASCII bytes |
+| 4 | `seq` | Positive integer, equal to the name head |
+| 5 | `sets` | Object of zero to four optional entries, in this order when present: `swarma-devices`, `swarma-holders`, `swarma-certs`, `swarma-card` |
+| 6 | `service` | Optional service declaration below; absence advertises no service |
 
-A set without a verified head is no set: each LIP says what its readers then
-do. Under LIP-0029 an own executor refuses owner commands
-(`DEVICE_PIN_INVALID`, `DEVICE_LIST_MISMATCH`, `DEVICE_LIST_ROLLBACK`), and
-under LIP-0016 a store reader treats every subject of the issuer as unbound.
+Each entry of `sets` has exactly `seq` and `sha256`, in that order and in
+the forms of SH1. No list, key, signature, policy, URL or `loc` occurs in
+an entry. The manifest authenticates its set pins; a set's bytes still
+have to pass that set's own checks. Absence is permitted, for example a
+service with only a card need not publish a device list or holders list.
 
-What the rules give and what they cost:
+The optional `service` is the LIP-0007 declaration, with exactly `type`,
+`actions`, `receipt_key`, `endpoint`, in that order. `type` is a nonempty
+ASCII service-type string of at most 128 bytes. `actions` is an array of
+at most 256 distinct nonempty ASCII action strings, each at most 128 bytes,
+in increasing byte order. Only actions of the declared type's supported
+profile can be used; the wallet-v1 strings remain wallet-v1 strings, and
+this declaration invents no v4 leaf. `receipt_key` is a valid BIP-340 x-only
+key in 64 lowercase hex. `endpoint` is a nonempty ASCII absolute address
+of at most 1024 bytes, interpreted only by a supported transport profile.
+All of these bytes count toward the manifest's 16384-byte limit.
 
-- **One reading for every set.** A reader of devices and a reader of
-  certificates see the same head at the same height, and neither depends on
-  a host that serves the files: a dropped record or an old set does not hash
-  to the head (LIP-0016 section 5).
-- **A pending head counts for nothing.** A new head counts only from its
-  confirmation, and the record that it adds or revokes takes effect then and
-  not before. Between broadcast and confirmation readers keep the previous
-  head. A stop that must act from the mempool is a seal spend and not a head
-  (LIP-0029 section 8; LIP-0008 sections 5.1 to 5.3).
-- **After a reorganisation the last confirmed head counts again.** This is
-  the reading of the Link book, §9.4 «Спорные случаи» (line 35 at
-  swarma-docs 34abef2): the state is recomputed, new records wait to be
-  anchored again, and remembered refusals are not forgotten. SH5 states it
-  for every set. The txid in the journal is the draft's way for a reader to
-  tell a reorganisation from a lower `seq` that the owner writes later; only
-  the second refuses. This narrows the version pin of LIP-0029 O9.2, which
-  refused every lower `seq`, and it is put to the owners with the rest of
-  this section.
-- **The name-owner key signs every change of a set.** It is the cold key, and
-  each change is a name update with its fee and, on v3, its outage (SH8).
-- **The name value fills.** With the sizes of section 8 and `seq` below 10,
-  `swarma-devices` adds 103 bytes and `swarma-certs` 101:
+This settles the containing path, field spellings, order and single-service
+multiplicity that LIP-0007 section 3 left open. Receipt/signature profiles
+for non-BIP-340 services, multi-service names, exact non-wallet action
+schemas and endpoint-access profiles stay open; unsupported profiles are
+not usable declarations. The declaration is discovery only. Its receipt
+key is not a replacement for any issuer, recipient or executor authority
+pin, and changing it cannot make old receipts, grants or reservations valid.
 
-| Value | Bytes without | With both heads | Left of 520 |
-| --- | ---: | ---: | ---: |
-| Landlord, no `nostr` | 100 | 304 | 216 |
-| Landlord, key string | 175 | 379 | 141 |
-| Landlord, NIP-05 object | 191 | 395 | 125 |
-| Landlord, NIP-05 object and one relay | 294 | 498 | 22 |
+Retrieval follows LIP-0033: presentation inline first; when there is no
+presenter, the optional NIP-05-domain well-known path, then kind 30079 with
+`["d","swarma-manifest"]` from the name's Nostr key. The domain is not
+invented from the label: LIP-0033 section 1 states the missing-domain case.
+An anonymous `id/` name or a pure service with neither a NIP-05 domain nor
+a Nostr key works fully when manifest bytes and needed set bytes travel
+inline. These secondary paths are optional and never required.
 
-Every row with `nostr` leaves less than the 150 bytes that section 8 keeps for
-the service declaration of LIP-0007. One member whose head document lists
-the heads of every set would cost about 103 bytes for any number of sets, and
-the name would then pin the device list through that document and not
-directly, against LIP-0029 decision 3. Both forms are open. The table counts
-two heads. `swarma-holders` (section 10.3) is a third and adds 103 bytes
-more: a landlord value with a NIP-05 object and no relay then takes 498
-bytes, and one with a relay does not fit.
+A manifest reader's deterministic order is: (1) name pin grammar and
+mixed-form check, `MANIFEST_PIN_INVALID`; (2) required bytes present,
+`LIST_UNKNOWN`; (3) size then canonical grammar, `MANIFEST_INVALID`;
+(4) hash, owner, network and head counter, `MANIFEST_MISMATCH`;
+(5) manifest update journal, `MANIFEST_ROLLBACK`; (6) required set presence,
+`LIST_UNKNOWN`, then that set's existing grammar, mismatch and rollback
+order. A decrease of a set counter uses that set's rollback code. A failure
+records no closure; a failed journal write admits nothing.
+
+#### 11.2. Transition from the per-set heads
+
+The H8 two-member `swarma-holders` form, in force since 0.1.53, remains
+**readable as the legacy form**. The analogous Draft direct device and
+certificate heads remain legacy descriptions. They are not fallback
+sources in the manifest profile. A deployment explicitly selects its
+reader profile and upgrades all consumers before publishing a manifest
+(SH8); absence of the new member never silently selects a weaker profile.
+The date for retiring legacy compatibility altogether is still open.
+
+A manifest-profile reader accepts no direct per-set head from a name. A
+name carrying a manifest and a direct `swarma-devices`, `swarma-holders`,
+`swarma-certs` or `swarma-card` member is refused as a source of sets with
+`MANIFEST_PIN_INVALID`, even if both pins are equal. In particular it MUST
+NOT accept both forms for one set. Inline `landlord.holders` together with
+a manifest likewise gives no holders (M2). A migration writes the manifest head
+and removes the direct heads in **one** name update. A reader carries its
+existing per-set counters, removal marks and seal closures into the manifest
+journal; changing the placement resets none of them. Once it took the
+manifest form it journals that form and refuses a downgrade to direct
+heads or an absent manifest. This is no new grant closure.
+
+| Case | Valid control | Forbidden outcome |
+| --- | --- | --- |
+| Manifest update | Manifest 8 changes devices 4 to 5, keeps holders 7 with identical hash | Manifest 8 to 8 on another update, holders 7 to 6, or holders 7 with another hash refuses |
+| Reread | Manifest 8 and the identical bytes are checked twice | The second read is not a new update or a rollback |
+| No secondary path | A name with no domain and no Nostr supplies manifest and card inline | Demanding HTTPS or Nostr, or silently fetching missing bytes, is forbidden |
+| Migration | A legacy holders pin becomes the same set entry of manifest 1 in one confirmed update | Both forms together refuse; dropping the old holder journal must not restore an entry |
+| Revocation | A validated seal spend is observed while the manifest cannot be read | The spend is still journaled; manifest availability cannot postpone closure |
+
+The manifest adds **104 bytes** at a one-digit `seq`, **119** at the largest
+`seq`. A landlord with a NIP-05 object and one relay takes 398 bytes (413 at
+the largest counter), below 520. The four set heads and the service
+declaration are off chain; the old 150-byte in-name service reserve is
+released. Section 8 gives the complete budget table. Every head update is
+still a cold-key name operation. Fast revocation is the spend of a seal,
+not a manifest rewrite.
 
 ## Alternatives
 
@@ -1348,8 +1458,9 @@ controls; each rejected case leaves no binding and no closure:
 - A third `nostr` shape, an object with `pubkey` and a relay array, appears in
   one client's notes for `id/` names and is absent from the draft NIP-N0. It
   yields no key here. It is added if the draft adopts it.
-- How the LIP-0007 service declaration shares the 520 bytes with `nostr` and
-  owner members.
+- Co-author agreement on the manifest and service-container amendment of
+  2026-11-20. The 520-byte placement question is closed by section 11: only
+  the manifest head is on chain, and the former 150-byte reserve is freed.
 - An additional naming convention with a single level of registration; the
   authors' own parsers would then handle only that level (the note that
   closes section 7). No prefix, grammar or migration is defined.
@@ -1425,9 +1536,8 @@ controls; each rejected case leaves no binding and no closure:
   landlord's own v4 grants (H15); the first-contact cost of a list at its
   bounds, measured; a vector set for a landlord's tool; and the 520 bytes
   of a landlord value with three heads (section 10.3).
-- **Heads of statement sets (section 11).** One member for each set, as
-  written, or one member over every set, which fits the budget and pins the
-  device list only indirectly; the confirmation depth at which a reader takes
+- **Heads of statement sets (section 11).** The single manifest is decided by Ivan Oparin on 2026-11-20;
+  the co-author's agreement, the date for retiring legacy per-set readers, and the confirmation depth at which a reader takes
   a new head; how a reader learns that an owner has no head of a set, as
   opposed to a head it cannot read; and the co-author's agreement.
 

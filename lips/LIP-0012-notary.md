@@ -62,6 +62,18 @@ its withdrawal. Everything else in this LIP and in LIP-0014 is a draft's
 proposal and is not decided: every field and byte of the attestation, the
 admission steps and their codes, and the form of the signed requirement.
 
+## Credential separation (Draft amendment of 2026-11-20)
+
+Ivan Oparin decided on 2026-11-20 that `subject-claim` and `agent-audit`
+are kinds of `swarma-credential/1`, signed by a separate credential issuer
+key in its own name, not by the notary key. The co-author's agreement is
+pending. [LIP-0032](LIP-0032-generalized-notary-and-credentials.md) keeps only
+`child-within-parent` and `contract-notarization` in typed notary
+attestation `/2`. The former keeps v1 semantics; its exact successor mapping
+remains open. Contract notarization attests a checked agreement and gives
+no grant authority. N10 means a notary issues no grant; issuing a credential
+requires the separate role and name, not an expanded notary-key privilege.
+
 ## Motivation
 
 LIP-0008 section 12.6 makes child grants part of the protocol and requires

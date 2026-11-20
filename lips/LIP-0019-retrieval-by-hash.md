@@ -70,6 +70,10 @@ decides what the object means.
 
 The loader takes endpoints from these sources, in this order:
 
+0. Inline bytes with the request or bundle, checked against the expected
+   hash and all object-profile checks before any network retrieval. Ivan
+   Oparin decided on 2026-11-20 to state this as a clarification of presenter
+   delivery, not a new trust source; co-author agreement is pending.
 1. Its own configuration: the stores that its operator chose.
 2. A hint that travels with the request or the bundle. A hint is unsigned.
    It may point the loader to a store and gives that store no trust.
@@ -82,9 +86,10 @@ define that policy, and a loader without one uses its configured stores
 alone. The price of that default is availability: an object that only a
 hinted store holds then counts as not presented.
 
-A third source is possible later and is not defined: a member of the
-issuer's name value outside `swarma`, which a LIP-0010 reader ignores. The
-landlord and agent values of Grant v3 are closed and cannot carry it.
+LIP-0033 specifies optional secondary distribution for pinned documents,
+including manifest lookup, under its SSRF boundary. It introduces no `loc`
+in the name or manifest. The landlord and agent values of Grant v3 remain
+closed: compatible-reader rollout precedes a manifest write.
 
 An endpoint is trusted for availability and for nothing else, like a
 provider of LIP-0016. The loader sends it no credential and no grant data.

@@ -188,7 +188,8 @@ Where each key is published follows from that:
 | Agent's Nostr key | `swarma.agent.nostr` and `nostr.names._`, which must be equal | `nostr` only | The agent's address; a grantee key only where a grant names it |
 | Any further key or pointer of the owner | Nowhere: it refuses the whole value | A member outside `swarma`, which a Link reader ignores | None |
 | Authority key of a person (K6) | Not in a name. Each grant to the person names it as `grantee_key` | The same; on v4 it is the request key of a recipient by key | A grantee key: it uses the authority of the grants that name it |
-| Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only |
+| Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only, including LIP-0032 typed notarization; never credentials |
+| Credential issuer key | Unsupported shape | Separate issuer name, `swarma.issuer.cred` (LIP-0010 section 9.1, Draft) | Signs third-party credentials only; historical validity and owner-authenticated compromise height follow LIP-0032 |
 
 **What a name change does to existing grants.** Grant v3 binds no owner key.
 The owner-key binding is a rule of the v4 draft (LIP-0008 section 3).
@@ -415,3 +416,26 @@ before a parent names that notary.
 The alternative derives agent keys from the operator's seed and exports them
 to the gateway. It allows a restore of an agent key from the seed and needs
 an export interface; a lost agent key can instead be replaced by an update.
+
+## Draft extension map, 2026-11-20
+
+Ivan Oparin decided on 2026-11-20 to separate credential issuance from
+notary attestation, replace per-set name heads with one manifest, and permit
+the scoped contract-free root EFFECT case. Co-author agreement on these
+Draft amendments is pending. The following six Draft proposals do not claim
+reader implementation, adoption or deployment:
+
+| LIP | Identity/key boundary |
+| --- | --- |
+| [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md) | Separate credential issuer key; eternal anchor history and compromise `h_c`; notary `/2` has only two kinds |
+| [LIP-0033](lips/LIP-0033-reference-distribution-for-pinned-lists.md) | Non-exclusive inline/HTTPS/Nostr delivery; kind 30079 and event-ID location `0x05`; no `loc` name member |
+| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Device proves login identity only; cold name-owner key never logs in; provisional key-only cells are not names |
+| [LIP-0035](lips/LIP-0035-unilateral-mandates.md) | Grant key issues targeted root EFFECT permission without a contract only in the no-`delegate`, non-hire/non-rental case |
+| [LIP-0036](lips/LIP-0036-federated-trust-and-progressive-disclosure.md) | Federation policy narrows admission; human L2 request is not a device-signed grant |
+| [LIP-0037](lips/LIP-0037-entity-card.md) | Unsigned metadata authenticated by name → manifest → card SHA-256 pins; no v1 card signing key |
+
+All set heads and the LIP-0007 service declaration live in the pinned
+manifest, outside `swarma`. Keys whose change must close grants remain in
+`swarma`. The manifest does not replace seal-spend revocation or confer
+new device/grant authority. Exact-value v3 readers require the explicit
+per-verifier implementation rollout before a production manifest write.

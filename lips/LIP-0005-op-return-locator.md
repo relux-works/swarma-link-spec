@@ -45,7 +45,10 @@ Readers refuse every other encoding: OP_PUSHDATA1/2/4, a split id, OP_1..OP_16 f
 | `0x06` | certificate set head, proposed in [LIP-0016](LIP-0016-certificate-store.md); the reference parser does not accept it | `version(1)` \|\| `head_commitment(32)` \|\| `locator` |
 | `0x07` | contract anchor, proposed in [LIP-0017](LIP-0017-contracts.md); the reference parser does not accept it | `version(1)` \|\| `contract_commitment(32)` \|\| `locator` |
 | `0x08` | contract termination, proposed in LIP-0017; the reference parser does not accept it | `version(1)` \|\| `contract_end_commitment(32)` \|\| `locator` |
-| `0x09`-`0x7f` | reserved for Swarma Link | — |
+| `0x09` | credential anchor, Draft LIP-0032 | `version(1)` \|\| `credential_digest(32)` \|\| `locator` |
+| `0x0a` | credential withdrawal for cause, Draft LIP-0032; not notary action `0x05` | `version(1)` \|\| `withdrawal_digest(32)` \|\| `locator` |
+| `0x0b` | credential issuer compromise break, Draft LIP-0032 | `version(1)` \|\| `break_digest(32)` \|\| `h_c_le64(8)` \|\| `locator` (only `0x00`) |
+| `0x0c`-`0x7f` | reserved for Swarma Link | — |
 | `0x80`-`0xff` | experimental / private use | — |
 
 `commitment` for `0x01` is the issuance commitment defined by LIP-0004 (landlord grants):
@@ -65,7 +68,8 @@ locator = location_type(1) || pointer
 | `0x02` | BitTorrent v2 (BEP 52) | info-hash (SHA-256 of the info dictionary) | 32 |
 | `0x03` | BitTorrent v1 (BEP 3) | info-hash (SHA-1) | 20 |
 | `0x04` | Swarma separate BitTorrent network (same BEPs, own DHT; see grant-store note) | v2 info-hash | 32 |
-| `0x05`-`0x7f` | reserved for further networks | defined by a later LIP | — |
+| `0x05` | Nostr event, Draft [LIP-0033](LIP-0033-reference-distribution-for-pinned-lists.md) | Binary 32-byte NIP-01 event ID, fetched by `ids`, not an author key or text hex; validate event signature, kind 30079, `d` tag and content under that LIP | 32 |
+| `0x06`-`0x7f` | reserved for further networks | defined by a later LIP | — |
 | `0x80`-`0xff` | experimental / private use | — | — |
 
 The location type describes the retrieval mechanism, not a server or tracker.
@@ -79,20 +83,29 @@ endpoint or trigger a fetch. No new name field is implied by this format.
 Reserved and experimental ranges are allocations for future profiles, not
 currently accepted values. The reference parser accepts only the two defined
 actions, `0x01` and `0x02`, and the five defined location types, with their
-exact pointer lengths. Actions `0x03` to `0x08` are proposals of Draft LIPs.
+exact pointer lengths. Actions `0x03` to `0x0b` and location `0x05` are proposals of Draft LIPs,
+not additions to the current reference parser's accepted set.
 [LIP-0020](LIP-0020-grant-v4-wire-registry.md) proposes payload version
 `0x02` of action `0x01` for the issuance of a v4 grant; the reference parser
-does not accept it.
+does not accept it. Draft LIP-0035 additionally assigns action `0x01`
+payload `0x03` to contract-free issuance preparation `/2`. LIP-0032 assigns
+action `0x04` payload `0x02` to typed notary attestation `/2` where its kind
+schema is specified. These assignments do not relax any existing profile's
+narrower location/version acceptance.
+
+Ivan Oparin decided on 2026-11-20 to keep credential anchoring and cause
+withdrawal distinct from notary actions and to allocate Nostr location
+`0x05`; co-author agreement on these Draft amendments is pending.
 
 ### Sizes
 
 | Locator | Payload | Script |
 | --- | --- | --- |
 | type `0x00` (none) | 1 + 32 + 1 = 34 | 1 + 4 + 1 + 34 = 40 |
-| 32-byte pointer (`0x01`, `0x02`, `0x04`) | 1 + 32 + 1 + 32 = 66 | 1 + 4 + 1 + 66 = **72** |
+| 32-byte pointer (`0x01`, `0x02`, `0x04`; Draft `0x05`) | 1 + 32 + 1 + 32 = 66 | 1 + 4 + 1 + 66 = **72** |
 | 20-byte pointer (`0x03`) | 1 + 32 + 1 + 20 = 54 | 60 |
 
-The payload is always a single direct push of at most 75 bytes; every defined combination fits within 83.
+The payload is always a single direct push of at most 75 bytes; every defined combination fits within 83. Draft action `0x0b` alone adds the eight-byte little-endian compromise height before its zero location byte; its payload is 42 bytes and its full script is 48 bytes. LIP-0032 specifies reconstruction and digest checks. This does not change the ordinary action layouts or the current reference parser.
 
 ## 3. Reading rules
 
