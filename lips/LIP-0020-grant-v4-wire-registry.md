@@ -1774,10 +1774,10 @@ registry of limit kinds lists the texts that a type profile defines as the
 `kind` of a limit, with its units, its periods and its arithmetic (LIP-0008
 section 2; LIP-0018 section 2).
 
-| Registry | Entries as they stand in version 0.1.58 |
+| Registry | Entries as they stand in version 0.1.67 |
 | --- | --- |
-| Action identifiers | None. No text of this specification names a v4 action identifier: the names of LIP-0014 D12 are actions of the v3 contract profile, and the actions of the vectors of section 12 are placeholders |
-| Limit kinds | None is defined. One text is reserved and undefined: `policy` (LIP-0008 section 12.4). The kinds that LIP-0008 section 2 lists are named by their meaning and have no identifier yet. The first three entries stand proposed by version 0.1.58, [LIP-0031](LIP-0031-limit-kinds-1.md): `swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`. Each is a proposal of that LIP with the state of its header; a side that adopts no profile of it has no profile for the kind and judges it under rule 2 as before |
+| Action identifiers | PROPOSED in [LIP-0030 section 3](LIP-0030-action-profile-agent-session.md#3-the-actions-and-the-limit-kinds): `swarma/station/agent/start`, `swarma/station/agent/restart`, `swarma/station/agent/renew` and `swarma/station/agent/stop`. Its `swarma/station/agent/halt` is an owner command, not a grant action. PROPOSED in [LIP-0038 section 7](LIP-0038-action-profiles.md#7-the-proposed-registry-rows): `swarma/post-message`, `swarma/spend-coins`, `swarma/name-update` and `swarma/model-call`. Each keeps the state of its defining profile; a side running none still refuses under rule 1. The v3 names of LIP-0014 D12 and the placeholder actions of section 12 define none of these leaves |
+| Limit kinds | PROPOSED since version 0.1.58 in [LIP-0031](LIP-0031-limit-kinds-1.md): `swarma/coins`, `swarma/model-cost` and `swarma/model-tokens`, reused without a second definition by LIP-0038 section 6. Its P6.1 records the owner-decided settlement choice, not adoption of the other rules. PROPOSED separately in LIP-0030 section 3: `swarma/station/agent/starts`, `swarma/station/agent/level` and `swarma/station/agent/span`; those accounts/checks are not the shared kinds of LIP-0031. A side running no profile of a kind still refuses under rule 2. One text stays reserved and undefined: `policy` (LIP-0008 section 12.4) |
 
 | # | Rule | Refusal |
 | --- | --- | --- |
@@ -1795,18 +1795,15 @@ signing service and at a verifier alike; an executor judges the kinds that
 a request consumes and that neither states in step E2. A root grant has no
 step table in this version, and rule 2 reaches it at a request alone. The
 refusals record no closure, and the grant stays a well-formed grant. Both
-codes are new. Two facts follow for whoever plans on Grant v4, and both
-hold until a profile exists. No action is defined: an executor that
-conforms to this specification refuses as `ACTION_UNDEFINED` every request
-that reaches rule 1, and a v4 grant has no effect at an executor. No limit
-kind is defined: a child that states a limit, and a child of a row whose
-template states one, refuses as `LIMIT_KIND_UNDEFINED` at every side, and
-only a pair without limits passes row F17. Since version 0.1.58 the three
-kinds of the registry above have a proposed profile, LIP-0031: at a side
-that runs it, a limit of one of those kinds is judged under that profile
-in row F17 and in row E2, and rule 2 refuses the kinds that still have no
-profile there; at a side that runs none, the sentence before stands
-whole. A kind whose amount is a floor
+codes were introduced by this registry. Two conditional facts remain:
+at a side that runs no profile of the requested action, rule 1 refuses
+as `ACTION_UNDEFINED`; at a side that runs no profile of a limit kind,
+rule 2 refuses the affected child admission or request as
+`LIMIT_KIND_UNDEFINED`. The proposed profiles above change neither
+fallback. A side that runs a shared-kind profile judges it under
+LIP-0031 in row F17 and row E2; LIP-0038 consumes that same profile,
+not a replacement. LIP-0030's independent station kinds keep their
+own account/check distinctions. A kind whose amount is a floor
 takes the same members as a ceiling (W11.4); how a floor is compared is for
 its profile, and until that profile exists rule 2 refuses.
 

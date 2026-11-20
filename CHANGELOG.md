@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.67 — 2026-11-20
+
+Net change over 0.1.66: re-file the earlier action-profiles draft as
+LIP-0038, leaving LIP-0032 for credentials. No implementation, adoption,
+wire members, vector changes or production migration is claimed.
+
+- Add the four PROPOSED leaves `swarma/post-message`,
+  `swarma/spend-coins`, `swarma/name-update` and `swarma/model-call`,
+  preserving their original scope and reservation-before-effect checks.
+- Record the owner's option A settlement decision of 2026-11-20, event
+  `$VY_Ow-Yi4YWA695VYxcLlg0EdizZ6p8UzPkpr37ZyGU`: actual consumption
+  is charged and the difference released, by one shared rule referring
+  to LIP-0031 L9. Add a reserve-10/actual-4 control and one-defect case
+  for each shared kind, plus the unknown-outcome retention countercase.
+- Reference LIP-0031's existing resource/unit/period forms, exact
+  accounting and refusal order instead of proposing incompatible kind
+  definitions. Index LIP-0030's distinct grant leaves and station kinds
+  alongside LIP-0038 in LIP-0020 W11.14; halt remains an owner command.
+- Reconcile LIP-0035's scoped unilateral roots, lowercase slash actions
+  and W11.4 limit arrays; LIP-0034's auth-key separation; and LIP-0010
+  section 11's manifest service declaration, which supplies discovery,
+  not authority. Preserve all other Draft/PROPOSED status and open points.
+- Update the README version/LIP list and UNRESOLVED_QUESTIONS; unchanged
+  trust and grant checks still do not qualify these new action profiles.
+
 ## 0.1.66 — 2026-11-20
 
 Net change over 0.1.65: six new Draft proposals, LIP-0032 to LIP-0037,

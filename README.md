@@ -1,6 +1,6 @@
 # Swarma Link: Human-to-Agent Mandates in an Untrusted Environment
 
-**Version:** 0.1.66
+**Version:** 0.1.67
 
 **Date:** 2026-11-20
 
@@ -64,6 +64,26 @@ closure and require their own adoption and conformance evidence.
 v0.1 precheck wording: route readiness alone creates no closure, but every
 spent, unknown or failed seal-state read, including in a precheck, follows
 Observation §4 and refuses/closes. Historical protocol files remain unchanged.
+
+## Action-profile draft in v0.1.67
+
+Version 0.1.67 re-files the earlier action-profiles draft as LIP-0038;
+LIP-0032 remains the credentials LIP. It adds no implementation or wire
+members and changes no committed vector.
+
+| LIP | Net change over 0.1.66 |
+| --- | --- |
+| [LIP-0038](lips/LIP-0038-action-profiles.md) | Four PROPOSED effect leaves: `swarma/post-message`, `swarma/spend-coins`, `swarma/name-update` and `swarma/model-call`; the shared kinds retain LIP-0031's resource/unit/period forms and accounting. The owner decided option A for settlement: charge actual and release the difference, by reference to L9. Each kind has a reserve-10/actual-4 control and one-defect case. Action checks, two new refusal codes, risk class, custody and wire forms remain proposals or open |
+
+[LIP-0020 W11.14](lips/LIP-0020-grant-v4-wire-registry.md#11-the-members-of-swarma-grant4)
+now indexes these proposed leaves beside LIP-0030's grant leaves and
+independent station kinds, without redefining the shared kinds or
+adopting a profile at every side. LIP-0038 preserves reservation before
+effect and reconciles LIP-0035's lowercase slash actions and W11.4 limit
+arrays, LIP-0034's separate auth-key role and LIP-0010's manifest service
+declaration. [Its open questions](lips/LIP-0038-action-profiles.md#open-questions)
+remain recorded in [UNRESOLVED_QUESTIONS.md](UNRESOLVED_QUESTIONS.md).
+The following version descriptions remain historical.
 
 ## Draft profiles and design decisions in v0.1.66
 

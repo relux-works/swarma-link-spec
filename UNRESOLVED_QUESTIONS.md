@@ -61,6 +61,36 @@ entries in that binding record.
 
 ## New design drafts
 
+The action-profiles draft is re-filed as
+[LIP-0038](lips/LIP-0038-action-profiles.md), not the credentials LIP-0032.
+Only its reserve-settlement choice is decided: option A, actual charge
+and release of the remainder, by LIP-0031 L9 (owner event
+`$VY_Ow-Yi4YWA695VYxcLlg0EdizZ6p8UzPkpr37ZyGU`, 2026-11-20).
+The remaining points below keep their Draft/PROPOSED state:
+
+- Invocation and receipt members, request identity/journal key, exact
+  argument and receipt forms, and executable vectors/checker.
+- Identifiers/profiles for outbound-message counts, name-operation counts,
+  model-request counts, maximum answer length and confirmation-depth
+  floors; the first two still block their effects. LIP-0031 L21 already
+  supplies a per-request input/output ceiling for the shared tokens kind.
+- Permitted-target constraints and message destination forms, deployment
+  model/accounting names, and contract mirrors of periods and their
+  recovery accounts. LIP-0031's defined resource/unit/period forms are
+  not reopened, nor may ad hoc target suffixes extend them.
+- Price-table authority/binding, changes and cost disputes, including
+  unsigned session requests and charges outside the reservation;
+  accounting when the upstream counts tokens differently.
+- `post-message` service type, transport key/holder and repeat-response
+  form; `name-update` name-owner-key custody, registration as a separate
+  future scope, coin charging of fees and pending-operation reads.
+- Each leaf's proposed risk class, per-asset/per-value confirmation
+  depths and cross-chain observations; refusal codes for text-bearing
+  effect grants and invocation checks E0.
+- Acceptance of the four leaves, `ACTION_TARGET` and `ACTION_ARGUMENTS`
+  and their deterministic placement. The shared kinds come from
+  LIP-0031; the settlement decision adopts none of their other rules.
+
 | Question | Location and boundary |
 | --- | --- |
 | Replaceable service profiles and cut-over | [LIP-0009](lips/LIP-0009-replaceable-services.md#open-questions); five RS1 directions are accepted, while type/version negotiation, export/receipt bytes, fencing, allocation lineage and uncertain-outcome reconciliation need profiles and qualification. Replacement grants come first; rebind is deferred. No M5/first-demo gate. |
