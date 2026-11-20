@@ -71,9 +71,9 @@ decides what the object means.
 The loader takes endpoints from these sources, in this order:
 
 0. Inline bytes with the request or bundle, checked against the expected
-   hash and all object-profile checks before any network retrieval. Ivan
-   Oparin decided on 2026-11-20 to state this as a clarification of presenter
-   delivery, not a new trust source; co-author agreement is pending.
+   hash and all object-profile checks before any network retrieval. This
+   Draft proposes step 0 as a clarification of presenter delivery, not a
+   new trust source; co-author agreement is pending.
 1. Its own configuration: the stores that its operator chose.
 2. A hint that travels with the request or the bundle. A hint is unsigned.
    It may point the loader to a store and gives that store no trust.

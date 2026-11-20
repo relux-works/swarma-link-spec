@@ -4,183 +4,194 @@
 - **Status:** Draft
 - **Author:** Ivan Oparin
 - **Created:** 2026-11-20
-- **Requires:** [LIP-0010](LIP-0010-name-value.md), [LIP-0029](LIP-0029-owner-control.md), [LIP-0033](LIP-0033-reference-distribution-for-pinned-lists.md)
+- **Requires:** [LIP-0010](LIP-0010-name-value.md), [LIP-0020](LIP-0020-grant-v4-wire-registry.md), [LIP-0024](LIP-0024-seal-endorsement.md), [LIP-0029](LIP-0029-owner-control.md), [LIP-0033](LIP-0033-reference-distribution-for-pinned-lists.md)
 - **Related:** [Names](../protocol/names.md), [LIP-0009](LIP-0009-replaceable-services.md), [LIP-0035](LIP-0035-unilateral-mandates.md)
 - **Follows:** [LIP-0001](LIP-0001-link-improvement-proposals.md), [LIP-0018](LIP-0018-extension-guide.md)
 
-## Summary and decision
+## Summary and editorial resolution
 
-An existing owner can authenticate to a replaceable service using an authorized
-device, not the cold name-owner key. A new user can start with a restricted
-key-only account and promote it after client-owned name registration.
+A dedicated **auth key**, not a device, grant or cold name-owner key,
+authenticates an owner to a foreign replaceable service. A new user starts
+with a restricted key-only account and promotes it after client-owned
+name registration. Authentication gives no EFFECT or disclosure authority.
 
-Ivan Oparin decided on 2026-11-20 that challenge-response uses
-`swarm-envelope/2` with body kind `auth-response/1`, not a separate
-`swarma-auth-challenge/1` signed format. Device-level and third-party rules
-remain those of LIP-0029 and the scoped LIP-0035 exception. The co-author's
-agreement on the corresponding older Draft amendments is pending.
+The Swarma Link editor's resolution adopts the owner's v0.3 draft,
+2026-11-20: BIP-340 auth objects replace the earlier proposed device-signed
+envelope response. It preserves the binding card decision's premise:
+"LIP-0029 O3.7/O4.6 stay intact (device keys never face foreign verifiers)"
+(`$LGvz_xrefHjg61tvoQgu5D4Dew_A_vZlfo09ay__PbQ`). This is an editorial
+resolution, not a new owner decision. The co-author's agreement is pending.
 
-MUST, MUST NOT, SHOULD and MAY are normative. Authentication establishes
-identity only: it is not a grant, owner command, consent event or authorization
-to disclose data or execute an EFFECT.
+MUST, MUST NOT, SHOULD and MAY are normative. No implementation or installed
+reader support is claimed.
 
-## 1. Named authentication
+## 1. Keys and manifest binding
 
-A1. The service MUST issue a cryptographically random 16-byte, base64url
-unpadded, single-use nonce and a short expiry, bound in its own challenge
-journal to the service's exact `aud`, the requested name and the current
-registration outpoint and compressed owner key. The lifetime MUST NOT exceed
-120 seconds. Reusing another service's nonce or audience refuses.
+A1. The auth key is secp256k1 BIP-340, in its own hardened account and
+separate custody. Its Draft path is `m/84'/7'/12'/0/0`; see KEY-MAP's
+v0.3 reconciliation for existing-path exceptions. A P-256 or BIP-340 device
+key stays internal to the owner's control plane and MUST NOT sign external
+service challenges or grants. The cold name-owner key signs name operations
+only, never a login. The grant key signs grants, never a login.
 
-A2. The response uses the existing envelope container, CCJ-1 canonicalization,
-author-signature algorithm and digest, `id` calculation, and replay rules of
-LIP-0029 sections 4–5. The body-kind signing and ID tag is exactly `swarma-link auth-response/1`, followed
-by the existing `0x0a` separator; its author role is the envelope's existing
-author role. The typed body has `type: "auth-response/1"`, `aud`,
-`nonce`, `iat`, `exp`, `name`, `registration`, `owner`, and, for named login,
-`devices` and optional `device_list` in the existing section 5.1 forms. `nonce` echoes
-the challenge. `iat` and `exp` are UTC `YYYY-MM-DDTHH:MM:SSZ` strings, **not**
-Unix numbers. `registration` is `txid:vout`, not just a transaction ID.
-The service checks the signed name/registration/owner against its challenge.
+A2. Named authentication requires the current confirmed LIP-0010 manifest's
+paired `auth_key` and `auth_seal` members. `auth_key` is the 64-lowercase-hex
+x-only key. `auth_seal` is exactly `{txid,vout,script}`: lowercase 64-hex
+txid, number-form output index at most 4294967295, and lowercase script hex.
+The seal MUST be a confirmed output under a supported disposable-key
+construction, with its spent state checked on the verifier's own node.
+Its exact script/fee construction remains open as for LIP-0029 device seals;
+unsupported construction refuses, not unspent. The seal is never an auth-key
+spend and is never a grant or device seal shared across roles.
 
-An envelope has one author signature by the identified device, never by the
-cold name-owner key or the landlord grant key. An arbitrary key found in
-`nostr`, a credential issuer key, or an invented authentication pin is not
-an authorized device. An attached manifest and set bytes may accompany the
-request under LIP-0033; they are not a new source of authority or an invented
-envelope member. Their enclosing transport packaging remains outside this LIP.
+A3. `auth_seal` and `device_seal` private keys MUST come from a CSPRNG,
+never the BIP-39 seed. Destroy each private key immediately after securely
+pre-signing and recording its `tx_revoke`, per LIP-0029 Figure 1; do not
+destroy the recorded transaction. Changing the auth key requires a fresh
+seal. All verifiers durably journal a validated seal spend under revocation
+rules, even without manifest bytes; rollback cannot restore authentication.
+Manifest edits alone close no grant and replace no grant authority pin.
 
-A3. The service MUST resolve a live name from its own verified chain view,
-match registration and owner, validate its manifest and `swarma-devices` set,
-then verify the device, its live seal and the envelope signature. Pin and
-journal checks use LIP-0010 section 11, not a direct device pin. Failure to
-obtain bytes is not permission to use a stale or unpinned list.
+## 2. Canonical challenge and upgrade objects
 
-A4. A supported signing device at ceiling 0, 1 or 2 MAY prove identity for
-login; this proof grants no L1 or L2 authority. P-256/FIDO2 algorithms use
-only the admitted LIP-0029 signature profiles. A messenger-only record with
-no supported direct-envelope signature cannot authenticate by pretending to
-be BIP-340. Presence and ceiling 2 remain required for L2 owner commands,
-not for an identity-only login. An executor policy MAY demand stronger login.
+Both types use restricted RFC 8785 (LIP-0020 W1), W2 number-form Unix
+seconds, W3 exact schemas, W4 typed digests and W5 BIP-340 signed forms
+`{"payload":...,"signature":"<128 lowercase hex>"}`. The signing tag
+equals `payload.type`. No `null`, unknown member or algorithm selector is
+allowed. Each complete signed form is at most 4096 bytes. There is no
+`swarm-envelope/2` body kind for foreign-service authentication.
 
-A5. On success, atomically consume the nonce and create a local session bound
-to `(name, registration outpoint, owner key, device key)`. A session MUST NOT
-outlive its explicit local expiry or waive fresh authority checks for effects.
-Name closure, device-seal spend and owner/registration changes invalidate the
-named binding on observation. Device-list edits obey their existing journal
-and membership rules. A local session is not portable cryptographic authority.
+| Type | Exact payload members |
+| --- | --- |
+| `swarma-auth-challenge/1` | `type`, `service_id`, `nonce`, `expires_at`, `auth_pubkey`; optional `name`, required in named mode and omitted in provisional mode |
+| `swarma-auth-upgrade/1` | `type`, `service_id`, `account_id`, `name`, `auth_pubkey`, `firstupdate_txid`, `nonce`, `expires_at` |
 
-The external `swarm-envelope/2` registry currently has a closed body-kind set.
-Adding `auth-response/1` and its conditional shape requires the corresponding
-external specification review before implementation admission. This Draft
-does not claim that external registry has already accepted the addition.
+`type` is the exact registered string. `service_id` is a nonempty ASCII
+audience identifier pinned in the service's local configuration, not a
+peer-supplied retrieval URL. `nonce` is 32 CSPRNG bytes in 64 lowercase hex;
+`auth_pubkey` is a valid 64-hex x-only key. `name` is the exact `id/` name,
+at most 255 ASCII bytes. `account_id` is a nonempty service-local ASCII
+identifier. `firstupdate_txid` is a lowercase 64-hex transaction id.
+`expires_at` is a W2 number, at most 9007199254740991.
 
-## 2. Provisional key-only account
+A4. The service issues and durably records the exact challenge payload,
+issuance time, audience, mode, nonce and intended account/key/name binding.
+The client signs it with the **auth key**; the signed challenge is the
+response. A nonce is valid for at most **120 seconds** from service issuance;
+`now >= expires_at`, an expiry not after issuance or a longer TTL refuses.
+The service compares every field to its outstanding challenge, verifies the
+signature, then atomically consumes the nonce before establishing a session.
+A replay or concurrent second consumption creates no second session.
+For named mode it resolves the name and registration/owner history, obtains
+the verified manifest through LIP-0033, matches `auth_key`, and checks the
+auth seal and its durable closure journal. A device list is not needed.
+An existing named account MUST retain its exact registration/owner binding;
+a different registration or owner cannot silently take over that cell even
+with the same name string. Missing bytes never trigger a silent outbound
+fetch for a presentation.
 
-P1. The client generates and retains the cold name-owner key and a separate
-supported authentication/device key locally, preferably hardware backed.
-The service and any fee sponsor MUST NOT receive either private key.
+A5. `swarma-auth-upgrade/1` uses a fresh nonce, with all A4 lifetime,
+audience and single-use requirements, from the service's
+upgrade-challenge endpoint (the v0.3 API example is
+`POST /v1/onboarding/upgrade-challenge`, not a required HTTP API here).
+The service binds it to the existing provisional account and auth key.
+The signature proves that same key; a different key MUST NOT take over the
+cell. Named checks and the confirmed first-update proof must pass before
+one atomic consume-and-bind operation. Failures leave the provisional cell
+unchanged. Replaying an upgrade never produces another account or a partial
+rebinding. Ordinary challenges cannot be used as upgrade challenges.
 
-P2. A key-only response uses the same `auth-response/1` envelope, with body
-members `type`, `aud`, `nonce`, `iat`, `exp`, and `key`. It MUST NOT claim
-`name`, `registration`, `owner`, `devices`, or `device_list`. The author key
-equals `key`, in the exact `p256:` or `bip340:` key-identifier form of
-LIP-0029 section 4 and the envelope signature profile; the service verifies
-proof of possession using a supported
-LIP-0029 envelope signature algorithm. No nonexistent name or device seal
-is fabricated. This conditional external body schema is part of the same
-registration gate described in section 1.
+## 3. Provisional accounts and client-owned registration
 
-P3. The provisional account cell is bound only to that key, is explicitly
-unnamed, has no on-chain reputation and MUST NOT exercise named EFFECT
-grants or high-value authority. A service MAY allow local profile setup and
-other explicitly restricted operations. A provisional login MUST NOT be
-reported as a live Swarma name or as an issuer/recipient ownership proof.
+P1. A service MAY admit a key-only challenge without a name. It creates a
+restricted local cell, not a named Link identity. No EFFECT, PII release,
+wildcard grant recipient, federation membership or verified-human status
+follows. Provisional request/rate/storage caps must be explicit, supported
+and enforced durably; absent limits refuse. A key-only signature is no
+proof that the key belongs to a human or owns a name.
 
-## 3. Client-owned registration and atomic upgrade
+N1. A sponsor MAY fund outputs controlled exclusively by the client. The
+client may construct `OP_NAME_NEW` spending an unconfirmed funding output.
+Same/next-block inclusion depends on policy, fees and miners, not a protocol
+promise. The sponsor never owns the name or signs the client name operation.
 
-N1. Self-funded registration is the default. If the client has no NMC, a
-sponsor MAY create `funding_tx` paying an output controlled exclusively by
-the client. The client MAY construct `OP_NAME_NEW` spending that output
-before it confirms. Inclusion in the same or next block depends on node
-mempool policy, fees and miners; it is not guaranteed by this protocol.
-The sponsor never owns the eventual name or its output script.
+N2. `OP_NAME_FIRSTUPDATE` must be mined at least 12 blocks after
+`OP_NAME_NEW`, not after `funding_tx`. Waiting for 12 commit confirmations
+before broadcast is conservative client policy. There is no promised
+wall-clock duration. [Names](../protocol/names.md) defines verification,
+not a funding API. The first-update value pins the manifest's auth key/seal;
+the client supplies manifest bytes inline when no secondary path exists.
+The service checks its required confirmed depth and the exact registration,
+not merely a txid, an unconfirmed reveal or a sponsor statement.
 
-N2. The consensus maturity condition is that `OP_NAME_FIRSTUPDATE` is mined
-at least 12 blocks after the `OP_NAME_NEW` commit, not that the funding
-transaction has 12 confirmations. Waiting for 12 commit confirmations before
-broadcast is a conservative client policy. There is no promised wall-clock
-duration. [Names](../protocol/names.md) specifies name verification and values,
-not this transaction-construction or funding API.
+### Non-normative implementation note: sponsored recovery
 
-N3. The first-update value pins a LIP-0010 manifest whose device-list entry
-contains the provisional key in an admitted device record. The name-owner
-key signs name transactions, never the login response. A valid device seal
-must exist; its construction follows LIP-0029, including a fresh disposable
-seal key and destruction of that key after the pre-signed revoke is prepared.
-Do not reuse the cold owner key as the device-seal key. The client supplies
-manifest/list bytes inline if no secondary retrieval channel exists.
-
-N4. After the first update reaches the service's required confirmation depth,
-the service issues a fresh named challenge. The provisional key must answer
-it as a member of the confirmed pinned device list. The service verifies all
-named checks and atomically binds the existing cell to the exact name,
-registration outpoint and owner. A concurrent or replayed upgrade MUST NOT
-produce a second account or bind an account to a different name. Failure
-leaves the restricted provisional cell unchanged. A mere transaction ID,
-unconfirmed reveal, owner screenshot or sponsor statement is insufficient.
+The owner's v0.3 draft, 2026-11-20, suggests a five-output `funding_tx`
+to distinct user-controlled `name_new_addr`, `firstupdate_addr`,
+`auth_seal_addr`, `seal_pool_addr`, `emergency_reserve_addr`. The auth-seal
+address is CSPRNG-only and stays unspent until real auth revocation; the
+emergency reserve uses a separate account 14'. See KEY-MAP for exceptions
+to v0.3's proposed owner, grant and seal derivations. Persist the
+`OP_NAME_NEW` salt in encrypted durable storage **before broadcast**.
+A restart-safe client resumes after sleep/restart and automatically submits
+FIRSTUPDATE when the commit is mature. This is implementation advice,
+not an additional consensus rule, a deployed wallet claim or a timer guarantee.
 
 ## 4. Portability and third parties
 
-The account owner is the pinned identity, not the replaceable service. A
-service SHOULD provide an authenticated migration/export path consistent
-with LIP-0009; this LIP does not standardize its application data format.
-
-Another person acts under a separately verified, exactly targeted grant.
-For a contract-free grant apply all LIP-0035 root/no-`delegate`/non-hire/
-non-rental restrictions. Recipient proof at invocation uses the applicable
-Link request-key rules; a successful device login is not a grant signature,
-contract consent, or a substitute for the executor's grant checks. A service
-MUST NOT make a wildcard recipient out of all accounts that logged in.
+The account owner is the pinned identity, not the replaceable service.
+Services SHOULD support LIP-0009 migration; application export bytes are open.
+Another person needs an independently verified, exactly targeted grant.
+LIP-0035 permits contract-free scoped roots and an optional signed mandate
+contract, never hire/rental, obligations or re-delegation under that profile.
+Successful auth is not a grant signature, recipient consent or authority
+to disclose data. A service MUST NOT turn its authenticated accounts into
+a wildcard recipient.
 
 ## 5. Deterministic refusal order
 
-1. Existing envelope shape, canonicalization, algorithm and signature errors
-   in LIP-0029 order. Unknown external body kinds refuse until admitted.
-2. `AUTH_CHALLENGE` for wrong audience, missing/expired/reused nonce, excessive
-   lifetime, or response/challenge identity mismatch; no session is created.
-3. For named mode, existing name/manifest/device-list mismatch, rollback,
-   unsupported-device and device-seal refusals in their profile order.
-   A key-only mode carrying named members fails shape checks first.
-4. `AUTH_UPGRADE` for an otherwise valid response that cannot atomically bind
-   the provisional cell to the confirmed name. Keep the old cell unchanged.
+1. LIP-0020 W9 wire pipeline (`WIRE_VALUE` for null, then its ordered
+   schema/key/signature failures). A validly encoded but incorrect BIP-340
+   signature is `AUTH_SIGNATURE` in this auth profile, not `WIRE_SIGNATURE`;
+   WIRE signature form errors retain their codes.
+2. `AUTH_CHALLENGE_EXPIRED` for an invalid time interval, TTL above 120 s,
+   or expiry; then `AUTH_CHALLENGE` for wrong audience, field mismatch,
+   absent/reused/wrong-purpose nonce or provisional-policy rejection.
+3. In named mode: `AUTH_NAME_CLOSED` for a validated name closure, then
+   existing name/history refusals, then LIP-0010's manifest order including
+   `LIST_UNKNOWN` and active-chain `MANIFEST_ROLLBACK`.
+4. `AUTH_KEY_UNPINNED` for absent/unpaired/different manifest auth binding
+   or unsupported seal construction; `AUTH_SEAL_SPENT` for a validated
+   spend/durable closure; `AUTH_SEAL_UNAVAILABLE` for unknown seal state.
+5. On upgrade, `UPGRADE_KEY_MISMATCH` for another provisional key. For
+   either mode, `AUTH_UPGRADE` for a mismatch with an existing cell's
+   registration/owner binding; on upgrade also for invalid first-update/
+   account binding or failed atomic consume-and-bind. No session or cell
+   change precedes acceptance.
 
-Grant refusal codes belong to the later grant pipeline, not to an identity
-login. A credential issuer closure is not `ISSUER_NAME_CLOSED` for a login;
-do not conflate the different key roles.
+Grant checks belong to the later invocation pipeline. Credential issuer
+closure is not a name or auth-key closure.
 
 ## 6. LIP-0018 checklist and conformance
 
-- Identifier/bytes: one existing envelope format with one new body kind and
-  two explicit conditional shapes; CCJ-1, not the LIP-0020 grant wire format.
-- Bounds/binding: nonce 16 bytes, lifetime at most 120 seconds, exact audience,
-  name/registration/owner/device binding and confirmed-list membership.
-- Refusals/security: section 5; replay, ownership separation, provisional
-  limits, propagation limits and atomic failure are specified above.
-- No new anchor action, contract profile, limit kind or certificate subject
-  is introduced. Their specialized extension checklists are not applicable.
-- Adoption: external envelope-kind registration, reader rollout and service
-  account-journal implementation are gates, not claims of deployed behavior.
+- Identifiers, exact schemas, sizes, integers, signers and digests: section 2
+  and LIP-0020 registry. New key role and manifest members: section 1.
+- Binding/replay/provisional limits/atomic failure: sections 1–3; refusal
+  order and forbidden partial outcomes: section 5.
+- No new anchor action, limit kind or certificate subject; those specialized
+  extension checklists do not apply. Auth seal script/fee and wallet APIs
+  remain open, not fabricated canonical bytes.
+- Adoption needs compatible readers, supported seal construction and a
+  durable service challenge/account journal. Co-author agreement is pending.
 
 Vectors are **not required for Draft LIPs** and are not supplied. Future
-conformance needs valid named/key-only controls; cold-key rejection; ceiling-0
-identity versus L2 authority; wrong nonce/audience/expiry; missing/rolled-back
-manifest; spent seal; unconfirmed/immature reveal; unsupported algorithm;
-and upgrade replay/concurrency with no duplicate or partially rebound cell.
+conformance pairs valid named/provisional/upgrade cases with device, grant
+and cold-key substitution, wrong audience/nonce/purpose, TTL 121 versus 120,
+expiry equality, replay/concurrency, unavailable or rolled-back manifest,
+spent/unknown seal, immature reveal and an upgrade that changes the key.
 
 ## Open questions
 
-Co-author agreement on amended Draft decisions and external envelope-kind
-acceptance remain pending. Application session lifetimes, data export format,
-service confirmation depths, and transport packaging of inline manifests
-are deployment choices or separate profiles, not fabricated canonical bytes.
+Co-author agreement, the exact auth-seal script/fee/revoke construction,
+service confirmation depths and application session/export profiles remain
+pending. No secret is stored in the public manifest or card.

@@ -2,7 +2,7 @@
 
 - **LIP:** 0037
 - **Status:** Draft
-- **Author:** The session-convert keeper at the owner's request
+- **Author:** Ivan Oparin
 - **Created:** 2026-11-20
 - **Affects:** the public identity subset of agent, person and service cards
 - **Builds on:** LIP-0010 sections 10 and 11, LIP-0019, LIP-0029;
@@ -17,7 +17,7 @@ Authenticity follows the SHA-256 chain from the confirmed name value to
 the manifest and from the manifest to the card. Only the name owner can
 write that name update.
 
-Ivan Oparin decided on 2026-11-20 on this placement and on option (a),
+Ivan Oparin decided on 2026-11-20 (source: `$LGvz_xrefHjg61tvoQgu5D4Dew_A_vZlfo09ay__PbQ`) on this placement and on option (a),
 pin-only authenticity, in event
 `$LGvz_xrefHjg61tvoQgu5D4Dew_A_vZlfo09ay__PbQ`. The co-author's agreement
 is pending. This is a Draft proposal; no installed adoption is claimed.
@@ -173,11 +173,20 @@ mark, `CARD_ROLLBACK`. Journal loss/fencing retains LIP-0025's codes.
 No `CARD_BUDGET` reader code exists: the writer measures the entire name
 value, and all card data beyond the manifest head is off chain.
 
+Consumers rendering `display`, `role` or other human-facing metadata
+SHOULD isolate untrusted text and visibly flag bidi controls U+200E/U+200F,
+U+202A–U+202E and U+2066–U+2069. They do not change identity or authority.
+This display warning does not silently change the v1 canonical grammar.
+
 ## Alternatives and security consequences
 
 Option (a), no internal signature, is chosen because another signature is
-redundant under the owner-written hash pin. It preserves LIP-0029 O3.7
-and O4.6 for card readers, survives a device's revocation and prevents an
+redundant under the owner-written hash pin. The owner's stated premise is
+"LIP-0029 O3.7/O4.6 stay intact (device keys never face foreign verifiers)"
+in `$LGvz_xrefHjg61tvoQgu5D4Dew_A_vZlfo09ay__PbQ`, without a card-reader
+qualification. The Swarma Link editor's resolution preserves that premise:
+LIP-0034 uses a dedicated auth key instead. The card survives a device's
+revocation and prevents an
 agent from rewriting its own card without its name owner's operation.
 
 Rejected: signing with the Nostr key would widen a closed messaging-key

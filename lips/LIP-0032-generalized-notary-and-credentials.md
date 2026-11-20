@@ -17,7 +17,7 @@ issuer key**, in `swarma.issuer.cred` of the issuer's own name, signs it.
 Notary attestations retain `child-within-parent` and add
 `contract-notarization`, not a second human-verification object.
 
-Ivan Oparin decided on 2026-11-20 that `subject-claim` and `agent-audit`
+Ivan Oparin decided on 2026-11-20 (source: `$-R4EXclWAkV9M95f3lhmqEzucNKId1XdrKY-YUtUJb0`, `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`, `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) that `subject-claim` and `agent-audit`
 are credential kinds, that credentials have the new key role, and that an
 eternal credential survives rotation unless an owner-authenticated break
 covers its anchor at or above a declared compromise height `h_c`. The
@@ -104,10 +104,10 @@ disclosure proof. A verifier MUST NOT accept an invented partial proof.
 | Member | Form and meaning |
 | --- | --- |
 | `type` | Exact string `swarma-credential/1` |
-| `credential_kind` | `subject-claim`, `agent-audit`, or a supported nonempty namespaced application-kind ASCII string |
+| `credential_kind` | `subject-claim`, `agent-audit`, or a supported application kind of lowercase ASCII slash segments as in LIP-0007 section 1 (for example `edu/diploma/1` or `id/human-verified/1`) |
 | `network` | `main` or `regtest`, matching `genesis` and the pinned chain |
 | `genesis` | Hash: exactly 64 lowercase hex characters |
-| `issuer` | Exactly `name`, `registration`, `owner`: the issuer's name, first-registration outpoint and compressed name-owner output key, as W11.2 defines these forms |
+| `issuer` | Exactly `name`, `registration`, `owner`: the issuer's name, first-registration outpoint and compressed name-owner output key (`owner` is the 66-hex compressed secp256k1 `owner_pin` of LIP-0021 O2.1), as W11.2 defines these forms |
 | `issuer_key` | Valid 64-hex x-only BIP-340 key, read from that issuer name's `swarma.issuer.cred` |
 | `subject` | Exactly `{mode,key}` with `mode` equal to `key` and a signing key, or exactly `{mode,name,registration,owner}` with `mode` equal to `name` and the same pinned name forms as `issuer`; no name string alone. These are this credential schema's members, not extra grant-recipient members |
 | `claims_salt` | 32 random bytes, 64 lowercase hex; part of the signed payload |
@@ -146,11 +146,20 @@ Per-claim salts, Merkle commitments and their canonical disclosure proofs
 remain open; LIP-0017 section 2 explicitly leaves their preimages open too.
 No implementation may claim partial-claim verification from this schema.
 
+An issuer deduplicating humans MUST NOT hash raw biometric vectors directly.
+Per the owner's v0.3 draft, 2026-11-20, it uses salted HMAC-SHA256 for
+discrete identifiers, an encrypted LSH/vector index, or an external KYC
+`subject_dedup_id` for video verification. These are privacy requirements,
+not a new on-chain biometric format or proof of unique humanity.
+
 ## 3. Anchoring, withdrawal and compromise
 
 CREDENTIAL_ANCHOR is LIP-0005 action **`0x09`**, payload version `0x01`.
-The commitment is the typed digest of the credential payload, not its
-identifier or the hash of its signed form. Locators `0x00`, `0x01` and
+The commitment is the W6 content address: **SHA-256 of the canonical
+`{payload,signature}` signed form**, not the bare payload or its typed
+signing digest. The anchor height bounds the existence of the signature
+only because the commitment covers that signature. A payload-digest-only
+anchor never proves a credential was signed before compromise. Locators `0x00`, `0x01` and
 `0x05` of LIP-0033 are admitted; `0x01` pins the signed form's content
 address and `0x05` the exact Nostr event id. A reader checks the anchor on
 its own node at its configured confirmation depth. `credential_id` is
@@ -186,18 +195,27 @@ version `0x01`, locator `0x00`, committing to the typed digest of
 `swarma-credential-break/1`. Its action-specific payload is exactly
 `version(1) || typed_digest(32) || h_c_le64(8) || location_type(1)`.
 `h_c_le64` is the compromise height as an unsigned eight-byte little-endian
-integer, no greater than 9007199254740991. The script is exactly 48 bytes:
+integer, no greater than 9007199254740991; a larger value or a height
+later than inclusion refuses `CRED_BREAK_INVALID` in the break reader and
+records no closure. The script is exactly 48 bytes:
 `6a 03 53 4c 0b 2a 01 <digest:32> <h_c:8 little endian> 00`.
 This extends the break action only, not any existing action's payload. That unsigned payload, at most 1024 bytes,
 has exactly `type`, `genesis`, `issuer`, `issuer_key`, `name_input`, `h_c`:
 issuer/key forms as above, `name_input` an outpoint, `h_c` a W2 number-form
-height. The transaction spends that exact current issuer-name output,
-whose `cred` is `issuer_key`, and replaces/removes that key. Its bound
+height. `issuer_key` MAY be any credential key authorized in the verified
+history of this exact registration and pinned owner, current or retired.
+The transaction spends the current issuer-name output irrespective of its
+current `cred`. It MUST replace/remove `cred` if it equals `issuer_key`;
+otherwise it MAY retain the different current key. A retired compromised
+key MUST NOT be republished merely to make a break possible. Its bound
 owner's signature must be the supported `SIGHASH_ALL` without
 `ANYONECANPAY` of LIP-0021 O4.4, committing to every output and thus the
 break frame. The reader reconstructs the payload from the spent issuer
-name/history, the bound credential key, name input and the on-chain `h_c`,
-and requires the typed digest to match. Thus withholding an off-chain break
+name/history, name input and the on-chain `h_c`, testing the historically
+authorized credential keys of that registration and pinned owner, and
+requires exactly one reconstructed typed digest to match. An unavailable
+or incomplete history refuses `CRED_ISSUER_HISTORY_UNAVAILABLE`; an
+unauthorized key or no matching digest is `CRED_BREAK_INVALID`. Thus withholding an off-chain break
 document cannot hide the compromise height or turn a break into an ordinary
 rotation. No off-chain assertion of a height is sufficient.
 
@@ -222,7 +240,9 @@ The first failure wins, in this order:
    presence rules and window ordering are schema checks, `WIRE_MEMBER`.
 2. Kind and application claims: `CRED_KIND`, then `CRED_CLAIMS`.
 3. Chain/genesis and subject binding: `CRED_BINDING`.
-4. Confirmed matching anchor, its frame, commitment and required depth:
+4. The earliest confirmed matching signed-form anchor in the active chain,
+   its frame, commitment and required depth (later re-anchors cannot change
+   its compromise-height result):
    `CRED_ANCHOR_MISSING`; an unavailable node proves nothing and gives
    `CRED_ISSUER_HISTORY_UNAVAILABLE`, not a missing anchor.
 5. Issuer registration/owner/key at the required historical position or
@@ -255,7 +275,10 @@ is never a grant, and policy may only narrow what its claims admit.
 This is a Draft. Vectors are **not required for Draft LIPs**. Adoption
 needs paired valid and refused cases for each lifecycle, exact canonical
 bytes and all hashes, wrong-chain/issuer/registration, anchor-before-key,
-rotation survival, compromise at `h_c - 1`, `h_c` and `h_c + 1`, unauthorized
+rotation survival, rotation followed by a break of the retired key,
+payload-digest-only pre-anchors whose signatures were made later (refused),
+a later duplicate anchor that cannot invalidate the earliest one, malformed
+break heights above the W2 bound, compromise at `h_c - 1`, `h_c` and `h_c + 1`, unauthorized
 break declarations, seal spends with and without cause, and unavailable
 history. The boundary cases must prove that `h_c` itself refuses while the
 valid prior anchor survives. No existing checker covers these new types.

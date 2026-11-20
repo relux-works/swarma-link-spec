@@ -30,7 +30,7 @@ under a decision of 2026-11-15 that awaits the co-author's agreement, the
 store holds no statement for an owner's own devices: the device list pinned in
 the owner's name replaces it for them.
 
-Ivan Oparin decided on 2026-11-20 that section 3.1 uses the
+Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) that section 3.1 uses the
 `swarma-certs` entry of the single manifest pinned by the issuer's name
 (LIP-0010 section 11), superseding the separate-head Draft of 2026-11-16.
 The co-author's agreement is pending. In this profile the set has no head
@@ -140,9 +140,9 @@ spends, and it is left to a later proposal.
 Under the decision of LIP-0010 section 11 the store has one mechanism with
 every other statement set: its head is the `swarma-certs` entry in the
 issuer's name-pinned `swarma-manifest/1`, and the last confirmed manifest
-counts. Ivan Oparin decided on 2026-11-20 to replace the former direct
+counts. Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) to replace the former direct
 name member this way; co-author agreement on this amendment is pending.
-The co-author's agreement remains pending. The 2026-11-20 direction
+The 2026-11-20 direction
 supersedes the conflicting older Draft placement now; it does not claim
 implementation or adoption. Sections 2, 3 and 5 describe the explicitly
 separate legacy anchored-head profile except where CH1–CH4 replace them.

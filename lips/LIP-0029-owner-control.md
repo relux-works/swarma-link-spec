@@ -10,9 +10,9 @@
   nothing ([Decision 0004](../decisions/0004-reconciliation-closures.md),
   status). For everything else the co-author's agreement is pending, no
   other rule of this LIP is adopted, and until the co-author agrees every
-  other text that this LIP revises stands as written, **except** where Ivan
-  Oparin decided on 2026-11-20 that LIP-0032 to LIP-0037 supersede conflicting
-  older Draft/PROPOSED text. Agreement on each amendment remains pending;
+  other text that this LIP revises stands as written. This Draft incorporates
+  LIP-0032 to LIP-0037 amendments and the binding decisions individually
+  cited there; editorial proposals do not acquire owner-decision status. Agreement on each amendment remains pending;
   the precedence direction is not an implementation or adoption claim.
 - **Created:** 2026-11-15
 - **Affects:** how an owner directs and bounds its own executors and the key
@@ -62,10 +62,8 @@ This LIP gives the owner a voice that the receivers check:
    3.6 (Draft of 2026-11-16). P-256 is admitted because the Secure Enclave
    holds no other curve. The envelope identifier and the replay journal
    exclude the signature (section 4).
-4. One envelope format, `swarm-envelope/2`, with the three original
-   authority-bearing body kinds (owner command, LIP-0013 instruction and
-   wallet request), plus identity-only `auth-response/1` under LIP-0034.
-   Its provisional branch proves a key only, not an on-chain name (section 5).
+4. One envelope format, `swarm-envelope/2`, with three typed body kinds: the
+   owner command, the LIP-0013 instruction and the wallet request (section 5).
 5. Three levels, L0 work, L1 effects within limits and L2, and a launch that
    inherits the level of the envelope that started it. At every level the
    inherited level bounds what the run's key holder signs (section 6).
@@ -113,16 +111,16 @@ this LIP; each is written out in the section that the last column names.
 | --- | --- | --- |
 | 1 | Signed at minimum, encrypted at maximum: use native encryption where possible. Transitional (M0): unsigned work is delivered but labelled; effects only on a signature, which section 1 carries for the unsigned message itself. After M6, unsigned input is ignored. Free text directs work only. An effect happens only through typed fields that define it completely: repository, ref and exact revision; payee and amount. The executor's gate recomputes the actual arguments and compares them with the fields before any effect. The owner's client forms the fields and shows them; the executor's model does not. | 1 |
 | 2 | The typed action registry is the action profiles of this specification: LIP-0006 and the v4 action profile of LIP-0008. A new action is a LIP section plus executor code. An unknown action class requires L2 or is refused. LIP-0008 section 12.4 stays reserved. | 2 |
-| 3 | Ivan Oparin decided on 2026-11-20 that the name pins one `swarma-manifest` head, outside `swarma`, whose manifest carries device and other set heads plus the service declaration. This supersedes the direct-device-only decision; co-author agreement on the amendment is pending. Changes do not close v4 grants; every verifier needs the compatible reader before production writing. Exact v3 readers still refuse extras. | 3.3, 3.4; LIP-0010 section 11 |
+| 3 | Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) that the name pins one `swarma-manifest` head, outside `swarma`, whose manifest carries device and other set heads plus the service declaration. This supersedes the direct-device-only decision; co-author agreement on the amendment is pending. Changes do not close v4 grants; every verifier needs the compatible reader before production writing. Exact v3 readers still refuse extras. | 3.3, 3.4; LIP-0010 section 11 |
 | 4 | A device record holds a label, the public key, the algorithm (BIP-340 or P-256; the verifier takes it from the record, never from the envelope), a presence flag (claimed, not proven), the level ceiling, and the outpoint of the revocation seal. | 3.1 |
 | 5 | Revocation of a device is the spend of its seal. The other devices hold a prepared spend, and the executors' nodes see it in the mempool and journal the closure. A rollback cannot restore a revoked device. An L2-signed revocation, journaled forever by the executors that receive it, is an extra fast path. A name update completes the revocation. | 8 |
 | 6 | Adding a device needs a new device list, its new seal, and a name update signed by the name-owner key. Adding is slow and guarded by design; removing is fast. | 9 |
 | 7 | Policy, from action class to level and limits, does not live in the pinned document. It lives in signed executor configuration sections (LIP-0015) with an increasing number, signed by an L2 device. Each executor journals the number and refuses a lower one. Every limit belongs to a named executor. | 7 |
 | 8 | There is no separate BIP-340 statement key. Statements are pinned in the name or signed by L2 devices. The authority key of a person leaves the key map in favour of device keys. | 10, 10.1 |
 | 9 | P-256 is admitted for device keys: SEC1 33-byte keys, 64-byte r‖s signatures, a domain tag. The envelope identifier and the replay journal are computed over the body without the signature, because ECDSA is malleable. P-256 is for envelopes only; Nostr events, the v3 `grantee_key` and seal spends stay BIP-340 (open questions, on seal spends). | 4 |
-| 10 | One `swarm-envelope/2` format: owner command, instruction, wallet request and Draft LIP-0034 identity-only `auth-response/1`, including restricted key-only mode. Authority-bearing kinds retain executor/nonce/expiry/device-list binding. Ivan Oparin decided on 2026-11-20 to add this kind; co-author agreement and external registry acceptance are pending. | 5 |
+| 10 | One envelope format, `swarm-envelope/2`, with typed body kinds: owner command, LIP-0013 instruction and wallet request. Every envelope names the executor, an anti-replay number, an expiry and the device-list hash; the list may be attached. | 5 |
 | 11 | Levels: L0 work; L1 effects within limits; L2 only by a key with the presence flag or by a separated human console. A launch inherits the envelope's level: an agent started under L0 cannot reach effects beyond L0 through its own grants. The key holder's table includes the level. | 6 |
-| 12 | The name-owner key decides who speaks for the owner; the grant key grants to others; device keys authorize owner control at own executors/key holders. Ivan Oparin decided on 2026-11-20 that a device may also prove identity at a foreign service under LIP-0034, but gives no foreign grant or effect authority; co-author agreement on the amendment is pending. | 10 |
+| 12 | Key boundaries. The name-owner key decides who speaks for the owner. The grant key grants to others only. Device keys are the owner itself at its own executors and at its agents' key holders. At a foreign executor nothing changes: the owner remains a grantee. | 10 |
 | 13 | Honest limits: a key without presence is available to any code on its device; the presence flag is claimed (a passcode instead of biometry, one touch for several signatures, an untrusted screen); a host console is not L2 when agents have shells there. | Honest limits |
 
 **Decisions of 2026-11-16.** Ivan Oparin decided three more points, which
@@ -132,7 +130,7 @@ co-author's agreement is pending.
 | # | Decision | Section |
 | --- | --- | --- |
 | 14 | The device-seal diagram goes into this LIP and the book in the same words: adding a device makes a seal `S_D` on a fresh `k_D`, a pre-signed `tx_revoke_D`, destroys `k_D`, hands the spend to the other devices and puts the list hash in the name by the cold key; each command needs the device signature, the list hash from the name and `gettxout(S_D)` unspent; on loss any device broadcasts `tx_revoke_D`, and a rollback cannot restore `D`. | 8.3, Figure 1 |
-| 15 | Ivan Oparin decided on 2026-11-20 to reach the device pin through the single manifest, superseding direct name placement; co-author agreement is pending. Matching checked bytes from any source count. Inline manifest/list delivery is primary; authenticated-domain HTTPS and Nostr kind 30079 are optional, non-exclusive secondary paths. No domain or Nostr key is required for inline operation. | 3.5; LIP-0033 |
+| 15 | Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) to reach the device pin through the single manifest, superseding direct name placement; co-author agreement is pending. Matching checked bytes from any source count. Inline manifest/list delivery is primary; authenticated-domain HTTPS and Nostr kind 30079 are optional, non-exclusive secondary paths. No domain or Nostr key is required for inline operation. | 3.5; LIP-0033 |
 | 16 | A messenger device key (a Matrix device's Ed25519 key, an XMPP OMEMO key) is an ordinary device record with the messenger's algorithm, an L1 ceiling and no presence. An end-to-end encrypted event authenticated by that device's session counts as an L1 command. Forwarded or backup-restored session keys are refused as unauthenticated, and plaintext never counts. | 4.1 |
 
 **Decisions of 2026-11-16, later.** Ivan Oparin decided three more points,
@@ -413,9 +411,15 @@ Without the line breaks it is 789 bytes, and `h(D)` is
 value then carries
 `"swarma-devices":{"seq":5,"sha256":"b726e9dd98d9ff7fa6cb98541f4473dcb521d6c872ac17b9ebdcc0c52372ae79"}`.
 
+For all manifest-backed list reads below, first run LIP-0010 section
+11.1's manifest order (`MANIFEST_*`, missing bytes `LIST_UNKNOWN`), then
+the list's own order. Equal set seq with a different hash refuses, not
+just lower seq; SH5's active-chain/reorg branch applies before comparison.
+The logical direct-pin examples below do not bypass this stage.
+
 #### 3.3. The pin reached through the owner's manifest
 
-Ivan Oparin decided on 2026-11-20 to replace the direct device-list head
+Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) to replace the direct device-list head
 with the single top-level `swarma-manifest` head of LIP-0010 section 11.
 The co-author's agreement is pending. That confirmed manifest supplies
 `sets.swarma-devices`; no `loc`, policy, device keys or list enters the
@@ -425,20 +429,20 @@ examples and diagrams below describe the logical device pin reached through
 this manifest, not permission to write an additional name member. Legacy
 compatibility is explicit under LIP-0010 section 11.2, never a silent fallback.
 
-Ivan Oparin decided on 2026-11-20 also to allow identity-only service login
-using the new LIP-0034 `auth-response/1` body kind; co-author agreement on
-these Draft amendments is pending. It supplies no grant or effect authority.
+The Swarma Link editor's resolution keeps device keys internal to owner
+control. Foreign-service login uses LIP-0034's separate auth key, not an
+owner envelope or any amendment to O3.7/O4.6.
 
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O3.4 | The name has one `swarma-manifest` head under LIP-0010 SH1. Its verified manifest carries `sets.swarma-devices` as `{"seq":<seq>,"sha256":"<h(D)>"}`. No device-list bytes or policy enters the name. Direct heads are readable only in explicit legacy mode; manifest-plus-direct forms refuse. | `MANIFEST_PIN_INVALID` or `DEVICE_PIN_INVALID` |
+| O3.4 | The name has one `swarma-manifest` head under LIP-0010 SH1. Its verified manifest carries `sets.swarma-devices` as `{"seq":<seq>,"sha256":"<h(D)>"}`. No device-list bytes or policy enters the name. A direct device head remains only a Draft legacy description; legacy holders pins remain readable per name under LIP-0010 section 11.2; manifest-plus-direct forms refuse. | `MANIFEST_PIN_INVALID` or `DEVICE_PIN_INVALID` |
 | O3.5 | Match manifest head and entries under LIP-0010 SH6: exact written names, no duplicate, escaped or folded aliases, and canonical shapes. A defective manifest gives no device set and no grant authority or closure. It leaves unrelated `swarma`-based grant checks unchanged. | `MANIFEST_PIN_INVALID`, `MANIFEST_INVALID` or `DEVICE_PIN_INVALID` |
 | O3.6 | The pinned `seq` equals the `seq` of the list, and `sha256` equals `h(D)`. | `DEVICE_LIST_MISMATCH` |
-| O3.7 | The device set gives no grant authority. Own executors/key holders read it for owner control. A foreign service may additionally read it for identity-only LIP-0034 login, never as permission for an effect, contract consent or a grant signature. | |
+| O3.7 | `swarma-devices` gives no grant authority. A Link reader of grants does not read it, and LIP-0010 section 1 holds for grants as written. Only an own executor and an own key holder read it, for owner control. | |
 | O3.8 | An update changing only `swarma-manifest`, including its device entry, changes neither owner nor `swarma` and ends no v4 grant. Revoking a device by spending its seal needs no manifest update. | |
 
-Ivan Oparin decided on 2026-11-20 that the single manifest of
+Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) that the single manifest of
 [LIP-0010](LIP-0010-name-value.md) section 11 replaces the Draft separate
 heads; the co-author's agreement is pending. A confirmed manifest pins the
 device list and the other registered sets. Its sequence strictly increases
@@ -449,7 +453,7 @@ later active-chain update is still a rollback, not a reorganisation.
 
 The holders set and device set share the manifest container, not authority.
 Every class verifier reads the former; own executors and key holders read
-the latter, with the identity-only foreign login exception of O3.7. A holder
+the latter, for owner control only (O3.7). A holder
 names one agent or station, its name-owner key and an individual seal; it
 signs nothing for the landlord. L2 devices of that landlord hold prepared
 holder-seal spends under LIP-0010 H27.
@@ -633,7 +637,7 @@ no second format.
 
 | Member | Rule | Source |
 | --- | --- | --- |
-| `type` | `owner-command/1`, `instruction/1`, `wallet-request/1`, or Draft LIP-0034 `auth-response/1` | The latter is identity-only and has named/key-only conditional shapes |
+| `type` | `owner-command/1`, `instruction/1` or `wallet-request/1` | Proposed here |
 | `aud` | The executor, by its `id/` name. The executor compares it with its own name byte for byte. | `swarm-envelope/2` section 2.1 |
 | `nonce` | The anti-replay number: 16 random bytes, canonical unpadded base64url | The same |
 | `iat`, `exp` | Signing time as claimed, and the expiry; `iat < exp` | The same |
@@ -642,9 +646,9 @@ no second format.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O5.1 | There is one `swarm-envelope/2` format. Original authority-bearing kinds remain owner command, instruction and wallet request; Draft LIP-0034 adds identity-only `auth-response/1`, gated on external body-kind registration. | `ENVELOPE_SHAPE` |
-| O5.2 | Authority-bearing envelopes name executor, nonce, expiry and device-list hash. Named auth responses additionally bind name/registration/owner; key-only provisional auth has LIP-0034's separate restricted shape. | `ENVELOPE_SHAPE` |
-| O5.3 | An attached list hashes to `devices.sha256` and never supplies the pin: the receiver verifies the name-pinned manifest and device entry. Inline manifest bytes give no authority without the confirmed head. | `DEVICE_LIST_MISMATCH` |
+| O5.1 | There is one envelope format, `swarm-envelope/2`, and it has three typed body kinds: the owner command, the LIP-0013 instruction and the wallet request. | `ENVELOPE_SHAPE` |
+| O5.2 | Every envelope names the executor, an anti-replay number, an expiry and the device-list hash. | `ENVELOPE_SHAPE` |
+| O5.3 | An attached list MUST hash to `devices.sha256`, and it is never a source of the pin: the executor reads the pin from the name (section 9). | `DEVICE_LIST_MISMATCH` |
 
 The proposed tags and lifetimes:
 
@@ -653,15 +657,8 @@ The proposed tags and lifetimes:
 | `owner-command/1` | `swarma-link owner-command/1` | One device of the owner's current list | 120 seconds, as `operator-act/1` |
 | `instruction/1` | `swarma-link instruction/1` | The grantee key of the grant it cites | 900 seconds, the window of LIP-0013 step 4e |
 | `wallet-request/1` | `swarma-link wallet-request/1` | The grantee key of the grant it cites | 900 seconds |
-| `auth-response/1` | `swarma-link auth-response/1` | One current device for named login; the provisional key for key-only login | 120 seconds; identity only |
 
-For `auth-response/1`, LIP-0034 defines the named and provisional key-only
-member sets, lifetime and refusal order. Key-only login has no fabricated
-name/device-list binding. It is not an owner command or EFFECT permission.
-External registration in `swarm-envelope/2` remains an implementation gate
-(section 5.4), not a claim that this repository can alter that registry alone.
-
-#### 5.2. The original three authority-bearing body kinds
+#### 5.2. The three body kinds
 
 **Owner command.** The owner's word to an own executor or an own key holder.
 
@@ -884,7 +881,7 @@ On loss:
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O8.8 | The seal `S_D` of a device `D` is an output that pays a fresh key `k_D`, which is neither the device key nor any other key. Before `D` is added, a transaction `tx_revoke_D` that spends `S_D` is signed with `k_D`, and `k_D` is then destroyed, so that no spend of `S_D` other than `tx_revoke_D` can be signed afterwards. `tx_revoke_D` is the prepared spend of O8.2, and it reaches the other devices under O9.3. | |
+| O8.8 | The seal `S_D` of a device `D` is an output that pays a fresh CSPRNG key `k_D`, never derived from a BIP-39 seed and neither the device key nor any other key (the Swarma Link editor's resolution, owner's v0.3 draft, 2026-11-20). Before `D` is added, a transaction `tx_revoke_D` that spends `S_D` is signed with `k_D`, and `k_D` is then destroyed, so that no spend of `S_D` other than `tx_revoke_D` can be signed afterwards. `tx_revoke_D` is the prepared spend of O8.2, and it reaches the other devices under O9.3. | |
 | O8.9 | For every command an own executor checks three things: the device's signature (section 11, steps 6 and 7), the list hash from the name (steps 4 and 5), and that `gettxout` on its own node, with the mempool included, shows `S_D` unspent (step 8). | `DEVICE_REVOKED` for the third |
 | O8.10 | When `D` is lost, any other device of the list broadcasts `tx_revoke_D`. A rollback cannot restore `D` (O8.4). | |
 
@@ -898,7 +895,7 @@ fast path of section 8.2 and a name update remain.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| O9.1 | Adding a device needs a new device list that holds its record, the device's new seal, and an update of the owner's name signed by the name-owner key that writes the new `swarma-devices` with a higher `seq`. | |
+| O9.1 | Adding a device needs a new device list that holds its record, the device's new seal, and an update of the owner's name signed by the name-owner key that writes a higher-seq manifest with the new `sets.swarma-devices` head and its higher set `seq`, under LIP-0010 SH5. | |
 | O9.2 | An executor takes a list only through the pin in the owner's name value on its own node, in its validated active chain, and only with a `seq` higher than the highest it journaled. "Higher" is the condition of a take alone: a pin that equals the journaled one, in `seq` and in hash, is the list that the executor holds, and it is read at every command with no new take and no refusal. An envelope, an attachment or a message never adds a device. | `DEVICE_LIST_ROLLBACK` |
 | O9.3 | The prepared spend of the new seal MUST reach the other devices under O8.2 before the new device signs anything. | |
 
@@ -915,14 +912,14 @@ device can remove a stolen one at once.
 | O10.1 | The name-owner key decides who speaks for the owner by updating the manifest head and pinned device entry. It never logs in or signs an envelope. |
 | O10.2 | The grant key grants to others only. It signs grants and what a grant needs: the contract hash of `landlord_sig`, on v3 the spend of a seal that pays it, and on v4 the endorsement of a seal key (LIP-0004 sections 2, 3 and 5; LIP-0008 section 11). Under Draft LIP-0008 section 11.4 of 2026-11-16 the v4 grant carries its seal key, and the grant key signs no endorsement. It signs no statement, no configuration, no device list and no envelope. |
 | O10.3 | Device keys are the owner at the owner's own executors and at the key holders of the owner's agents. |
-| O10.4 | At a foreign executor the owner remains a grantee: a device may prove identity under LIP-0034 but gives no grant, contract-consent or effect authority. |
+| O10.4 | At a foreign executor nothing changes: the owner remains a grantee there, and a device key gives nothing. |
 | O10.5 | There is no separate BIP-340 statement key. A statement is pinned in the name or signed by an L2 device. |
 
 | Key | Decides or signs | Never |
 | --- | --- | --- |
 | Name-owner key | Updates of the name; with them the device-list pin | Directs work; signs an envelope |
 | Grant key | Grants to others | Statements, configuration, envelopes |
-| Device key, L0 or L1 | Owner commands up to its ceiling at own executors/key holders; identity-only LIP-0034 authentication at a service | L2; foreign effect/grant authority |
+| Device key, L0 or L1 | Owner commands up to its ceiling, at own executors and own key holders | L2; anything at a foreign executor |
 | Device key, L2 with presence | The same at L2, policy sections and fast revocations | Anything at a foreign executor |
 
 #### 10.1. Where R5 closes
@@ -946,7 +943,7 @@ order and the codes are the draft's proposal.
 | 1 | The envelope parses as `swarm-envelope/2` with the expected type from the channel, and its identifier recomputes | `ENVELOPE_SHAPE` |
 | 2 | `aud` equals the name of `X` | `NOT_FOR_ME` |
 | 3 | `iat` is not in the future beyond the skew of `X`, `exp` has not passed, and `exp − iat` is within the lifetime of section 5.1 | `STALE` |
-| 4 | `X` reads the owner's name on its own node: a valid `swarma-devices`, with a `seq` not lower than its journaled highest | `DEVICE_PIN_INVALID`, `DEVICE_LIST_ROLLBACK` |
+| 4 | `X` reads the owner's confirmed name and first runs LIP-0010 section 11.1 steps 1–6 for its manifest and device entry. Then check the device pin/list journal under SH5: a lower set seq, or equal seq with a different hash, refuses, subject to its active-chain/reorg rule | The ordered `MANIFEST_*` and `LIST_UNKNOWN` refusals of section 11.1, then `DEVICE_PIN_INVALID`, `DEVICE_LIST_ROLLBACK` |
 | 5 | `devices` equals the pin; the list that `X` holds under that hash, cached or attached, hashes to it | `DEVICE_LIST_MISMATCH`; with no list under that hash, `LIST_UNKNOWN` (O3.14), and the sender re-sends with the list attached |
 | 6 | Exactly one signature, whose key equals the `key` of one record, under that record's `alg`, for which `X` has a verifier (O3.17) | `DEVICE_UNKNOWN`, `DEVICE_ALG_MISMATCH`, `DEVICE_ALG_UNSUPPORTED` |
 | 7 | The signature verifies | `ENVELOPE_SIGNATURE` |

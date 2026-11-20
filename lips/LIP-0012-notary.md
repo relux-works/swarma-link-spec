@@ -64,7 +64,7 @@ admission steps and their codes, and the form of the signed requirement.
 
 ## Credential separation (Draft amendment of 2026-11-20)
 
-Ivan Oparin decided on 2026-11-20 that `subject-claim` and `agent-audit`
+Ivan Oparin decided on 2026-11-20 (source: `$-R4EXclWAkV9M95f3lhmqEzucNKId1XdrKY-YUtUJb0`, `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`) that `subject-claim` and `agent-audit`
 are kinds of `swarma-credential/1`, signed by a separate credential issuer
 key in its own name, not by the notary key. The co-author's agreement is
 pending. [LIP-0032](LIP-0032-generalized-notary-and-credentials.md) keeps only

@@ -15,10 +15,13 @@ which a verifier may receive them. The manifest of LIP-0010 section 11
 pins the heads of the device, holder, certificate and card sets. Neither
 the name value nor the manifest carries `loc`.
 
-Ivan Oparin decided on 2026-11-20 that there is no `loc`, that one Nostr
-event kind serves the lists and documents, that location type `0x05`
-names that event, and that inline bytes precede retrieval. The co-author's
-agreement is pending. These are Draft proposals, not deployed readers.
+This Draft proposes no `loc`, one dedicated Nostr kind, binary event-ID
+location `0x05` and inline-first retrieval. The umbrella head follows the
+binding decision `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`;
+the concrete kind, locator and retrieval details are editorial proposals,
+not additional recorded owner allocations. The owner's v0.3 draft,
+2026-11-20, supplies the ordered lookup and reorg-safe journal refinements.
+The co-author's agreement is pending; no deployed reader is claimed.
 
 The words MUST, MUST NOT, SHOULD and MAY have their RFC 2119 and RFC 8174
 meanings.
@@ -39,8 +42,23 @@ bytes first, then the required set bytes. The sender supplies them on change
 and first contact; a cache entry is usable only under the exact current pin.
 The set's counter is `seq`, not `v`.
 
-A reader without a presenter MAY use the following secondary paths. It
-verifies the manifest before using any head obtained from it.
+The fixed lookup order is: **0** inline request/bundle bytes; **1** a
+configured LIP-0019 blob store or verified local cache; **2** the authenticated
+NIP-05-domain well-known path; **3** the configured Nostr event path below.
+A presentation lacking required bytes refuses by name and asks the sender
+to resend; it does not silently fetch. An explicit retrieval operation may
+try the remaining configured steps. A reader verifies the manifest before
+using any head obtained from it; later sources never override matching
+already checked inline bytes. Other delivered matching bytes remain valid
+under the non-exclusive rule, regardless of this lookup order.
+
+The verifier journals `(seq, anchoring_txid)` for the manifest and `seq` for
+each subset. Manifest updates strictly increase seq; subsets never decrease.
+`MANIFEST_ROLLBACK` for a lower seq applies only while that anchoring txid
+stays in the active chain. If it is orphaned, revert the active pointer to
+the highest confirmed manifest in the active chain and retain **all**
+durable seal closures and removal marks (LIP-0010 SH5). An untouched set
+keeps its seq/hash. Rereading one head is not an update.
 
 | Object | HTTPS path, relative to the verified NIP-05 domain | Nostr `d` tag |
 | --- | --- | --- |
@@ -149,7 +167,8 @@ wins. Retrieval cannot replace those profiles' existing order.
 | Invalid manifest pin or manifest | `MANIFEST_PIN_INVALID`, `MANIFEST_INVALID`, `MANIFEST_MISMATCH`, `MANIFEST_ROLLBACK` (LIP-0010 section 11) |
 | Oversized or malformed list | `DEVICE_LIST_INVALID` or `HOLDER_LIST_INVALID` |
 | List bytes or identity differ from the pin | `DEVICE_LIST_MISMATCH` or `HOLDER_LIST_MISMATCH` |
-| Required manifest/list bytes unavailable | `LIST_UNKNOWN` |
+| Required manifest/device/holder bytes unavailable | `LIST_UNKNOWN` |
+| Certificate pin absent / pinned head bytes unavailable | `HEAD_PIN` / `STORE_UNAVAILABLE` (LIP-0016 CH3) |
 | Card grammar, mismatch or unavailable bytes | LIP-0037 section 5 |
 | Other signed objects | Their own `WIRE_*` and state-check order |
 
@@ -160,7 +179,10 @@ Check size before hash; do not fetch further bytes after the size bound is
 exceeded. These diagnostics do not rename the enclosing set/object profile's
 more specific admission codes in the table. A loader may try another allowed
 source after a bad candidate. When no usable bytes remain, the enclosing
-admission refuses `LIST_UNKNOWN`, **not** the draft's `LIST_UNAVAILABLE`.
+admission uses `LIST_UNKNOWN` for manifest/device/holder bytes,
+`HEAD_PIN` for an absent certificate entry, `STORE_UNAVAILABLE` for its
+unavailable pinned bytes, or `CARD_UNAVAILABLE` for an absent card entry
+or missing card bytes. It never renames `LIST_UNKNOWN` to `LIST_UNAVAILABLE`.
 A denied outbound request is a loader-policy refusal, never permission to
 contact an unconfigured host; matching inline bytes remain acceptable.
 A failed transport is not a revocation. No closure is journaled merely

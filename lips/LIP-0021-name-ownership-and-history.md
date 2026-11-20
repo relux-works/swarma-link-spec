@@ -481,15 +481,19 @@ J6.4.
 
 #### 7.6. Credential issuer history and compromise break (Draft, 2026-11-20)
 
-Ivan Oparin decided on 2026-11-20 that eternal credentials survive rotation,
+Ivan Oparin decided on 2026-11-20 (source: `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) that eternal credentials survive rotation,
 and an emergency issuer closure states a compromise height `h_c`, signed
 by the name-owner key in the break transaction. The co-author's agreement
-is pending. LIP-0032 sections 2–4 define the credential issuer role and the
+is pending. Source: `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`.
+LIP-0032 sections 2–4 define the credential issuer role and the
 exact `swarma-credential-break/1` object, frame and refusal order.
 
 A verifier MUST establish the credential key in the issuer's exact
 registration and owner history at the credential anchor's confirmed chain
-position. A historical eternal credential does not require that key to be
+position. The anchor commits to the canonical signed form, including the
+signature, not its computable-in-advance payload digest; only that makes
+anchor height evidence that the signature existed. Use the earliest
+confirmed matching anchor in the active chain. A historical eternal credential does not require that key to be
 current today. A rotation, lapse or transfer alone cannot erase its anchored
 fact. Unavailable historical evidence refuses; a current key is no substitute
 for the historical one. Re-registration is a different identity.
@@ -498,16 +502,21 @@ A compromise break uses action `0x0b`, payload `0x01`, location `0x00`, with
 the typed digest of the break payload plus its eight-byte little-endian
 `h_c`, before the zero location byte (48-byte script, LIP-0032 section 3).
 All payload members are reconstructed from the spent issuer name/history,
-credential key, name input and this public height, then checked against the
-digest; a missing off-chain document cannot suppress the closure. It spends the named current issuer
-output, removes or replaces its `issuer.cred`, and its supported owner
+each historically authorized credential key of that registration and
+pinned owner, name input and this public height, then checked for exactly
+one matching digest; a missing off-chain document cannot suppress the closure. It spends the named current issuer
+output, even if its current `issuer.cred` differs from the compromised
+key. Only when they are equal MUST that key be removed or replaced. A
+retired key needs no temporary republication. Its supported owner
 signature commits to all outputs, including that frame (`SIGHASH_ALL`
 without `ANYONECANPAY`, O4.4). The payload binds the chain, issuer
 name/registration/owner, compromised credential key, spent name outpoint and
 `h_c`. A signature by the credential key, an unsigned claim, or an unrelated
 name transaction cannot close that issuer key. The height is a JSON number
 within the LIP-0020 height bound and no later than the break's inclusion
-height; a mempool witness uses its candidate inclusion height.
+height; a mempool witness uses its candidate inclusion height. Larger
+or out-of-bound binary heights refuse `CRED_BREAK_INVALID` and produce no
+closure. Incomplete historical evidence is `CRED_ISSUER_HISTORY_UNAVAILABLE`.
 
 For a valid owner-authenticated break, anchors **below** `h_c` retain their
 previous validity; anchors **at or above** `h_c` refuse `CRED_ISSUER_CLOSED`.

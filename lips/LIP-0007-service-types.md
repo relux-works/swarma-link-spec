@@ -91,7 +91,7 @@ behaviour, not an added wallet-v1 request field or type-declaration guarantee.
 
 ### 3. Typed name-value member
 
-Ivan Oparin decided on 2026-11-20 that the service declaration moves out of
+Ivan Oparin decided on 2026-11-20 (source: `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`) that the service declaration moves out of
 the 520-byte name value into `service` of the pinned `swarma-manifest/1`,
 freeing the former 150-byte reserve. The co-author's agreement is pending.
 LIP-0010 section 11.1 defines its exact container and canonical byte rules.

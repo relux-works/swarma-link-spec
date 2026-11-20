@@ -3571,8 +3571,9 @@ vectors.
 
 ## Credential cause separation (Draft amendment of 2026-11-20)
 
-Ivan Oparin decided on 2026-11-20 that credential revocation for cause has
-its own action/domain; co-author agreement is pending. LIP-0032 uses action
+This Draft proposes a separate credential cause action/domain: an
+editorial correction because the existing notary cause semantics do not
+apply to credentials. Co-author agreement is pending. LIP-0032 uses action
 `0x0a` and `swarma-credential-withdrawal/1`. This does not alter action
 `0x05`, its `swarma-attest-cause-v1` commitment or its child-specific
 notary-withdrawal semantics. A credential withdrawal cannot forbid a child

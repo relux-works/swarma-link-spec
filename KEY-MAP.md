@@ -189,6 +189,7 @@ Where each key is published follows from that:
 | Any further key or pointer of the owner | Nowhere: it refuses the whole value | A member outside `swarma`, which a Link reader ignores | None |
 | Authority key of a person (K6) | Not in a name. Each grant to the person names it as `grantee_key` | The same; on v4 it is the request key of a recipient by key | A grantee key: it uses the authority of the grants that name it |
 | Notary attestation key | Not in a principal's or an agent's name | The notary's own name, `swarma.notary.attest` (LIP-0010 section 9, proposed) | Signs attestations only, including LIP-0032 typed notarization; never credentials |
+| Auth key | Unsupported shape | Paired manifest `auth_key`/`auth_seal`, Draft LIP-0034 | External identity only; no grant authority |
 | Credential issuer key | Unsupported shape | Separate issuer name, `swarma.issuer.cred` (LIP-0010 section 9.1, Draft) | Signs third-party credentials only; historical validity and owner-authenticated compromise height follow LIP-0032 |
 
 **What a name change does to existing grants.** Grant v3 binds no owner key.
@@ -353,6 +354,27 @@ previous section says.
 | Coin key of a row of a re-delegating agent, v4 (decision of 2026-11-14, J1; agreed by both owners on 2026-11-15) | A separate key, derived from the seed of the operator's signer in an account of its own, as v4 seal keys are; the account and the path are not fixed | The operator's signer (LIP-0014 section 9.1) | A new parent grant |
 | v4 seal keys, later | `m/84'/7'/<seal-account>'/0/i` (LIP-0008 section 11.1), with a seal account of 10 or above | The signer | Per seal |
 
+### v0.3 account reconciliation (Draft, 2026-11-20)
+
+The Swarma Link editor's resolution preserves existing derivations where
+the owner's v0.3 draft differs. It adds a separate auth role, not a migration
+of an existing secret. No account holding an existing seal may be reused
+for another purpose. On a fresh provision, reserve the auth/reserve accounts
+below before allocating seal accounts; an older colliding allocation stays
+unchanged and needs a separately agreed free account, not key reuse.
+LIP-0024 E5.1–E5.5 still require independent account provisioning/wrapping;
+different path strings alone do not prove custody separation.
+
+| Role | v0.3 proposal | This specification |
+| --- | --- | --- |
+| Funding | `m/84'/7'/0'/0/*` | Compatible external branch of existing funding account `m/84'/7'/0'` |
+| Name owner | `m/84'/7'/10'/0/0` | Not adopted: preserve separate seed, account `m/84'/7'/0'`, fresh address per name; no hot-seed owner key |
+| Grant | `m/84'/7'/11'/0/0` | Not adopted: preserve decided K5 random Keychain key and later BIP-85 target `m/83696968'/2'/7'`; the grant key stays outside every wallet account |
+| Auth | `m/84'/7'/12'/0/0` | New Draft dedicated account on fresh provisioning, subject to existing-allocation exclusion above |
+| Grant seals | `m/84'/7'/13'/0'/*'` | Not adopted: preserve `m/84'/7'/<seal-account>'/0/i`, account 10 or above and existing non-hardened children; no silent derivation migration |
+| Emergency fee reserve | `m/84'/7'/14'/0/0` | New Draft separate reserve account on fresh provisioning; never an auth or grant-seal account |
+| Auth/device fast-revocation seals | CSPRNG | CSPRNG-only, never BIP-39-derived; destroy keys after pre-signing and recording revoke transactions |
+
 Two reasons carry the layout. The grant key stays outside every wallet
 account, in both custodies: a Keychain item is in no wallet, and a Namecoin
 wallet restored from the seed never scans a BIP-85 path. So no wallet offers
@@ -419,7 +441,7 @@ an export interface; a lost agent key can instead be replaced by an update.
 
 ## Draft extension map, 2026-11-20
 
-Ivan Oparin decided on 2026-11-20 to separate credential issuance from
+Ivan Oparin decided on 2026-11-20 (source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`, `$qthK9PE_qJlXchm3O9Cdy9Lvz24EmiqwzN8CFhh1n_s`, `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to separate credential issuance from
 notary attestation, replace per-set name heads with one manifest, and permit
 the scoped contract-free root EFFECT case. Co-author agreement on these
 Draft amendments is pending. The following six Draft proposals do not claim
@@ -429,7 +451,7 @@ reader implementation, adoption or deployment:
 | --- | --- |
 | [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md) | Separate credential issuer key; eternal anchor history and compromise `h_c`; notary `/2` has only two kinds |
 | [LIP-0033](lips/LIP-0033-reference-distribution-for-pinned-lists.md) | Non-exclusive inline/HTTPS/Nostr delivery; kind 30079 and event-ID location `0x05`; no `loc` name member |
-| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Device proves login identity only; cold name-owner key never logs in; provisional key-only cells are not names |
+| [LIP-0034](lips/LIP-0034-provisional-onboarding-and-name-auth.md) | Dedicated BIP-340 auth key proves foreign-service identity; device and cold name-owner keys never log in; provisional cells are not names |
 | [LIP-0035](lips/LIP-0035-unilateral-mandates.md) | Grant key issues targeted root EFFECT permission without a contract only in the no-`delegate`, non-hire/non-rental case |
 | [LIP-0036](lips/LIP-0036-federated-trust-and-progressive-disclosure.md) | Federation policy narrows admission; human L2 request is not a device-signed grant |
 | [LIP-0037](lips/LIP-0037-entity-card.md) | Unsigned metadata authenticated by name → manifest → card SHA-256 pins; no v1 card signing key |

@@ -240,7 +240,7 @@ consume a resource. A generic integer counter is not a complete cost contract.
 
 For a grant that binds a contract (bilateral, framework, rental), the
 contract mirrors all grant limits by executor, kind, resource, unit and
-amount; a mismatch refuses admission. Ivan Oparin decided on 2026-11-20 to
+amount; a mismatch refuses admission. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to
 exclude only the LIP-0035 contract-free root EFFECT case; the co-author's
 agreement on this Draft amendment is pending. Hire and rental remain
 contract-binding. The contract may retain additional human
@@ -804,7 +804,7 @@ chain; one process relabelled as new is not a newcomer.
 | S6-11 | A verifier with an intact journal | A verifier whose journal was deleted does not admit until its owner starts it anew, and reports no witness state. |
 
 Credential issuer breaks are a different key role, not a new interpretation
-of `ISSUER_NAME_CLOSED`. Ivan Oparin decided on 2026-11-20 that eternal
+of `ISSUER_NAME_CLOSED`. Ivan Oparin decided on 2026-11-20 (source: `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) that eternal
 credentials survive rotation and that a name-owner-authenticated compromise
 height `h_c` closes only anchors at or above it; co-author agreement is
 pending. LIP-0032 section 3 and LIP-0021 section 7.6 specify that break and

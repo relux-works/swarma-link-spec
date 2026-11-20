@@ -45,7 +45,7 @@ Readers refuse every other encoding: OP_PUSHDATA1/2/4, a split id, OP_1..OP_16 f
 | `0x06` | certificate set head, proposed in [LIP-0016](LIP-0016-certificate-store.md); the reference parser does not accept it | `version(1)` \|\| `head_commitment(32)` \|\| `locator` |
 | `0x07` | contract anchor, proposed in [LIP-0017](LIP-0017-contracts.md); the reference parser does not accept it | `version(1)` \|\| `contract_commitment(32)` \|\| `locator` |
 | `0x08` | contract termination, proposed in LIP-0017; the reference parser does not accept it | `version(1)` \|\| `contract_end_commitment(32)` \|\| `locator` |
-| `0x09` | credential anchor, Draft LIP-0032 | `version(1)` \|\| `credential_digest(32)` \|\| `locator` |
+| `0x09` | credential anchor, Draft LIP-0032 | `version(1)` \|\| `signed_credential_sha256(32)` \|\| `locator` |
 | `0x0a` | credential withdrawal for cause, Draft LIP-0032; not notary action `0x05` | `version(1)` \|\| `withdrawal_digest(32)` \|\| `locator` |
 | `0x0b` | credential issuer compromise break, Draft LIP-0032 | `version(1)` \|\| `break_digest(32)` \|\| `h_c_le64(8)` \|\| `locator` (only `0x00`) |
 | `0x0c`-`0x7f` | reserved for Swarma Link | — |
@@ -93,9 +93,10 @@ action `0x04` payload `0x02` to typed notary attestation `/2` where its kind
 schema is specified. These assignments do not relax any existing profile's
 narrower location/version acceptance.
 
-Ivan Oparin decided on 2026-11-20 to keep credential anchoring and cause
-withdrawal distinct from notary actions and to allocate Nostr location
-`0x05`; co-author agreement on these Draft amendments is pending.
+This Draft proposes distinct credential anchor/cause actions and Nostr
+location `0x05`. This is an editorial correction because notary action
+`0x05` has incompatible semantics, not a recorded owner allocation.
+Co-author agreement on these Draft amendments is pending.
 
 ### Sizes
 
@@ -120,7 +121,10 @@ The payload is always a single direct push of at most 75 bytes; every defined co
    by the generic parser. It does not satisfy an issuance transaction's required
    commitment, and an extra Memo `OP_RETURN` still violates rule 1.
 5. The pointer is verified after fetching: the fetched bytes must hash to the pointer (type `0x01`) or match the
-   torrent's info dictionary (types `0x02`-`0x04`), and the object must hash to the value the commitment binds.
+   torrent's info dictionary (types `0x02`-`0x04`). For type `0x05`, the NIP-01
+   SHA-256 of the serialized event must equal its pointer, and signature,
+   kind and `d` tag must pass LIP-0033 before its document is used. The
+   decoded object must hash to the value the action commitment binds.
 
 ## 4. Effect on the reference implementation
 

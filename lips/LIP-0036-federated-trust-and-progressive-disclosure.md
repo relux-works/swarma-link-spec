@@ -11,8 +11,7 @@
 ## Summary and decision
 
 Unknown peers may screen each other under bounded, low-risk policy before
-an owner authorizes a specific disclosure. Ivan Oparin decided on 2026-11-20
-that this proposal uses the LIP-0032 **credential** kinds, the non-exclusive
+an owner authorizes a specific disclosure. This Draft proposes to compose the LIP-0032 **credential** kinds, the non-exclusive
 LIP-0033 distribution rule, and the scoped LIP-0035 contract-free exception.
 The co-author's agreement on the amended Draft decisions is pending.
 
@@ -23,10 +22,12 @@ a credential nor a policy signature creates grant authority.
 
 | Phase | Admission | Data boundary | Human gate |
 | --- | --- | --- | --- |
-| Screening | Pinned landlord trust policy, an independently valid screening grant and optionally a `subject-claim` credential | Zero PII and no external tools in the screening context | No per-message confirmation, within accepted signed limits |
+| Screening | Pinned landlord trust policy, an independently valid screening grant and optionally a `subject-claim` or `id/human-verified/1` credential | Zero PII and no external tools in the screening context | No per-message confirmation, within accepted signed limits |
 | Disclosure | Exactly targeted EFFECT grant to one recipient and one executor | Sensitive bytes held by the isolated executor, not the screening agent | Explicit human-gated issuance request, followed by grant-key signing |
 
-F1. A verifier MUST NOT accept wildcard Grantee fields. It checks separately
+F1. A hub offering both landlord services and human verification MUST
+register two separate `id/` names, under LIP-0010's one-role shapes. A
+verifier MUST NOT accept wildcard Grantee fields. It checks separately
 the peer's landlord against its active trust policy, the peer-to-landlord
 binding, and the screening grant's authority, limits and unspent seals.
 The agent's `swarma.agent.landlord` pointer alone is not ownership or grant
@@ -39,7 +40,7 @@ version/digest, signing authority and supported schema. If it cannot verify
 that policy or cannot establish the landlord binding, it refuses admission.
 This LIP does not invent the external project's canonical policy bytes.
 
-F2. A `subject-claim` or `agent-audit` is a kind of `swarma-credential/1`,
+F2. A `subject-claim`, `agent-audit` or supported `id/human-verified/1` is a kind of `swarma-credential/1`,
 not of `swarma-notary-attestation/2`. When required by the local policy,
 verify its issuer credential-key role, named subject binding, anchored bytes,
 lifecycle, compromise-height and revocation rules in LIP-0032. A claim such
@@ -64,7 +65,9 @@ An owner must explicitly approve the precise recipient, effect, executor,
 limits and expiry. When using LIP-0029 owner control, require an L2 owner
 command from a presence-capable ceiling-2 device, or its separately admitted
 human-console path. That command requests the operation; the **grant key**
-still signs the resulting root grant. A ceiling-2 device does not acquire
+still signs the resulting root grant. The owner confirms via the
+grant-key signer under Touch ID through a delegated signing request with
+every signed field shown; a P-256 device key never signs the grant. A ceiling-2 device does not acquire
 grant-key signing authority. The cold name-owner key does not log in or sign
 routine envelopes. The `Owner-confirmation threshold` is an effect-policy
 limit, not the name for issuance authority or an alternative signing key.
@@ -72,8 +75,17 @@ limit, not the name for issuance authority or an alternative signing key.
 F5. The resulting unilateral grant follows all LIP-0035 rules: one recipient
 key or name, one executor, no `delegate`, no hire/rental, no obligations on
 the grantee, a dedicated seal and finite limits/window. Examples include
-single-use contact handoff or narrowly capped calendar access. An undefined
-`secret.release` or calendar profile MUST refuse until separately specified.
+single-use contact handoff or narrowly capped calendar access. The optional
+signed mandate contract of LIP-0035 may be used, but is not mandatory.
+For PII `contact/release`, the Grantee MUST be the partner's personal
+`id/` name or Companion App (Contour A), not a managed screening agent or
+hub. It calls the issuer's isolated `contact-vault` directly, bypassing
+screening agents and hubs: PII MUST NOT enter their context or transit
+through them. For non-PII `calendar/free-busy` and `calendar/propose`, the
+Grantee MAY be the Companion App or a distinct sub-agent `id/` name listed
+in its landlord's verified `swarma-holders`. Unknown action/limit profiles
+MUST refuse until separately specified. Recipient names alone do not prove
+these application roles; the supported profile must bind them.
 
 F6. Matrix E2EE, Nostr and a2a-swarm can carry the private conversation and
 grant bytes. Reference bytes from any source count only after their pin and
@@ -85,7 +97,11 @@ F7. Spending a disclosure seal closes its admission durably on observation,
 without a manifest update. Issuer emergency closure uses its applicable
 LIP-0008/LIP-0021 rules. A landlord's brake closes grants issued by that
 landlord; it does not magically revoke a different owner's disclosure grant.
-Loss of federation-policy admission may independently stop further screening.
+A required revocable human credential's seal spend closes its admission;
+a required notary attestation's seal spend likewise closes its admission.
+Do not apply notary action `0x05` to a credential. `ISSUER_NAME_CLOSED`
+closes grants of that issuer, not unrelated credential issuers. Loss of
+federation-policy admission may independently stop further screening.
 Network propagation is not instantaneous at every verifier.
 
 ## 2. Deterministic refusal order
@@ -100,7 +116,9 @@ Network propagation is not instantaneous at every verifier.
    existing limit-overrun code when a defined cap is exhausted.
 5. `FED_HUMAN_GATE` for an attempted disclosure transition without the
    human-authorized issuance request. No grant or disclosure is produced.
-6. The ordinary LIP-0035/Link invocation pipeline for the resulting disclosure
+6. `FED_PII_ROUTE` for a PII Grantee or route outside Contour A, then
+   `FED_GRANTEE_ROLE` for an unverified non-PII sub-agent/holder role.
+7. The ordinary LIP-0035/Link invocation pipeline for the resulting disclosure
    grant. A policy verdict never overrides its refusal.
 
 ## 3. Security boundaries
@@ -132,7 +150,9 @@ Vectors are **not required for Draft LIPs** and are not supplied. Future
 conformance must pair valid two-phase cases with wildcard recipients, false
 landlord pointers, expired policy, wrong credential subject/key role, missing
 caps, unknown profiles, multi-executor budget duplication, ceiling-1 issuance,
-ceiling-2 grant-signature substitution, contract-free TEXT hiring, and seal
+ceiling-2 grant-signature substitution, contract-free TEXT hiring,
+PII through a hub versus direct contact-vault access, unlisted sub-agents,
+combined hub/notary name roles, and seal
 revocation without forbidden partial disclosure.
 
 ## Open questions

@@ -40,6 +40,15 @@ On C10 to C12, the co-author agrees and leaves
 the judgement to Ivan (source below). It proposes semantics without
 canonical bytes, and nothing of it is implemented.
 
+The Swarma Link editor's resolution also proposes LIP-0035's optional
+`swarma-unilateral-mandate/1` contract profile from the owner's v0.3 draft,
+2026-11-20. It does not make a contract mandatory for scoped B. The issuer
+alone signs that contract; grant issuance retains applicable W7 evidence.
+The mandate's issuer-only seal MAY equal the grant seal. C5/C12 hold; a
+spend closes both without requiring an unspecified termination-statement
+format. That narrow profile refines C8, not the bilateral/framework/rental
+seal protocol. Co-author agreement is pending.
+
 ## Decisions recorded
 
 Ivan Oparin decided the following on 2026-11-14. The LIP stays Draft until
@@ -51,7 +60,7 @@ the co-author agrees; adoption follows LIP-0001.
 | C2. Salts | The contract carries a salt, and each clause a salt of its own, so that a party can disclose single clauses. |
 | C3. Anchor | A contract is anchored in a LIP-0005 frame with an action code of its own. |
 | C4. Assent on chain | Optionally, both parties show their assent by spending a shared output that needs both signatures. |
-| C5. Contract and grant | Grants that bind a contract (bilateral, framework, rental) bind exactly one, which may be minimal. A contract may exist without a grant. Only LIP-0035's root EFFECT grant without `delegate`, never hire or rental, may omit it; the recipient is one key or one name. Ivan Oparin decided on 2026-11-20 to scope the former universal rule this way; co-author agreement on this amendment is pending. |
+| C5. Contract and grant | Grants that bind a contract (bilateral, framework, rental) bind exactly one, which may be minimal. A contract may exist without a grant. Only LIP-0035's root EFFECT grant without `delegate`, never hire or rental, may omit it; the recipient is one key or one name. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to scope the former universal rule this way; co-author agreement on this amendment is pending. |
 | C6. Any parties, many kinds | Contracts and grants work for any pair of parties, people, companies and agents in any combination, and for many kinds of contract: between businesses, for services, employment, rental and trust. |
 | C7. Windows | A grant's window lies inside its contract's window. Profile `swarma-trust-contract/1` keeps equality as the special case. A framework contract may cover several grants over time. A contract ends early only through a machine rule that names who may declare the end. |
 | C8. Contract seal | For v4 and for framework contracts: the contract names its own confirmed output. Every grant under it also requires that output unspent, and one spend ends them all. The script of the output encodes the termination clause: the issuer alone, either party, both together, or an arbiter. The spend carries a frame with the hash of the signed termination statement. v3 stays as it is: the issuer spends seals, and the reason follows LIP-0011. |
@@ -69,7 +78,7 @@ The labels C10 to C12 are this draft's numbering, continuing the table above.
 | --- | --- |
 | C10. The seal decides termination | The termination type of a contract is the type of its seal: issuer only, either party, both together, or arbiter, per its script. It is a machine field of the contract, and every reader, renderer and user interface shows it from the seal script, never from prose. A prose clause on termination ends nothing (section 5, rule 6). |
 | C11. Drafting starts with the seal | Drafting a contract starts with creating its seal. |
-| C12. No grant without a contract seal | Grants that bind a contract (bilateral, framework, rental) MUST NOT be issued under it without a confirmed seal; signing services and verifiers refuse deterministically. LIP-0035's scoped contract-free root requires its own grant seal, not a contract seal. Ivan Oparin decided on 2026-11-20 to scope this rule; co-author agreement on the amendment is pending. |
+| C12. No grant without a contract seal | Grants that bind a contract (bilateral, framework, rental) MUST NOT be issued under it without a confirmed seal; signing services and verifiers refuse deterministically. LIP-0035's scoped contract-free root requires its own grant seal, not a contract seal. Ivan Oparin decided on 2026-11-20 (source: `$HZ30GFE5jwhKwwz9eDacfUnKf6nTRh2h-uF4OHylwD4`) to scope this rule; co-author agreement on the amendment is pending. |
 
 The nine directions of 2026-11-14 and the three of 2026-11-17 are the
 owner's. Everything else in this LIP is the draft's proposal and is not

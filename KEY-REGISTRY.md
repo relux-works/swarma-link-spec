@@ -98,6 +98,7 @@ and wait for the owners' confirmation.
 | Row coin key, v4 | medium | LIP-0014 section 9.1; decision of 2026-11-14, agreed by both owners on 2026-11-15 |
 | Child-seal key, v4, optional | medium | LIP-0014 section 11.1; decision of 2026-11-14: a profile option, not in the first version. LIP-0014 section 11.2, Draft of 2026-11-16: in v4 from the first version, agreement pending |
 | Notary attestation key | high | LIP-0012 and LIP-0014, Draft; typed notary `/2` in LIP-0032 |
+| Auth key | high | Draft LIP-0034; paired manifest auth key/seal, external identity only |
 | Credential issuer key | high | LIP-0032 and LIP-0010 section 9.1, Draft; owner decision of 2026-11-20, co-author agreement pending |
 | Notary seal key | medium | LIP-0012 and LIP-0014, Draft |
 | Row stop key, v4 | medium | LIP-0014 section 10.1; decision of 2026-11-14, agreement pending |
@@ -533,9 +534,7 @@ names it as the holder or as the channel key.
   record's ceiling, at the owner's own executors and at the key holders of
   the owner's agents; at ceiling 2 also the owner's executor policy sections
   and the fast revocation of another device. No grant, no Nostr event, no
-  seal spend and no name operation. Draft LIP-0034 also permits
-  identity-only `auth-response/1` login at a foreign service, not grant,
-  consent or effect authority. A Matrix device key signs no envelope: its device-keys object
+  seal spend, external service challenge or name operation. A Matrix device key signs no envelope: its device-keys object
   binds the Olm identity from which its Megolm sessions come, and an
   end-to-end encrypted event bound to it counts as an L1 owner command
   (LIP-0029 OM2).
@@ -746,6 +745,27 @@ until that agreement.
 - Source: LIP-0012 and LIP-0014 sections 6 and 7, Draft; the designation is
   the owners' decision D3 of 2026-11-12.
 
+**Auth key (Draft LIP-0034)**
+
+- Owner: the owner of the authenticating name; provisional mode proves a key only.
+- Published: paired `auth_key` and `auth_seal` in the owner's confirmed
+  `swarma-manifest/1`, never `swarma` or a device list. Neither is grant authority.
+- Holder: a dedicated signer in separate hardened account/custody; no agent,
+  foreign verifier or service receives the private key.
+- Signs: only `swarma-auth-challenge/1` and `swarma-auth-upgrade/1`, under
+  their exact LIP-0020 BIP-340 tags. No grant, device envelope, Nostr event,
+  card, name transaction or seal spend.
+- Danger: high: a leak impersonates the owner at services, not at Link executors.
+- Recovery: spend the disposable auth seal; observers durably close login.
+  Publish a new auth key with a fresh seal via an owner-signed manifest update.
+- Derivation: Draft `m/84'/7'/12'/0/0` in a fresh dedicated account. Existing
+  account assignments are never reused; KEY-MAP reconciles v0.3 conflicts.
+  Auth/device fast-revocation seal keys are CSPRNG-only and destroyed after
+  recording their pre-signed revoke, never derived from the recovery seed.
+- Source: the Swarma Link editor's resolution adopting the owner's v0.3
+  draft, 2026-11-20; co-author agreement pending. Existing grant/name/seal
+  derivations and LIP-0024 custody isolation remain unchanged.
+
 **Credential issuer key**
 
 - Owner: the credential issuer, a person or organization; a notary uses a
@@ -759,13 +779,17 @@ until that agreement.
   attestation, Nostr event, owner envelope, name operation or card.
 - Danger: high; compromise forges claims within a separately trusted issuer
   policy but cannot itself authorize Link effects.
-- Recovery: rotate the key in `swarma`. Eternal, already anchored credentials
+- Recovery: a suspected compromise needs an owner-authenticated break, not
+  just a rotation. The break may close a historically authorized retired
+  key after rotation without republishing it. Eternal, already anchored credentials
   survive ordinary rotation; revocable credentials require the current key
   and a live seal. An owner-authenticated LIP-0032 compromise break states
   `h_c`: anchors below it survive, those at or above refuse. No silent
   history erasure or retroactive replacement by the current key is allowed.
-- Decision: Ivan Oparin decided on 2026-11-20 to add this role and historical
-  closure rule; the co-author's agreement is pending.
+- Decision: Ivan Oparin decided on 2026-11-20 (source: `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo`, `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`) to add this role and historical
+  closure rule; the co-author's agreement is pending. Sources:
+  `$Gud1cjVYSeUB5efzCOTWCUKyo6_USVveOlma-8vPrXo` and
+  `$rLXvqLJXXxqduX4JKe7QyLua9IPDECvVc6xmM_NtyOM`.
 - Source: [LIP-0032](lips/LIP-0032-generalized-notary-and-credentials.md),
   [LIP-0021 section 7.6](lips/LIP-0021-name-ownership-and-history.md#76-credential-issuer-history-and-compromise-break-draft-2026-11-20).
 
