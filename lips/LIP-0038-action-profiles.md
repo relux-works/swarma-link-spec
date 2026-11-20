@@ -4,7 +4,7 @@
 - **Created:** 2026-11-17
 - **Re-filed:** 2026-11-20, from the action-profiles draft on version 0.1.57; LIP-0032 now names the credentials proposal
 - **Affects:** the proposed entries of the two registries of
-  LIP-0020 W11.14: four further action identifiers under `swarma/` using the three
+  LIP-0020 W11.14: four further action identifiers under `swarma/`, two of which use the three
   shared limit kinds of LIP-0031, with what an executor checks before and during each effect, the
   refusals, and what its receipt states
 - **Builds on:** LIP-0006 sections 1, 3, 4, 5, 6 and 7, LIP-0007 section 1,
@@ -19,8 +19,8 @@ The registries of LIP-0020 W11.14 carry proposed profiles, not adopted
 actions at every executor. LIP-0030 proposes the agent-session leaves
 and their own kinds; LIP-0031 proposes `swarma/coins`,
 `swarma/model-cost` and `swarma/model-tokens`. This LIP proposes four
-further leaves using those same three kinds, not competing definitions
-of them. A side that runs no profile of an action still refuses it as
+further leaves, two of which use those same three kinds, not competing
+definitions of them. A side that runs no profile of an action still refuses it as
 `ACTION_UNDEFINED` (W11.14 rule 1), and a consumed kind without a profile
 there still refuses as `LIMIT_KIND_UNDEFINED` (rule 2).
 
@@ -70,6 +70,7 @@ P6.1 references LIP-0031 L9 for that choice; the event decides neither
 the four leaves nor any other rule or open encoding of this draft.
 It supersedes the original section 6 proposal to retain a reconciled
 unused reservation.
+The co-author's agreement is pending.
 
 | Carried text | State there | Used here |
 | --- | --- | --- |
@@ -95,9 +96,10 @@ should look at them first. Each is marked where it stands.
    open (sections 2, 4 and 6).
 2. Two refusal codes, `ACTION_ARGUMENTS` and `ACTION_TARGET`, with
    their place between the steps E2 and E3 of LIP-0014 section 8.4
-   (section 8). The checks of an invocation itself have no code in a
-   landed text (row E0 there), and this draft adds two codes for the
-   checks that belong to an action alone.
+   (section 8). LIP-0030 section 6 proposes invocation-check codes,
+   and the LIP-0014 companion's section 5 (O3) proposes E0's inner
+   order. Neither is an adopted assignment by this LIP; it adds only
+   the two codes for the checks that belong to an action alone.
 3. All four actions stand in the risk class that stops at a tip age of
    60 minutes (P1.12). The cutoffs are decided; which action stands in
    which class is not, and LIP-0022 leaves it to action profiles.
@@ -196,7 +198,7 @@ every effect, is what would let a v4 grant authorize these effects.
   of `G`; P1.2 and P1.11 still require their pinned keys. Changing the
   manifest alone closes no grant (LIP-0010 SH7).
 - LIP-0034 A1 to A3 separate foreign-service login under `auth_key` and
-  its paired `auth_seal` from grant, messaging and cold name-owner keys.
+  its paired `auth_seal` from device, grant and cold name-owner keys.
   A login, a device key or a service declaration authorizes none of
   these effects and substitutes for none of their signing roles.
 - LIP-0035's contract-free branch is a root grant without `delegate`,
@@ -206,6 +208,10 @@ every effect, is what would let a v4 grant authorize these effects.
   mirror below applies where a contract is required or supplied; this
   LIP neither invents a contract for that branch nor removes one from
   a hire, rental or delegated path.
+  Its section 2.2 `swarma-broker-invoke/1` wrapper has no member for
+  action arguments. It therefore cannot request any of these four
+  leaves under P1.5 without a new signed argument binding. That binding
+  remains open; arguments supplied outside the signature cannot fill it.
 
 ## Proposal
 
@@ -221,7 +227,7 @@ text; a rule of this draft says so.
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| P1.1 | Each of the four identifiers is one exact leaf, in lowercase segments separated by slashes. It matches exactly; a prefix grants nothing, and no other text stands for it (LIP-0008 section 12.3; LIP-0018 section 3; LIP-0035 section 2.1). The leaf is an entry of `actions` of `G` and, for a request under a child, of `delegate.actions` of the parent (LIP-0014 section 8.4, row E0). | Open, with the codes of row E0 |
+| P1.1 | Each of the four identifiers is one exact leaf, in lowercase segments separated by slashes. It matches exactly; a prefix grants nothing, and no other text stands for it (LIP-0008 section 12.3; LIP-0018 section 3; LIP-0035 section 2.1). The leaf is an entry of `actions` of `G` and, for a request under a child, of `delegate.actions` of the parent (LIP-0014 section 8.4, row E0). | `GRANT_ACTION_ABSENT` is proposed in LIP-0030 section 6 and the LIP-0014 companion O3; E0 assignments remain proposed |
 | P1.2 | The executor of the grant, the executor of the invocation and the authenticated service's pinned name and key are one service (LIP-0008 section 4). A service of the same type that the grant does not name is no executor for the request, and no budget of `G` is spendable at it (LIP-0008 sections 4 and 12.2). | The refusal of that check |
 | P1.3 | Before any reservation or effect, `X` admits the request as it admits any invocation: the checks of LIP-0008 sections 4 and 12 over the whole proof path, in one consistent observation of its own node, healthy and fresh for the class of the action (P1.12). A gateway or a presenter supplies data for those checks and replaces none of them (LIP-0008 section 5). | The refusal of the check that fails |
 | P1.4 | `X` knows the leaf and every limit kind that the request consumes, under the type profile it runs. That a text stands in `actions` of `G` does not define it, and a limit of an undefined kind is never read as no limit (LIP-0020 W11.14 rules 1 and 2). For the three shared kinds it also recognises the limit's resource, unit and period under LIP-0031 L4; an unsupported text is not a new kind or unlimited authority. | `ACTION_UNDEFINED`; `LIMIT_KIND_UNDEFINED`; `LIMIT_UNSUPPORTED` (LIP-0031) |
@@ -405,7 +411,7 @@ Checks of the executor, beside section 1:
 
 | Rule | Requirement | Refusal |
 | --- | --- | --- |
-| P5.1 | The model of the arguments is one that the resource of the tokens and cost limits names, together with one model and token-accounting profile for both. A request that names another model, or tokens counted under another profile, is no call under these limits. The largest output of the arguments stands against the per-request maximum of its kind, and against the remaining output allowance at the reservation of P5.2. A default that the arguments omit comes from the signed default of the grant and from nowhere else (LIP-0008 section 2). | `ACTION_TARGET` (proposed) for the model; `SPEND_OVER` (LIP-0031 L21) for a largest output above the stated per-request output ceiling |
+| P5.1 | The model of the arguments is one that the resource of the tokens and cost limits names, together with one model and token-accounting profile for both. A request that names another model, or tokens counted under another profile, is no call under these limits. The largest output of the arguments stands against the per-request maximum of its kind, and against the remaining output allowance at the reservation of P5.2. A default that the arguments omit comes from the signed default of the grant and from nowhere else (LIP-0008 section 2). An absent largest output with no signed default is the no-finite-maximum case of LIP-0031 L18/L20, not malformed arguments. | `ACTION_TARGET` (proposed) for the model; `ACTION_ARGUMENTS` (proposed) for a present but malformed output bound; `SPEND_OVER` for a well-formed bound above a stated per-request ceiling, or an absent bound without a signed default where a per-request cost or output key applies (LIP-0031 L18/L20/L21). Without such a key, the absent bound refuses at P5.2's reservation as `OWN_LIMIT_OVER` or `ROW_CAP_OVER`, in LIP-0031 section 6's order; nothing is reserved |
 | P5.2 | The reservation of P1.7 comes before the upstream call and covers, for the cost kind, the price of the request at its largest stated output under LIP-0031 L17's exact price-table maximum and single upward conversion, and, for the tokens kind, the input tokens as counted before the call and that largest output, in separate `input-token` and `output-token` accounts (LIP-0031 L19/L20), never their sum in one token account. Input that cannot be counted under the named accounting profile before the call reserves nothing and refuses. No upstream call is made on an estimate that no reservation covers. (This draft's rule, on the reservation duty of LIP-0008 section 2.) | `OWN_LIMIT_OVER`, `ROW_CAP_OVER`; `ACTION_ARGUMENTS` (proposed) where the input has no count |
 | P5.3 | During the call, `X` counts the output as it arrives and delivers no output beyond the smaller of the largest output of the arguments and what the reservation covers. Where the upstream returns more than was reserved, the excess is not delivered as this request's answer, and the cost that the upstream nevertheless charged is reconciled against the reservation and reported in the receipt, never taken silently from a later request's allowance. Known outcomes follow P6.1 and LIP-0031 L18/L20; an upstream charge above the reservation is outside that profile and is charged neither above the reservation to this grant nor to a later request. (This draft's rule.) | None of its own |
 | P5.4 | A request may arrive as a signed invocation, or in a session under LIP-0028 where the client cannot sign. In a session the request carries a bearer token and no signature, `X` makes the checks of the proof path before every reservation (LIP-0028 T4.5), the session's accounts stand beside those of `G` (T4.6), and a request sent twice is two requests, because no sender signed its identity (LIP-0028 section 4). The commands that open, extend and close a session are separate leaves of the type's table (LIP-0028 T1.1) and no part of this leaf; until the co-author agrees to sessions, a v4 model service admits signed invocations alone (LIP-0008 section 5). | The refusals of LIP-0028 for a request in a session |
@@ -435,16 +441,22 @@ revocation releases nothing (P1.10; LIP-0031 L9). The machine-readable
 contract mirror, where required or supplied, retains LIP-0031 L10;
 the scoped contract-free root of LIP-0035 is not given a new mirror.
 
-**P6.1 — DECIDED settlement choice (option A).** Apply LIP-0031 L9:
+**P6.1 — Settlement (option A).** **DECIDED: actual settlement and
+release of the difference only.** Apply LIP-0031 L9:
 for each shared kind, settle a known outcome at its actual consumption
-as that kind measures it, and release the difference from the reservation
+as that kind measures it, and release the difference from the reservation.
+This is the choice recorded by the owner event above, with the co-author's
+agreement pending, not acceptance of the other proposed rules of
+LIP-0031 or of this LIP. Each kind below cites this one rule.
+
+**PROPOSED mechanics and per-kind readings.** LIP-0031 L9 releases
 in the same accounts, atomically with the journal entry recording the
-outcome. A settlement is recorded once for that request identity and
-does not release again on replay. A known non-effect settles at zero;
-an unknown outcome retains its reservation. No settlement charges above
-the reservation to the grant. This is the choice recorded by the owner
-event above, not acceptance of the other proposed rules of LIP-0031 or
-of this LIP. Each kind below cites this one rule.
+outcome, once for that request identity and not again on replay.
+A known outcome in which the effect did not happen settles at the
+consumption its kind states for it (LIP-0031 L13/L15, L18 and L20),
+which is zero only where nothing was consumed. An unknown outcome
+retains its reservation. No settlement charges above the reservation
+to the grant. These carried rules remain PROPOSED.
 
 #### `swarma/coins`
 
@@ -453,7 +465,7 @@ of this LIP. Each kind below cites this one rule.
 | Identifier and resource | `swarma/coins`, LIP-0031 L11: `<system>:<asset>`, with `namecoin:NMC` assigned. Other payment systems require their own assigned texts; permitted-target encoding remains open (P3.2), not an invented suffix to this resource |
 | Unit and integer scale | L11: atomic asset units; `namecoin:NMC` uses `atomic`, 100000000 per NMC. Amounts use W11.1 decimal strings and exact integer arithmetic |
 | Bounds and rounding | L1 and L13: integer form 0 to 18446744073709551615, no floating-point amounts; charge the value paid away plus applicable fees, excluding change |
-| Period and aggregation | L3, L5, L7 and L12: whole-window total, stated period instances and the per-request ceiling of L14. Chain coins admit block and clock families; off-chain rails admit clock counting only |
+| Period and aggregation | L3, L5, L7 and L12: whole-window total, stated period instances and the per-request ceiling of L14. Only coins on the chain of the grant's `genesis` admit block and clock families; other chains and off-chain rails admit clock counting only |
 | Reservation, uncertainty and settlement | P3.3 and L13 reserve amount plus fee bound before signing or broadcast. P3.5 retains unknown outcomes. Known amount and fees use L13 and the single settlement rule P6.1 |
 | Refusal codes | Section 8; LIP-0031 L4/L14 and L8 retain their codes. `ACTION_TARGET` and `ACTION_ARGUMENTS` check the request against a recognised limit, not the recognisability of that limit |
 | Vectors and checker, path | Cases S38-5 to S38-9 and S38-C1/S38-C2; invocation/receipt octets and real-executor vectors remain open. LIP-0031 sections 1 and 2, consumed by this LIP |
@@ -495,6 +507,10 @@ to stand when the kinds arrive; until then `swarma/spend-coins` and
 `swarma/model-call` are the two of the four that a grant can carry to
 an effect, and the text says so rather than naming identifiers that
 nobody assigned.
+Whether `swarma/model-call` also consumes the unnamed model-request
+count is open, not decided by that statement. If required, that count
+likewise blocks the effect at P1.4 until its kind has a profile and
+identifier; this LIP assigns neither by implication.
 
 ### 7. The proposed registry rows
 
@@ -530,12 +546,12 @@ neither binds a reader before it.
 
 | Code | What it reports | Rules | State |
 | --- | --- | --- | --- |
-| `ACTION_ARGUMENTS` | The arguments are not complete for the leaf, are not in the form that its profile states, or differ from the actual arguments of the effect. The request's amount unit differing from a recognised limit, a malformed output bound, a name value that no profile of the executor can read, and input with no token count stand here. A well-formed longest output above a stated shared-kind per-request ceiling instead uses `SPEND_OVER` | P1.5, P2.2, P3.1, P4.3, P5.1, P5.2 | New with this LIP |
+| `ACTION_ARGUMENTS` | The arguments are not complete for the leaf, are not in the form that its profile states, or differ from the actual arguments of the effect. The request's amount unit differing from a recognised limit, a present but malformed output bound, a name value that no profile of the executor can read, and input with no token count stand here. Exception: an absent largest output with no signed default follows LIP-0031 L18/L20 under P5.1, not this code. A well-formed longest output above a stated shared-kind per-request ceiling instead uses `SPEND_OVER` | P1.5, P2.2, P3.1, P4.3, P5.1, P5.2 | New with this LIP |
 | `ACTION_TARGET` | The target of the effect is not the one that the grant and its limits permit: a signing key or a destination of a message, an asset, a rail or a payee of a payment, a name, a registration or a transfer asked of the update leaf, a model or a currency of a model request | P2.1, P2.2, P3.1, P3.2, P4.1, P4.2, P4.4, P5.1 | New with this LIP |
 | `ACTION_UNDEFINED` | No type profile of the executor defines the action | P1.4 | LIP-0020 W11.14 |
 | `LIMIT_KIND_UNDEFINED` | A limit kind that the request consumes has no type profile at the executor | P1.4 | LIP-0020 W11.14 |
 | `LIMIT_UNSUPPORTED` | A shared kind is known but its resource, unit or period is unsupported | P1.4 | LIP-0031 L4 |
-| `SPEND_OVER` | A shared kind exceeds a stated per-request ceiling, or lacks a finite maximum as L18/L20 specify | P3.3, P5.1, section 6 | LIP-0031 L14, L18, L18A, L20, L21 |
+| `SPEND_OVER` | A shared kind exceeds a stated per-request ceiling, or has no finite maximum under L18/L20 and the applicable per-request cost or output key is stated. This includes an absent largest output with no signed default. With no such key, a missing finite maximum instead refuses at reservation as `OWN_LIMIT_OVER` or `ROW_CAP_OVER`, in LIP-0031 section 6's order. A present but malformed output bound is `ACTION_ARGUMENTS` | P3.3, P5.1, section 6 | LIP-0031 L14, L18, L18A, L20, L21 |
 | `LIMIT_CLOCK_REGRESSION` | A clock-period instance regresses at reservation | P1.7, section 6 | LIP-0031 L7 and section 6 |
 | `OWN_LIMIT_OVER` | A reservation would exceed the own account of `G` for its key | P1.7 | LIP-0026 R5.6 |
 | `ROW_CAP_OVER` | A reservation would exceed the row account of the parent for its key | P1.7 | LIP-0026 R5.6 |
@@ -544,7 +560,10 @@ P8.1. The checks of a request stand in this order. First the admission
 of the grant and of its path and the authentication of the request, at
 their places in the landed texts (LIP-0008 sections 4 and 12; LIP-0014
 section 8.4 for a child). Then the checks of the invocation itself
-(row E0 there, whose codes and inner order are open). Then the action
+(row E0 there). LIP-0030 section 6 proposes their base codes, and the
+[LIP-0014 companion section 5 (O3)](LIP-0014-source-contract-proposals.md#5-o3-invocation-checks--proposed)
+proposes E0.1 to E0.4's order. Both remain PROPOSED; this LIP adopts
+none of their assignments. Then the action
 is defined (E1), then every kind it consumes is defined (E2), with the
 shared-kind texts checked as `LIMIT_UNSUPPORTED` under LIP-0031 L4. Then the
 checks of this LIP that need no ledger: `ACTION_TARGET` before
@@ -593,15 +612,18 @@ draft.
 | S38-5 | A `spend-coins` request inside every stated limit, amount and fee bound together | Reserved, rechecked and paid. The receipt states the payee, the amount and fees as paid and the spend's identifier |
 | S38-6 | The same request with the amount one atomic unit below the remaining allowance and a fee bound of two units | `OWN_LIMIT_OVER` (or `ROW_CAP_OVER` under a child): the charge is amount and fees together (P3.3). Nothing is signed |
 | S38-7 | The same amount on another asset; on the same asset through another rail; in another unit | `ACTION_TARGET` for the asset and the rail; `ACTION_ARGUMENTS` for the unit (P3.1) |
-| S38-8 | A payee that the limit's resource does not permit, at an amount of one atomic unit | `ACTION_TARGET`, before any amount is compared (P3.2) |
+| S38-8 | A payee that the applicable target constraint does not permit (form open, P3.2), at an amount of one atomic unit | `ACTION_TARGET`, before any amount is compared (P3.2) |
 | S38-9 | A spend broadcast and then no certain outcome; the same request once more; a new request for the same payment under a new nonce | The reservation stands and the receipt is uncertain. The repeat makes no second spend. The new request is a second payment and is charged as one; it reconciles nothing (P3.5) |
 | S38-10 | A `name-update` request for a registered, unexpired name with a complete new value within 520 bytes that keeps the owner | Reserved, re-read and written. The receipt states the name, both value hashes, the transaction id and the observed state |
 | S38-11 | A value of 521 bytes; a value that `X` would complete from the old value; a request for a name that the limit does not permit | `ACTION_ARGUMENTS` twice; `ACTION_TARGET` (P4.1, P4.3) |
-| S38-12 | A request to register a new name; to write a name that the node shows expired; to move the name to a new owner | `ACTION_TARGET` for the registration and the transfer; the refusal of the read for the expired name (P4.2, P4.4). No operation is built |
+| S38-12 | A request to register a new name; to write a name that the node shows expired; to move the name to a new owner | `ACTION_TARGET` for all three (P4.2, P4.4), unlike the registered, unexpired control S38-10. No operation is built |
 | S38-13 | The request of S38-10, and between its two reads another operation spends the name's output | Refused on the second read, with no operation on the stale output (P4.6) |
 | S38-14 | A `model-call` request whose counted input and largest output fit both limits, at the reserved price | Reserved before the call, answered, and the receipt states the model, both token counts and the cost charged with its basis |
 | S38-15 | A model that the limits' resource does not name; input that has no count under the named accounting profile | `ACTION_TARGET`; `ACTION_ARGUMENTS`. No upstream call (P5.1, P5.2) |
 | S38-16 | A largest output above the per-request maximum; and one above the remaining output allowance but inside the maximum | `SPEND_OVER` for the first (LIP-0031 L21); the refusal of the account for the second (P5.1) |
+| S38-16A | S38-14 with the sole change that the signed arguments omit the largest output and there is no signed default; an applicable per-request cost or output key is stated | `SPEND_OVER`, not `ACTION_ARGUMENTS` (P5.1; LIP-0031 L18/L20). No reservation or upstream call |
+| S38-16B | S38-16A at a root grant with whole-window cost and output ceilings, but without an applicable per-request cost or output key | `OWN_LIMIT_OVER` at the first consumed own account in LIP-0031 section 6's order. Nothing is reserved and no upstream call is made; not `ACTION_ARGUMENTS` (P5.1) |
+| S38-16C | S38-14 with a present output bound that is malformed under the accounting profile rather than absent | `ACTION_ARGUMENTS`, whether or not a per-request key is stated (P5.1). No reservation or upstream call. S38-14's well-formed bound remains the positive control |
 | S38-17 | An upstream answer longer than the largest output of the arguments | The answer is cut at the bound and no more is delivered; the excess cost is reconciled and reported, never moved to a later request (P5.3) |
 | S38-18 | An upstream call with no certain outcome, and the same request sent twice in a session | The reservation stands and the outcome is uncertain (P5.5). In a session the two sends are two requests and are charged twice (P5.4) |
 | S38-19 | Each of the four leaves at an executor that runs no profile of this LIP, under a well-formed grant whose `actions` state the leaf | `ACTION_UNDEFINED` for each (P1.4): that the text stands in the grant defines nothing |
@@ -618,7 +640,7 @@ These are semantic contract fixtures, not invocation octets or executed
 service tests. Each control assumes the shared-kind profile, valid
 authority, recognised keys, sufficient ceilings and a durable reservation
 before the effect. Each negative case changes only the settlement step
-to the original draft's no-release behaviour; it is nonconforming to
+as stated, retaining unused allowance or zeroing actual consumption; it is nonconforming to
 P6.1, not a new request refusal code. The same check covers every own
 and applicable row account and its original period instance. Other
 requests' debits are unchanged.
@@ -627,10 +649,17 @@ requests' debits are unchanged.
 | --- | --- | --- |
 | S38-C1 | `swarma/coins`: reserve 10 atomic units, payment 3 plus fee bound 7; known actual payment 3 plus fee 1 = 4 | Debit 4, release 6, atomically with the outcome (P6.1; LIP-0031 L9/L13). Replay changes no account and sends no second payment |
 | S38-C2 | S38-C1 with the sole defect that settlement retains the reserved 10 and releases 0 | Nonconforming to P6.1: the required debit is 4 and release is 6, not 10 and 0. No repair may create a second payment |
+| S38-C3 | `swarma/coins`: reserve 10 atomic units, payment 3 plus fee bound 7; the payment is displaced by a transaction returning the coins to the payer, and the attempt actually paid fee 2 | Debit 2, release 8 (P6.1; LIP-0031 L13/L15): the payment value is 0, not the paid fee |
+| S38-C4 | S38-C3 with the sole defect that the known failed payment settles at debit 0 and release 10 | Nonconforming to P6.1 and LIP-0031 L13/L15: the fee debit must be 2 and release 8. A known non-effect does not erase actual consumption |
+| S38-C5 | The reservation of S38-C3, but a known refusal before broadcast, with no value or fee consumed | Debit 0, release 10 (P3.4; P6.1; LIP-0031 L13/L15). Zero is correct here because nothing was consumed, unlike S38-C3 |
 | S38-T1 | `swarma/model-tokens`: reserve 10 in the `output-token` account; the known actual output is 4 under the executor's accounting. The separate counted input was sent | Debit 4 output tokens, release 6 output tokens (P6.1; LIP-0031 L9/L20). Input settles separately at its counted reservation. Replay releases nothing again |
 | S38-T2 | S38-T1 with the sole defect that output settlement retains the reserved 10 and releases 0 | Nonconforming to P6.1: the output debit must be 4 and release 6; neither the input account nor a new model call may absorb the difference |
+| S38-T3 | `swarma/model-tokens`: input counted and reserved at 4 was sent; output reserved at 10; the known upstream refusal returned no output | Input debit 4, release 0; output debit 0, release 10 (P6.1; LIP-0031 L20). A refusal does not erase the sent input's consumption |
+| S38-T4 | S38-T3 with the sole defect that input settles at debit 0 and release 4 | Nonconforming to P6.1 and LIP-0031 L20: input sent must settle at its reservation of 4, irrespective of the answer |
 | S38-M1 | `swarma/model-cost`: finite table maximum reserves 10 integer subunits; the known actual whole-request cost under that same table converts once upward to 4 | Debit 4, release 6 (P6.1; LIP-0031 L9/L18). Replay changes neither debit nor release and makes no new upstream call |
 | S38-M2 | S38-M1 with the sole defect that cost settlement retains the reserved 10 and releases 0 | Nonconforming to P6.1: the required debit is 4 and release is 6; the difference cannot be charged to a later request |
+| S38-M3 | `swarma/model-cost`: reserve 10 integer subunits; known priced work converts once upward to actual cost 4, but the answer is unusable | Debit 4, release 6 (P6.1; LIP-0031 L18). Priced work is charged whether or not the answer is used |
+| S38-M4 | S38-M3 with the sole defect that an unusable answer settles at debit 0 and release 10 | Nonconforming to P6.1 and LIP-0031 L18: actual priced work still debits 4 and releases 6 |
 | S38-U1 | S38-C1, S38-T1 and S38-M1 separately, with the sole changed fact that the outcome is still unknown rather than established at 4 | Each keeps its full reservation of 10 and releases 0. A restart, revocation or partial observation is not evidence permitting the control's release (P1.10; LIP-0031 L9) |
 
 ## Sources
@@ -744,10 +773,16 @@ against its resource; no such implementation or qualification is claimed.
 - The members of `swarma-invocation/1` and of `swarma-receipt/1`, the
   journal key of a request, and with them every argument form and
   receipt member of sections 2 to 5 (LIP-0020 sections 3 and 6).
+  LIP-0035 section 2.2's broker wrapper cannot carry these leaves until
+  a signed action-argument binding is specified; no unsigned supplement
+  is authorized by this LIP.
 - Identifiers and profiles for the five kinds that section 6 states by
   meaning alone: outbound messages, name operations, model requests,
   maximum answer length and required confirmation depth. Until the
   first two exist, sections 2 and 4 are defined and unusable.
+  Whether `model-call` consumes the unnamed model-request count is
+  unresolved; if it does, P1.4 also blocks that leaf until its kind
+  profile and identifier exist.
 - Permitted-target encoding for coins and the other action constraints:
   LIP-0031 now fixes `<system>:<asset>`, `<model>/<accounting>`, the
   input/output units and `<currency>/<scale>`, but assigns no payee
@@ -780,8 +815,9 @@ against its resource; no such implementation or qualification is claimed.
   counts of different chains are no measures of one another
   (LIP-0008 section 2).
 - The code for a grant that an effect service refuses under
-  LIP-0006 section 7 (P1.6), which no landed text names, and the
-  codes of the invocation checks of row E0, beside which the two
+  LIP-0006 section 7 (P1.6), which no landed text names, and adoption
+  of the invocation-check codes proposed in LIP-0030 section 6 and
+  the E0 order of the LIP-0014 companion O3, beside which the two
   codes of section 8 stand.
 - Confirmation as part of an outcome for `spend-coins` and
   `name-update`: at what depth a receipt may call an effect

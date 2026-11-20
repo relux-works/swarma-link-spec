@@ -3,8 +3,9 @@
 - **Status:** Draft. The paragraph of section 5 that states the four
   rules is decided by the owner on 2026-11-17 and is in force in this
   version; the co-author's answer is folded in by amendment. Every
-  other rule of this LIP is proposed, neither
-  owner has decided one, and nothing else in it is in force. The
+  other rule of this LIP remains proposed except the actual-settlement
+  and release choice recorded in point 5 below, decided on 2026-11-20
+  with the co-author's agreement pending. No other rule is adopted. The
   owner's requirement of 2026-11-17 that a period be expressible in
   clock time and, for chain coins, in blocks is recorded under "What
   is decided and what is proposed"; the rules that carry it are
@@ -55,7 +56,8 @@ This LIP proposes the first three type profiles:
 - exhaustion and continuation, in the paragraph of section 5 that
   states the four rules, to which every other text points (decided
   by the owner on 2026-11-17 and in force in this version; the rest
-  of this list is proposed);
+  of this list is proposed except point 5's actual-settlement and
+  release choice below);
 - the refusal codes and their order (section 6), and the vector set
   that the profiles need, described and not built (section 7).
 
@@ -93,10 +95,10 @@ none of those texts and restates none of them; it cites them.
 | Exhaustion and continuation | The decision record is the paragraph of section 5 that states the four rules | That paragraph contains nothing beyond them. The separate PROPOSED reading has no interim force |
 
 Every rule of this LIP except the paragraph of section 5 that states
-the four rules is the draft's proposal, and neither owner has decided
-one. Five points are choices of this draft
-where no text gives an answer, and the owners should look at them
-first:
+the four rules and the limited decision in point 5 below remains the
+draft's proposal. Points 1 to 4 are choices of this draft where no text
+gives an answer, and the owners should look at them first; point 5
+records the subsequent settlement decision:
 
 1. The reading of `period` in L3: an absent `period` is the total over
    the whole window, a present one is a ceiling per period instance,
@@ -122,9 +124,15 @@ first:
    `LIMIT_CLOCK_REGRESSION` (section 6).
    Every other refusal of this LIP takes a code that a landed text
    already names.
-5. The settlement of sections 3 and 4 releases the difference between
-   the reserved maximum and the actual consumption once the outcome is
-   known. LIP-0026 R5.8 leaves that release to the type profile.
+5. **DECIDED settlement choice only:** charge actual consumption and
+   release the difference from the reservation for each of the three
+   shared kinds, by L9. Ivan Oparin selected option A for LIP-0038 on
+   2026-11-20, "charge actual, return the rest, as LIP-0031", event
+   `$VY_Ow-Yi4YWA695VYxcLlg0EdizZ6p8UzPkpr37ZyGU`.
+   The co-author's agreement is pending. LIP-0026 R5.8 leaves release
+   to the type profile; the other mechanics and per-kind rules remain
+   PROPOSED. [LIP-0038 P6.1](LIP-0038-action-profiles.md#6-the-three-shared-limit-kinds)
+   states that settlement choice once for the consuming action leaves.
 
 The paragraph of section 5 that states the four rules is no choice
 of this draft: it is decided by the owner on 2026-11-17 and in force

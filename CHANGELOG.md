@@ -14,6 +14,10 @@ wire members, vector changes or production migration is claimed.
   is charged and the difference released, by one shared rule referring
   to LIP-0031 L9. Add a reserve-10/actual-4 control and one-defect case
   for each shared kind, plus the unknown-outcome retention countercase.
+  The co-author's agreement is pending. Align LIP-0031's status and
+  point 5 with that limited decision; other mechanics remain PROPOSED.
+  Known non-effects retain any kind-defined consumption, including paid
+  attempt fees, sent input and priced work; add paired regression cases.
 - Reference LIP-0031's existing resource/unit/period forms, exact
   accounting and refusal order instead of proposing incompatible kind
   definitions. Index LIP-0030's distinct grant leaves and station kinds
@@ -22,6 +26,9 @@ wire members, vector changes or production migration is claimed.
   and W11.4 limit arrays; LIP-0034's auth-key separation; and LIP-0010
   section 11's manifest service declaration, which supplies discovery,
   not authority. Preserve all other Draft/PROPOSED status and open points.
+  Distinguish absent and malformed model-output bounds deterministically
+  under LIP-0031's refusal order, cite the existing proposed E0 codes,
+  and leave the broker wrapper's missing signed-argument binding open.
 - Update the README version/LIP list and UNRESOLVED_QUESTIONS; unchanged
   trust and grant checks still do not qualify these new action profiles.
 
