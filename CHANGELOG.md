@@ -8,10 +8,16 @@ companion. Only the owner (guardian) creates an agent identity; the
 homeserver registration credential is the owner's secret, outside every
 agent's reach; the new account's access token goes straight into keyvault
 custody. The enrollment contract lives in the keyvault specification,
-`docs/agent-enrollment.md` (PR #123, in review); Link cites it rather than
-restating it. The Enrollment register and B1/B2 question entries now
-distinguish the decided custody and contract home from acceptance of the
-keyvault text, which remains the replacement trigger. The transaction
+`docs/agent-enrollment.md` (swarma-keyvault PR #123, merged on 2026-11-20 at
+`eb103c8f361ce430589c50b26e42604c43b2e83e`); that text remains **PROPOSED**,
+and merging it is not acceptance. On acceptance, Link cites it rather than
+restating it. The Enrollment register and B1/B2 question entries distinguish
+the decided custody and contract home from the still-OPEN B2 registration-route
+mechanism and acceptance of the keyvault text. Section 2.4 retains the owners'
+b1 wording and records the keyvault decision record's differing date,
+deployment scope and holder; the scope and owner/administrator identity
+remain OPEN, and the keyvault text must align before acceptance. Acceptance
+with those gates retained remains the replacement trigger. The transaction
 clauses stay **PROPOSED**; no normative rule, wire member, vector or
 implementation changes, and no qualification or adoption is claimed.
 
