@@ -865,14 +865,21 @@ gives the refusal. Step 1 has the following ordered substeps:
    permits missing `contract`; a child still requires it (`WIRE_MEMBER`).
 2. A root without `contract` selects the contract-free branch and MUST NOT
    supply a mandate. For a root with `contract`, only an anchor carrying
-   payload `0x03` or a presented form claiming payload type
-   `swarma-unilateral-mandate/1` selects the mandate branch, regardless of
-   the offered preparation version. Only that branch MUST present the bound
+   payload `0x03` or a mandate claim as defined here selects the mandate
+   branch, regardless of the offered preparation version.
+   Only that branch MUST present the bound
    contract document; missing bytes are `CONTRACT_NOT_PRESENTED`, never a
-   reason to fall back or silently fetch it. Check the document and signed
+   reason to fall back or silently fetch it. The **claim read** is defined
+   as follows: presented bytes claim the mandate profile only if they pass
+   W9.1 steps 1–2 and their payload has a member `type` whose value is
+   exactly the string `swarma-unilateral-mandate/1`. Other presented bytes
+   on a root whose anchor carries payload `0x02` are ignored at issuance.
+   On the branch selected by a payload-`0x03` anchor, check the document and signed
    form first (W9.1 steps 1–2, with their codes, including `WIRE_JSON` for
-   non-document bytes); a payload type other than
-   `swarma-unilateral-mandate/1` then refuses as `ISSUANCE_MODE`. The signed
+   non-document bytes). The **type check**, after those two steps, refuses
+   as `ISSUANCE_MODE` if the payload's `type` is absent, is not a string,
+   or is any string other than `swarma-unilateral-mandate/1`; this replaces
+   W3.1's `WIRE_TYPE` at this step. The signed
    mandate then passes its remaining W9 wire/signature pipeline. Profile
    selection is not validation, and a failed mandate never falls back.
    Otherwise the root stays on the ordinary `/1` path: no contract document

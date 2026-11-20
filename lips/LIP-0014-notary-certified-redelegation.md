@@ -1464,8 +1464,9 @@ The steps are named F1 to F24, and A1 stands between F19 and F20. The row
 of a child is the row that its ordinal selects (LIP-0026 R8.3, R8.8).
 
 **Draft LIP-0035 routing clarification.** At F6(a), after the required
-documents are present and before (b), a bound document claiming payload type
-`swarma-unilateral-mandate/1` refuses as `ISSUANCE_MODE`: it is never the
+documents are present and before (b), a bound document that satisfies the
+claim read defined in [LIP-0020 W9.4 step 1, substep 2](LIP-0020-grant-v4-wire-registry.md#9-pipelines-order-and-refusal-codes)
+refuses as `ISSUANCE_MODE`: it is never the
 contract of an ordinary `/1`-issued grant. Mandates are root-only `/2`
 issuances and confer no re-delegation. Missing documents still give
 `CONTRACT_NOT_PRESENTED` first. This does not add a contract-byte check to

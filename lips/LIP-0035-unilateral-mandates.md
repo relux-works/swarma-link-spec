@@ -105,10 +105,10 @@ preparation mode in step 2; skip separate assent/consent in steps 3–4 for
 either unilateral branch; frame in step 5; typed preparation commitment
 in step 6. The presenter supplies the signed mandate bytes whenever the
 grant takes the mandate branch: a root with `contract` under payload `0x03`,
-or one presented with a form claiming the mandate payload type. Missing
-mandate bytes refuse `CONTRACT_NOT_PRESENTED`; malformed document/form bytes
-use their W9 codes, including `WIRE_JSON` for non-document bytes; a different
-payload type after those checks is `ISSUANCE_MODE`. A failed mandate never
+or one presented with a mandate claim. Both the claim read and the type
+check are defined only in [LIP-0020 W9.4 step 1, substep 2](LIP-0020-grant-v4-wire-registry.md#9-pipelines-order-and-refusal-codes).
+Missing mandate bytes refuse `CONTRACT_NOT_PRESENTED`; malformed document/form bytes
+on the selected branch use their W9 codes. A failed mandate never
 falls back to `/1` or the contract-free branch. Ordinary `/1` roots require
 no contract bytes at issuance and keep LIP-0020 section 10's stated-input behaviour:
 the ordinary contract identifier is 32 given octets while its preimage is
@@ -325,8 +325,15 @@ Vectors are **not required for Draft LIPs** and are not supplied. Admission
 still requires implementation tests for a valid root/key and root/name pair,
 ordinary contract-binding `/1` roots accepted without contract bytes as in
 LIP-0020 section 10's `composed-v-01` and `composed-v-02`, beside mandate-only missing
-bytes (`CONTRACT_NOT_PRESENTED`), non-document bytes (`WIRE_JSON`), and a
-different payload type (`ISSUANCE_MODE`); forbidden `delegate`/child/hire/rental,
+bytes (`CONTRACT_NOT_PRESENTED`), and, on a payload-`0x03` anchor, non-document
+bytes (`WIRE_JSON`) and a different payload type (`ISSUANCE_MODE`). Add these
+named regression pairs: `mandate-type-absent` and `mandate-type-non-string`
+each refuse `ISSUANCE_MODE` on that anchor, beside `mandate-type-valid`
+admitted with a valid mandate. On `composed-v-01` (payload `0x02`),
+`ordinary-non-document`, `ordinary-duplicate-type` and
+`ordinary-non-canonical-mandate-claim` each remain `ok`, beside
+`ordinary-valid-mandate-claim`: the same root with a valid mandate form
+takes the mandate branch and never returns `ok`. Also test forbidden `delegate`/child/hire/rental,
 null versus omitted contract, obligation-bearing actions, wrong preparation
 version, absent seal, replay/concurrent single use, and durable revocation.
 No single-use P2SH-v4 bytes are claimed while their construction is open.

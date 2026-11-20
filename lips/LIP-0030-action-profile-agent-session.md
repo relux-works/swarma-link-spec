@@ -594,8 +594,9 @@ against the other root checks. This admission amendment does not supply
 a session-ending event for a validated contract-seal spend (N12).
 
 **Draft LIP-0035 routing clarification.** Within C6, after the required
-documents are present and before recomputation, a bound document claiming
-payload type `swarma-unilateral-mandate/1` refuses as `ISSUANCE_MODE`, for a
+documents are present and before recomputation, a bound document that satisfies
+the claim read defined in [LIP-0020 W9.4 step 1, substep 2](LIP-0020-grant-v4-wire-registry.md#9-pipelines-order-and-refusal-codes)
+refuses as `ISSUANCE_MODE`, for a
 root or a child. It is never an ordinary `/1` contract; a child applies the
 same check already inside F6(a). Missing documents keep C6's existing codes
 and precede this check. Ordinary root issuance under LIP-0020 W9.4 still
