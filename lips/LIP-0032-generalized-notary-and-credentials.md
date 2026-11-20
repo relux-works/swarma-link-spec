@@ -53,8 +53,8 @@ only `/2` kinds are `child-within-parent` and `contract-notarization`.
 
 Both use LIP-0020 W1 to W6: restricted RFC 8785, `type` rather than
 `profile`, the type's tagged digest, BIP-340 and `{payload,signature}`.
-There is no new fixed `swarma-notary-v2` prefix; the literal old prefixes
-are not 16 bytes merely because an older profile had a 16-byte prefix.
+The proposed fixed `swarma-notary-v2` prefix is not used: W4 derives
+the signing domain from the exact registered type string.
 The signed form is at most 65536 bytes.
 
 For `child-within-parent`, the binding, textual/mechanical checks, parties,
@@ -68,7 +68,7 @@ For `contract-notarization`, the proposed payload has exactly these
 members, sorted by RFC 8785, with the forms of section 2 below:
 `type` = `swarma-notary-attestation/2`, `kind` = `contract-notarization`,
 `network`, `genesis`, `notary` (the pinned name/registration/owner object),
-`notary_key` (signing key), `contract_id` (hash), `party_names` (2 to 64
+`notary_key` (signing key), `contract_id` (hash), `party_names` (two or more
 distinct name strings, increasing ASCII order), `notary_clause_sha256`
 (hash), `witnessed_at` (Unix-seconds number), `notary_seal` (the
 `notary_seal` member forms of LIP-0014 section 6.1, re-encoded in W1
@@ -95,26 +95,25 @@ A credential is a LIP-0020 signed object with the following payload schema;
 the **complete signed form** is at most **65536 bytes**. Every object has
 only its listed members. Canonical bytes are W1, integers W2, keys W3.6,
 the signing digest W4, signature and signed form W5, identifier and content
-address W6. No `null`, mode discriminator, fixed-prefix digest or v1
-contract canonicalization is borrowed. Sensitive claim fields SHOULD use
+address W6. No `null`, fixed-prefix digest or v1 contract canonicalization is borrowed. Sensitive claim fields SHOULD use
 per-claim salts for selective disclosure, as the original proposal requires.
-The exact salted-clause/Merkle proof format is open; the flat claim form
+The exact salted-clause/Merkle proof format is open; the claims container
 below authenticates a complete privately delivered document, not a partial
 disclosure proof. A verifier MUST NOT accept an invented partial proof.
 
 | Member | Form and meaning |
 | --- | --- |
 | `type` | Exact string `swarma-credential/1` |
-| `credential_kind` | `subject-claim`, `agent-audit`, or a supported namespaced application-kind string of 1 to 128 ASCII bytes |
+| `credential_kind` | `subject-claim`, `agent-audit`, or a supported nonempty namespaced application-kind ASCII string |
 | `network` | `main` or `regtest`, matching `genesis` and the pinned chain |
 | `genesis` | Hash: exactly 64 lowercase hex characters |
 | `issuer` | Exactly `name`, `registration`, `owner`: the issuer's name, first-registration outpoint and compressed name-owner output key, as W11.2 defines these forms |
 | `issuer_key` | Valid 64-hex x-only BIP-340 key, read from that issuer name's `swarma.issuer.cred` |
-| `subject` | Exactly `{key}` with a signing key, or exactly `{name,registration,owner}` with the same pinned name forms as `issuer`; no name string alone |
+| `subject` | Exactly `{mode,key}` with `mode` equal to `key` and a signing key, or exactly `{mode,name,registration,owner}` with `mode` equal to `name` and the same pinned name forms as `issuer`; no name string alone. These are this credential schema's members, not extra grant-recipient members |
 | `claims_salt` | 32 random bytes, 64 lowercase hex; part of the signed payload |
-| `claims` | Object with 1 to 128 distinct claim-name strings (1 to 128 ASCII bytes) mapped to strings, booleans or W2 number-form integers; each string value at most 4096 UTF-8 bytes; no nested objects or arrays in this first profile |
+| `claims` | Canonical object of machine-readable claims under the supported credential-kind schema. W1 values and depth limits apply; that schema states the exact W2 form and bound of every integer. No per-field quota beyond the complete-document bound is introduced here. Salted commitments or selective proofs require their separately specified schema below |
 | `lifecycle` | `eternal` or `revocable` |
-| `revocation_seal` | Absent for eternal; required for revocable, exactly `{txid,vout,script}`: 64-hex txid, W2 number-form output index at most 4294967295, lowercase hex script of at most 10000 bytes, controlled solely by the issuer |
+| `revocation_seal` | Absent for eternal; required for revocable, exactly `{txid,vout,script}`: 64-hex txid, W2 number-form output index at most 4294967295, lowercase hex script bytes, controlled solely by the issuer |
 | `not_before_height` | W2 number-form height, 0 to 9007199254740991 |
 | `not_after_height` | Optional only for eternal; required for revocable, same form, strictly greater than `not_before_height`; exclusive end of the window |
 | `issued_at` | W2 number-form Unix seconds, a claim of the signer, never evidence of anchor height |

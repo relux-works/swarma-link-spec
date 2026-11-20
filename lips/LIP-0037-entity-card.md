@@ -71,12 +71,12 @@ without a BOM or trailing bytes, with exactly these members in this order:
 | 3 | `name` | The entity's own `id/` name, at most 255 ASCII bytes |
 | 4 | `seq` | Positive canonical JSON integer, at most 9007199254740991 |
 | 5 | `kind` | `agent`, `person` or `service` |
-| 6 | `display` | Human label, at most 64 UTF-8 bytes |
+| 6 | `display` | Short human label, directing no authority |
 | 7 | `owner` | Landlord/operator `id/` name, at most 255 ASCII bytes; the same name for a person |
-| 8 | `transports` | At most 64 `{transport,address}` objects, in that member order, each identifying one public reachability hint |
-| 9 | `relays` | The full list of zero to 64 distinct absolute `ws` or `wss` URLs with a host, each at most 256 ASCII bytes |
-| 10 | `role` | Work description, at most 280 UTF-8 bytes |
-| 11 | `contact` | Public contact address or empty string, at most 256 UTF-8 bytes |
+| 8 | `transports` | Array of `{transport,address}` objects, in that member order, each identifying one public reachability hint |
+| 9 | `relays` | The full list of absolute ASCII `ws` or `wss` URLs with a host; the empty list is valid |
+| 10 | `role` | Short work description, directing no authority |
+| 11 | `contact` | Public contact address or empty string |
 | 12 | `replaces` | Canonical nonnegative JSON integer, less than `seq`; 0 for the first card, otherwise the previous card's `seq` |
 
 Canonical encoding is fixed-order, **not** RFC 8785 key sorting. Outside
@@ -89,12 +89,12 @@ or exponent. Arrays keep their order. A reader re-encodes and requires
 identical bytes. Duplicate, unknown, reordered or null members refuse.
 The 16384-byte bound covers the complete document, not a signed wrapper.
 
-`transport` is a nonempty lowercase ASCII token of at most 32 bytes using
-letters, digits and hyphens. `address` is a nonempty string of at most 512
-UTF-8 bytes. This is a reachability vocabulary, not an action registry:
+`transport` is a nonempty ASCII string; `address` is a nonempty string
+in the card encoding. The complete 16384-byte document cap bounds these
+fields and arrays; no additional per-field quota is imposed. This is a reachability vocabulary, not an action registry:
 an unknown transport is an opaque hint, never authority or an automatic
 connection. Matrix, XMPP, Mattermost, Nostr, email and HTTPS may be listed.
-No two entries have the same `(transport,address)`. A `nostr` entry is the
+A `nostr` entry is the
 64-hex key the name's `nostr` yields; a contradictory Nostr address gives
 `CARD_MISMATCH`. A name without a Nostr key has no `nostr` entry.
 
