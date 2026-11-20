@@ -759,7 +759,8 @@ until that agreement.
 - Recovery: spend the disposable auth seal; observers durably close login.
   Publish a new auth key with a fresh seal via an owner-signed manifest update.
 - Derivation: Draft `m/84'/7'/2'/0/0`, its own separately wrapped account
-  on the hot signer seed, not the cold name-owner seed. KEY-MAP rejects
+  on the seed of the operator's signer, not the cold name-owner seed;
+  KEY-MAP defines provisioning for an owner without that signer. KEY-MAP rejects
   v0.3 account 12 because it intersects the dynamic seal/row/stop pool 10+;
   reserve account 3 and funding account 0 remain separate from auth account 2.
   Auth/device fast-revocation seal keys are CSPRNG-only and destroyed after

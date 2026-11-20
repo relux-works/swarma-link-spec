@@ -120,7 +120,7 @@ The table says which open point of LIP-0008 each section answers.
 | Part | Can be built now | Waits for |
 | --- | --- | --- |
 | The reader of canonical bytes, the two integer forms, the typed digest, signatures, the signed form and identifiers (sections 1 to 6) | Yes | The owners' acceptance |
-| The assent, the consent event, the issuance preparation and its frame (sections 7 and 8), as octets and as checks on stated inputs | Yes | The contract identifier is taken as 32 given octets: its preimage is open in LIP-0017 section 2. The reads on a node need the ownership profile of LIP-0008 section 3, which is open |
+| The assent, the consent event, the issuance preparation and its frame (sections 7 and 8), as octets and as checks on stated inputs | Yes | On the ordinary `/1` path the contract identifier is taken as 32 given octets: its preimage is open in LIP-0017 section 2; W9.4 adds no contract-document input to that path. The reads on a node need the ownership profile of LIP-0008 section 3, which is open |
 | A reader of a grant: its members, its signature, and the rules that need its octets alone (section 11) | Yes | The co-author's answer. The admission of a grant needs the reads on a node of the profiles that section 11.11 names |
 | A parser of an invocation, a receipt, an endorsement or the successor attestation | No | The members of each, as the next table says |
 
@@ -863,18 +863,25 @@ gives the refusal. Step 1 has the following ordered substeps:
 
 1. Check the signed grant through W9 and W11.8–W11.10. The root wire schema
    permits missing `contract`; a child still requires it (`WIRE_MEMBER`).
-2. A root with `contract` MUST present the bound contract document for
-   profile selection; missing bytes are `CONTRACT_NOT_PRESENTED`, not a
-   reason to assume the contract-free branch or silently fetch it. A
-   document claiming payload type `swarma-unilateral-mandate/1` selects the
-   mandate branch, regardless of the offered preparation version. Profile
-   selection is not validation: that signed mandate then passes its W9
-   wire/signature pipeline. A different supported contract profile stays
-   on `/1` and must recompute to the grant's `contract` using that profile's
-   defined preimage (`CONTRACT_ID` otherwise), still in this substep.
-   An unsupported or unspecified preimage cannot admit an ordinary path;
-   unrelated bytes never reroute a mandate into it. A root without `contract`
-   selects the contract-free branch and MUST NOT supply a mandate.
+2. A root without `contract` selects the contract-free branch and MUST NOT
+   supply a mandate. For a root with `contract`, only an anchor carrying
+   payload `0x03` or a presented form claiming payload type
+   `swarma-unilateral-mandate/1` selects the mandate branch, regardless of
+   the offered preparation version. Only that branch MUST present the bound
+   contract document; missing bytes are `CONTRACT_NOT_PRESENTED`, never a
+   reason to fall back or silently fetch it. Check the document and signed
+   form first (W9.1 steps 1–2, with their codes, including `WIRE_JSON` for
+   non-document bytes); a payload type other than
+   `swarma-unilateral-mandate/1` then refuses as `ISSUANCE_MODE`. The signed
+   mandate then passes its remaining W9 wire/signature pipeline. Profile
+   selection is not validation, and a failed mandate never falls back.
+   Otherwise the root stays on the ordinary `/1` path: no contract document
+   is required or validated at issuance, and its identifier remains 32 given
+   octets while the ordinary profile's preimage is open. Incidental bytes
+   that claim no mandate do not add an ordinary issuance gate. An ordinary
+   `/1` issuance never establishes the unilateral mandate profile; when its
+   bound document is later presented, LIP-0014 F6(a) and LIP-0030 C6 reject
+   a mandate with `ISSUANCE_MODE` before any contract recomputation.
 3. For the mandate branch, compare every bound field and the contract
    identifier under LIP-0035 section 2.1. Any mismatch is
    `UNILAT_MANDATE_MISMATCH`; do not examine any consent event first or
@@ -896,7 +903,7 @@ editor's resolution of the owner's v0.3 profile, not a new owner decision.
 
 | Step | Check | Refusal |
 | --- | --- | --- |
-| 1 | Signed grant; root contract-profile input; signed mandate if selected; mandate equality; unilateral scope, in the substep order above | The respective W9/W11 codes, `CONTRACT_NOT_PRESENTED`, ordinary-profile `CONTRACT_ID`, `UNILAT_MANDATE_MISMATCH`, `UNILAT_SCOPE`, `UNILAT_OBLIGATION_FORBIDDEN` |
+| 1 | Signed grant; unilateral branch selection; mandate document/form/type and remaining W9 if selected; mandate equality; unilateral scope, in the substep order above; no contract-byte gate for ordinary `/1` | The respective W9/W11 codes, mandate-only `CONTRACT_NOT_PRESENTED`, `ISSUANCE_MODE` for a non-mandate type on that branch, `UNILAT_MANDATE_MISMATCH`, `UNILAT_SCOPE`, `UNILAT_OBLIGATION_FORBIDDEN` |
 | 2 | Preparation mode and profile-specific inputs (W8.4): ordinary consent evidence, or unilateral U3 identity/snapshot inputs; no unexpected mandate | `ISSUANCE_MODE` |
 | 3 | Ordinary `/1` only: the issuer's assent, through the pipeline of a signed object, and then W7.2 | The codes of that pipeline, `ASSENT_BINDING`, `ASSENT_PARTY` |
 | 4 | Ordinary `/1` only: the consent event, through the five steps of W7.4, with the evidence outpoint for a grant by name | `CONSENT_SHAPE`, `CONSENT_BINDING`, `CONSENT_KEY`, `CONSENT_EVIDENCE`, `CONSENT_SIGNATURE`, `CONSENT_TIME` |
@@ -944,7 +951,9 @@ The table holds the codes of the pipelines and no code of an admission.
 The codes that version 0.1.55 proposes for the admission of a child and
 for a request are registered in section 11.11, in the table "Codes of
 version 0.1.55", with the step of LIP-0014 section 8.4 at which each
-stands. No pipeline of this section reports one of them.
+stands. Only `CONTRACT_NOT_PRESENTED` is also reported by W9.4, solely for
+the mandate branch defined there; no other code of that table is reported
+by a pipeline of this section.
 
 ### 10. Vectors
 
@@ -1559,14 +1568,15 @@ co-author's answer folded in by amendment.
 **Codes of version 0.1.55.** Six codes are new with version 0.1.55, and
 three codes of v3 are taken for v4. This table registers all of them for a
 checker; each is proposed with the row of LIP-0014 section 8.4 that reports
-it, and none is reported by a pipeline of section 9. "Again" is the mark of
-LIP-0014 section 8.4 for what a refusal leaves behind.
+it. Only `CONTRACT_NOT_PRESENTED` is also used by the Draft mandate branch
+of W9.4; the ordinary `/1` pipeline reports none of these codes. "Again" is
+the mark of LIP-0014 section 8.4 for what a refusal leaves behind.
 
 | Code | What it reports | Step | Again | Defined by | State |
 | --- | --- | --- | --- | --- | --- |
 | `CHILD_CONTRACT_DIFFERS` | The member `contract` of a child differs from that of its parent | F5 | no | W11.11, rule 1 | New code, new rule |
-| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind, or, since the proposal of 0.1.61, for the framework identifier that document names | Root issuance W9.4 step 1, before mandate checks; path F6, part (a), unchanged | input | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework presentation added by 0.1.61 |
-| `CONTRACT_ID` | A presented document does not recompute to its required identifier: the bound contract to the identifier of the grants, and, since the proposal of 0.1.61, the framework contract to the identifier the bound document names (LIP-0017 section 2). Not computable until its v4 contract profile fixes the preimage; a mandate mismatch uses W9.4's `UNILAT_MANDATE_MISMATCH` instead | Ordinary root profile selection W9.4 step 1; path F6, part (b), unchanged | no | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework recomputation added by 0.1.61 |
+| `CONTRACT_NOT_PRESENTED` | No contract document is presented for the identifier that the grants of a path bind, or, since the proposal of 0.1.61, for the framework identifier that document names; also missing mandate bytes on W9.4's selected mandate branch | Mandate-only issuance W9.4 step 1, before mandate checks; path F6, part (a), unchanged; never ordinary `/1` issuance | input | LIP-0014 section 8.4, rules T1 and T11; Draft W9.4 mandate branch | New code, new rule; framework presentation added by 0.1.61 |
+| `CONTRACT_ID` | A presented document does not recompute to its required identifier: the bound contract to the identifier of the grants, and, since the proposal of 0.1.61, the framework contract to the identifier the bound document names (LIP-0017 section 2). Not computable until its v4 contract profile fixes the preimage; a mandate mismatch uses W9.4's `UNILAT_MANDATE_MISMATCH` instead | Path F6, part (b), unchanged; not W9.4 issuance | no | LIP-0014 section 8.4, rules T1 and T11 | New code, new rule; framework recomputation added by 0.1.61 |
 | `CHILD_NOT_LIVE` | A child that its own closure or its own window refuses: a journaled closure, a window that opens below its recent block, a window that has not opened, a window that has ended, a spent seal | F20, F21 | closed for a closure and a validated spend; state for the window | LIP-0014 section 8.4, rule T3 | New code for rules of LIP-0008 sections 5.1 and 7.1 |
 | `ACTION_UNDEFINED` | A request for an action that no type profile of the executor defines | E1 | no, under one profile | W11.14, rule 1 | New code for the rule of W11.4 |
 | `LIMIT_KIND_UNDEFINED` | A limit of a child or of its row whose kind has no type profile at the side; a request that consumes a kind without a profile | F17, part (b); E2 | no, under one set of profiles | W11.14, rule 2; LIP-0014 section 8.4, rule T9 | New code for the rule of W11.4 |

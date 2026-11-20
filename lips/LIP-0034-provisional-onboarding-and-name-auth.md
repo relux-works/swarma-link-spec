@@ -28,8 +28,9 @@ reader support is claimed.
 ## 1. Keys and manifest binding
 
 A1. The auth key is secp256k1 BIP-340, in its own hardened account and
-separate custody. Its Draft path is `m/84'/7'/2'/0/0` on the hot signer
-seed, not the cold name-owner seed. KEY-MAP records why v0.3 account 12
+separate custody. Its Draft path is `m/84'/7'/2'/0/0` on the seed of the
+operator's signer, not the cold name-owner seed; KEY-MAP defines provisioning
+for an owner without that signer. KEY-MAP records why v0.3 account 12
 is not adopted: it intersects the shared dynamic account pool 10+. A P-256
 or BIP-340 device key stays internal to the owner's control plane and MUST NOT sign external
 service challenges or grants. The cold name-owner key signs name operations

@@ -359,9 +359,12 @@ previous section says.
 The Swarma Link editor's resolution preserves existing derivations where
 the owner's v0.3 draft differs. It adds a separate auth role, not a migration
 of an existing secret. The fixed auth account is `m/84'/7'/2'`; the fixed
-emergency fee-reserve account is `m/84'/7'/3'`, both on the operator's hot
-signer seed, **not** the cold name-owner seed. These account indices are
-below 10 and outside the shared dynamic pool of LIP-0024 seals, LIP-0026
+emergency fee-reserve account is `m/84'/7'/3'`, both on the seed of the
+operator's signer, **not** the cold name-owner seed. This is the existing
+seed used for funding account 0, where that signer exists. An owner without
+such a signer provisions a separate seed for the dedicated auth and reserve
+signers, using the same account indices and custody separation. These account
+indices are below 10 and outside the shared dynamic pool of LIP-0024 seals, LIP-0026
 rows and LIP-0027 stop keys. This Draft does **not** adopt v0.3's fixed
 indices 12 and 14: those are valid future dynamic allocations on the same
 seed, so reserving them only against existing seals would not prevent a

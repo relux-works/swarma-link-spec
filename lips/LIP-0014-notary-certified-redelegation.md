@@ -1463,6 +1463,14 @@ and the list of open points after the pairs names it.
 The steps are named F1 to F24, and A1 stands between F19 and F20. The row
 of a child is the row that its ordinal selects (LIP-0026 R8.3, R8.8).
 
+**Draft LIP-0035 routing clarification.** At F6(a), after the required
+documents are present and before (b), a bound document claiming payload type
+`swarma-unilateral-mandate/1` refuses as `ISSUANCE_MODE`: it is never the
+contract of an ordinary `/1`-issued grant. Mandates are root-only `/2`
+issuances and confer no re-delegation. Missing documents still give
+`CONTRACT_NOT_PRESENTED` first. This does not add a contract-byte check to
+ordinary root issuance under LIP-0020 W9.4.
+
 | # | Step | Reads | Side | On success | Refusal | Again | Not yet observed | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | F1 | The parent as a document: the pipeline of a signed object (LIP-0020 W9.1, W11.8), steps 1 to 8, and of step 9 the rules of every grant (W11.9) and then rules 1 and 3 of W11.10, the forms of `delegate.actions` and of `notaries`. The row reads no fact of a chain. Rules 2 and 4 to 8 of W11.10, the rules of the pools, the groups and the ranges, are no part of this row at an admission: F13 judges rules 4 and 5 for the group and the range of the child, and open point O7 holds the rest (rule T10) | The signed form of `P`, octets alone | both | `P` is a signed grant with a right of re-delegation, its identifier is recomputed, and its signature holds under `issuer.grant_key` | The codes of that pipeline, in its order: `WIRE_SIZE` to `WIRE_ID`; then `GRANT_SHAPE`; then `GRANT_DELEGATE` for rules 1 and 3 of W11.10 | no | The child, the contract, every fact of a node; the groups and the ranges of `P` | Carried: LIP-0020 W9.1, W11.8 and W11.9; W11.8, step 6, reads a child under the key of "the parent that the reader has already read through this pipeline". **NEW** (rule T10): which rules of W11.10 the admission of a child asks for, and at which step. LIP-0020 W11.10 says that the result of the pipeline "does not say what a verifier must have read before it admits a child" and leaves that to proposal Q1 of LIP-0026, which is pending; under the profile in force a verifier "checks only the group and the range of its child" (LIP-0026 section 8), and the refusal of a whole parent is unavailable (LIP-0026, "Owner decision proposals"). This row therefore asks of W11.10 for the two forms that F16 and F23 read and for nothing of a group, and it decides nothing of Q1. The earlier drafts of this row refused a child for a defect in a group that its ordinal does not select; that requirement is withdrawn, and the row contradicts no sentence in force |

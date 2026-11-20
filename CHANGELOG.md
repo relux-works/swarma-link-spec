@@ -39,7 +39,11 @@ production name migration or deployed reader support is claimed.
   exact grant equality, signed broker invocation and externally fenced
   single-use journal. The mandate's checked signature is bound in `/2`,
   without separate assent or recipient consent; W9.4 orders equality and
-  scope checks. Journal continuity keeps LIP-0025's existing loss/fencing
+  scope checks. Contract-byte routing applies only to the mandate branch;
+  ordinary `/1` root issuance keeps section 10's given contract identifier
+  and needs no contract bytes. Later F6(a)/C6 checks reject a mandate
+  presented as an ordinary contract with `ISSUANCE_MODE`.
+  Journal continuity keeps LIP-0025's existing loss/fencing
   codes and precedence; root wire/scope and child refusals are unambiguous.
 - LIP-0036 composes credentials, supported screening limits and a human-gated
   disclosure grant, with `curator-trust` explicitly external, role-separated

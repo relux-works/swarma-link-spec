@@ -99,18 +99,28 @@ and rental path; neither
 version may be substituted for the other. Existing v3 framing is unchanged.
 
 Use the **one deterministic issuance pipeline of LIP-0020 W9.4**, not
-an independent mandate pipeline: signed grant, contract-profile input,
+an independent mandate pipeline: signed grant, unilateral branch selection,
 signed mandate if selected, equality, then U1–U6 in step 1; identity and
 preparation mode in step 2; skip separate assent/consent in steps 3–4 for
 either unilateral branch; frame in step 5; typed preparation commitment
 in step 6. The presenter supplies the signed mandate bytes whenever the
-grant binds that profile. Missing root contract bytes refuse
-`CONTRACT_NOT_PRESENTED`; a failed mandate never falls back to `/1` or the
-contract-free branch. The recipient snapshot is reconstructed at the signed
+grant takes the mandate branch: a root with `contract` under payload `0x03`,
+or one presented with a form claiming the mandate payload type. Missing
+mandate bytes refuse `CONTRACT_NOT_PRESENTED`; malformed document/form bytes
+use their W9 codes, including `WIRE_JSON` for non-document bytes; a different
+payload type after those checks is `ISSUANCE_MODE`. A failed mandate never
+falls back to `/1` or the contract-free branch. Ordinary `/1` roots require
+no contract bytes at issuance and keep LIP-0020 section 10's stated-input behaviour:
+the ordinary contract identifier is 32 given octets while its preimage is
+open. Supplying unrelated bytes does not add an issuance gate. An ordinary
+`/1` issuance never establishes this mandate profile: LIP-0014 F6(a) and
+LIP-0030 C6 refuse a presented mandate as `ISSUANCE_MODE` before recomputing
+its identifier. The recipient snapshot is reconstructed at the signed
 `recent_block` as U3 specifies, not read from a nonexistent `/2` member.
 A supplied `/1` for either unilateral branch, or `/2` for another contract
-profile, is `ISSUANCE_MODE`; an anchor with the wrong frame version is
-`ISSUANCE_FRAME`. Neither failure creates an issuance or an effect.
+profile, is `ISSUANCE_MODE`. After branch selection and preparation mode
+pass, an anchor with the wrong frame version is `ISSUANCE_FRAME` at step 5.
+Neither failure creates an issuance or an effect.
 
 ### 2.1. Optional signed mandate contract
 
@@ -243,7 +253,8 @@ network propagation time. Already disclosed bytes cannot be recalled.
 Use existing pipeline codes rather than aliases for malformed wire or closure:
 
 1. Issuance uses LIP-0020 W9.4 exactly, including its ordered step-1
-   substeps: grant W9/W11, root contract bytes, mandate W9, equality,
+   substeps: grant W9/W11, unilateral branch selection, mandate-only
+   document/form/type checks and remaining W9, equality,
    `UNILAT_SCOPE`, then `UNILAT_OBLIGATION_FORBIDDEN`. Null is `WIRE_VALUE`;
    a contract-free child is `WIRE_MEMBER` before scope. An attempted child
    under a non-delegable parent remains `NOT_DELEGABLE` at its ordinary
@@ -312,7 +323,10 @@ guarantees. Private delivery does not remove ledger visibility of an anchor.
 
 Vectors are **not required for Draft LIPs** and are not supplied. Admission
 still requires implementation tests for a valid root/key and root/name pair,
-contract-bearing positive controls, forbidden `delegate`/child/hire/rental,
+ordinary contract-binding `/1` roots accepted without contract bytes as in
+LIP-0020 section 10's `composed-v-01` and `composed-v-02`, beside mandate-only missing
+bytes (`CONTRACT_NOT_PRESENTED`), non-document bytes (`WIRE_JSON`), and a
+different payload type (`ISSUANCE_MODE`); forbidden `delegate`/child/hire/rental,
 null versus omitted contract, obligation-bearing actions, wrong preparation
 version, absent seal, replay/concurrent single use, and durable revocation.
 No single-use P2SH-v4 bytes are claimed while their construction is open.
@@ -339,4 +353,8 @@ pending. The single-use P2SH-v4 construction and application action/limit
 profiles and general C2 per-clause salt/proof mapping remain open before
 adoption. The Option A/B choice itself is closed by the owner's
 decision, not awaiting another preference poll. Whether the optional
-mandate profile becomes mandatory later is an open owner item.
+mandate profile becomes mandatory later is an open owner item. Ordinary
+issuance's opaque identifier cannot reveal withheld mandate bytes while the
+general contract preimages are open. Such a `/1` issuance is an ordinary
+consented grant, never this profile; presenting the mandate at F6(a) or C6
+refuses it as specified above. This Draft claims no earlier detection.

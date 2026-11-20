@@ -593,6 +593,15 @@ defined again here. The root check is **P** and has no proposed place
 against the other root checks. This admission amendment does not supply
 a session-ending event for a validated contract-seal spend (N12).
 
+**Draft LIP-0035 routing clarification.** Within C6, after the required
+documents are present and before recomputation, a bound document claiming
+payload type `swarma-unilateral-mandate/1` refuses as `ISSUANCE_MODE`, for a
+root or a child. It is never an ordinary `/1` contract; a child applies the
+same check already inside F6(a). Missing documents keep C6's existing codes
+and precede this check. Ordinary root issuance under LIP-0020 W9.4 still
+requires no contract bytes; C6 is a later admission check, not a new
+issuance gate.
+
 | # | Check of the grant checker | Order that the cited text states | Code |
 | --- | --- | --- | --- |
 | C1 | The request and every grant of the path are read as signed objects: the pipeline of LIP-0020 W9.1, with W11.8 to W11.10 for a grant. A child is read under the delegation key of its parent, as W11.8 carries it; a child signed by another key refuses here | For a child, **R** as proposed by version 0.1.55 [D]: the parent as a document (row F1), then the child as a document (F2), then the observation (F3); "a refusal of a document is computed in no observation" (row F3 and pair Q1), so the documents stand before the observation although LIP-0022 B6.1 puts its six codes "before every rule of a grant". For a root, **P** as before: these are rules of the signed object and stand before the observation. Whether a reader judges a whole parent is O-6 | The codes of that pipeline (section 6, list 3). **O** for the invocation (N1) |
